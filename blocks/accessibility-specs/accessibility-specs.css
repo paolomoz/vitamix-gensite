@@ -1,0 +1,197 @@
+/* Accessibility Specs Block - Vitamix Design System */
+
+.accessibility-specs {
+  padding: var(--spacing-section-sm, 3rem) var(--spacing-lg, 1.5rem);
+  max-width: var(--max-width-content, 1200px);
+  margin: 0 auto;
+}
+
+.accessibility-specs-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl, 3rem);
+}
+
+.accessibility-specs-icon {
+  color: var(--color-brand-red, #c41230);
+  margin-bottom: var(--spacing-sm, 0.5rem);
+}
+
+.accessibility-specs-icon svg {
+  width: 40px;
+  height: 40px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.accessibility-specs-title {
+  font-size: var(--font-size-4xl, 2.25rem);
+  font-weight: 300;
+  color: var(--color-brand-dark, #1a1a1a);
+  margin: 0;
+}
+
+.accessibility-specs-table {
+  background: var(--color-white, #fff);
+  border: 1px solid var(--color-light-gray, #e5e5e5);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+  margin-bottom: var(--spacing-xl, 2rem);
+  overflow-x: auto;
+}
+
+.specs-header-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  background: var(--color-off-white, #f5f5f5);
+  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
+}
+
+.specs-header-row > div {
+  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-dark-gray, #666);
+}
+
+.specs-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
+  transition: background-color var(--transition-fast, 0.15s ease);
+}
+
+.specs-row:last-child {
+  border-bottom: none;
+}
+
+.specs-row:hover {
+  background: var(--color-off-white, #f5f5f5);
+}
+
+.specs-row > div {
+  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-charcoal, #333);
+  display: flex;
+  align-items: center;
+}
+
+.specs-row a {
+  color: var(--color-brand-red, #c41230);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-normal, 0.2s ease);
+}
+
+.specs-row a:hover {
+  color: var(--color-brand-red-dark, #a30f28);
+  text-decoration: underline;
+}
+
+.specs-row.recommended {
+  background: rgba(196, 18, 48, 0.05);
+}
+
+.accessibility-recommendation {
+  background: var(--color-off-white, #f5f5f5);
+  padding: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md, 1rem);
+}
+
+.recommendation-icon {
+  color: var(--color-brand-red, #c41230);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.recommendation-content h3 {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 500;
+  color: var(--color-brand-dark, #1a1a1a);
+  margin: 0 0 var(--spacing-xs, 0.25rem);
+}
+
+.recommendation-content p {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-dark-gray, #666);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.accessibility-tips {
+  background: var(--color-white, #fff);
+  border: 1px solid var(--color-light-gray, #e5e5e5);
+  padding: var(--spacing-lg, 1.5rem);
+}
+
+.accessibility-tips h3 {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-brand-red, #c41230);
+  margin: 0 0 var(--spacing-md, 1rem);
+}
+
+.accessibility-tips ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.accessibility-tips li {
+  padding: var(--spacing-sm, 0.5rem) 0;
+  color: var(--color-charcoal, #333);
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.6;
+  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
+}
+
+.accessibility-tips li:last-child {
+  border-bottom: none;
+}
+
+/* Responsive */
+@media (width < 768px) {
+  .accessibility-specs {
+    padding: var(--spacing-lg, 1.5rem) var(--spacing-md, 1rem);
+  }
+
+  .specs-header-row,
+  .specs-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .specs-header-row > div:first-child {
+    display: block;
+  }
+
+  .specs-header-row > div:not(:first-child) {
+    display: none;
+  }
+
+  .specs-row > div {
+    padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  }
+
+  .specs-row > div::before {
+    content: attr(data-label);
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: 500;
+    color: var(--color-dark-gray, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: var(--spacing-sm, 0.5rem);
+    min-width: 80px;
+  }
+
+  .accessibility-recommendation {
+    flex-direction: column;
+  }
+}

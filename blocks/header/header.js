@@ -126,10 +126,13 @@ export default async function decorate(block) {
   });
 
   const navBrand = nav.querySelector('.nav-brand');
-  const brandLink = navBrand.querySelector('.button');
-  if (brandLink) {
-    brandLink.className = '';
-    brandLink.closest('.button-container').className = '';
+  // Replace brand content with Vitamix logo
+  if (navBrand) {
+    navBrand.innerHTML = `
+      <a href="/" aria-label="Vitamix Home">
+        <img src="/icons/vitamix-logo.svg" alt="Vitamix" width="160" height="35">
+      </a>
+    `;
   }
 
   const navSections = nav.querySelector('.nav-sections');
@@ -158,6 +161,186 @@ export default async function decorate(block) {
   // prevent mobile nav behavior on window resize
   toggleMenu(nav, navSections, isDesktop.matches);
   isDesktop.addEventListener('change', () => toggleMenu(nav, navSections, isDesktop.matches));
+
+  // Add search bar to header
+  const searchContainer = document.createElement('div');
+  searchContainer.className = 'nav-search';
+  searchContainer.innerHTML = `
+    <div class="header-search-container">
+      <input type="text" placeholder="What would you like to explore?" aria-label="Search query">
+      <button type="button" class="header-explore-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+          <path d="M20 3v4"></path>
+          <path d="M22 5h-4"></path>
+          <path d="M4 17v2"></path>
+          <path d="M5 18H3"></path>
+        </svg>
+        <span>Explore</span>
+      </button>
+    </div>
+  `;
+
+  // Add AI mode toggle (Speed = Cerebras, Quality = Claude)
+  const aiModeToggle = document.createElement('div');
+  aiModeToggle.className = 'nav-ai-toggle';
+  const savedMode = sessionStorage.getItem('ai-mode') || 'speed';
+  aiModeToggle.innerHTML = `
+    <button type="button" class="ai-toggle-option${savedMode === 'speed' ? ' active' : ''}" data-value="speed" title="Fast generation with Cerebras">Speed</button>
+    <button type="button" class="ai-toggle-option${savedMode === 'quality' ? ' active' : ''}" data-value="quality" title="Quality generation with Claude">Quality</button>
+  `;
+
+  // Add image quality toggle to the right of the header
+  const qualityToggle = document.createElement('div');
+  qualityToggle.className = 'nav-quality-toggle';
+  qualityToggle.innerHTML = `
+    <span class="quality-label">Images:</span>
+    <button type="button" class="quality-option active" data-value="fast">Fast</button>
+    <button type="button" class="quality-option" data-value="best">Best</button>
+  `;
+
+  // Add Share button (disabled during generation, enabled when published)
+  const shareButton = document.createElement('button');
+  shareButton.className = 'header-share-btn';
+  shareButton.type = 'button';
+  shareButton.title = 'Share link will be available after page is saved';
+  shareButton.disabled = true;
+  shareButton.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+      <polyline points="16 6 12 2 8 6"/>
+      <line x1="12" y1="2" x2="12" y2="15"/>
+    </svg>
+    <span>Share</span>
+  `;
+
+  // Store published URL for sharing
+  let publishedUrl = null;
+
+  // Show notification
+  function showCopyNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'copy-notification';
+    notification.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+      <span>${message}</span>
+    `;
+    document.body.appendChild(notification);
+
+    // Trigger show animation
+    requestAnimationFrame(() => {
+      notification.classList.add('show');
+    });
+
+    // Auto-dismiss after 2 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 2000);
+  }
+
+  // Share button click handler
+  shareButton.addEventListener('click', async () => {
+    if (!publishedUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(publishedUrl);
+      showCopyNotification('Link copied to clipboard!');
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = publishedUrl;
+      textArea.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showCopyNotification('Link copied to clipboard!');
+    }
+  });
+
+  // Listen for page-published event
+  window.addEventListener('page-published', (e) => {
+    publishedUrl = e.detail.url;
+    shareButton.disabled = false;
+    shareButton.title = 'Copy link to this page';
+    console.log('[Header] Share button enabled for:', publishedUrl);
+  });
+
+  // Add search interactivity
+  const searchInput = searchContainer.querySelector('input');
+  const searchButton = searchContainer.querySelector('.header-explore-btn');
+
+  // AI mode toggle click handler
+  const aiToggleOptions = aiModeToggle.querySelectorAll('.ai-toggle-option');
+  aiToggleOptions.forEach((option) => {
+    option.addEventListener('click', () => {
+      aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
+      option.classList.add('active');
+      sessionStorage.setItem('ai-mode', option.dataset.value);
+    });
+  });
+
+  // Image quality toggle click handler
+  const toggleOptions = qualityToggle.querySelectorAll('.quality-option');
+  toggleOptions.forEach((option) => {
+    option.addEventListener('click', () => {
+      toggleOptions.forEach((opt) => opt.classList.remove('active'));
+      option.classList.add('active');
+    });
+  });
+
+  // Simple search with spinner
+  const doSearch = () => {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    // Show spinner
+    searchButton.disabled = true;
+    searchInput.disabled = true;
+    searchButton.innerHTML = '<div class="header-search-spinner"></div>';
+
+    // Get selected AI mode (default to quality/Claude)
+    const aiMode = sessionStorage.getItem('ai-mode') || 'quality';
+
+    // Navigate based on AI mode - both use same worker with different presets:
+    // - speed: preset=all-cerebras (Cerebras for everything)
+    // - quality: preset=production (Claude for reasoning, Cerebras for content)
+    const preset = aiMode === 'quality' ? 'production' : 'all-cerebras';
+    window.location.href = `/?q=${encodeURIComponent(query)}&preset=${preset}`;
+  };
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // Update AI toggle to reflect current page mode based on preset parameter
+  const currentPreset = urlParams.get('preset');
+  if (currentPreset === 'all-cerebras') {
+    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
+    aiModeToggle.querySelector('[data-value="speed"]').classList.add('active');
+    sessionStorage.setItem('ai-mode', 'speed');
+  } else if (currentPreset === 'production' || urlParams.has('q')) {
+    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
+    aiModeToggle.querySelector('[data-value="quality"]').classList.add('active');
+    sessionStorage.setItem('ai-mode', 'quality');
+  }
+
+  searchButton.addEventListener('click', doSearch);
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      doSearch();
+    }
+  });
+
+  // Only show nav-search on non-home pages (home page has its own search form)
+  const isHomePage = window.location.pathname === '/' && !window.location.search;
+  if (!isHomePage) {
+    nav.appendChild(searchContainer);
+    nav.appendChild(qualityToggle);
+    nav.appendChild(shareButton);
+  }
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'nav-wrapper';

@@ -1,0 +1,190 @@
+/* Empathy Hero Block Styles */
+
+.empathy-hero {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%);
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.empathy-hero-content {
+  max-width: 700px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.empathy-hero-content.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.empathy-decoration {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  color: #d4030f;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.empathy-decoration svg {
+  width: 100%;
+  height: 100%;
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+.empathy-content {
+  position: relative;
+  z-index: 2;
+}
+
+.empathy-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  background: white;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  color: #d4030f;
+}
+
+.empathy-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.empathy-headline {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1rem;
+  line-height: 1.3;
+}
+
+.empathy-message {
+  font-size: 1.2rem;
+  color: #555;
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+
+.empathy-promise {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.empathy-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #d4030f;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.empathy-cta:hover {
+  background: #b5020d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 3, 15, 0.3);
+}
+
+/* Dark section variant */
+.section.dark .empathy-hero {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+}
+
+.section.dark .empathy-headline {
+  color: #fff;
+}
+
+.section.dark .empathy-message {
+  color: #ccc;
+}
+
+.section.dark .empathy-promise {
+  color: #eee;
+}
+
+.section.dark .empathy-icon {
+  background: #333;
+  color: #ff6b6b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .empathy-hero {
+    min-height: 350px;
+    padding: 2rem 1.5rem;
+  }
+
+  .empathy-decoration {
+    width: 300px;
+    height: 300px;
+  }
+
+  .empathy-headline {
+    font-size: 1.6rem;
+  }
+
+  .empathy-message {
+    font-size: 1.05rem;
+  }
+
+  .empathy-promise {
+    font-size: 1rem;
+  }
+
+  .empathy-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .empathy-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .empathy-headline {
+    font-size: 1.4rem;
+  }
+
+  .empathy-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}

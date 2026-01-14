@@ -1,0 +1,109 @@
+{
+  "faqs": [
+    {
+      "id": "warranty-period",
+      "category": "warranty",
+      "question": "What is the warranty period for Vitamix blenders?",
+      "answer": "Most Vitamix home blenders come with a 10-year full warranty that covers all parts, performance, and labor. Some models like the Explorian series have a 5-year warranty. Commercial models have a 3-year warranty.",
+      "keywords": ["warranty", "guarantee", "coverage", "years", "period"]
+    },
+    {
+      "id": "warranty-coverage",
+      "category": "warranty",
+      "question": "What does the Vitamix warranty cover?",
+      "answer": "The Vitamix warranty covers the motor, blade assembly, container, lid, tamper, and all other components against defects in materials and workmanship. It includes free repairs or replacements and covers two-way shipping.",
+      "keywords": ["warranty", "cover", "coverage", "parts", "motor", "blade", "container"]
+    },
+    {
+      "id": "warranty-claim",
+      "category": "warranty",
+      "question": "How do I start a warranty claim?",
+      "answer": "To start a warranty claim: 1) Locate your serial number on the bottom of the motor base. 2) Have your proof of purchase ready. 3) Contact Vitamix support at 1-800-848-2649 or visit vitamix.com/support. 4) Our team will troubleshoot and arrange repair or replacement if needed.",
+      "keywords": ["warranty", "claim", "repair", "replacement", "return", "support"]
+    },
+    {
+      "id": "leak-causes",
+      "category": "troubleshooting",
+      "question": "Why is my Vitamix leaking from the bottom?",
+      "answer": "Leaking from the container bottom is usually caused by: 1) A worn blade seal - this is the most common cause and is covered under warranty. 2) Overfilling above the max line. 3) A cracked container. Contact support for a free replacement if under warranty.",
+      "keywords": ["leak", "leaking", "bottom", "seal", "drip", "container"]
+    },
+    {
+      "id": "noise-normal",
+      "category": "troubleshooting",
+      "question": "Is it normal for my Vitamix to be loud?",
+      "answer": "Vitamix blenders operate at 88-92 decibels at maximum speed, similar to a garbage disposal. This is normal due to the powerful motor. For quieter operation, use lower speeds when possible, or consider the Quiet One model designed for noise-sensitive environments.",
+      "keywords": ["noise", "loud", "sound", "decibels", "quiet", "volume"]
+    },
+    {
+      "id": "motor-smell",
+      "category": "troubleshooting",
+      "question": "Why does my Vitamix smell like burning?",
+      "answer": "A slight burning smell during heavy blending (like nut butters) can be normal as the motor works hard. However, if the smell persists or smoke appears, stop immediately and unplug. This may indicate the thermal protection has activated. Let it cool for 45 minutes before trying again. Contact support if the issue continues.",
+      "keywords": ["smell", "burning", "smoke", "motor", "overheating", "hot"]
+    },
+    {
+      "id": "self-clean",
+      "category": "cleaning",
+      "question": "How do I use the self-cleaning feature?",
+      "answer": "To self-clean your Vitamix: 1) Fill the container halfway with warm water. 2) Add a drop of dish soap. 3) Secure the lid with the plug in place. 4) Start on low and increase to high speed for 30-60 seconds. 5) Rinse and air dry. Run this cycle after each use for best results.",
+      "keywords": ["clean", "self-clean", "wash", "cleaning", "rinse"]
+    },
+    {
+      "id": "dishwasher",
+      "category": "cleaning",
+      "question": "Can I put my Vitamix in the dishwasher?",
+      "answer": "The container and lid are top-rack dishwasher safe, but we recommend hand washing for best longevity. Never put the motor base in water or dishwasher. The tamper can be washed by hand. For stubborn residue, blend warm water with a drop of soap.",
+      "keywords": ["dishwasher", "wash", "clean", "safe", "hand wash"]
+    },
+    {
+      "id": "blade-cleaning",
+      "category": "cleaning",
+      "question": "How do I clean under the blades?",
+      "answer": "The self-cleaning cycle handles most residue under the blades. For stubborn buildup: 1) Fill with warm water and 1 cup white vinegar. 2) Let soak for several hours or overnight. 3) Run the self-clean cycle. 4) Rinse thoroughly. Never try to remove the blade assembly yourself.",
+      "keywords": ["blade", "clean", "stuck", "residue", "buildup", "under"]
+    },
+    {
+      "id": "hot-liquids",
+      "category": "usage",
+      "question": "Can I blend hot liquids in my Vitamix?",
+      "answer": "Yes! Vitamix can blend hot liquids safely. Important tips: 1) Never fill past the max line with hot liquids. 2) Remove the lid plug and cover with a folded towel to allow steam to escape. 3) Start on low speed to prevent splashing. The friction heat feature can also heat cold ingredients to steaming.",
+      "keywords": ["hot", "soup", "heat", "warm", "liquid", "steam", "temperature"]
+    },
+    {
+      "id": "ice-crushing",
+      "category": "usage",
+      "question": "Can Vitamix crush ice?",
+      "answer": "Yes, all Vitamix blenders excel at crushing ice. For best results: 1) Add liquid first, then ice. 2) Use the tamper to push ice into the blades. 3) Start on low and increase to high. Vitamix can create snow-like ice consistency in seconds for smoothies, frozen drinks, and desserts.",
+      "keywords": ["ice", "crush", "frozen", "smoothie", "snow", "blend"]
+    },
+    {
+      "id": "dry-grinding",
+      "category": "usage",
+      "question": "Can I grind dry ingredients like coffee or grains?",
+      "answer": "Yes, Vitamix can grind coffee beans, grains, and spices. For best results with frequent dry grinding, consider the Dry Grains Container which has a different blade shape optimized for milling. The standard container works for occasional grinding but may leave some coarse pieces.",
+      "keywords": ["grind", "dry", "coffee", "grain", "flour", "spice", "mill"]
+    },
+    {
+      "id": "container-size",
+      "category": "usage",
+      "question": "What container size should I get?",
+      "answer": "64oz containers are best for families and batch cooking. 48oz containers fit under standard cabinets and work well for 2-4 servings. 20oz personal cups are ideal for single-serve smoothies. Many Ascent models are compatible with multiple container sizes.",
+      "keywords": ["container", "size", "capacity", "oz", "ounce", "cup", "family"]
+    },
+    {
+      "id": "refurbished",
+      "category": "purchase",
+      "question": "Are Certified Reconditioned Vitamix blenders worth it?",
+      "answer": "Yes! Certified Reconditioned Vitamix blenders are factory-inspected, include new containers and parts, and come with a full 5-year warranty. They offer significant savings (often 30-40% off) while maintaining Vitamix quality and performance standards.",
+      "keywords": ["refurbished", "reconditioned", "certified", "used", "savings", "discount"]
+    },
+    {
+      "id": "model-difference",
+      "category": "purchase",
+      "question": "What's the difference between Vitamix series?",
+      "answer": "Ascent Series: Latest technology, touchscreen (some models), wireless connectivity, 10-year warranty. Explorian Series: Entry-level with essential features, 5-year warranty. Legacy Series (5200, 7500): Proven classics with full power, 7-10 year warranty. Each series offers the same powerful blending performance.",
+      "keywords": ["difference", "series", "model", "compare", "ascent", "explorian", "legacy"]
+    }
+  ]
+}

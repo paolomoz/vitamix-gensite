@@ -7,3 +7,14 @@ helix-importer-ui
 .DS_Store
 *.bak
 .idea
+.env
+
+.playwright-mcp/*
+tools/crawler/node_modules/*
+workers/vitamix-gensite-embed-recipes/node_modules/*
+workers/vitamix-gensite-recommender/node_modules/*
+workers/vitamix-gensite-analytics/node_modules/*
+
+# Cloudflare Workers secrets and temp files
+.dev.vars
+.wrangler/

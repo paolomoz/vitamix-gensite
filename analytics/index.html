@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard | Vitamix POC</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/blocks/analytics-dashboard/analytics-dashboard.css">
+  <style>
+    body {
+      display: block !important;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+    .analytics-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: #666;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      color: #c41230;
+    }
+  </style>
+</head>
+<body>
+  <div class="analytics-wrapper">
+    <a href="/" class="back-link">&larr; Back to Home</a>
+
+    <div class="analytics-dashboard block" data-block-name="analytics-dashboard">
+      <!-- Block content will be populated by JS -->
+    </div>
+  </div>
+
+  <script type="module">
+    import decorate from '/blocks/analytics-dashboard/analytics-dashboard.js';
+
+    const block = document.querySelector('.analytics-dashboard');
+    if (block) {
+      decorate(block);
+      console.log('[Analytics] Dashboard block decorated');
+    }
+  </script>
+</body>
+</html>

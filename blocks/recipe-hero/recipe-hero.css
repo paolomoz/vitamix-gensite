@@ -1,0 +1,167 @@
+/**
+ * Recipe Hero Block Styles - Vitamix Design System
+ *
+ * A text-focused hero for recipe listing/collection pages.
+ * Clean, minimal design that lets the recipe cards shine.
+ */
+
+/* ===== Container Reset ===== */
+.recipe-hero-container {
+  padding: var(--spacing-section-sm) 0 var(--spacing-xl);
+}
+
+.recipe-hero-container .recipe-hero-wrapper {
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* ===== Base Styles ===== */
+.recipe-hero {
+  text-align: left;
+}
+
+.recipe-hero > div {
+  display: contents;
+}
+
+/* ===== Hero Content ===== */
+.recipe-hero .hero-content {
+  max-width: 800px;
+}
+
+/* ===== Title ===== */
+.recipe-hero .hero-title,
+.recipe-hero h1 {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-light);
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--color-brand-dark);
+  margin: 0 0 var(--spacing-md);
+}
+
+/* ===== Subtitle ===== */
+.recipe-hero .hero-subtitle,
+.recipe-hero .hero-content > p {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-dark-gray);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-lg);
+  max-width: 600px;
+}
+
+/* ===== Stats List ===== */
+.recipe-hero .hero-stats,
+.recipe-hero ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recipe-hero .hero-stats li,
+.recipe-hero ul li {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-charcoal);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Stat labels (Prep:, Cook:, etc.) */
+.recipe-hero .hero-stats li::before,
+.recipe-hero ul li::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--color-brand-red);
+  border-radius: 50%;
+  margin-right: var(--spacing-xs);
+}
+
+/* ===== Centered Variant ===== */
+.recipe-hero.centered {
+  text-align: center;
+}
+
+.recipe-hero.centered .hero-content {
+  margin: 0 auto;
+}
+
+.recipe-hero.centered .hero-subtitle,
+.recipe-hero.centered .hero-content > p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.recipe-hero.centered .hero-stats,
+.recipe-hero.centered ul {
+  justify-content: center;
+}
+
+/* ===== Dark Variant ===== */
+.recipe-hero.dark,
+.dark .recipe-hero {
+  background: var(--color-brand-dark);
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-md);
+}
+
+.recipe-hero.dark .hero-title,
+.recipe-hero.dark h1,
+.dark .recipe-hero h1 {
+  color: var(--color-white);
+}
+
+.recipe-hero.dark .hero-subtitle,
+.recipe-hero.dark .hero-content > p,
+.dark .recipe-hero p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.recipe-hero.dark .hero-stats li,
+.recipe-hero.dark ul li,
+.dark .recipe-hero ul li {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== Desktop Styles ===== */
+@media (width >= 900px) {
+  .recipe-hero .hero-title,
+  .recipe-hero h1 {
+    font-size: var(--font-size-hero);
+  }
+
+  .recipe-hero .hero-subtitle,
+  .recipe-hero .hero-content > p {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* ===== Mobile Styles ===== */
+@media (width < 600px) {
+  .recipe-hero-container {
+    padding: var(--spacing-xl) 0 var(--spacing-lg);
+  }
+
+  .recipe-hero-container .recipe-hero-wrapper {
+    padding: 0 var(--spacing-md);
+  }
+
+  .recipe-hero .hero-title,
+  .recipe-hero h1 {
+    font-size: var(--font-size-4xl);
+  }
+
+  .recipe-hero .hero-stats,
+  .recipe-hero ul {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}

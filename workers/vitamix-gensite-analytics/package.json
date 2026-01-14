@@ -1,0 +1,25 @@
+{
+  "name": "vitamix-analytics",
+  "version": "1.0.0",
+  "description": "Analytics tracking and AI analysis for Vitamix POC",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "types": "wrangler types"
+  },
+  "keywords": [
+    "cloudflare",
+    "worker",
+    "vitamix",
+    "analytics"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "typescript": "^5.3.0",
+    "wrangler": "^3.95.0"
+  }
+}

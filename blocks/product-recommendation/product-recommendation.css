@@ -1,0 +1,252 @@
+/**
+ * Product Recommendation Block Styles
+ *
+ * Hero-style 50/50 split layout for product recommendations.
+ * Visually matches the hero block design.
+ */
+
+/* Container reset - match hero-container */
+main .section.dark.product-recommendation-container {
+  padding: 25px 0;
+}
+
+.product-recommendation-container .product-recommendation-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
+.product-recommendation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2xl, 3rem);
+  align-items: center;
+  max-width: var(--max-width-wide, 1400px);
+  margin: 0 auto;
+  min-height: 400px;
+  position: relative;
+}
+
+.product-recommendation > div {
+  display: contents;
+}
+
+/* Image side - match hero-image styling */
+.product-recommendation-image,
+.product-recommendation > div > div:first-child:has(picture) {
+  max-width: 100%;
+}
+
+.product-recommendation-image picture,
+.product-recommendation-image img,
+.product-recommendation > div > div:first-child picture,
+.product-recommendation > div > div:first-child img {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: var(--radius-md, 8px);
+}
+
+/* Content side - match hero-content styling */
+.product-recommendation-content,
+.product-recommendation > div > div:last-child {
+  padding: var(--spacing-xl, 2rem) 0;
+}
+
+/* Eyebrow - match hero eyebrow styling */
+.product-recommendation-eyebrow,
+.product-recommendation-content > p:first-child {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-semibold, 500);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-brand-red, #c41230);
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+/* Headline - match hero h1 styling */
+.product-recommendation-headline {
+  font-size: var(--font-size-5xl, 3rem);
+  font-weight: var(--font-weight-light, 300);
+  letter-spacing: -0.025em;
+  color: var(--color-brand-dark, #1a1a1a);
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  line-height: 1.1;
+}
+
+/* Body - match hero p styling */
+.product-recommendation-body {
+  font-size: var(--font-size-lg, 1.125rem);
+  color: var(--color-charcoal, #333);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+/* Price section */
+.product-recommendation-price {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.product-recommendation-price .price {
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-brand-dark, #1a1a1a);
+  display: block;
+}
+
+.product-recommendation-price .price-note {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-dark-gray, #666);
+  display: block;
+  margin-top: var(--spacing-xs, 0.25rem);
+}
+
+/* CTAs */
+.product-recommendation-ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.product-recommendation-ctas .button {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.product-recommendation-ctas .button.primary {
+  background: #c41230;
+  color: #fff;
+  border: 2px solid #c41230;
+}
+
+.product-recommendation-ctas .button.primary:hover {
+  background: #a30f28;
+  border-color: #a30f28;
+}
+
+.product-recommendation-ctas .button.secondary {
+  background: transparent;
+  color: #1a1a1a;
+  border: 2px solid #1a1a1a;
+}
+
+.product-recommendation-ctas .button.secondary:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* Reverse variant - image on right */
+.product-recommendation.reverse .product-recommendation-image {
+  order: 2;
+}
+
+/* Section style variants */
+
+/* Highlight section - subtle background */
+.section.highlight .product-recommendation {
+  background: transparent;
+}
+
+.section.highlight .product-recommendation-content {
+  background: transparent;
+}
+
+/* Dark section - match hero.dark styling */
+.section.dark .product-recommendation {
+  background: var(--color-brand-dark, #1a1a1a);
+}
+
+.section.dark .product-recommendation-content {
+  background: transparent;
+  color: var(--color-white, #fff);
+}
+
+.section.dark .product-recommendation-eyebrow,
+.section.dark .product-recommendation-content > p:first-child {
+  color: var(--color-brand-red, #c41230);
+}
+
+.section.dark .product-recommendation-headline {
+  color: var(--color-white, #fff);
+}
+
+.section.dark .product-recommendation-body {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.section.dark .product-recommendation-price .price {
+  color: var(--color-white, #fff);
+}
+
+.section.dark .product-recommendation-price .price-note {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.section.dark .product-recommendation-ctas .button.secondary {
+  color: var(--color-white, #fff);
+  border-color: var(--color-white, #fff);
+}
+
+.section.dark .product-recommendation-ctas .button.secondary:hover {
+  background: var(--color-white, #fff);
+  color: var(--color-brand-dark, #1a1a1a);
+}
+
+/* Desktop Styles - match hero */
+@media (width >= 900px) {
+  .product-recommendation {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2xl, 3rem);
+    align-items: center;
+    max-width: var(--max-width-wide, 1400px);
+    margin: 0 auto;
+  }
+
+  .product-recommendation-headline {
+    font-size: var(--font-size-hero, 4.5rem);
+  }
+}
+
+/* Tablet Styles */
+@media (width < 900px) {
+  .product-recommendation {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .product-recommendation-image,
+  .product-recommendation > div > div:first-child:has(picture) {
+    min-height: 300px;
+  }
+
+  .product-recommendation.reverse .product-recommendation-image {
+    order: 0;
+  }
+
+  .product-recommendation-headline {
+    font-size: var(--font-size-5xl, 3rem);
+  }
+}
+
+/* Mobile Styles - match hero */
+@media (width < 600px) {
+  .product-recommendation {
+    padding: var(--spacing-xl, 2rem) var(--spacing-md, 1rem);
+    min-height: 300px;
+  }
+
+  .product-recommendation-content {
+    padding: var(--spacing-lg, 1.5rem) 0;
+  }
+
+  .product-recommendation-headline {
+    font-size: var(--font-size-4xl, 2.25rem);
+  }
+}

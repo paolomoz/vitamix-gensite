@@ -3,6 +3,11 @@
  *
  * Hero-style 50/50 split layout for product recommendations.
  * Visually matches the hero block design.
+ *
+ * Variants:
+ * - Default: Padded layout with gap between image and content
+ * - split: Full-bleed 50/50 layout matching Vitamix commercial style
+ * - reverse: Image on right side
  */
 
 /* Container reset - match hero-container */
@@ -248,5 +253,210 @@ main .section.dark.product-recommendation-container {
 
   .product-recommendation-headline {
     font-size: var(--font-size-800);
+  }
+}
+
+/* ===================================================================
+   Split Variant - Full-bleed 50/50 layout (Vitamix commercial style)
+   =================================================================== */
+
+/* Container for split variant - full width, no padding */
+.product-recommendation-container:has(.product-recommendation.split) {
+  padding: 0;
+  margin: 0;
+}
+
+.product-recommendation-container:has(.product-recommendation.split) .product-recommendation-wrapper {
+  max-width: unset;
+  padding: 0;
+  margin: 0;
+}
+
+/* Split layout - full bleed, no gap */
+.product-recommendation.split {
+  display: flex;
+  gap: 0;
+  max-width: unset;
+  min-height: 500px;
+  background-color: var(--color-black, #000);
+}
+
+/* Only use display:contents for DA-structured intermediate wrapper div */
+.product-recommendation.split > div:not(.product-recommendation-image):not(.product-recommendation-content) {
+  display: contents;
+}
+
+/* Split image - exactly 50%, full height, no border radius */
+.product-recommendation.split .product-recommendation-image,
+.product-recommendation.split > div > div:first-child:has(picture) {
+  display: block;
+  flex: 0 0 50%;
+  position: relative;
+  overflow: hidden;
+  min-height: 500px;
+  align-self: stretch;
+}
+
+.product-recommendation.split .product-recommendation-image picture,
+.product-recommendation.split .product-recommendation-image img,
+.product-recommendation.split > div > div:first-child picture,
+.product-recommendation.split > div > div:first-child img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* Split content - 50%, black background, centered content */
+.product-recommendation.split .product-recommendation-content,
+.product-recommendation.split > div > div:last-child {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 72px 64px;
+  background-color: var(--color-black, #000);
+  color: var(--color-white);
+  align-self: stretch;
+}
+
+/* Split eyebrow - gray, uppercase, small */
+.product-recommendation.split .product-recommendation-eyebrow,
+.product-recommendation.split .product-recommendation-content > p:first-child,
+.product-recommendation.split > div > div:last-child > p:first-child {
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgb(162, 170, 173);
+  margin-bottom: var(--spacing-100);
+}
+
+/* Split headline - serif, light, large */
+.product-recommendation.split .product-recommendation-headline,
+.product-recommendation.split h2 {
+  font-family: var(--heading-font-family);
+  font-size: 45px;
+  font-weight: var(--weight-light);
+  color: rgb(246, 246, 246);
+  margin-bottom: var(--spacing-200);
+  line-height: 1.17;
+  letter-spacing: normal;
+}
+
+/* Split body text */
+.product-recommendation.split .product-recommendation-body,
+.product-recommendation.split p:not(:first-child):not(.product-recommendation-eyebrow) {
+  font-size: var(--font-size-100);
+  line-height: 1.625;
+  color: var(--color-white);
+  margin-bottom: var(--spacing-300);
+  max-width: 480px;
+}
+
+/* Split price */
+.product-recommendation.split .product-recommendation-price .price {
+  color: var(--color-white);
+}
+
+.product-recommendation.split .product-recommendation-price .price-note {
+  color: rgb(162, 170, 173);
+}
+
+/* Split CTA button - white background, charcoal text */
+.product-recommendation.split .product-recommendation-ctas {
+  margin-top: var(--spacing-300);
+}
+
+.product-recommendation.split .product-recommendation-ctas .button,
+.product-recommendation.split .product-recommendation-ctas a {
+  display: inline-block;
+  padding: 17px 36px;
+  font-size: 14px;
+  font-weight: var(--weight-normal);
+  text-transform: uppercase;
+  letter-spacing: normal;
+  text-decoration: none;
+  background-color: var(--color-white);
+  color: var(--color-charcoal);
+  border: 1px solid rgb(64, 89, 107);
+  border-radius: 2px;
+  transition: all var(--transition-normal);
+}
+
+.product-recommendation.split .product-recommendation-ctas .button:hover,
+.product-recommendation.split .product-recommendation-ctas a:hover {
+  background-color: var(--color-gray-200);
+}
+
+/* Split secondary button - outline style */
+.product-recommendation.split .product-recommendation-ctas .button.secondary {
+  background-color: transparent;
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+
+.product-recommendation.split .product-recommendation-ctas .button.secondary:hover {
+  background-color: var(--color-white);
+  color: var(--color-charcoal);
+}
+
+/* Split reverse - image on right */
+.product-recommendation.split.reverse .product-recommendation-image,
+.product-recommendation.split.reverse > div > div:first-child:has(picture) {
+  order: 2;
+}
+
+/* Split tablet responsive */
+@media (width < 900px) {
+  .product-recommendation.split {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .product-recommendation.split .product-recommendation-image,
+  .product-recommendation.split > div > div:first-child:has(picture) {
+    flex: 0 0 auto;
+    min-height: 350px;
+    width: 100%;
+  }
+
+  .product-recommendation.split .product-recommendation-content,
+  .product-recommendation.split > div > div:last-child {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: var(--spacing-600) var(--spacing-300);
+  }
+
+  .product-recommendation.split.reverse .product-recommendation-image,
+  .product-recommendation.split.reverse > div > div:first-child:has(picture) {
+    order: 0;
+  }
+}
+
+/* Split mobile responsive */
+@media (width < 600px) {
+  .product-recommendation.split .product-recommendation-image,
+  .product-recommendation.split > div > div:first-child:has(picture) {
+    min-height: 280px;
+  }
+
+  .product-recommendation.split .product-recommendation-content,
+  .product-recommendation.split > div > div:last-child {
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .product-recommendation.split .product-recommendation-headline,
+  .product-recommendation.split h2 {
+    font-size: var(--font-size-500);
+  }
+
+  .product-recommendation.split .product-recommendation-ctas .button,
+  .product-recommendation.split .product-recommendation-ctas a {
+    padding: 14px 28px;
+    font-size: 13px;
   }
 }

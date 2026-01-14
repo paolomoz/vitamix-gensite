@@ -285,12 +285,14 @@ main .section.dark.hero-container {
 /* ===== Quote Variant (Split with charcoal content area) ===== */
 /* Use with: hero (split, quote) or hero (split, quote, reverse) */
 .hero.split.quote {
+  display: block;
   min-height: 500px;
 }
 
 .hero.split.quote > div {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  min-height: 500px;
   background-color: var(--color-charcoal);
 }
 
@@ -299,6 +301,12 @@ main .section.dark.hero-container {
 .hero.split.quote .hero-image {
   position: relative;
   background: transparent;
+  overflow: hidden;
+  z-index: auto;
+  inset: unset;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
 }
 
 .hero.split.quote > div > div:first-child picture,
@@ -308,6 +316,7 @@ main .section.dark.hero-container {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 1;
 }
 
 /* Content cell - charcoal background with generous padding */

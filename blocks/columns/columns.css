@@ -7,22 +7,39 @@
  * The JS decorator adds:
  * - columns-N-cols class based on column count
  * - columns-img-col class on cells containing only a picture
+ *
+ * Variants:
+ * - highlight: Gray background feature boxes
+ * - icons: Circular images with text
+ * - icon-list: List items with small icons
+ * - text-center: Centered text alignment
  */
 
-.columns {
-  padding: 40px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+p + .columns-container {
+  margin-top: var(--spacing-400);
 }
 
-/* Row wrapper - use display:contents to flatten for grid */
+.columns {
+  padding: var(--spacing-600) var(--spacing-300);
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.columns .button-wrapper {
+  justify-content: center;
+}
+
+/* Row wrapper - flex for side-by-side layout */
 .columns > div {
-  display: contents;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Column cells */
 .columns > div > div {
-  margin-bottom: 32px;
+  order: 1;
+  margin-bottom: var(--spacing-400);
 }
 
 .columns > div > div:last-child {
@@ -31,8 +48,8 @@
 
 .columns img {
   width: 100%;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  border-radius: var(--rounding-l);
+  margin-bottom: var(--spacing-100);
 }
 
 .columns picture {
@@ -40,24 +57,24 @@
 }
 
 .columns h3 {
-  font-size: 22px;
-  margin-bottom: 12px;
-  color: #333;
+  font-size: var(--font-size-400);
+  margin-bottom: var(--spacing-80);
+  color: var(--color-charcoal);
 }
 
 .columns p {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #555;
-  margin-bottom: 12px;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-l);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-80);
 }
 
 .columns p:last-child {
   margin-bottom: 0;
 }
 
-/* Image column styling */
-.columns-img-col {
+/* Image column styling - show first on mobile */
+.columns > div > .columns-img-col {
   order: 0;
 }
 
@@ -66,18 +83,41 @@
   margin-bottom: 0;
 }
 
-/* Highlight variant - for feature boxes */
-.columns.highlight > div > div {
-  background: #f8f9fa;
-  padding: 24px;
-  border-radius: 8px;
+/* ==========================================================================
+   Desktop Layout
+   ========================================================================== */
+
+@media (width >= 800px) {
+  .columns {
+    text-align: unset;
+  }
+
+  .columns .button-wrapper {
+    justify-content: unset;
+  }
+
+  .columns > div {
+    flex-direction: row;
+    gap: var(--spacing-400);
+  }
+
+  .columns > div > div {
+    order: unset;
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .columns > div > .column-button {
+    max-width: max-content;
+    align-self: flex-end;
+  }
 }
 
 @media (width >= 900px) {
   .columns {
     display: grid;
-    gap: 32px;
-    padding: 60px 32px;
+    gap: var(--spacing-400);
+    padding: var(--spacing-700) var(--spacing-400);
   }
 
   /* Column count classes */
@@ -93,17 +133,143 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .columns > div > div {
-    margin-bottom: 0;
+  .columns > div {
+    display: contents;
   }
 }
 
+/* ==========================================================================
+   Highlight Variant - Feature boxes with background
+   ========================================================================== */
+
+.columns.highlight > div > div {
+  background: var(--color-gray-100);
+  padding: var(--spacing-300);
+  border-radius: var(--rounding-l);
+}
+
+/* ==========================================================================
+   Icons Variant - Circular images with text
+   ========================================================================== */
+
+.columns.icons {
+  text-align: left;
+}
+
+.columns.icons > div {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-400);
+}
+
+.columns.icons > div + div {
+  margin-top: var(--spacing-400);
+}
+
+.columns.icons img {
+  width: 6em;
+  height: 6em;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0;
+}
+
+@media (width >= 800px) {
+  .columns.icons > div > div {
+    flex: unset;
+  }
+}
+
+/* ==========================================================================
+   Icon List Variant - List items with small icons
+   ========================================================================== */
+
+.columns.icon-list > div {
+  align-items: center;
+}
+
+.columns.icon-list div > div {
+  width: 100%;
+  max-width: 30ch;
+}
+
+.columns.icon-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.columns.icon-list ul > li {
+  display: flex;
+  gap: 1ch;
+  align-items: center;
+}
+
+.columns.icon-list ul > li a {
+  text-decoration: none;
+}
+
+.columns.icon-list ul > li .img-wrapper {
+  display: inline-block;
+  width: 2em;
+}
+
+@media (width >= 800px) {
+  .columns.icon-list > div {
+    align-items: unset;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   Text Center Variant
+   ========================================================================== */
+
+.columns.text-center {
+  text-align: center;
+}
+
+.columns.text-center .button-wrapper {
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Icon Circle Classes (for SVG icons)
+   ========================================================================== */
+
+.columns .icon-circle-1 svg,
+.columns .icon-circle-2 svg,
+.columns .icon-circle-3 svg {
+  height: 4em;
+  width: 4em;
+}
+
+/* ==========================================================================
+   Responsive Base
+   ========================================================================== */
+
 @media (width < 600px) {
   .columns {
-    padding: 32px 16px;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .columns.highlight > div > div {
-    padding: 20px;
+    padding: var(--spacing-200);
   }
+}
+
+/* ==========================================================================
+   Dark Section Support
+   ========================================================================== */
+
+.section.dark .columns h3 {
+  color: var(--color-white);
+}
+
+.section.dark .columns p {
+  color: var(--color-gray-500);
+}
+
+.section.dark .columns.highlight > div > div {
+  background: var(--color-white-alpha-10, rgba(255 255 255 / 10%));
 }

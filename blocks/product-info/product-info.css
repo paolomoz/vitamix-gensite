@@ -2,96 +2,98 @@
 .product-info {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  padding: 3rem 2rem;
-  max-width: 1200px;
+  gap: var(--spacing-800);
+  padding: var(--spacing-700) var(--spacing-400);
+  max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
 .product-info-about {
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: #1a1a1a;
-  margin: 0 0 1.5rem;
+  font-size: var(--font-size-500);
+  font-weight: var(--weight-regular);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-300);
 }
 
 .product-info-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin: 0 0 1rem;
+  font-size: var(--font-size-300);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-100);
 }
 
 .product-info-desc {
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: #333;
-  margin: 0 0 2rem;
+  font-size: var(--font-size-80);
+  line-height: var(--line-height-l);
+  color: var(--color-charcoal);
+  margin: 0 0 var(--spacing-400);
 }
 
 .product-info-feature-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--spacing-300);
 }
 
 .product-info-feature h4 {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem;
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-60);
 }
 
 .product-info-feature p {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: #666;
+  font-size: var(--font-size-80);
+  line-height: var(--line-height-m);
+  color: var(--color-gray-900);
   margin: 0;
 }
 
 /* Specs column with tabs */
 .product-info-specs {
-  background: #fff;
-  border: 1px solid #e5e5e5;
+  background: var(--color-white);
+  border: var(--border-s) solid var(--color-gray-400);
   padding: 0;
 }
 
 .product-info-tabs {
   display: flex;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: var(--border-s) solid var(--color-gray-400);
 }
 
 .product-info-tab {
   flex: 1;
-  padding: 1rem;
+  padding: var(--spacing-100);
   background: none;
   border: none;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #666;
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-medium);
+  color: var(--color-gray-900);
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--border-m) solid transparent;
   margin-bottom: -1px;
 }
 
-.product-info-tab:hover { color: #1a1a1a; }
+.product-info-tab:hover {
+  color: var(--color-dark-charcoal);
+}
 
 .product-info-tab.active {
-  color: #1a1a1a;
-  border-bottom-color: #1a1a1a;
+  color: var(--color-dark-charcoal);
+  border-bottom-color: var(--color-dark-charcoal);
 }
 
 .product-info-tab-content {
-  padding: 1.5rem;
+  padding: var(--spacing-300);
 }
 
 .product-info-tab-content h4 {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin: 0 0 1rem;
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-100);
 }
 
 .product-info-spec-list {
@@ -101,26 +103,31 @@
 
 .product-info-spec-row {
   display: flex;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: var(--spacing-60) 0;
+  border-bottom: var(--border-s) solid var(--color-gray-300);
 }
 
-.product-info-spec-row:last-child { border-bottom: none; }
+.product-info-spec-row:last-child {
+  border-bottom: none;
+}
 
 .product-info-spec-row dt {
   flex: 0 0 40%;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
 }
 
 .product-info-spec-row dd {
   flex: 1;
-  font-size: 0.875rem;
-  color: #666;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
   margin: 0;
 }
 
-@media (max-width: 900px) {
-  .product-info { grid-template-columns: 1fr; gap: 2rem; }
+@media (width < 900px) {
+  .product-info {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-400);
+  }
 }

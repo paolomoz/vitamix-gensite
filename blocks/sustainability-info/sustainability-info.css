@@ -1,20 +1,22 @@
-/* Sustainability Info Block - Vitamix Design System */
+/**
+ * Sustainability Info Block Styles
+ */
 
 .sustainability-info {
-  padding: var(--spacing-section-sm, 3rem) var(--spacing-lg, 1.5rem);
-  max-width: var(--max-width-content, 1200px);
+  padding: var(--spacing-600) var(--spacing-300);
+  max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
 .sustainability-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md, 1rem);
-  margin-bottom: var(--spacing-2xl, 3rem);
+  gap: var(--spacing-100);
+  margin-bottom: var(--spacing-600);
 }
 
 .sustainability-icon {
-  color: var(--color-brand-red, #c41230);
+  color: var(--color-red);
 }
 
 .sustainability-icon svg {
@@ -26,50 +28,50 @@
 }
 
 .sustainability-title {
-  font-size: var(--font-size-4xl, 2.25rem);
-  font-weight: 300;
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .sustainability-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg, 1.5rem);
-  margin-bottom: var(--spacing-xl, 2rem);
+  gap: var(--spacing-300);
+  margin-bottom: var(--spacing-400);
 }
 
 .sustainability-card {
-  background: var(--color-white, #fff);
-  border: 1px solid var(--color-light-gray, #e5e5e5);
-  padding: var(--spacing-lg, 1.5rem);
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
-  transition: box-shadow var(--transition-normal, 0.2s ease);
+  background: var(--color-white);
+  border: var(--border-s) solid var(--color-gray-400);
+  padding: var(--spacing-300);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-normal);
 }
 
 .sustainability-card:hover {
-  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow-md);
 }
 
 .card-icon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-400);
   display: block;
-  margin-bottom: var(--spacing-sm, 0.5rem);
+  margin-bottom: var(--spacing-60);
 }
 
 .card-label {
-  font-size: var(--font-size-xs, 0.75rem);
-  font-weight: 500;
-  letter-spacing: 0.15em;
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  color: var(--color-brand-red, #c41230);
-  margin: 0 0 var(--spacing-sm, 0.5rem);
+  color: var(--color-red);
+  margin: 0 0 var(--spacing-60);
 }
 
 .card-content {
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-dark-gray, #666);
-  line-height: 1.6;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
+  line-height: var(--line-height-xl);
 }
 
 .card-content p {
@@ -79,61 +81,61 @@
 .sustainability-highlight {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-md, 1rem);
-  background: var(--color-off-white, #f5f5f5);
-  border-left: 4px solid var(--color-brand-red, #c41230);
-  padding: var(--spacing-lg, 1.5rem);
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  gap: var(--spacing-100);
+  background: var(--color-gray-200);
+  border-left: var(--spacing-40) solid var(--color-red);
+  padding: var(--spacing-300);
+  margin-bottom: var(--spacing-300);
 }
 
 .highlight-icon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-400);
   flex-shrink: 0;
 }
 
 .highlight-content {
-  color: var(--color-charcoal, #333);
+  color: var(--color-charcoal);
 }
 
 .highlight-content strong {
   display: block;
-  font-size: var(--font-size-lg, 1.125rem);
-  font-weight: 500;
-  margin-bottom: var(--spacing-xs, 0.25rem);
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--spacing-40);
+  color: var(--color-dark-charcoal);
 }
 
 .highlight-content p {
   margin: 0;
-  line-height: 1.6;
-  font-size: var(--font-size-sm, 0.875rem);
+  line-height: var(--line-height-xl);
+  font-size: var(--font-size-80);
 }
 
 .sustainability-certifications {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-sm, 0.5rem);
+  gap: var(--spacing-60);
   justify-content: center;
 }
 
 .cert-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs, 0.25rem);
-  background: var(--color-white, #fff);
-  border: 1px solid var(--color-light-gray, #e5e5e5);
-  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
-  font-size: var(--font-size-xs, 0.75rem);
-  font-weight: 500;
-  color: var(--color-charcoal, #333);
+  gap: var(--spacing-40);
+  background: var(--color-white);
+  border: var(--border-s) solid var(--color-gray-400);
+  padding: var(--spacing-60) var(--spacing-100);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-medium);
+  color: var(--color-charcoal);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 /* Responsive */
 @media (width < 600px) {
   .sustainability-info {
-    padding: var(--spacing-lg, 1.5rem) var(--spacing-md, 1rem);
+    padding: var(--spacing-300) var(--spacing-100);
   }
 
   .sustainability-header {

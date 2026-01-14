@@ -1,10 +1,7 @@
 /**
- * Category Cards Block Styles - Vitamix Design System
+ * Category Cards Block Styles
  *
  * Based on vitamix.com category navigation patterns:
- * - Screenshots: learn-page-shop-categories.png, commercial-page-hero.png
- *
- * Features:
  * - Square/contained product images
  * - Uppercase category titles
  * - Subtle border with hover effects
@@ -13,7 +10,7 @@
 
 /* ===== Container ===== */
 .category-cards {
-  padding: var(--spacing-section-md) var(--spacing-lg);
+  padding: var(--spacing-700) var(--spacing-300);
   max-width: var(--max-width-wide);
   margin: 0 auto;
 }
@@ -25,7 +22,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-lg);
+  gap: var(--spacing-300);
 }
 
 /* ===== Card Base ===== */
@@ -37,8 +34,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-lg);
-  border: 1px solid var(--color-light-gray);
+  padding: var(--spacing-300);
+  border: var(--border-s) solid var(--color-gray-400);
   text-decoration: none;
   color: inherit;
   transition: all var(--transition-normal);
@@ -46,7 +43,7 @@
 }
 
 .category-card-link:hover {
-  border-color: var(--color-brand-dark);
+  border-color: var(--color-dark-charcoal);
   box-shadow: var(--shadow-md);
   text-decoration: none;
 }
@@ -55,7 +52,7 @@
 .category-card-image {
   width: 100%;
   max-width: 180px;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-100);
 }
 
 .category-card-image picture {
@@ -70,19 +67,19 @@
 
 /* ===== Category Title ===== */
 .category-card-title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-brand-dark);
-  line-height: 1.3;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-dark-charcoal);
+  line-height: var(--line-height-m);
 }
 
 /* ===== Variants ===== */
 
 /* Bordered variant - more prominent borders */
 .category-cards.bordered .category-card-link {
-  border-width: 2px;
+  border-width: var(--border-m);
 }
 
 /* Large variant - bigger cards */
@@ -91,25 +88,25 @@
 }
 
 .category-cards.large .category-card-title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-100);
 }
 
 /* Highlight variant - selected/active state */
 .category-cards .category-card.active .category-card-link,
 .category-cards .category-card-link:focus {
-  border-color: var(--color-brand-dark);
-  background: var(--color-off-white);
+  border-color: var(--color-dark-charcoal);
+  background: var(--color-gray-200);
 }
 
 /* No border variant */
 .category-cards.no-border .category-card-link {
   border: none;
-  padding: var(--spacing-md);
+  padding: var(--spacing-100);
 }
 
 .category-cards.no-border .category-card-link:hover {
   box-shadow: none;
-  background: var(--color-off-white);
+  background: var(--color-gray-200);
 }
 
 /* ===== Grid Column Variants ===== */
@@ -134,39 +131,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-400);
 }
 
 .category-cards-header h2 {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-light);
-  color: var(--color-brand-dark);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .category-cards-header p {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--color-brand-red);
-  margin: 0 0 var(--spacing-sm);
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--color-red);
+  margin: 0 0 var(--spacing-60);
 }
 
 .category-cards-header a {
-  color: var(--color-brand-dark);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-charcoal);
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-wide);
   text-decoration: none;
-  padding: 0.5rem 1.5rem;
-  border: 1px solid var(--color-brand-dark);
+  padding: var(--spacing-60) var(--spacing-300);
+  border: var(--border-s) solid var(--color-dark-charcoal);
   transition: all var(--transition-normal);
 }
 
 .category-cards-header a:hover {
-  background: var(--color-brand-dark);
+  background: var(--color-dark-charcoal);
   color: var(--color-white);
 }
 
@@ -190,12 +187,12 @@
 
 @media (width < 600px) {
   .category-cards {
-    padding: var(--spacing-xl) var(--spacing-md);
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .category-cards > ul {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
+    gap: var(--spacing-100);
   }
 
   .category-cards.two-up > ul {
@@ -203,7 +200,7 @@
   }
 
   .category-card-link {
-    padding: var(--spacing-md);
+    padding: var(--spacing-100);
   }
 
   .category-card-image {
@@ -211,6 +208,6 @@
   }
 
   .category-card-title {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-40);
   }
 }

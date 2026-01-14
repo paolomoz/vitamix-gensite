@@ -5,19 +5,19 @@
 .faq {
   max-width: 800px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: var(--spacing-600) var(--spacing-300);
 }
 
 .faq > div {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  border: var(--border-s) solid var(--color-gray-400);
+  border-radius: var(--rounding-l);
+  margin-bottom: var(--spacing-100);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--transition-normal);
 }
 
 .faq > div:hover {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  box-shadow: var(--shadow-md);
 }
 
 .faq > div:last-child {
@@ -26,11 +26,11 @@
 
 /* Question */
 .faq > div > div:first-child {
-  padding: 20px 24px;
-  font-weight: 500;
-  font-size: 18px;
-  color: #333;
-  background: #f8f9fa;
+  padding: var(--spacing-200) var(--spacing-300);
+  font-weight: var(--weight-medium);
+  font-size: var(--font-size-200);
+  color: var(--color-charcoal);
+  background: var(--color-gray-100);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -40,10 +40,10 @@
 
 .faq > div > div:first-child::after {
   content: '+';
-  font-size: 24px;
-  font-weight: 400;
-  color: #666;
-  transition: transform 0.2s ease;
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-normal);
+  color: var(--color-gray-900);
+  transition: transform var(--transition-normal);
 }
 
 .faq > div.expanded > div:first-child::after {
@@ -52,34 +52,34 @@
 
 /* Answer */
 .faq > div > div:last-child {
-  padding: 0 24px;
+  padding: 0 var(--spacing-300);
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #555;
+  transition: max-height var(--transition-slow), padding var(--transition-slow);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-gray-900);
 }
 
 .faq > div.expanded > div:last-child {
-  padding: 20px 24px;
+  padding: var(--spacing-200) var(--spacing-300);
   max-height: 500px;
 }
 
 /* Compact variant */
 .faq.compact > div > div:first-child {
-  padding: 16px 20px;
-  font-size: 16px;
+  padding: var(--spacing-100) var(--spacing-200);
+  font-size: var(--font-size-100);
 }
 
 .faq.compact > div.expanded > div:last-child {
-  padding: 16px 20px;
+  padding: var(--spacing-100) var(--spacing-200);
 }
 
 /* Borderless variant */
 .faq.borderless > div {
   border: none;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: var(--border-s) solid var(--color-gray-400);
   border-radius: 0;
 }
 
@@ -93,15 +93,15 @@
 
 @media (width < 600px) {
   .faq {
-    padding: 32px 16px;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .faq > div > div:first-child {
-    padding: 16px;
-    font-size: 16px;
+    padding: var(--spacing-100);
+    font-size: var(--font-size-100);
   }
 
   .faq > div.expanded > div:last-child {
-    padding: 16px;
+    padding: var(--spacing-100);
   }
 }

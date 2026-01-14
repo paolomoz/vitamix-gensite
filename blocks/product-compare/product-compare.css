@@ -5,8 +5,8 @@
  */
 
 .product-compare {
-  padding: 3rem 1.5rem;
-  max-width: 1400px;
+  padding: var(--spacing-700) var(--spacing-300);
+  max-width: var(--max-width-wide);
   margin: 0 auto;
 }
 
@@ -15,74 +15,74 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-400);
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--spacing-100);
 }
 
 .product-compare-title {
-  font-size: 1.75rem;
-  font-weight: 300;
-  color: #1a1a1a;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .product-compare-btn {
-  padding: 0.75rem 2rem;
-  background: #e5e5e5;
-  color: #666;
+  padding: var(--spacing-80) var(--spacing-400);
+  background: var(--color-gray-400);
+  color: var(--color-gray-900);
   border: none;
   border-radius: 0;
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: var(--weight-medium);
+  font-size: var(--font-size-80);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: not-allowed;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .product-compare-btn.active {
-  background: #c41230;
-  color: #fff;
+  background: var(--color-red);
+  color: var(--color-white);
   cursor: pointer;
 }
 
 .product-compare-btn.active:hover {
-  background: #a30f28;
+  background: var(--color-madder);
 }
 
 /* Product Grid */
 .product-compare-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
+  gap: var(--spacing-300);
 }
 
 /* Product Card */
 .product-compare-card {
   position: relative;
-  background: #fff;
-  border: 2px solid #e5e5e5;
-  border-radius: 4px;
-  padding: 1.5rem;
+  background: var(--color-white);
+  border: var(--border-m) solid var(--color-gray-400);
+  border-radius: var(--rounding-s);
+  padding: var(--spacing-300);
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .product-compare-card:hover {
-  border-color: #ccc;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+  border-color: var(--color-gray-600);
+  box-shadow: var(--shadow-md);
 }
 
 .product-compare-card.selected {
-  border-color: #c41230;
-  box-shadow: 0 0 0 2px rgb(196 18 48 / 20%);
+  border-color: var(--color-red);
+  box-shadow: 0 0 0 var(--border-m) var(--shadow-100);
 }
 
 .product-compare-card.selected .product-compare-checkbox {
-  background: #c41230;
-  border-color: #c41230;
+  background: var(--color-red);
+  border-color: var(--color-red);
 }
 
 .product-compare-card.selected .product-compare-checkbox svg {
@@ -92,24 +92,24 @@
 /* Checkbox */
 .product-compare-checkbox {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
+  top: var(--spacing-100);
+  right: var(--spacing-100);
+  width: var(--spacing-300);
+  height: var(--spacing-300);
+  border: var(--border-m) solid var(--color-gray-600);
+  border-radius: var(--rounding-s);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .product-compare-checkbox svg {
-  width: 14px;
-  height: 14px;
-  color: #fff;
+  width: var(--font-size-100);
+  height: var(--font-size-100);
+  color: var(--color-white);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-normal);
 }
 
 /* Product Image */
@@ -118,7 +118,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-100);
 }
 
 .product-compare-image img {
@@ -129,16 +129,16 @@
 
 /* Product Name */
 .product-compare-name {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem;
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-60);
 }
 
 /* Product Price */
 .product-compare-price {
-  font-size: 1rem;
-  color: #666;
+  font-size: var(--font-size-100);
+  color: var(--color-gray-900);
 }
 
 /* =========================================
@@ -148,16 +148,16 @@
 .comparison-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 50%);
+  background: var(--overlay-dark);
   z-index: 9999;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--spacing-400);
   overflow-y: auto;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transition: all var(--transition-slow);
 }
 
 .comparison-modal-overlay.open {
@@ -166,15 +166,15 @@
 }
 
 .comparison-modal {
-  background: #f8f8f8;
-  border-radius: 4px;
+  background: var(--color-gray-200);
+  border-radius: var(--rounding-s);
   width: 100%;
   max-width: 1200px;
-  max-height: calc(100vh - 4rem);
+  max-height: calc(100vh - var(--spacing-800));
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
-  transform: translateY(-20px);
-  transition: transform 0.3s ease;
+  box-shadow: var(--shadow-xl);
+  transform: translateY(calc(-1 * var(--spacing-200)));
+  transition: transform var(--transition-slow);
 }
 
 .comparison-modal-overlay.open .comparison-modal {
@@ -186,32 +186,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 2.5rem;
-  border-bottom: 1px solid #e5e5e5;
-  background: #fff;
+  padding: var(--spacing-400) var(--spacing-500);
+  border-bottom: var(--border-s) solid var(--color-gray-400);
+  background: var(--color-white);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .comparison-modal-header h2 {
-  font-size: 1.75rem;
-  font-weight: 300;
-  color: #1a1a1a;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .comparison-modal-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--spacing-300);
 }
 
 .comparison-modal-print {
   background: none;
   border: none;
-  color: #2563eb;
-  font-size: 0.875rem;
+  color: var(--color-robin);
+  font-size: var(--font-size-80);
   cursor: pointer;
   padding: 0;
 }
@@ -224,59 +224,59 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
-  color: #666;
-  transition: color 0.2s ease;
+  padding: var(--spacing-60);
+  color: var(--color-gray-900);
+  transition: color var(--transition-normal);
 }
 
 .comparison-modal-close:hover {
-  color: #1a1a1a;
+  color: var(--color-dark-charcoal);
 }
 
 .comparison-modal-close svg {
-  width: 24px;
-  height: 24px;
+  width: var(--spacing-300);
+  height: var(--spacing-300);
 }
 
 /* Products Grid */
 .comparison-modal-products {
   display: grid;
-  padding: 0 2.5rem;
-  background: #fff;
-  border-bottom: 1px solid #e5e5e5;
+  padding: 0 var(--spacing-500);
+  background: var(--color-white);
+  border-bottom: var(--border-s) solid var(--color-gray-400);
 }
 
 .comparison-modal-corner {
-  padding: 1.5rem 0;
+  padding: var(--spacing-300) 0;
 }
 
 .comparison-modal-product {
   position: relative;
-  padding: 1.5rem;
+  padding: var(--spacing-300);
   text-align: center;
-  border-left: 1px solid #e5e5e5;
+  border-left: var(--border-s) solid var(--color-gray-400);
 }
 
 .comparison-modal-remove {
   position: absolute;
-  top: 0.5rem;
+  top: var(--spacing-60);
   left: 50%;
   transform: translateX(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.25rem;
-  color: #999;
-  transition: color 0.2s ease;
+  padding: var(--spacing-40);
+  color: var(--color-gray-700);
+  transition: color var(--transition-normal);
 }
 
 .comparison-modal-remove:hover {
-  color: #1a1a1a;
+  color: var(--color-dark-charcoal);
 }
 
 .comparison-modal-remove svg {
-  width: 16px;
-  height: 16px;
+  width: var(--spacing-100);
+  height: var(--spacing-100);
 }
 
 .comparison-modal-product-image {
@@ -284,7 +284,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-100);
 }
 
 .comparison-modal-product-image img {
@@ -297,30 +297,30 @@
 .comparison-modal-colors {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  min-height: 24px;
+  gap: var(--spacing-60);
+  margin-bottom: var(--spacing-100);
+  min-height: var(--spacing-300);
 }
 
 .comparison-modal-swatch {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid transparent;
+  width: var(--spacing-200);
+  height: var(--spacing-200);
+  border-radius: var(--radius-full);
+  border: var(--border-m) solid transparent;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: border-color var(--transition-normal);
 }
 
 .comparison-modal-swatch.active,
 .comparison-modal-swatch:hover {
-  border-color: #1a1a1a;
+  border-color: var(--color-dark-charcoal);
 }
 
 .comparison-modal-product-name {
-  font-size: 1.125rem;
-  font-weight: 400;
-  color: #1a1a1a;
-  margin: 0 0 1.5rem;
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-regular);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-300);
 }
 
 /* CTA */
@@ -330,84 +330,84 @@
 
 .comparison-modal-view-btn {
   display: inline-block;
-  padding: 0.75rem 2rem;
-  background: #c41230;
-  color: #fff !important;
+  padding: var(--spacing-80) var(--spacing-400);
+  background: var(--color-red);
+  color: var(--color-white) !important;
   text-decoration: none;
   border-radius: 0;
-  font-weight: 500;
-  font-size: 0.8125rem;
+  font-weight: var(--weight-medium);
+  font-size: var(--font-size-60);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: background 0.2s ease;
-  line-height: 1.2;
+  transition: background var(--transition-normal);
+  line-height: var(--line-height-s);
 }
 
 .comparison-modal-view-btn:hover {
-  background: #a30f28;
-  color: #fff;
+  background: var(--color-madder);
+  color: var(--color-white);
 }
 
 .comparison-modal-out-of-stock {
-  color: #2563eb;
-  font-size: 0.875rem;
+  color: var(--color-robin);
+  font-size: var(--font-size-80);
 }
 
 /* Features Section */
 .comparison-modal-features {
   display: grid;
-  padding: 0 2.5rem 2rem;
-  background: #fff;
+  padding: 0 var(--spacing-500) var(--spacing-400);
+  background: var(--color-white);
 }
 
 .comparison-modal-features-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #666;
-  padding: 1.5rem 0;
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
+  color: var(--color-gray-900);
+  padding: var(--spacing-300) 0;
   align-self: start;
 }
 
 .comparison-modal-features-list {
-  padding: 1.5rem;
-  border-left: 1px solid #e5e5e5;
+  padding: var(--spacing-300);
+  border-left: var(--border-s) solid var(--color-gray-400);
 }
 
 .comparison-modal-feature-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  color: #333;
+  gap: var(--spacing-60);
+  margin-bottom: var(--spacing-80);
+  font-size: var(--font-size-80);
+  color: var(--color-charcoal);
   text-align: left;
 }
 
 .comparison-modal-feature-item svg {
-  width: 18px;
-  height: 18px;
+  width: var(--font-size-200);
+  height: var(--font-size-200);
   flex-shrink: 0;
-  margin-top: 0.1rem;
+  margin-top: var(--spacing-20);
 }
 
 .comparison-modal-na {
-  color: #999;
-  font-size: 0.875rem;
+  color: var(--color-gray-700);
+  font-size: var(--font-size-80);
 }
 
 /* Responsive */
 @media (width < 900px) {
   .comparison-modal-overlay {
-    padding: 1rem;
+    padding: var(--spacing-100);
   }
 
   .comparison-modal-header {
-    padding: 1.5rem;
+    padding: var(--spacing-300);
   }
 
   .comparison-modal-products,
   .comparison-modal-features {
-    padding: 0 1rem;
+    padding: 0 var(--spacing-100);
     overflow-x: auto;
   }
 
@@ -418,7 +418,7 @@
 
 @media (width < 600px) {
   .product-compare {
-    padding: 2rem 1rem;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .product-compare-header {
@@ -428,11 +428,11 @@
 
   .product-compare-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: var(--spacing-100);
   }
 
   .product-compare-card {
-    padding: 1rem;
+    padding: var(--spacing-100);
   }
 
   .product-compare-image {
@@ -440,11 +440,11 @@
   }
 
   .product-compare-name {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-80);
   }
 
   .comparison-modal-header h2 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-300);
   }
 
   .comparison-modal-product-image {
@@ -452,8 +452,8 @@
   }
 
   .comparison-modal-view-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.6875rem;
+    padding: var(--spacing-60) var(--spacing-100);
+    font-size: var(--font-size-40);
   }
 }
 

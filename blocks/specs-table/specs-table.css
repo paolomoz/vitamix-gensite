@@ -6,17 +6,17 @@
  */
 
 .specs-table {
-  padding: 3rem 1.5rem;
+  padding: var(--spacing-600) var(--spacing-300);
   max-width: 800px;
   margin: 0 auto;
 }
 
 /* Title with model name */
 .specs-table-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 1.5rem;
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-semibold);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-300);
   padding: 0;
 }
 
@@ -24,71 +24,71 @@
 .specs-table > div {
   display: grid;
   grid-template-columns: 200px 1fr;
-  gap: 1.5rem;
-  padding: 1.25rem 0;
-  border-bottom: 1px solid #e5e5e5;
+  gap: var(--spacing-300);
+  padding: var(--spacing-200) 0;
+  border-bottom: var(--border-s) solid var(--color-gray-400);
   align-items: baseline;
 }
 
 /* First div after title or first child gets top border */
 .specs-table > div:first-of-type {
-  border-top: 1px solid #e5e5e5;
+  border-top: var(--border-s) solid var(--color-gray-400);
 }
 
 /* Label column */
 .specs-table-label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #666;
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--color-gray-900);
 }
 
 /* Value column */
 .specs-table-value {
-  font-size: 1rem;
-  color: #1a1a1a;
-  line-height: 1.5;
+  font-size: var(--font-size-100);
+  color: var(--color-dark-charcoal);
+  line-height: var(--line-height-l);
 }
 
 /* Section variants */
 .section.highlight .specs-table > div {
-  border-color: #d4d4d4;
+  border-color: var(--color-gray-500);
 }
 
 .section.dark .specs-table > div {
-  border-color: rgb(255 255 255 / 15%);
+  border-color: var(--color-white-alpha-15);
 }
 
 .section.dark .specs-table-title {
-  color: #fff;
+  color: var(--color-white);
 }
 
 .section.dark .specs-table-label {
-  color: rgb(255 255 255 / 60%);
+  color: var(--color-white-alpha-60);
 }
 
 .section.dark .specs-table-value {
-  color: #fff;
+  color: var(--color-white);
 }
 
 /* Responsive */
 @media (width < 600px) {
   .specs-table {
-    padding: 2rem 1rem;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .specs-table > div {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
-    padding: 1rem 0;
+    gap: var(--spacing-60);
+    padding: var(--spacing-100) 0;
   }
 
   .specs-table-label {
-    font-size: 0.75rem;
+    font-size: var(--font-size-40);
   }
 
   .specs-table-value {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-100);
   }
 }

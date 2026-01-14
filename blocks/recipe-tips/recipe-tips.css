@@ -1,12 +1,12 @@
 .recipe-tips {
-  padding: 40px 24px;
+  padding: var(--spacing-600) var(--spacing-300);
   max-width: 800px;
   margin: 0 auto;
 }
 
 .recipe-tips-section-header {
-  margin-top: 32px;
-  margin-bottom: 20px;
+  margin-top: var(--spacing-400);
+  margin-bottom: var(--spacing-200);
 }
 
 .recipe-tips-section-header:first-child {
@@ -14,50 +14,50 @@
 }
 
 .recipe-tips-section-header h2 {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-semibold);
+  color: var(--color-dark-charcoal);
 }
 
 .recipe-tips-section-header h3 {
-  font-size: 22px;
-  font-weight: 600;
-  color: #1a1a1a;
-  padding-top: 24px;
-  border-top: 1px solid #e0e0e0;
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-semibold);
+  color: var(--color-dark-charcoal);
+  padding-top: var(--spacing-300);
+  border-top: var(--border-s) solid var(--color-gray-400);
 }
 
 .recipe-tips-item {
-  padding: 16px 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  border-left: 4px solid var(--color-brand-red, #c00);
+  padding: var(--spacing-100) var(--spacing-200);
+  background: var(--color-gray-100);
+  border-radius: var(--rounding-l);
+  margin-bottom: var(--spacing-80);
+  border-left: var(--spacing-40) solid var(--color-red);
 }
 
 .recipe-tips-item-title {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-60);
 }
 
 .recipe-tips-item-title strong {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-semibold);
+  color: var(--color-dark-charcoal);
 }
 
 .recipe-tips-item-description {
-  font-size: 15px;
-  line-height: 1.6;
-  color: #555;
+  font-size: var(--font-size-80);
+  line-height: var(--line-height-l);
+  color: var(--color-gray-900);
   margin: 0;
 }
 
 @media (width < 600px) {
   .recipe-tips {
-    padding: 32px 16px;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .recipe-tips-item {
-    padding: 14px 16px;
+    padding: var(--spacing-100);
   }
 }

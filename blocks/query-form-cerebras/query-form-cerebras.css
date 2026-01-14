@@ -6,13 +6,13 @@
 .query-form-cerebras {
   max-width: 700px;
   margin: 0 auto;
-  padding: 20px 0;
+  padding: var(--spacing-200) 0;
 }
 
 .query-form-cerebras-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-100);
   align-items: center;
 }
 
@@ -23,64 +23,64 @@
   align-items: stretch;
   width: 100%;
   max-width: 600px;
-  background: white;
-  border-radius: 8px;
+  background: var(--color-white);
+  border-radius: var(--rounding-l);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
+  box-shadow: var(--shadow-md);
 }
 
 .query-form-cerebras input[type="text"] {
   flex: 1;
-  padding: 16px 20px;
-  font-size: 16px;
+  padding: var(--spacing-100) var(--spacing-200);
+  font-size: var(--font-size-100);
   border: none;
   outline: none;
   background: transparent;
 }
 
 .query-form-cerebras input[type="text"]::placeholder {
-  color: #888;
+  color: var(--color-gray-800);
 }
 
 .query-form-cerebras button[type="submit"] {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
-  font-size: 14px;
-  font-weight: 500;
+  gap: var(--spacing-60);
+  padding: var(--spacing-100) var(--spacing-300);
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
-  background: var(--color-brand-red, #c00);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-white);
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-normal);
 }
 
 .query-form-cerebras button[type="submit"]:hover {
-  background: #a00;
+  background: var(--color-madder);
 }
 
 .query-form-cerebras button[type="submit"]:disabled {
-  background: #999;
+  background: var(--color-gray-800);
   cursor: wait;
 }
 
 .query-form-cerebras button[type="submit"] svg {
-  width: 16px;
-  height: 16px;
+  width: var(--spacing-100);
+  height: var(--spacing-100);
   flex-shrink: 0;
 }
 
 /* Generating spinner */
 .query-form-cerebras .generating-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgb(255 255 255 / 30%);
-  border-top-color: white;
-  border-radius: 50%;
+  width: var(--spacing-100);
+  height: var(--spacing-100);
+  border: var(--spacing-20) solid var(--overlay-lighter);
+  border-top-color: var(--color-white);
+  border-radius: var(--radius-full);
   animation: cerebras-spin 0.8s linear infinite;
 }
 
@@ -90,8 +90,8 @@
 
 /* Error message */
 .query-form-cerebras-error {
-  color: #c00;
-  font-size: 14px;
+  color: var(--color-red);
+  font-size: var(--font-size-80);
   text-align: center;
 }
 
@@ -99,30 +99,30 @@
 .query-form-cerebras-examples {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--spacing-60);
   align-items: center;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: var(--spacing-60);
 }
 
 .query-form-cerebras-examples .examples-label {
-  color: #666;
-  font-size: 14px;
+  color: var(--color-gray-900);
+  font-size: var(--font-size-80);
 }
 
 .query-form-cerebras-examples button {
-  padding: 8px 16px;
-  font-size: 13px;
-  background: rgb(0 0 0 / 5%);
-  border: 1px solid rgb(0 0 0 / 10%);
-  border-radius: 20px;
+  padding: var(--spacing-60) var(--spacing-100);
+  font-size: var(--font-size-60);
+  background: var(--shadow-100);
+  border: var(--border-s) solid var(--shadow-100);
+  border-radius: var(--rounding-xl);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--transition-normal), border-color var(--transition-normal);
 }
 
 .query-form-cerebras-examples button:hover {
-  background: rgb(0 0 0 / 10%);
-  border-color: rgb(0 0 0 / 20%);
+  background: var(--shadow-200);
+  border-color: var(--shadow-200);
 }
 
 .query-form-cerebras-examples button:disabled {
@@ -131,35 +131,35 @@
 
 /* Dark section variant */
 .section.dark .query-form-cerebras-examples .examples-label {
-  color: rgb(255 255 255 / 70%);
+  color: var(--overlay-lighter);
 }
 
 .section.dark .query-form-cerebras-examples button {
-  background: rgb(255 255 255 / 10%);
-  border-color: rgb(255 255 255 / 20%);
-  color: rgb(255 255 255 / 90%);
+  background: var(--overlay-lighter);
+  border-color: var(--overlay-lighter);
+  color: var(--overlay-light);
 }
 
 .section.dark .query-form-cerebras-examples button:hover {
-  background: rgb(255 255 255 / 20%);
-  border-color: rgb(255 255 255 / 30%);
+  background: var(--overlay-charcoal);
+  border-color: var(--overlay-charcoal);
 }
 
 /* Responsive */
 @media (width < 600px) {
   .query-form-cerebras-input-wrapper {
     flex-direction: column;
-    border-radius: 8px;
+    border-radius: var(--rounding-l);
   }
 
   .query-form-cerebras input[type="text"] {
-    padding: 14px 16px;
-    border-bottom: 1px solid #eee;
+    padding: var(--spacing-80) var(--spacing-100);
+    border-bottom: var(--border-s) solid var(--color-gray-300);
   }
 
   .query-form-cerebras button[type="submit"] {
     justify-content: center;
-    padding: 14px 24px;
+    padding: var(--spacing-80) var(--spacing-300);
   }
 
   .query-form-cerebras-examples {
@@ -169,5 +169,5 @@
 
 /* Hero section integration */
 .section.hero .query-form-cerebras {
-  margin-top: 32px;
+  margin-top: var(--spacing-400);
 }

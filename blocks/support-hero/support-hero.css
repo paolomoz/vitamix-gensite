@@ -2,7 +2,7 @@
  * Support Hero Block Styles
  *
  * Modern hero with empathetic background image for troubleshooting pages.
- * Uses Vitamix design tokens with contemporary styling.
+ * Uses Vitamix design tokens.
  */
 
 .support-hero {
@@ -40,9 +40,9 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgb(26 26 26 / 88%) 0%,
-    rgb(26 26 26 / 75%) 40%,
-    rgb(26 26 26 / 55%) 100%
+    var(--overlay-dark) 0%,
+    rgba(26 26 26 / 75%) 40%,
+    rgba(26 26 26 / 55%) 100%
   );
 }
 
@@ -50,9 +50,9 @@
 .support-hero:not(:has(.support-hero-background)) {
   background: linear-gradient(
     135deg,
-    var(--color-brand-dark) 0%,
-    #2d2d2d 50%,
-    #1f1f1f 100%
+    var(--color-dark-charcoal) 0%,
+    var(--color-charcoal-light) 50%,
+    var(--color-charcoal-darker) 100%
   );
 }
 
@@ -62,55 +62,55 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-300);
   max-width: 800px;
-  padding: var(--spacing-section-md) var(--spacing-lg);
+  padding: var(--spacing-700) var(--spacing-300);
 }
 
 /* Badge - modern pill shape */
 .support-hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: var(--color-brand-red);
+  gap: var(--spacing-60);
+  padding: var(--spacing-60) var(--spacing-300);
+  background: var(--color-red);
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 16px rgb(196 18 48 / 35%);
+  box-shadow: var(--shadow-lg);
 }
 
 .support-hero-badge svg {
-  width: 16px;
-  height: 16px;
+  width: var(--spacing-100);
+  height: var(--spacing-100);
   fill: none;
   stroke: var(--color-white);
   stroke-width: 2;
 }
 
 .support-hero-badge span {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.1em;
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
   color: var(--color-white);
 }
 
 /* Title - large, modern typography on dark bg */
 .support-hero-title {
-  font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-800);
+  font-weight: var(--weight-light);
   color: var(--color-white);
   margin: 0;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  text-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  text-shadow: var(--shadow-sm);
 }
 
 /* Subtitle */
 .support-hero-subtitle {
-  font-size: var(--font-size-xl);
-  color: rgb(255 255 255 / 85%);
+  font-size: var(--font-size-200);
+  color: var(--overlay-light);
   margin: 0;
-  line-height: 1.6;
+  line-height: var(--line-height-l);
   max-width: 580px;
 }
 
@@ -119,9 +119,9 @@
   content: '';
   width: 80px;
   height: 3px;
-  background: linear-gradient(90deg, var(--color-brand-red) 0%, rgb(196 18 48 / 0%) 100%);
-  border-radius: 2px;
-  margin-top: var(--spacing-sm);
+  background: linear-gradient(90deg, var(--color-red) 0%, transparent 100%);
+  border-radius: var(--rounding-s);
+  margin-top: var(--spacing-60);
 }
 
 /* Hide old icon element */
@@ -136,16 +136,16 @@
   }
 
   .support-hero-content {
-    padding: 10px var(--spacing-xl);
+    padding: var(--spacing-100) var(--spacing-400);
     max-width: 900px;
   }
 
   .support-hero-title {
-    font-size: var(--font-size-hero);
+    font-size: var(--font-size-1000);
   }
 
   .support-hero-subtitle {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-400);
   }
 }
 
@@ -155,20 +155,20 @@
   }
 
   .support-hero-content {
-    padding: var(--spacing-xl) var(--spacing-md);
-    gap: var(--spacing-md);
+    padding: var(--spacing-400) var(--spacing-100);
+    gap: var(--spacing-100);
   }
 
   .support-hero-title {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-600);
   }
 
   .support-hero-subtitle {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-200);
   }
 
   .support-hero-badge {
-    padding: var(--spacing-xs) var(--spacing-md);
+    padding: var(--spacing-40) var(--spacing-100);
   }
 
   .support-hero-badge svg {
@@ -177,6 +177,6 @@
   }
 
   .support-hero-badge span {
-    font-size: 10px;
+    font-size: var(--font-size-20);
   }
 }

@@ -1,20 +1,22 @@
-/* Engineering Specs Block - Vitamix Design System */
+/**
+ * Engineering Specs Block Styles
+ */
 
 .engineering-specs {
-  padding: var(--spacing-section-sm, 3rem) var(--spacing-lg, 1.5rem);
+  padding: var(--spacing-600) var(--spacing-300);
   max-width: 800px;
   margin: 0 auto;
 }
 
 .engineering-specs-header {
-  margin-bottom: var(--spacing-xl, 2rem);
-  border-bottom: 2px solid var(--color-brand-dark, #1a1a1a);
-  padding-bottom: var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-400);
+  border-bottom: var(--border-m) solid var(--color-dark-charcoal);
+  padding-bottom: var(--spacing-100);
 }
 
 .engineering-specs-icon {
-  color: var(--color-brand-dark, #1a1a1a);
-  margin-bottom: var(--spacing-sm, 0.5rem);
+  color: var(--color-dark-charcoal);
+  margin-bottom: var(--spacing-60);
 }
 
 .engineering-specs-icon svg {
@@ -26,31 +28,31 @@
 }
 
 .engineering-specs-title {
-  font-size: var(--font-size-3xl, 1.875rem);
-  font-weight: 300;
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .engineering-specs-subtitle {
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-dark-gray, #666);
-  margin: var(--spacing-xs, 0.25rem) 0 0;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
+  margin: var(--spacing-40) 0 0;
   font-style: italic;
 }
 
 .engineering-specs-table {
-  background: var(--color-off-white, #f5f5f5);
-  border: 1px solid var(--color-light-gray, #e5e5e5);
-  margin-bottom: var(--spacing-xl, 2rem);
+  background: var(--color-gray-200);
+  border: var(--border-s) solid var(--color-gray-400);
+  margin-bottom: var(--spacing-400);
 }
 
 .spec-row {
   display: grid;
   grid-template-columns: 180px 1fr auto;
-  gap: var(--spacing-md, 1rem);
-  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
-  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
+  gap: var(--spacing-100);
+  padding: var(--spacing-60) var(--spacing-100);
+  border-bottom: var(--border-s) solid var(--color-gray-400);
   align-items: center;
 }
 
@@ -59,53 +61,53 @@
 }
 
 .spec-row:nth-child(even) {
-  background: var(--color-white, #fff);
+  background: var(--color-white);
 }
 
 .spec-label {
-  font-weight: 500;
-  color: var(--color-charcoal, #333);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--weight-medium);
+  color: var(--color-charcoal);
+  font-size: var(--font-size-80);
 }
 
 .spec-value {
-  color: var(--color-brand-dark, #1a1a1a);
-  font-weight: 500;
-  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-dark-charcoal);
+  font-weight: var(--weight-medium);
+  font-size: var(--font-size-80);
 }
 
 .spec-notes {
-  font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-dark-gray, #666);
+  font-size: var(--font-size-40);
+  color: var(--color-gray-900);
   font-style: italic;
 }
 
 .engineering-methodology {
-  background: var(--color-white, #fff);
-  border: 1px solid var(--color-light-gray, #e5e5e5);
-  padding: var(--spacing-lg, 1.5rem);
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  background: var(--color-white);
+  border: var(--border-s) solid var(--color-gray-400);
+  padding: var(--spacing-300);
+  margin-bottom: var(--spacing-300);
 }
 
 .engineering-methodology h4 {
-  font-size: var(--font-size-xs, 0.75rem);
-  font-weight: 500;
-  color: var(--color-brand-red, #c41230);
-  margin: 0 0 var(--spacing-sm, 0.5rem);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-medium);
+  color: var(--color-red);
+  margin: 0 0 var(--spacing-60);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-wider);
 }
 
 .engineering-methodology ul {
   margin: 0;
-  padding-left: var(--spacing-lg, 1.5rem);
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-dark-gray, #666);
+  padding-left: var(--spacing-300);
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
 }
 
 .engineering-methodology li {
-  margin-bottom: var(--spacing-xs, 0.25rem);
-  line-height: 1.5;
+  margin-bottom: var(--spacing-40);
+  line-height: var(--line-height-l);
 }
 
 .engineering-methodology li:last-child {
@@ -113,8 +115,8 @@
 }
 
 .engineering-methodology strong {
-  color: var(--color-charcoal, #333);
-  font-weight: 500;
+  color: var(--color-charcoal);
+  font-weight: var(--weight-medium);
 }
 
 .engineering-download {
@@ -124,19 +126,19 @@
 .download-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm, 0.5rem);
-  color: var(--color-brand-red, #c41230);
+  gap: var(--spacing-60);
+  color: var(--color-red);
   text-decoration: none;
-  font-size: var(--font-size-sm, 0.875rem);
-  font-weight: 500;
-  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
-  border: 1px solid var(--color-brand-red, #c41230);
-  transition: all var(--transition-normal, 0.2s ease);
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
+  padding: var(--spacing-60) var(--spacing-100);
+  border: var(--border-s) solid var(--color-red);
+  transition: all var(--transition-normal);
 }
 
 .download-link:hover {
-  background: var(--color-brand-red, #c41230);
-  color: var(--color-white, #fff);
+  background: var(--color-red);
+  color: var(--color-white);
 }
 
 .download-link svg {
@@ -148,20 +150,20 @@
 /* Responsive */
 @media (width < 600px) {
   .engineering-specs {
-    padding: var(--spacing-lg, 1.5rem) var(--spacing-md, 1rem);
+    padding: var(--spacing-300) var(--spacing-100);
   }
 
   .spec-row {
     grid-template-columns: 1fr;
-    gap: var(--spacing-xs, 0.25rem);
+    gap: var(--spacing-40);
   }
 
   .spec-label {
-    font-size: var(--font-size-xs, 0.75rem);
-    color: var(--color-dark-gray, #666);
+    font-size: var(--font-size-40);
+    color: var(--color-gray-900);
   }
 
   .spec-notes {
-    margin-top: var(--spacing-xs, 0.25rem);
+    margin-top: var(--spacing-40);
   }
 }

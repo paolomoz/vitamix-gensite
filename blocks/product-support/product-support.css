@@ -1,9 +1,9 @@
 /* Product Support Block */
 .product-support {
-  padding: 3rem 2rem;
-  max-width: 1200px;
+  padding: var(--spacing-700) var(--spacing-400);
+  max-width: var(--max-width-content);
   margin: 0 auto;
-  border-top: 1px solid #e5e5e5;
+  border-top: var(--border-s) solid var(--color-gray-400);
 }
 
 .product-support-inner {
@@ -13,38 +13,38 @@
 }
 
 .product-support-title {
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: #1a1a1a;
+  font-size: var(--font-size-300);
+  font-weight: var(--weight-regular);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .product-support-links {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: var(--spacing-400);
 }
 
 .product-support-link {
-  font-size: 0.9375rem;
-  color: #0066cc;
+  font-size: var(--font-size-80);
+  color: var(--color-robin);
   text-decoration: underline;
 }
 
 .product-support-link:hover {
-  color: #004499;
+  color: var(--color-lapis);
 }
 
 .product-support-divider {
-  width: 1px;
-  height: 1.5rem;
-  background: #e5e5e5;
+  width: var(--border-s);
+  height: var(--spacing-300);
+  background: var(--color-gray-400);
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   .product-support-inner {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--spacing-300);
     text-align: center;
   }
 }

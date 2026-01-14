@@ -5,20 +5,20 @@
 .text {
   max-width: 800px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: var(--spacing-600) var(--spacing-300);
 }
 
 .text h2 {
-  font-size: 32px;
-  margin-bottom: 24px;
-  color: #333;
+  font-size: var(--font-size-600);
+  margin-bottom: var(--spacing-300);
+  color: var(--color-charcoal);
 }
 
 .text p {
-  font-size: 18px;
-  line-height: 1.7;
-  color: #555;
-  margin-bottom: 16px;
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-xl);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-100);
 }
 
 .text p:last-child {
@@ -32,19 +32,19 @@
 
 /* Large variant */
 .text.large p {
-  font-size: 20px;
+  font-size: var(--font-size-200);
 }
 
 @media (width < 600px) {
   .text {
-    padding: 32px 16px;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .text h2 {
-    font-size: 26px;
+    font-size: var(--font-size-400);
   }
 
   .text p {
-    font-size: 16px;
+    font-size: var(--font-size-100);
   }
 }

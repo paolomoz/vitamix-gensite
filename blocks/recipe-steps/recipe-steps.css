@@ -1,24 +1,24 @@
 .recipe-steps {
-  padding: 40px 24px;
+  padding: var(--spacing-600) var(--spacing-300);
   max-width: 800px;
   margin: 0 auto;
 }
 
 .recipe-steps-header {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-400);
 }
 
 .recipe-steps-header h2 {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-semibold);
+  color: var(--color-dark-charcoal);
 }
 
 .recipe-step {
   display: flex;
-  gap: 24px;
-  padding: 24px 0;
-  border-bottom: 1px solid #e8e8e8;
+  gap: var(--spacing-300);
+  padding: var(--spacing-300) 0;
+  border-bottom: var(--border-s) solid var(--color-gray-300);
   position: relative;
 }
 
@@ -31,13 +31,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--color-brand-red, #c00);
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 50%;
+  width: var(--spacing-600);
+  height: var(--spacing-600);
+  background: var(--color-red);
+  color: var(--color-white);
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-bold);
+  border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
@@ -50,37 +50,37 @@
 }
 
 .recipe-step-content > p:not(.recipe-step-number) {
-  font-size: 16px;
-  line-height: 1.7;
-  color: #333;
-  margin-bottom: 16px;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-charcoal);
+  margin-bottom: var(--spacing-100);
 }
 
 .recipe-step-image {
-  margin-top: 16px;
+  margin-top: var(--spacing-100);
 }
 
 .recipe-step-image img {
   width: 100%;
   max-width: 400px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--rounding-l);
+  box-shadow: var(--shadow-md);
 }
 
 @media (width < 600px) {
   .recipe-steps {
-    padding: 32px 16px;
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .recipe-step {
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-100);
   }
 
   .recipe-step::before {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
+    width: var(--spacing-400);
+    height: var(--spacing-400);
+    font-size: var(--font-size-100);
   }
 
   .recipe-step-image img {

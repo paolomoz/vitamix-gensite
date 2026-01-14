@@ -1,20 +1,98 @@
+/**
+ * Footer Block Styles - Vitamix Design System
+ */
+
 footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  background-color: var(--color-gray-100);
+  font-size: var(--font-size-60);
+  color: var(--color-gray-900);
 }
 
 footer .footer > div {
   margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+  max-width: var(--max-width-content);
+  padding: var(--spacing-600) var(--spacing-300) var(--spacing-300);
 }
 
 footer .footer p {
   margin: 0;
+  line-height: var(--line-height-l);
+}
+
+footer .footer a {
+  color: var(--color-charcoal);
+  text-decoration: none;
+}
+
+footer .footer a:hover {
+  text-decoration: underline;
+}
+
+/* Footer links list */
+footer .footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-100) var(--spacing-300);
+}
+
+footer .footer ul li {
+  margin: 0;
+}
+
+/* Social links styling */
+footer .footer .social-links {
+  display: flex;
+  gap: var(--spacing-100);
+  margin-top: var(--spacing-200);
+}
+
+footer .footer .social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+  transition: background-color var(--transition-normal);
+}
+
+footer .footer .social-links a:hover {
+  background-color: var(--color-red);
+  text-decoration: none;
+}
+
+footer .footer .social-links svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Copyright section */
+footer .footer .copyright {
+  margin-top: var(--spacing-300);
+  padding-top: var(--spacing-200);
+  border-top: var(--border-s) solid var(--color-gray-300);
+  font-size: var(--font-size-40);
+  color: var(--color-gray-800);
 }
 
 @media (width >= 900px) {
   footer .footer > div {
-    padding: 40px 32px 24px;
+    padding: var(--spacing-600) var(--spacing-400) var(--spacing-300);
+  }
+}
+
+@media (width < 600px) {
+  footer .footer > div {
+    padding: var(--spacing-400) var(--spacing-100) var(--spacing-200);
+  }
+
+  footer .footer ul {
+    flex-direction: column;
+    gap: var(--spacing-80);
   }
 }

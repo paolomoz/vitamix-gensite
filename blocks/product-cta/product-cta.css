@@ -5,7 +5,7 @@
  */
 
 .product-cta {
-  padding: 4rem 1.5rem;
+  padding: var(--spacing-800) var(--spacing-300);
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
@@ -15,96 +15,96 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--spacing-300);
 }
 
 .product-cta-title {
-  font-size: 2rem;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .product-cta-description {
-  font-size: 1.125rem;
-  color: #666;
+  font-size: var(--font-size-200);
+  color: var(--color-gray-900);
   margin: 0;
   max-width: 500px;
-  line-height: 1.6;
+  line-height: var(--line-height-l);
 }
 
 .product-cta-buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: var(--spacing-100);
+  margin-top: var(--spacing-60);
 }
 
 .product-cta-button {
   display: inline-block;
-  padding: 0.75rem 2rem;
+  padding: var(--spacing-80) var(--spacing-400);
   border-radius: 0;
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: var(--weight-medium);
+  font-size: var(--font-size-80);
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .product-cta-button.primary {
-  background: #c41230;
-  color: #fff;
+  background: var(--color-red);
+  color: var(--color-white);
 }
 
 .product-cta-button.primary:hover {
-  background: #a30f28;
-  color: #fff;
+  background: var(--color-madder);
+  color: var(--color-white);
 }
 
 .product-cta-button.secondary {
   background: transparent;
-  color: #1a1a1a;
-  border: 2px solid #1a1a1a;
+  color: var(--color-dark-charcoal);
+  border: var(--border-m) solid var(--color-dark-charcoal);
 }
 
 .product-cta-button.secondary:hover {
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--color-dark-charcoal);
+  color: var(--color-white);
 }
 
 /* Section variants */
 .section.highlight .product-cta-title {
-  color: #1a1a1a;
+  color: var(--color-dark-charcoal);
 }
 
 .section.dark .product-cta-title {
-  color: #fff;
+  color: var(--color-white);
 }
 
 .section.dark .product-cta-description {
-  color: rgb(255 255 255 / 70%);
+  color: var(--overlay-light);
 }
 
 .section.dark .product-cta-button.secondary {
-  color: #fff;
-  border-color: #fff;
+  color: var(--color-white);
+  border-color: var(--color-white);
 }
 
 .section.dark .product-cta-button.secondary:hover {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--color-white);
+  color: var(--color-dark-charcoal);
 }
 
 /* Responsive */
 @media (width < 600px) {
   .product-cta {
-    padding: 3rem 1rem;
+    padding: var(--spacing-700) var(--spacing-100);
   }
 
   .product-cta-title {
-    font-size: 1.5rem;
+    font-size: var(--font-size-500);
   }
 
   .product-cta-buttons {

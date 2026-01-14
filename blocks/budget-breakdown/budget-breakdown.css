@@ -1,20 +1,22 @@
-/* Budget Breakdown Block - Vitamix Design System */
+/**
+ * Budget Breakdown Block Styles
+ */
 
 .budget-breakdown {
-  padding: var(--spacing-section-sm, 3rem) var(--spacing-lg, 1.5rem);
-  max-width: var(--max-width-content, 1200px);
+  padding: var(--spacing-600) var(--spacing-300);
+  max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
 /* Header */
 .budget-header {
   text-align: center;
-  margin-bottom: var(--spacing-xl, 2rem);
+  margin-bottom: var(--spacing-400);
 }
 
 .budget-icon {
-  color: var(--color-brand-red, #c41230);
-  margin-bottom: var(--spacing-sm, 0.5rem);
+  color: var(--color-red);
+  margin-bottom: var(--spacing-60);
 }
 
 .budget-icon svg {
@@ -23,40 +25,40 @@
 }
 
 .budget-title {
-  font-size: var(--font-size-4xl, 2.25rem);
-  font-weight: 300;
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 /* Tiers Grid */
 .budget-tiers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg, 1.5rem);
-  margin-bottom: var(--spacing-xl, 2rem);
+  gap: var(--spacing-300);
+  margin-bottom: var(--spacing-400);
 }
 
 /* Individual Tier Card */
 .budget-tier {
-  background: var(--color-white, #fff);
-  border: 1px solid var(--color-light-gray, #e5e5e5);
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
-  transition: all var(--transition-normal, 0.2s ease);
+  background: var(--color-white);
+  border: var(--border-s) solid var(--color-gray-400);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
   overflow: hidden;
 }
 
 .budget-tier:hover {
-  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
 /* Tier Header */
 .tier-header {
-  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
-  background: var(--color-off-white, #f5f5f5);
-  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
+  padding: var(--spacing-100) var(--spacing-300);
+  background: var(--color-gray-200);
+  border-bottom: var(--border-s) solid var(--color-gray-400);
   position: relative;
 }
 
@@ -66,38 +68,38 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 4px;
-  background: var(--color-brand-red, #c41230);
+  width: var(--spacing-40);
+  background: var(--color-red);
 }
 
 .tier-label {
-  font-size: var(--font-size-base, 1rem);
-  font-weight: 500;
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 /* Tier type accents */
 .tier-budget .tier-header::before {
-  background: #22c55e;
+  background: var(--color-avocado);
 }
 
 .tier-standard .tier-header::before {
-  background: var(--color-brand-red, #c41230);
+  background: var(--color-red);
 }
 
 .tier-premium .tier-header::before {
-  background: linear-gradient(180deg, #ffd700 0%, #f59e0b 100%);
+  background: linear-gradient(180deg, var(--color-star-gold) 0%, var(--color-gold) 100%);
 }
 
 .tier-refurbished .tier-header::before {
-  background: #8b5cf6;
+  background: var(--color-purple);
 }
 
 /* Tier Body */
 .tier-body {
-  padding: var(--spacing-sm, 0.5rem) 0;
+  padding: var(--spacing-60) 0;
 }
 
 /* Product Items */
@@ -105,9 +107,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
-  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
-  transition: background-color var(--transition-fast, 0.15s ease);
+  padding: var(--spacing-100) var(--spacing-300);
+  border-bottom: var(--border-s) solid var(--color-gray-400);
+  transition: background-color var(--transition-fast);
 }
 
 .product-item:last-child {
@@ -115,50 +117,50 @@
 }
 
 .product-item:hover {
-  background: var(--color-off-white, #f5f5f5);
+  background: var(--color-gray-200);
 }
 
 .product-name {
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-charcoal, #333);
-  font-weight: 400;
+  font-size: var(--font-size-80);
+  color: var(--color-charcoal);
+  font-weight: var(--weight-normal);
 }
 
 .product-price {
-  font-size: var(--font-size-base, 1rem);
-  font-weight: 500;
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
   white-space: nowrap;
-  margin-left: var(--spacing-md, 1rem);
+  margin-left: var(--spacing-100);
 }
 
 /* Value Note */
 .budget-value-note {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-md, 1rem);
-  background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
-  border: 1px solid #fde68a;
-  border-left: 4px solid #f59e0b;
-  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  gap: var(--spacing-100);
+  background: linear-gradient(135deg, var(--color-gold-lighter) 0%, var(--color-gold-light) 100%);
+  border: var(--border-s) solid var(--color-gold-light);
+  border-left: var(--spacing-40) solid var(--color-gold);
+  padding: var(--spacing-100) var(--spacing-300);
+  margin-bottom: var(--spacing-300);
 }
 
 .value-note-icon {
-  color: #d97706;
+  color: var(--color-gold);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .value-note-text {
-  font-size: var(--font-size-sm, 0.875rem);
-  color: #92400e;
-  line-height: 1.5;
+  font-size: var(--font-size-80);
+  color: var(--color-gold-dark);
+  line-height: var(--line-height-l);
 }
 
 .value-note-text strong {
-  font-weight: 500;
-  color: #78350f;
+  font-weight: var(--weight-medium);
+  color: var(--color-gold-darker);
 }
 
 /* Refurbished CTA */
@@ -166,46 +168,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-md, 1rem);
-  background: var(--color-brand-red, #c41230);
-  color: var(--color-white, #fff);
+  gap: var(--spacing-100);
+  background: var(--color-red);
+  color: var(--color-white);
   text-decoration: none;
-  padding: var(--spacing-md, 1rem) var(--spacing-xl, 2rem);
-  transition: all var(--transition-normal, 0.2s ease);
+  padding: var(--spacing-100) var(--spacing-400);
+  transition: all var(--transition-normal);
 }
 
 .budget-refurb-cta:hover {
-  background: var(--color-brand-red-dark, #a30f28);
+  background: var(--color-madder);
 }
 
 .refurb-badge {
-  background: rgba(255, 255, 255, 0.2);
-  padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
-  font-size: var(--font-size-xs, 0.75rem);
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  border-radius: 2px;
+  background: var(--color-white-alpha-20);
+  padding: var(--spacing-40) var(--spacing-60);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  border-radius: var(--rounding-s);
 }
 
 .refurb-text {
-  font-size: var(--font-size-sm, 0.875rem);
-  font-weight: 500;
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 .budget-refurb-cta svg {
-  transition: transform var(--transition-normal, 0.2s ease);
+  transition: transform var(--transition-normal);
 }
 
 .budget-refurb-cta:hover svg {
-  transform: translateX(4px);
+  transform: translateX(var(--spacing-40));
 }
 
 /* Responsive */
 @media (width < 768px) {
   .budget-breakdown {
-    padding: var(--spacing-lg, 1.5rem) var(--spacing-md, 1rem);
+    padding: var(--spacing-300) var(--spacing-100);
   }
 
   .budget-tiers-grid {
@@ -213,13 +215,13 @@
   }
 
   .budget-title {
-    font-size: var(--font-size-3xl, 1.875rem);
+    font-size: var(--font-size-600);
   }
 
   .budget-refurb-cta {
     flex-direction: column;
-    gap: var(--spacing-sm, 0.5rem);
-    padding: var(--spacing-md, 1rem);
+    gap: var(--spacing-60);
+    padding: var(--spacing-100);
   }
 }
 
@@ -227,12 +229,12 @@
   .product-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-xs, 0.25rem);
+    gap: var(--spacing-40);
   }
 
   .product-price {
     margin-left: 0;
-    color: var(--color-brand-red, #c41230);
+    color: var(--color-red);
   }
 
   .budget-value-note {

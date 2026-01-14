@@ -3,16 +3,16 @@
  */
 
 .reasoning-user-container {
-  background: linear-gradient(135deg, #fefefe 0%, #f8f9fa 100%);
-  border-radius: 16px;
-  margin: 24px 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-gray-100) 100%);
+  border-radius: var(--rounding-xl);
+  margin: var(--spacing-300) 0;
+  box-shadow: var(--shadow-md);
 }
 
 .reasoning-user-wrapper {
   max-width: 900px;
   margin: 0 auto;
-  padding: 32px 40px;
+  padding: var(--spacing-400) var(--spacing-600);
 }
 
 .reasoning-user.block {
@@ -24,59 +24,59 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-100);
 }
 
 .reasoning-user-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-semibold);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .reasoning-user-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  font-size: 11px;
-  font-weight: 600;
+  gap: var(--spacing-40);
+  padding: var(--spacing-40) var(--spacing-80);
+  font-size: var(--font-size-20);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 20px;
+  letter-spacing: var(--letter-spacing-wide);
+  background: linear-gradient(135deg, var(--gradient-purple-start) 0%, var(--gradient-purple-end) 100%);
+  color: var(--color-white);
+  border-radius: var(--spacing-200);
 }
 
 /* Intro text */
 .reasoning-user-intro {
-  font-size: 15px;
-  color: #666;
-  margin: 0 0 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--spacing-300);
+  padding-bottom: var(--spacing-200);
+  border-bottom: var(--border-s) solid var(--color-gray-400);
 }
 
 /* Steps */
 .reasoning-user-steps {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--spacing-200);
 }
 
 .reasoning-user-step {
   display: flex;
-  gap: 16px;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: var(--spacing-100);
+  padding: var(--spacing-200);
+  background: var(--color-white);
+  border-radius: var(--rounding-l);
+  border: var(--border-s) solid var(--color-gray-300);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .reasoning-user-step:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(calc(-1 * var(--spacing-20)));
+  box-shadow: var(--shadow-lg);
 }
 
 .step-emoji {
@@ -90,20 +90,20 @@
 }
 
 .step-heading {
-  font-weight: 600;
-  font-size: 16px;
-  color: #1a1a1a;
-  margin-bottom: 8px;
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-size-100);
+  color: var(--color-dark-charcoal);
+  margin-bottom: var(--spacing-60);
 }
 
 .step-detail {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #555;
+  font-size: var(--font-size-80);
+  line-height: var(--line-height-xl);
+  color: var(--color-gray-900);
 }
 
 .step-detail p {
-  margin: 0 0 8px;
+  margin: 0 0 var(--spacing-60);
 }
 
 .step-detail p:last-child {
@@ -114,47 +114,47 @@
 .reasoning-user-footer {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
+  gap: var(--spacing-80);
+  margin-top: var(--spacing-300);
+  padding-top: var(--spacing-200);
+  border-top: var(--border-s) solid var(--color-gray-400);
 }
 
 .footer-icon {
-  font-size: 18px;
+  font-size: var(--font-size-200);
 }
 
 .footer-text {
-  font-size: 14px;
-  color: #666;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
   font-style: italic;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .reasoning-user-wrapper {
-    padding: 24px 20px;
+    padding: var(--spacing-300) var(--spacing-200);
   }
 
   .reasoning-user-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--spacing-80);
   }
 
   .reasoning-user-title {
-    font-size: 20px;
+    font-size: var(--font-size-200);
   }
 
   .reasoning-user-step {
-    padding: 16px;
+    padding: var(--spacing-100);
   }
 
   .step-emoji {
-    font-size: 24px;
+    font-size: var(--spacing-300);
   }
 
   .step-heading {
-    font-size: 15px;
+    font-size: var(--font-size-80);
   }
 }

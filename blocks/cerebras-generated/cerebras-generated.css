@@ -22,8 +22,8 @@
   justify-content: center;
   align-items: center;
   min-height: 60vh;
-  padding: 40px 24px;
-  background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+  padding: var(--spacing-600) var(--spacing-300);
+  background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%);
 }
 
 .cerebras-loading-content {
@@ -32,37 +32,37 @@
 }
 
 .cerebras-loading h2 {
-  font-size: 1.75rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin-bottom: 12px;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
+  margin-bottom: var(--spacing-80);
 }
 
 .cerebras-query {
-  font-size: 1.125rem;
-  color: #666;
+  font-size: var(--font-size-200);
+  color: var(--color-gray-900);
   font-style: italic;
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-400);
 }
 
 .cerebras-status {
-  font-size: 0.875rem;
-  color: #888;
-  margin-top: 24px;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-800);
+  margin-top: var(--spacing-300);
 }
 
 /* Progress indicator (uses skeleton.css styles) */
 .cerebras-loading .progress-indicator {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: var(--spacing-60);
 }
 
 .cerebras-loading .progress-dot {
-  width: 12px;
-  height: 12px;
-  background: var(--color-brand-red, #c00);
-  border-radius: 50%;
+  width: var(--spacing-80);
+  height: var(--spacing-80);
+  background: var(--color-red);
+  border-radius: var(--radius-full);
   animation: progress-pulse 1.5s ease-in-out infinite;
 }
 
@@ -93,73 +93,73 @@
   justify-content: center;
   align-items: center;
   min-height: 50vh;
-  padding: 40px 24px;
+  padding: var(--spacing-600) var(--spacing-300);
   text-align: center;
-  background: #fdf2f2;
+  background: rgb(253 242 242);
 }
 
 .cerebras-error h2 {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #b91c1c;
-  margin-bottom: 12px;
+  font-size: var(--font-size-500);
+  font-weight: var(--weight-medium);
+  color: var(--color-madder);
+  margin-bottom: var(--spacing-80);
 }
 
 .cerebras-error p {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 24px;
+  font-size: var(--font-size-100);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-300);
   max-width: 400px;
 }
 
 .cerebras-error-actions {
   display: flex;
-  gap: 16px;
+  gap: var(--spacing-100);
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .cerebras-retry-btn {
-  background: var(--color-brand-red, #c00);
-  color: #fff;
+  background: var(--color-red);
+  color: var(--color-white);
   border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
+  padding: var(--spacing-80) var(--spacing-300);
+  border-radius: var(--rounding-m);
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--transition-normal);
 }
 
 .cerebras-retry-btn:hover {
-  background: #a00;
+  background: var(--color-madder);
 }
 
 .cerebras-error-actions .secondary {
-  background: #fff;
-  color: #333;
-  border: 1px solid #ddd;
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  border: var(--border-s) solid var(--color-gray-400);
   text-decoration: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background 0.2s;
+  padding: var(--spacing-80) var(--spacing-300);
+  border-radius: var(--rounding-m);
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
+  transition: background var(--transition-normal);
 }
 
 .cerebras-error-actions .secondary:hover {
-  background: #f5f5f5;
+  background: var(--color-gray-100);
 }
 
 /* Smooth fade-in for generated sections */
 .section:not(:has(.cerebras-generated)) {
-  animation: section-fade-in 0.4s ease-out;
+  animation: section-fade-in var(--transition-slow) ease-out;
 }
 
 @keyframes section-fade-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(var(--spacing-80));
   }
 
   to {
@@ -172,15 +172,15 @@
 @media (width < 600px) {
   .cerebras-loading {
     min-height: 50vh;
-    padding: 24px 16px;
+    padding: var(--spacing-300) var(--spacing-100);
   }
 
   .cerebras-loading h2 {
-    font-size: 1.375rem;
+    font-size: var(--font-size-400);
   }
 
   .cerebras-query {
-    font-size: 1rem;
+    font-size: var(--font-size-100);
   }
 
   .cerebras-error-actions {

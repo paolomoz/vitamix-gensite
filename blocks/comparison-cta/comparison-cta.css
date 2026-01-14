@@ -5,8 +5,8 @@
  */
 
 .comparison-cta {
-  padding: 4rem 1.5rem;
-  max-width: 1200px;
+  padding: var(--spacing-700) var(--spacing-300);
+  max-width: var(--max-width-content);
   margin: 0 auto;
   text-align: center;
 }
@@ -14,97 +14,97 @@
 .comparison-cta-inner {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--spacing-400);
 }
 
 .comparison-cta-products {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: var(--spacing-400);
   flex-wrap: wrap;
 }
 
 .comparison-cta-product {
-  background: rgb(255 255 255 / 10%);
-  border-radius: 4px;
-  padding: 1.5rem 2rem;
+  background: var(--color-white-alpha-10);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-300) var(--spacing-400);
   min-width: 180px;
-  border: 1px solid rgb(255 255 255 / 15%);
-  transition: background 0.2s ease;
+  border: var(--border-s) solid var(--color-white-alpha-15);
+  transition: background var(--transition-normal);
 }
 
 .comparison-cta-product:hover {
-  background: rgb(255 255 255 / 15%);
+  background: var(--color-white-alpha-15);
 }
 
 .comparison-cta-name {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: #fff;
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-300);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-60);
 }
 
 .comparison-cta-price {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #fff;
-  margin-bottom: 1rem;
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-100);
 }
 
 .comparison-cta-button {
   display: inline-block;
-  padding: 0.75rem 2rem;
-  background: #c41230;
-  color: #fff;
+  padding: var(--spacing-80) var(--spacing-400);
+  background: var(--color-red);
+  color: var(--color-white);
   text-decoration: none;
   border-radius: 0;
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: var(--weight-medium);
+  font-size: var(--font-size-80);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: background 0.2s ease;
+  letter-spacing: var(--letter-spacing-wide);
+  transition: background var(--transition-normal);
 }
 
 .comparison-cta-button:hover {
-  background: #a30f28;
+  background: var(--color-madder);
   text-decoration: none;
-  color: #fff;
+  color: var(--color-white);
 }
 
 .comparison-cta-footer {
-  font-size: 0.875rem;
-  color: rgb(255 255 255 / 70%);
+  font-size: var(--font-size-80);
+  color: var(--color-white-alpha-70);
 }
 
 /* Light section */
 .section:not(.dark) .comparison-cta-product {
-  background: #f5f5f5;
-  border-color: #e5e5e5;
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-400);
 }
 
 .section:not(.dark) .comparison-cta-product:hover {
-  background: #eee;
+  background: var(--color-gray-300);
 }
 
 .section:not(.dark) .comparison-cta-name,
 .section:not(.dark) .comparison-cta-price {
-  color: #1a1a1a;
+  color: var(--color-dark-charcoal);
 }
 
 .section:not(.dark) .comparison-cta-footer {
-  color: #666;
+  color: var(--color-gray-900);
 }
 
 /* Responsive */
 @media (width < 768px) {
   .comparison-cta {
-    padding: 3rem 1rem;
+    padding: var(--spacing-600) var(--spacing-100);
   }
 
   .comparison-cta-products {
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: var(--spacing-100);
   }
 
   .comparison-cta-product {

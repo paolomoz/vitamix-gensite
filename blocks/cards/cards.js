@@ -46,14 +46,22 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 export default function decorate(block) {
   /* change to ul, li */
   const ul = document.createElement('ul');
-  [...block.children].forEach((row) => {
+  const rows = [...block.children];
+
+  // Add row count class for grid layout variants
+  const rowCount = rows.length;
+  if (rowCount >= 2 && rowCount <= 5) {
+    ul.classList.add(`rows-${rowCount}`);
+  }
+
+  rows.forEach((row) => {
     const li = document.createElement('li');
     while (row.firstElementChild) li.append(row.firstElementChild);
     [...li.children].forEach((div) => {
       if (div.children.length === 1 && div.querySelector('picture')) {
-        div.className = 'cards-card-image';
+        div.className = 'card-image';
       } else {
-        div.className = 'cards-card-body';
+        div.className = 'card-body';
       }
     });
     ul.append(li);

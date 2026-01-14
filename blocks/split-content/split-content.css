@@ -1,10 +1,6 @@
 /**
  * Split Content Block Styles - Vitamix Design System
  *
- * Based on vitamix.com split section patterns:
- * - Screenshots: learn-page-social-gallery.png, blender-recommender-content.png,
- *   learn-page-category-cards.png
- *
  * Features:
  * - 50/50 or 60/40 split layouts
  * - Full-height images
@@ -55,24 +51,24 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: var(--spacing-section-sm);
+  padding: var(--spacing-600);
 }
 
 /* Eyebrow text */
 .split-content-body .eyebrow,
 .split-content-body > p:first-child {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.15em;
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  color: var(--color-brand-red);
-  margin-bottom: var(--spacing-md);
+  color: var(--color-red);
+  margin-bottom: var(--spacing-100);
 }
 
 /* Reset eyebrow if it's not actually an eyebrow */
 .split-content-body > p:first-child:not(.eyebrow) {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-normal);
   letter-spacing: normal;
   text-transform: none;
   color: var(--color-charcoal);
@@ -80,27 +76,27 @@
 
 /* Headline */
 .split-content-body h2 {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-light);
-  color: var(--color-brand-dark);
-  margin-bottom: var(--spacing-lg);
-  line-height: 1.2;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
+  margin-bottom: var(--spacing-300);
+  line-height: var(--line-height-s);
 }
 
 .split-content-body h3 {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-light);
-  color: var(--color-brand-dark);
-  margin-bottom: var(--spacing-lg);
-  line-height: 1.2;
+  font-size: var(--font-size-500);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
+  margin-bottom: var(--spacing-300);
+  line-height: var(--line-height-s);
 }
 
 /* Body text */
 .split-content-body p {
-  font-size: var(--font-size-base);
-  line-height: 1.7;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
   color: var(--color-charcoal);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-300);
 }
 
 .split-content-body p:last-child {
@@ -110,7 +106,7 @@
 /* CTA Button */
 .split-content-body .button {
   align-self: flex-start;
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-100);
 }
 
 /* ===== Reverse Variant (Image Right) ===== */
@@ -124,7 +120,7 @@
 
 /* ===== Dark Variant ===== */
 .split-content.dark {
-  background: var(--color-brand-dark);
+  background: var(--color-dark-charcoal);
 }
 
 .split-content.dark .split-content-body {
@@ -138,12 +134,12 @@
 }
 
 .split-content.dark .split-content-body .eyebrow {
-  color: var(--color-brand-red);
+  color: var(--color-red);
 }
 
 /* ===== Light Variant ===== */
 .split-content.light {
-  background: var(--color-off-white);
+  background: var(--color-gray-200);
 }
 
 /* ===== Ratio Variants ===== */
@@ -193,21 +189,21 @@
 
 /* ===== Padding Variants ===== */
 .split-content.padded .split-content-body {
-  padding: var(--spacing-section-md);
+  padding: var(--spacing-700);
 }
 
 .split-content.compact .split-content-body {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-400);
 }
 
 /* ===== Responsive ===== */
 @media (width >= 1200px) {
   .split-content-body {
-    padding: var(--spacing-section-md);
+    padding: var(--spacing-700);
   }
 
   .split-content-body h2 {
-    font-size: var(--font-size-5xl);
+    font-size: var(--font-size-800);
   }
 }
 
@@ -241,15 +237,15 @@
 
 @media (width < 600px) {
   .split-content-body {
-    padding: var(--spacing-xl) var(--spacing-md);
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .split-content-body h2 {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-500);
   }
 
   .split-content-body h3 {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-400);
   }
 
   .split-content-image {

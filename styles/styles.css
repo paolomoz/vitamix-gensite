@@ -11,19 +11,81 @@
  */
 
 :root {
-  /* ===== Vitamix Brand Colors ===== */
-  --color-brand-red: #C41230;
-  --color-brand-red-dark: #a30f28;
-  --color-brand-dark: #1A1A1A;
-  --color-charcoal: #333333;
-  --color-dark-gray: #666666;
-  --color-medium-gray: #999999;
-  --color-light-gray: #E5E5E5;
-  --color-off-white: #F5F5F5;
-  --color-white: #FFFFFF;
-  --color-star-gold: #FFD700;
+  /* ===== Colors (aligned to ../vitamix/ reference) ===== */
 
-  /* Legacy color mappings */
+  /* Neutrals */
+  --color-white: white;
+  --color-gray-100: #fafafa;
+  --color-gray-200: #f3f1eb;
+  --color-gray-300: #e9e9e9;
+  --color-gray-400: #d6d6d6;
+  --color-gray-500: #cbcbcb;
+  --color-gray-600: #c5d5c8;
+  --color-gray-700: #a2b2bd;
+  --color-gray-800: #8d8d8d;
+  --color-gray-900: #666;
+  --color-black: black;
+
+  /* Brand Colors */
+  --color-red: #c8102e;
+  --color-madder: #a01e2a;
+  --color-rosewood: #6c1d20;
+  --color-chili: #e03b24;
+  --color-cinnamon: #b05e36;
+  --color-deep-rust: #a94f11;
+  --color-yellow: #fc0;
+  --color-asparagus: #799a3c;
+  --color-green: #64a338;
+  --color-xanadu: #5e7d61;
+  --color-moss: #59632c;
+  --color-robin: #3dcbda;
+  --color-blue: #1b64b4;
+  --color-lapis: #3865a3;
+  --color-steel: #a2b1bc;
+  --color-gray: #40596b;
+  --color-charcoal: #333f48;
+  --color-dark-charcoal: #262626;
+  --color-star-gold: #ffd700;
+
+  /* Shadows */
+  --shadow-100: rgba(0 0 0 / 7%);
+  --shadow-200: rgba(0 0 0 / 33.3%);
+  --shadow-300: rgba(0 0 0 / 50%);
+  --shadow-400: rgba(0 0 0 / 66.6%);
+
+  /* Overlays */
+  --overlay-light: rgba(255 255 255 / 95%);
+  --overlay-lighter: rgba(255 255 255 / 50%);
+  --overlay-charcoal: rgba(51 63 72 / 35%);
+  --overlay-charcoal-dark: rgba(51 63 72 / 60%);
+
+  /* Semantic Brand Colors */
+  --color-brand-primary: var(--color-charcoal);
+  --color-brand-secondary: var(--color-red);
+  --color-brand-tertiary: var(--color-robin);
+  --color-brand-quaternary: var(--color-asparagus);
+
+  /* Legacy color mappings (for backward compatibility) */
+  --color-brand-red: var(--color-red);
+  --color-brand-red-dark: var(--color-madder);
+  --color-brand-dark: var(--color-dark-charcoal);
+  --color-dark-gray: var(--color-gray-900);
+  --color-medium-gray: var(--color-gray-800);
+  --color-light-gray: var(--color-gray-300);
+  --color-off-white: var(--color-gray-200);
+
+  /* Layers */
+  --layer-elevated: var(--color-gray-100);
+  --layer-base: var(--color-gray-100);
+  --layer-depth: var(--color-gray-200);
+  --layer-pasteboard: var(--color-gray-300);
+
+  /* Semantic colors */
+  --color-background: var(--layer-base);
+  --color-text: var(--color-charcoal);
+  --color-link: var(--color-gray);
+  --color-link-hover: var(--color-link);
+  --color-eyebrow: var(--color-madder);
   --background-color: var(--color-white);
   --light-color: var(--color-off-white);
   --dark-color: var(--color-dark-gray);
@@ -31,102 +93,247 @@
   --link-color: var(--color-brand-red);
   --link-hover-color: var(--color-brand-red-dark);
 
-  /* ===== Typography - Vitamix via Adobe Fonts ===== */
-  --body-font-family: 'gotham-narrow', gotham-narrow-fallback, helvetica, sans-serif;
-  --heading-font-family: 'sentinel', sentinel-fallback, georgia, serif;
-  --nav-font-family: 'gotham-narrow', gotham-narrow-fallback, helvetica, sans-serif;
+  /* Status Colors - Success */
+  --color-success: #16a34a;
+  --color-success-light: #4ade80;
+  --color-success-dark: #14532d;
+  --color-success-bg: #f0fdf4;
+  --color-success-bg-strong: #dcfce7;
+  --color-success-border: #bbf7d0;
+  --color-success-text: #166534;
 
-  /* Font sizes */
-  --font-size-hero: 4.5rem;
-  --font-size-5xl: 3rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-xl: 1.25rem;
-  --font-size-lg: 1.125rem;
-  --font-size-base: 1rem;
-  --font-size-sm: 0.875rem;
-  --font-size-xs: 0.75rem;
+  /* Status Colors - Warning */
+  --color-warning: #ca8a04;
+  --color-warning-light: #fbbf24;
+  --color-warning-dark: #92400e;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #92400e;
 
-  /* Legacy size mappings */
-  --body-font-size-m: var(--font-size-base);
-  --body-font-size-s: var(--font-size-sm);
-  --body-font-size-xs: var(--font-size-xs);
-  --heading-font-size-xxl: var(--font-size-hero);
-  --heading-font-size-xl: var(--font-size-5xl);
-  --heading-font-size-l: var(--font-size-4xl);
-  --heading-font-size-m: var(--font-size-3xl);
-  --heading-font-size-s: var(--font-size-2xl);
-  --heading-font-size-xs: var(--font-size-xl);
+  /* Status Colors - Error */
+  --color-error: #dc2626;
+  --color-error-light: #f87171;
+  --color-error-dark: #991b1b;
+  --color-error-bg: #fef2f2;
+  --color-error-bg-strong: #fecaca;
+  --color-error-text: #dc2626;
+  --color-error-badge: #ef4444;
+  --color-error-badge-dark: #7f1d1d;
 
-  /* Font weights */
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 500;
-  --font-weight-bold: 500;
+  /* Charcoal Variants (for gradients) */
+  --color-charcoal-light: #2d2d2d;
+  --color-charcoal-darker: #1f1f1f;
 
-  /* ===== Spacing ===== */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-  --spacing-section-sm: 3rem;
-  --spacing-section-md: 5rem;
-  --spacing-section-lg: 8rem;
+  /* Decorative Gradients */
+  --gradient-purple-start: #667eea;
+  --gradient-purple-end: #764ba2;
 
-  /* ===== Shadows ===== */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.15);
+  /* ===== Typography (aligned to ../vitamix/ reference) ===== */
+
+  /* Font Families */
+  --serif-font-family: 'sentinel', sentinel-fallback, georgia, serif;
+  --sans-serif-font-family: 'gotham-narrow', gotham-narrow-fallback, helvetica, sans-serif;
+  --body-font-family: var(--sans-serif-font-family);
+  --heading-font-family: var(--serif-font-family);
+  --nav-font-family: var(--sans-serif-font-family);
+  --code-font-family: monospace;
+
+  /* Font Sizes (reference scale) */
+  --font-size-20: 10px;
+  --font-size-40: 12px;
+  --font-size-60: 13px;
+  --font-size-80: 14px;
+  --font-size-90: 15px;
+  --font-size-100: 16px;
+  --font-size-200: 18px;
+  --font-size-300: 20px;
+  --font-size-400: 22px;
+  --font-size-500: 24px;
+  --font-size-600: 28px;
+  --font-size-700: 30px;
+  --font-size-750: 32px;
+  --font-size-800: 36px;
+  --font-size-900: 45px;
+  --font-size-950: 54px;
+  --font-size-1000: 75px;
+
+  /* Legacy font size mappings */
+  --font-size-hero: var(--font-size-1000);
+  --font-size-5xl: var(--font-size-900);
+  --font-size-4xl: var(--font-size-800);
+  --font-size-3xl: var(--font-size-700);
+  --font-size-2xl: var(--font-size-500);
+  --font-size-xl: var(--font-size-300);
+  --font-size-lg: var(--font-size-200);
+  --font-size-base: var(--font-size-100);
+  --font-size-sm: var(--font-size-80);
+  --font-size-xs: var(--font-size-40);
+
+  /* Letter Spacing */
+  --letter-spacing-m: 0.14em;
+  --letter-spacing-s: 0.083em;
+
+  /* Font Weights */
+  --weight-medium: 500;
+  --weight-regular: 400;
+  --weight-light: 300;
+  --font-weight-light: var(--weight-light);
+  --font-weight-normal: var(--weight-regular);
+  --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-medium);
+  --font-weight-bold: var(--weight-medium);
+
+  /* Line Heights */
+  --line-height-xl: 1.63;
+  --line-height-l: 1.45;
+  --line-height-m: 1.3;
+  --line-height-s: 1.2;
+  --line-height-xs: 1;
+
+  /* Heading Sizes (semantic) */
+  --heading-size-xxxxl: var(--font-size-800);
+  --heading-size-xxxl: var(--font-size-700);
+  --heading-size-xxl: var(--font-size-600);
+  --heading-size-xl: var(--font-size-700);
+  --heading-size-l: var(--font-size-400);
+  --heading-size-m: var(--font-size-300);
+  --heading-size-s: var(--font-size-200);
+  --heading-size-xs: var(--font-size-100);
+
+  /* Body Sizes (semantic) */
+  --body-size-xxxl: var(--font-size-500);
+  --body-size-xxl: var(--font-size-400);
+  --body-size-xl: var(--font-size-300);
+  --body-size-l: var(--font-size-200);
+  --body-size-m: var(--font-size-100);
+  --body-size-s: var(--font-size-80);
+  --body-size-xs: var(--font-size-60);
+
+  /* Detail Sizes (semantic) */
+  --detail-size-xl: var(--font-size-100);
+  --detail-size-l: var(--font-size-80);
+  --detail-size-m: var(--font-size-60);
+  --detail-size-s: var(--font-size-40);
+  --detail-size-xs: var(--font-size-20);
+
+  /* Legacy heading size mappings */
+  --body-font-size-m: var(--body-size-m);
+  --body-font-size-s: var(--body-size-s);
+  --body-font-size-xs: var(--body-size-xs);
+  --heading-font-size-xxl: var(--heading-size-xxxxl);
+  --heading-font-size-xl: var(--heading-size-xxl);
+  --heading-font-size-l: var(--heading-size-l);
+  --heading-font-size-m: var(--heading-size-m);
+  --heading-font-size-s: var(--heading-size-s);
+  --heading-font-size-xs: var(--heading-size-xs);
+
+  /* ===== Spacing (aligned to ../vitamix/ reference) ===== */
+  --spacing-20: 2px;
+  --spacing-40: 4px;
+  --spacing-60: 8px;
+  --spacing-80: 12px;
+  --spacing-100: 16px;
+  --spacing-200: 20px;
+  --spacing-300: 24px;
+  --spacing-400: 32px;
+  --spacing-500: 35px;
+  --spacing-600: 40px;
+  --spacing-700: 48px;
+  --spacing-800: 64px;
+  --spacing-900: 160px;
+
+  /* Semantic spacing aliases */
+  --spacing-3xl: var(--spacing-800);
+  --spacing-xxl: var(--spacing-700);
+  --spacing-xl: var(--spacing-400);
+  --spacing-l: var(--spacing-300);
+  --spacing-m: var(--spacing-200);
+  --spacing-s: var(--spacing-60);
+  --spacing-xs: var(--spacing-40);
+  --spacing-xxs: var(--spacing-20);
+
+  /* Legacy spacing mappings */
+  --spacing-sm: var(--spacing-60);
+  --spacing-md: var(--spacing-100);
+  --spacing-lg: var(--spacing-300);
+  --spacing-2xl: var(--spacing-700);
+  --spacing-section-sm: var(--spacing-700);
+  --spacing-section-md: var(--spacing-800);
+  --spacing-section-lg: var(--spacing-900);
+
+  /* ===== Borders & Rounding (aligned to ../vitamix/ reference) ===== */
+  --border-l: 4px;
+  --border-m: 2px;
+  --border-s: 1px;
+
+  --rounding-xl: 16px;
+  --rounding-l: 10px;
+  --rounding-m: 5px;
+  --rounding-s: 2px;
+
+  /* Legacy radius mappings */
+  --radius-sm: var(--rounding-s);
+  --radius-md: var(--rounding-m);
+  --radius-lg: var(--rounding-l);
+  --radius-full: 9999px;
+
+  /* Icons */
+  --icon-l: 28px;
+  --icon-m: 22px;
+  --icon-s: 16px;
+
+  /* ===== Shadows (elevation-based for components) ===== */
+  --shadow-sm: 0 1px 3px var(--shadow-100);
+  --shadow-md: 0 4px 12px var(--shadow-100);
+  --shadow-lg: 0 8px 24px var(--shadow-200);
+  --shadow-xl: 0 12px 32px var(--shadow-200);
+  --shadow-default: var(--shadow-200) 0 0 12px 2px;
+  --shadow-hover: 0 2px 8px 0 var(--shadow-100);
+  --shadow-dragged: 0 3px 12px 0 var(--shadow-200);
 
   /* ===== Transitions ===== */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.2s ease;
   --transition-slow: 0.3s ease;
 
-  /* ===== Border Radius ===== */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
-
   /* ===== Layout ===== */
-  --nav-height: 64px;
+  --nav-height: 68px;
+  --header-height: var(--nav-height);
+  --horizontal-spacing: var(--spacing-400);
+  --site-width: 2000px;
   --max-width-content: 1200px;
   --max-width-wide: 1400px;
 }
 
-/* fallback fonts */
-@font-face {
-  font-family: roboto-condensed-fallback;
-  size-adjust: 88.82%;
-  src: local('Arial');
-}
-
-@font-face {
-  font-family: roboto-fallback;
-  size-adjust: 99.529%;
-  src: local('Arial');
-}
-
 @media (width >= 900px) {
   :root {
-    /* body sizes */
-    --body-font-size-m: 18px;
-    --body-font-size-s: 16px;
-    --body-font-size-xs: 14px;
+    --horizontal-spacing: var(--spacing-800);
+  }
+}
 
-    /* heading sizes */
-    --heading-font-size-xxl: 45px;
-    --heading-font-size-xl: 36px;
-    --heading-font-size-l: 28px;
-    --heading-font-size-m: 22px;
-    --heading-font-size-s: 20px;
-    --heading-font-size-xs: 18px;
+@media (width >= 1000px) {
+  :root {
+    --header-height: 84px;
+    --nav-height: 84px;
+  }
+}
+
+/* fallback fonts */
+@font-face {
+  font-family: sentinel-fallback;
+  size-adjust: 93.86%;
+  src: local('Georgia');
+}
+
+@font-face {
+  font-family: gotham-narrow-fallback;
+  size-adjust: 98.395%;
+  src: local('Helvetica');
+}
+
+@media (width >= 800px) {
+  :root {
+    /* heading sizes - responsive adjustment */
+    --heading-size-xl: var(--font-size-900);
   }
 }
 
@@ -167,9 +374,10 @@ h6 {
   margin-top: 0.8em;
   margin-bottom: 0.25em;
   font-family: var(--heading-font-family);
-  font-weight: 500;
-  line-height: 1.25;
+  font-weight: 300;
+  line-height: var(--line-height-s);
   scroll-margin: 40px;
+  word-break: break-word;
 }
 
 h1 { font-size: var(--heading-font-size-xxl); }
@@ -178,6 +386,26 @@ h3 { font-size: var(--heading-font-size-l); }
 h4 { font-size: var(--heading-font-size-m); }
 h5 { font-size: var(--heading-font-size-s); }
 h6 { font-size: var(--heading-font-size-xs); }
+
+/* Responsive h2 sizing */
+@media (width >= 800px) {
+  h2 { font-size: var(--font-size-900, 45px); }
+}
+
+/* Eyebrow text pattern (Vitamix design system) */
+.eyebrow {
+  margin-bottom: var(--spacing-60);
+  color: var(--color-red);
+  font-family: var(--sans-serif-font-family);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+[data-eyebrow] {
+  margin-top: 0;
+}
 
 p,
 dl,
@@ -298,6 +526,84 @@ a.button.ghost:hover,
 button.ghost:hover {
   background-color: transparent;
   text-decoration-thickness: 2px;
+}
+
+/* Emphasis button (filled gray) - Vitamix reference pattern */
+a.button.emphasis,
+button.emphasis {
+  border-color: var(--color-gray);
+  background-color: var(--color-gray);
+  color: var(--color-white);
+}
+
+a.button.emphasis:hover,
+button.emphasis:hover {
+  background-color: var(--color-charcoal);
+  border-color: var(--color-charcoal);
+}
+
+/* Link button (text only, underlined) - Vitamix reference pattern */
+a.button.link,
+button.link {
+  padding-left: 0;
+  padding-right: 0;
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--color-gray);
+  text-decoration: underline;
+  text-underline-offset: var(--spacing-60);
+  text-transform: none;
+}
+
+a.button.link:hover,
+button.link:hover {
+  box-shadow: none;
+  background-color: transparent;
+  color: var(--color-charcoal);
+}
+
+/* Accent button (red filled) - Vitamix reference pattern */
+a.button.accent,
+button.accent {
+  border-color: var(--color-red);
+  background-color: var(--color-red);
+  color: var(--color-white);
+}
+
+a.button.accent:hover,
+button.accent:hover {
+  background-color: var(--color-madder);
+  border-color: var(--color-madder);
+}
+
+/* Outline button (ghost with border) - for dark sections */
+a.button.outline,
+button.outline {
+  background-color: transparent;
+  border: 1px solid currentcolor;
+  color: inherit;
+}
+
+a.button.outline:hover,
+button.outline:hover {
+  background-color: var(--color-white);
+  color: var(--color-charcoal);
+}
+
+/* Close button (circular icon) */
+button.close {
+  width: 40px;
+  height: 40px;
+  border-color: transparent;
+  border-radius: 50%;
+  padding: 0.4em;
+  background-color: transparent;
+  color: currentcolor;
+  line-height: 0;
+}
+
+button.close:hover {
+  background-color: var(--overlay-charcoal);
 }
 
 /* CTA Type Icons */
@@ -433,9 +739,10 @@ main .section.highlight {
 }
 
 main .section.dark {
-  background-color: var(--color-brand-dark, #1A1A1A);
+  background-color: var(--color-charcoal);
   margin: 0;
   padding: 60px 0;
+  color: var(--color-white);
 }
 
 main .section.dark h1,
@@ -443,21 +750,36 @@ main .section.dark h2,
 main .section.dark h3,
 main .section.dark h4,
 main .section.dark p {
-  color: var(--color-white, #fff);
+  color: var(--color-white);
 }
 
-main .section.dark a:any-link {
-  color: var(--color-brand-red, #C41230);
+/* Eyebrow in dark sections - muted gray for contrast */
+main .section.dark .eyebrow {
+  color: var(--color-gray-500);
+}
+
+/* Links in dark sections */
+main .section.dark a:any-link:not(.button) {
+  color: var(--color-gray-500);
+}
+
+main .section.dark a:any-link:not(.button):hover {
+  color: var(--color-white);
 }
 
 main .section.dark .button:any-link {
-  color: var(--color-white, #fff);
+  color: var(--color-white);
 }
 
 main .section.dark .button.secondary:any-link {
   background-color: transparent;
-  border-color: var(--color-white, #fff);
-  color: var(--color-white, #fff);
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
+
+main .section.dark .button.secondary:any-link:hover {
+  background-color: var(--color-white);
+  color: var(--color-charcoal);
 }
 
 /* Accent section - for best-pick and important callouts (Vitamix Design System) */

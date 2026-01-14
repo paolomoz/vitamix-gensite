@@ -2,10 +2,9 @@
  * Best Pick Block Styles
  *
  * Hero-style "Our Top Pick" callout following Vitamix Design System.
- * Visually matches the hero block design.
  */
 
-/* Container reset - match hero-container */
+/* Container reset */
 main .section.dark.best-pick-container {
   padding: 25px 0;
 }
@@ -18,7 +17,7 @@ main .section.dark.best-pick-container {
 .best-pick {
   position: relative;
   min-height: 400px;
-  max-width: var(--max-width-wide, 1400px);
+  max-width: var(--max-width-wide);
   margin: 0 auto;
   padding: 0;
 }
@@ -27,21 +26,21 @@ main .section.dark.best-pick-container {
   position: relative;
 }
 
-/* Badge - brand red with square corners */
+/* Badge */
 .best-pick-badge {
   display: inline-block;
-  background: var(--color-brand-red, #c41230);
-  color: var(--color-white, #fff);
-  padding: 0.5rem 1.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
+  background: var(--color-red);
+  color: var(--color-white);
+  padding: var(--spacing-60) var(--spacing-300);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
   border-radius: 0;
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--spacing-300);
 }
 
-/* Content container - single column, centered */
+/* Content container */
 .best-pick-container {
   display: block;
   max-width: 800px;
@@ -49,86 +48,84 @@ main .section.dark.best-pick-container {
   text-align: center;
 }
 
-/* Content column - centered text */
+/* Content column */
 .best-pick-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-xl, 2rem) 0;
+  padding: var(--spacing-400) 0;
 }
 
-/* Eyebrow text - match hero eyebrow */
+/* Eyebrow text */
 .best-pick-eyebrow {
-  font-size: var(--font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-semibold, 500);
-  letter-spacing: 0.15em;
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  color: var(--color-brand-red, #c41230);
-  margin-bottom: var(--spacing-md, 1rem);
+  color: var(--color-red);
+  margin-bottom: var(--spacing-100);
 }
 
-/* Headline - match hero h1 styling */
+/* Headline */
 .best-pick-headline {
-  font-size: var(--font-size-5xl, 3rem);
-  font-weight: var(--font-weight-light, 300);
-  letter-spacing: -0.025em;
-  color: var(--color-brand-dark, #1a1a1a);
-  margin-bottom: var(--spacing-lg, 1.5rem);
-  line-height: 1.1;
+  font-size: var(--font-size-800);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-dark-charcoal);
+  margin-bottom: var(--spacing-300);
+  line-height: var(--line-height-s);
 }
 
-/* Rationale/body text - match hero p styling */
+/* Rationale/body text */
 .best-pick-rationale {
-  font-size: var(--font-size-lg, 1.125rem);
-  color: var(--color-charcoal, #333);
-  line-height: 1.7;
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  font-size: var(--font-size-200);
+  color: var(--color-charcoal);
+  line-height: var(--line-height-xl);
+  margin-bottom: var(--spacing-300);
 }
 
 /* Price and warranty details */
 .best-pick-details {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md, 1rem);
-  margin-top: var(--spacing-sm, 0.5rem);
+  gap: var(--spacing-100);
+  margin-top: var(--spacing-60);
 }
 
 .best-pick-price {
-  font-size: var(--font-size-xl, 1.25rem);
-  font-weight: 500;
-  color: var(--color-brand-dark, #1a1a1a);
+  font-size: var(--font-size-300);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
 }
 
 .best-pick-warranty {
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-dark-gray, #666);
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
 }
 
-/* CTA button - primary button per design system */
+/* CTA button */
 .best-pick-cta {
-  margin-top: var(--spacing-md, 1rem);
+  margin-top: var(--spacing-100);
 }
 
 .best-pick-cta .button.primary {
   display: inline-block;
-  background-color: var(--color-brand-red, #c41230);
-  color: var(--color-white, #fff);
-  padding: 0.75rem 2rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  background-color: var(--color-red);
+  color: var(--color-white);
+  padding: var(--spacing-80) var(--spacing-400);
+  font-size: var(--font-size-80);
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-wide);
   border-radius: 0;
   border: none;
   text-decoration: none;
-  transition: background-color var(--transition-normal, 0.2s ease);
+  transition: background-color var(--transition-normal);
 }
 
 .best-pick-cta .button.primary:hover {
-  background-color: var(--color-brand-red-dark, #a30f28);
+  background-color: var(--color-madder);
 }
-
-/* Image column removed - best-pick is now text-only */
 
 /* Section variants */
 .section.highlight .best-pick {
@@ -144,56 +141,56 @@ main .section.dark.best-pick-container {
 }
 
 .section.dark .best-pick-badge {
-  background: var(--color-white, #fff);
-  color: var(--color-brand-red, #c41230);
+  background: var(--color-white);
+  color: var(--color-red);
 }
 
 .section.dark .best-pick-eyebrow {
-  color: #ff8a99;
+  color: var(--color-red-light);
 }
 
 .section.dark .best-pick-headline {
-  color: var(--color-white, #fff);
+  color: var(--color-white);
 }
 
 .section.dark .best-pick-rationale {
-  color: rgb(255 255 255 / 85%);
+  color: var(--color-white-alpha-85);
 }
 
 .section.dark .best-pick-price {
-  color: var(--color-white, #fff);
+  color: var(--color-white);
 }
 
 .section.dark .best-pick-warranty {
-  color: rgb(255 255 255 / 70%);
+  color: var(--color-white-alpha-70);
 }
 
 /* Desktop Styles */
 @media (width >= 900px) {
   .best-pick-headline {
-    font-size: var(--font-size-hero, 4.5rem);
+    font-size: var(--font-size-900);
   }
 }
 
 /* Tablet Styles */
 @media (width < 900px) {
   .best-pick-headline {
-    font-size: var(--font-size-5xl, 3rem);
+    font-size: var(--font-size-800);
   }
 }
 
 /* Mobile Styles */
 @media (width < 600px) {
   .best-pick {
-    padding: var(--spacing-xl, 2rem) var(--spacing-md, 1rem);
+    padding: var(--spacing-400) var(--spacing-100);
     min-height: auto;
   }
 
   .best-pick-content {
-    padding: var(--spacing-lg, 1.5rem) 0;
+    padding: var(--spacing-300) 0;
   }
 
   .best-pick-headline {
-    font-size: var(--font-size-4xl, 2.25rem);
+    font-size: var(--font-size-700);
   }
 }

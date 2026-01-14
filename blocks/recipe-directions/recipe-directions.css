@@ -10,11 +10,11 @@
 }
 
 .recipe-directions .directions-title {
-  font-size: 2rem;
-  font-weight: 300;
-  color: var(--color-brand-dark, #1a1a1a);
-  margin: 0 0 24px 0;
-  letter-spacing: -0.02em;
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-300) 0;
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 /* Steps list */
@@ -26,10 +26,10 @@
 
 .recipe-directions .direction-step {
   display: flex;
-  gap: 20px;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--color-light-gray, #e5e5e5);
-  transition: background 0.2s ease;
+  gap: var(--spacing-200);
+  padding: var(--spacing-300) 0;
+  border-bottom: var(--border-s) solid var(--color-gray-400);
+  transition: background var(--transition-normal);
 }
 
 .recipe-directions .direction-step:last-child {
@@ -37,10 +37,10 @@
 }
 
 .recipe-directions .direction-step.highlighted {
-  background: rgba(196, 18, 48, 0.05);
-  margin: 0 -16px;
-  padding: 24px 16px;
-  border-radius: 8px;
+  background: var(--shadow-100);
+  margin: 0 calc(-1 * var(--spacing-100));
+  padding: var(--spacing-300) var(--spacing-100);
+  border-radius: var(--rounding-l);
 }
 
 /* Step number */
@@ -48,26 +48,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--color-brand-red, #c41230);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 50%;
+  width: var(--spacing-600);
+  height: var(--spacing-600);
+  background: var(--color-red);
+  color: var(--color-white);
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
 /* Step content */
 .recipe-directions .step-content {
   flex: 1;
-  padding-top: 6px;
+  padding-top: var(--spacing-60);
 }
 
 .recipe-directions .step-text {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--color-charcoal, #333);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-charcoal);
   margin: 0;
 }
 
@@ -75,46 +75,46 @@
 .recipe-directions .directions-progress {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  padding: 24px 0;
+  gap: var(--spacing-60);
+  padding: var(--spacing-300) 0;
 }
 
 .recipe-directions .progress-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--color-light-gray, #e5e5e5);
-  border-radius: 50%;
-  transition: background 0.2s ease;
+  width: var(--spacing-60);
+  height: var(--spacing-60);
+  background: var(--color-gray-400);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-normal);
 }
 
 .recipe-directions .progress-dot.active {
-  background: var(--color-brand-dark, #1a1a1a);
+  background: var(--color-dark-charcoal);
 }
 
 /* Navigation arrows */
 .recipe-directions .directions-nav {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 0;
+  gap: var(--spacing-80);
+  padding: var(--spacing-100) 0;
 }
 
 .recipe-directions .nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: #2d3e50;
+  width: var(--spacing-700);
+  height: var(--spacing-700);
+  background: var(--color-charcoal);
   border: none;
-  border-radius: 50%;
-  color: #fff;
+  border-radius: var(--radius-full);
+  color: var(--color-white);
   cursor: pointer;
-  transition: background 0.2s ease, opacity 0.2s ease;
+  transition: background var(--transition-normal), opacity var(--transition-normal);
 }
 
 .recipe-directions .nav-btn:hover:not(:disabled) {
-  background: #3d4e60;
+  background: var(--color-gray-900);
 }
 
 .recipe-directions .nav-btn:disabled {
@@ -123,13 +123,13 @@
 }
 
 .recipe-directions .nav-btn svg {
-  width: 20px;
-  height: 20px;
+  width: var(--spacing-200);
+  height: var(--spacing-200);
 }
 
 /* Cook Mode styling */
 .recipe-directions.cook-mode .directions-list {
-  font-size: 1.125rem;
+  font-size: var(--font-size-200);
 }
 
 .recipe-directions.cook-mode .direction-step:not(.highlighted) {
@@ -139,32 +139,32 @@
 .recipe-directions.cook-mode .step-number {
   width: 44px;
   height: 44px;
-  font-size: 1.125rem;
+  font-size: var(--font-size-200);
 }
 
 /* Responsive */
 @media (width < 600px) {
   .recipe-directions .directions-title {
-    font-size: 1.5rem;
+    font-size: var(--font-size-500);
   }
 
   .recipe-directions .direction-step {
-    gap: 16px;
-    padding: 20px 0;
+    gap: var(--spacing-100);
+    padding: var(--spacing-200) 0;
   }
 
   .recipe-directions .step-number {
-    width: 32px;
-    height: 32px;
-    font-size: 0.875rem;
+    width: var(--spacing-400);
+    height: var(--spacing-400);
+    font-size: var(--font-size-80);
   }
 
   .recipe-directions .step-text {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-80);
   }
 
   .recipe-directions .nav-btn {
-    width: 40px;
-    height: 40px;
+    width: var(--spacing-600);
+    height: var(--spacing-600);
   }
 }

@@ -5,40 +5,40 @@
  */
 
 .tips-banner {
-  padding: 5rem 1.5rem;
-  max-width: 1200px;
+  padding: var(--spacing-800) var(--spacing-300);
+  max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
 .tips-banner-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: var(--spacing-600);
 }
 
 .tips-banner-header h2 {
-  font-size: 2rem;
-  font-weight: 300;
-  color: #1a1a1a;
+  font-size: var(--font-size-600);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
   margin: 0;
 }
 
 .tips-banner-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: var(--spacing-400);
 }
 
 .tips-banner-item {
   display: flex;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 8px;
-  transition: box-shadow 0.2s ease;
+  gap: var(--spacing-100);
+  padding: var(--spacing-300);
+  background: var(--color-white);
+  border-radius: var(--rounding-l);
+  transition: box-shadow var(--transition-normal);
 }
 
 .tips-banner-item:hover {
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+  box-shadow: var(--shadow-md);
 }
 
 /* Number badge */
@@ -49,11 +49,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #c41230;
-  color: #fff;
-  font-size: 1.125rem;
-  font-weight: 500;
-  border-radius: 50%;
+  background: var(--color-red);
+  color: var(--color-white);
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-full);
 }
 
 /* Content */
@@ -62,17 +62,17 @@
 }
 
 .tips-banner-headline {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem;
-  line-height: 1.3;
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-medium);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-60);
+  line-height: var(--line-height-m);
 }
 
 .tips-banner-description {
-  font-size: 0.875rem;
-  color: #666;
-  line-height: 1.6;
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
+  line-height: var(--line-height-xl);
   margin: 0;
 }
 
@@ -84,8 +84,8 @@
 }
 
 .section.highlight .tips-banner-item {
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Dark section */
@@ -94,50 +94,50 @@
 }
 
 .section.dark .tips-banner-header h2 {
-  color: #fff;
+  color: var(--color-white);
 }
 
 .section.dark .tips-banner-item {
-  background: rgb(255 255 255 / 10%);
+  background: var(--color-white-alpha-10);
 }
 
 .section.dark .tips-banner-number {
-  background: #fff;
-  color: #c41230;
+  background: var(--color-white);
+  color: var(--color-red);
 }
 
 .section.dark .tips-banner-headline {
-  color: #fff;
+  color: var(--color-white);
 }
 
 .section.dark .tips-banner-description {
-  color: rgb(255 255 255 / 70%);
+  color: var(--color-white-alpha-70);
 }
 
 /* Compact variant */
 .tips-banner.compact .tips-banner-item {
-  padding: 1rem;
+  padding: var(--spacing-100);
 }
 
 .tips-banner.compact .tips-banner-number {
   width: 32px;
   height: 32px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-80);
 }
 
 /* Responsive */
 @media (width < 768px) {
   .tips-banner {
-    padding: 3rem 1rem;
+    padding: var(--spacing-600) var(--spacing-100);
   }
 
   .tips-banner-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: var(--spacing-100);
   }
 
   .tips-banner-header h2 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-400);
   }
 }
 

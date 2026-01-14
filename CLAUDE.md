@@ -176,3 +176,77 @@ const ctx = SessionContextManager.buildEncodedContextParam();
 - `query` - User search
 - `page_published` - Generated page saved
 - `conversion` - CTA click to vitamix.com
+
+## Design Context
+
+### Users
+Home cooks and kitchen enthusiasts researching high-performance blenders. They arrive via search queries seeking recipes, product comparisons, and support content. Context: often mid-purchase decision or exploring what's possible with a Vitamix. The job to be done: get confident answers quickly—whether finding the right product, discovering recipes, or solving a problem.
+
+### Brand Personality
+**Professional, Premium, Trusted.** Vitamix is the gold standard in blending—built to last, backed by decades of expertise. The voice is knowledgeable but never condescending, confident but warm. Every interaction should reinforce that this is a serious tool for people who care about quality.
+
+### Emotional Goals
+**Confidence & Trust.** Users should feel assured in their decisions. The interface removes doubt through clear information hierarchy, consistent patterns, and professional polish. No gimmicks, no overwhelming choices—just clarity that builds trust.
+
+### Aesthetic Direction
+**Reference**: The canonical Vitamix design system at `../vitamix/` (EDS production site)
+**Visual Tone**: Clean, premium, editorial. Generous whitespace. Photography-forward. Typography that breathes.
+**Anti-references**: Cluttered e-commerce sites, aggressive promotional aesthetics, generic Bootstrap looks
+
+### Design System (Reference: ../vitamix/)
+
+#### Colors
+```css
+/* Brand */
+--color-red: #c8102e;           /* Primary accent */
+--color-charcoal: #333f48;      /* Primary text, dark backgrounds */
+--color-madder: #a01e2a;        /* Red dark variant */
+
+/* Neutrals */
+--color-gray-100: #fafafa;      /* Lightest */
+--color-gray-200: #f3f1eb;      /* Off-white/cream */
+--color-gray-300: #e9e9e9;      /* Borders */
+--color-gray-900: #666;         /* Secondary text */
+
+/* Accent */
+--color-robin: #3dcbda;         /* Teal accent */
+--color-asparagus: #799a3c;     /* Green accent */
+```
+
+#### Typography
+- **Headings**: Sentinel (serif), weight 300, tight line-height (1.2)
+- **Body**: Gotham Narrow (sans-serif), weight 400, relaxed line-height (1.3-1.6)
+- **Scale**: 10px to 75px in 20 steps (base: 16px)
+
+#### Spacing
+```css
+--spacing-60: 8px;    --spacing-200: 20px;   --spacing-600: 40px;
+--spacing-100: 16px;  --spacing-400: 32px;   --spacing-800: 64px;
+```
+
+#### Border Radius
+```css
+--rounding-s: 2px;    /* Subtle, buttons */
+--rounding-m: 5px;    /* Cards, inputs */
+--rounding-l: 10px;   /* Larger cards */
+--rounding-xl: 16px;  /* Hero elements */
+```
+
+### Design Principles
+
+1. **Defer to the reference** — When in doubt, match `../vitamix/` exactly. It's the source of truth.
+
+2. **Tokens over hardcodes** — Never use raw hex colors or pixel values. Every color is `var(--color-*)`, every space is `var(--spacing-*)`.
+
+3. **Typography hierarchy matters** — Sentinel serif for headlines creates premium feel. Gotham Narrow for body ensures readability. Don't mix them arbitrarily.
+
+4. **Restraint is premium** — Fewer colors, more whitespace, less decoration. Let photography and content breathe.
+
+5. **Consistency builds trust** — Same button styles, same card patterns, same hover states. Predictability signals professionalism.
+
+### Accessibility
+Match reference site standards (WCAG AA baseline). Ensure:
+- 4.5:1 contrast ratio for text
+- Visible focus states on all interactive elements
+- Keyboard navigability
+- Semantic HTML structure

@@ -2,12 +2,22 @@
  * Hero Block Styles - Vitamix Design System
  *
  * Supports multiple variants aligned with vitamix.com design:
- * - Default: Two-column split layout (image left, content right)
+ * - Default: Full-bleed background image with dark overlay, centered text
  * - full-width: Full-bleed background image with dark overlay
  * - light: Light background with dark text
  * - split: 50/50 split with prominent image
- * - reverse: Image on right side
+ * - split quote: 50/50 split with charcoal content area (testimonial style)
+ * - reverse: Image on right side (combine with split)
  * - centered: Centered text overlay on image
+ * - dark: Dark background without image
+ *
+ * Example usage for quote variant:
+ * | Hero (split, quote) |                           |
+ * |---------------------|---------------------------|
+ * | [chef-image.jpg]    | ## Preferred by the Pros  |
+ * |                     | "Quote text here..."      |
+ * |                     | Attribution Name          |
+ * |                     | *Organization Name*       |
  */
 
 /* ===== Container Reset ===== */
@@ -270,6 +280,126 @@ main .section.dark.hero-container {
 
 .hero.split .button-wrapper {
   justify-content: flex-start;
+}
+
+/* ===== Quote Variant (Split with charcoal content area) ===== */
+/* Use with: hero (split, quote) or hero (split, quote, reverse) */
+.hero.split.quote {
+  min-height: 500px;
+}
+
+.hero.split.quote > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: var(--color-charcoal);
+}
+
+/* Image cell - no background, full bleed */
+.hero.split.quote > div > div:first-child,
+.hero.split.quote .hero-image {
+  position: relative;
+  background: transparent;
+}
+
+.hero.split.quote > div > div:first-child picture,
+.hero.split.quote > div > div:first-child img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Content cell - charcoal background with generous padding */
+.hero.split.quote > div > div:last-child,
+.hero.split.quote .hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--spacing-900) var(--spacing-600);
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+/* Heading - serif, light weight, white */
+.hero.split.quote h1,
+.hero.split.quote h2 {
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-200);
+  line-height: var(--line-height-s);
+}
+
+/* Quote text */
+.hero.split.quote p {
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-100);
+}
+
+/* Attribution name - slightly bolder */
+.hero.split.quote p:nth-child(3) {
+  font-weight: var(--weight-medium);
+  margin-top: var(--spacing-200);
+}
+
+/* Organization - italic */
+.hero.split.quote p em,
+.hero.split.quote p:last-child em {
+  font-style: italic;
+  color: var(--color-gray-400);
+}
+
+/* Remove eyebrow styling for quote variant */
+.hero.split.quote > div > div:last-child > p:first-child {
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-normal);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-white);
+}
+
+/* Desktop quote variant */
+@media (width >= 900px) {
+  .hero.split.quote h1,
+  .hero.split.quote h2 {
+    font-size: 45px;
+  }
+
+  .hero.split.quote > div > div:last-child,
+  .hero.split.quote .hero-content {
+    padding: 160px 64px;
+  }
+}
+
+/* Tablet quote variant */
+@media (width < 900px) {
+  .hero.split.quote > div {
+    grid-template-columns: 1fr;
+  }
+
+  .hero.split.quote > div > div:first-child {
+    min-height: 350px;
+  }
+
+  .hero.split.quote > div > div:last-child {
+    padding: var(--spacing-600) var(--spacing-300);
+  }
+}
+
+/* Mobile quote variant */
+@media (width < 600px) {
+  .hero.split.quote h1,
+  .hero.split.quote h2 {
+    font-size: var(--font-size-500);
+  }
+
+  .hero.split.quote > div > div:last-child {
+    padding: var(--spacing-400) var(--spacing-200);
+  }
 }
 
 /* ===== Reverse Variant (Image on Right) ===== */

@@ -1,273 +1,450 @@
-/**
- * Header Block
- *
- * Clean, professional header matching vitamix.com.
- * Features: Logo, navigation, AI-powered search, tools.
- */
+import { getMetadata, toClassName } from '../../scripts/aem.js';
+import { swapIcons, getCookies } from '../../scripts/scripts.js';
+import { loadFragment } from '../fragment/fragment.js';
 
-// Media query for desktop
-const isDesktop = window.matchMedia('(min-width: 1000px)');
+// media query match that indicates desktop width
+const isDesktop = window.matchMedia('(width >= 1000px)');
 
 /**
- * Toggles mobile menu state
- * @param {HTMLElement} nav - Navigation element
- * @param {boolean} forceExpanded - Force expand/collapse state
+ * Rewrites links to use the current hostname.
+ * @param {HTMLElement} element - Element within which to rewrite links
  */
-function toggleMenu(nav, forceExpanded = null) {
-  const expanded = forceExpanded !== null
-    ? !forceExpanded
-    : nav.getAttribute('aria-expanded') === 'true';
-
-  nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-  document.body.style.overflowY = expanded || isDesktop.matches ? '' : 'hidden';
-
-  const button = nav.querySelector('.nav-hamburger button');
-  if (button) {
-    button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
+function rewriteLinks(element) {
+  if (window.location.hostname.endsWith('.vitamix.com')) {
+    const links = element.querySelectorAll('a[href^="https://www.vitamix.com"]');
+    links.forEach((link) => {
+      if (link.href.includes('vitamix.com')) {
+        link.href = link.href.replace('https://www.vitamix.com', window.location.origin);
+      }
+    });
   }
 }
 
 /**
- * Creates the search bar component
- * @returns {HTMLElement} Search container element
+ * Toggles header state based on screen size.
+ * @param {boolean} desktop - Whether current layout is desktop
+ * @param {HTMLElement} nav - Navigation container∂
+ * @param {HTMLElement} hamburger - Hamburger toggle button
  */
-function createSearchBar() {
-  const searchContainer = document.createElement('div');
-  searchContainer.className = 'nav-search';
-  searchContainer.innerHTML = `
-    <div class="header-search-container">
-      <input type="text" placeholder="What would you like to explore?" aria-label="Search query">
-      <button type="button" class="header-explore-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-          <path d="M20 3v4"/><path d="M22 5h-4"/>
-          <path d="M4 17v2"/><path d="M5 18H3"/>
-        </svg>
-        <span>Explore</span>
-      </button>
-    </div>
-  `;
-  return searchContainer;
+function toggleHeader(desktop, nav, hamburger) {
+  const hamburgerWrapper = hamburger.closest('div');
+  const controls = hamburger.getAttribute('aria-controls').split(' ');
+  const toggleControls = (ids, status) => {
+    ids.forEach((id) => {
+      const control = nav.querySelector(`#${id}`);
+      if (control) control.setAttribute('aria-hidden', status);
+    });
+  };
+
+  if (desktop) {
+    nav.dataset.expanded = true;
+    hamburgerWrapper.setAttribute('aria-hidden', true);
+    toggleControls(controls, false);
+  } else {
+    nav.dataset.expanded = false;
+    hamburgerWrapper.setAttribute('aria-hidden', false);
+    toggleControls(controls, true);
+  }
 }
 
 /**
- * Creates AI mode toggle
- * @returns {HTMLElement} Toggle element
+ * Toggles expanded/collapsed state of hamburger menu.
+ * @param {HTMLElement} hamburger - Hamburger toggle button
+ * @param {HTMLElement} nav - Navigation container
  */
-function createAIModeToggle() {
-  const savedMode = sessionStorage.getItem('ai-mode') || 'speed';
-  const toggle = document.createElement('div');
-  toggle.className = 'nav-ai-toggle';
-  toggle.innerHTML = `
-    <button type="button" class="ai-toggle-option${savedMode === 'speed' ? ' active' : ''}" data-value="speed" title="Fast generation with Cerebras">Speed</button>
-    <button type="button" class="ai-toggle-option${savedMode === 'quality' ? ' active' : ''}" data-value="quality" title="Quality generation with Claude">Quality</button>
-  `;
+function toggleHamburger(hamburger, nav) {
+  const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+  hamburger.setAttribute('aria-expanded', !expanded);
+  const controls = hamburger.getAttribute('aria-controls').split(' ');
+  controls.forEach((id) => {
+    const control = document.getElementById(id);
+    if (control) {
+      control.setAttribute('aria-hidden', expanded);
+    }
+  });
+  nav.dataset.expanded = !expanded;
+  if (!expanded) document.body.dataset.scroll = 'disabled';
+  else document.body.removeAttribute('data-scroll');
+}
 
-  // Toggle click handler
-  toggle.querySelectorAll('.ai-toggle-option').forEach((option) => {
-    option.addEventListener('click', () => {
-      toggle.querySelectorAll('.ai-toggle-option').forEach((opt) => opt.classList.remove('active'));
-      option.classList.add('active');
-      sessionStorage.setItem('ai-mode', option.dataset.value);
+/**
+ * Builds language selector block.
+ * @param {HTMLElement} tool - Language selector.
+ */
+function buildLanguageSelector(tool) {
+  const label = tool.querySelector('p');
+  const options = tool.querySelector('ul');
+
+  const selected = [...options.children].find((option) => option.querySelector('strong'));
+  const selectedIcon = selected.querySelector('.icon');
+  const selectedText = [...selected.querySelectorAll('strong')].pop().textContent;
+
+  const button = document.createElement('button');
+  button.className = 'icon-wrapper';
+  button.setAttribute('aria-haspopup', true);
+  button.setAttribute('aria-expanded', false);
+  button.setAttribute('aria-controls', 'language-menu');
+  button.setAttribute('aria-label', label.textContent);
+  button.append(selectedIcon.cloneNode(true), selectedText);
+
+  options.setAttribute('role', 'menu');
+  options.id = 'language-menu';
+  [...options.children].forEach((option) => {
+    const optionLink = option.querySelector('a');
+    const optionIcon = option.querySelector('.icon');
+    const optionLabels = [...option.querySelectorAll('a')].map((a) => {
+      const span = document.createElement('span');
+      span.textContent = a.textContent;
+      return span;
+    });
+    const optionText = document.createElement('p');
+    optionText.append(...optionLabels);
+    option.innerHTML = '';
+    optionLink.replaceChildren(optionIcon.cloneNode(true), optionText);
+    option.append(optionLink);
+    if (!window.location.pathname.includes('/products/')) { // if not on a product page
+      const targetPathSegments = new URL(optionLink.href).pathname.split('/');
+      const currentPathSegments = window.location.pathname.split('/');
+      const optionLinkHref = `${targetPathSegments.slice(0, 3).join('/')}/${currentPathSegments.slice(3).join('/')}`;
+      optionLink.href = optionLinkHref;
+    }
+  });
+
+  label.replaceWith(button);
+
+  button.addEventListener('click', () => {
+    const expanded = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', !expanded);
+  });
+}
+
+/**
+ * Sanitizes navigation list.
+ * @param {HTMLElement} ul - Navigation list element
+ */
+function sanitizeNavList(ul) {
+  [...ul.children].forEach((li) => {
+    // unwrap nested <as>
+    li.querySelectorAll('p').forEach((p) => {
+      const onlyChild = p.children.length === 1 && p.querySelector('a');
+      const noOtherContent = p.childNodes.length === 1;
+      if (onlyChild && noOtherContent) p.replaceWith(p.firstElementChild);
+    });
+
+    // de-button
+    li.querySelectorAll('a').forEach((a) => a.removeAttribute('class'));
+
+    const a = li.querySelector('a');
+    const submenu = li.querySelector('ul');
+
+    if (a && submenu && !li.querySelector('button.submenu-toggle')) {
+      const text = a.textContent.trim();
+
+      // generate unique id from link text
+      const id = `submenu-${toClassName(text)}`;
+      submenu.id = id;
+      submenu.setAttribute('aria-hidden', true);
+
+      // add toggle button
+      const toggle = document.createElement('button');
+      toggle.setAttribute('aria-expanded', false);
+      toggle.setAttribute('aria-controls', id);
+      toggle.setAttribute('aria-label', `Toggle ${text} submenu`);
+      toggle.className = 'submenu-toggle';
+      const chevron = document.createElement('i');
+      chevron.className = 'symbol symbol-chevron';
+      toggle.prepend(chevron);
+
+      li.insertBefore(toggle, submenu);
+      li.classList.add('submenu-wrapper');
+
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', !expanded);
+        submenu.setAttribute('aria-hidden', expanded);
+      });
+
+      // handled nested submenus
+      sanitizeNavList(submenu);
+    }
+  });
+}
+
+/**
+ * Enforces the open/closed state of the "Products" submenu.
+ * @param {HTMLElement} nav - Navigation container element
+ */
+function enforceSubmenuState(nav) {
+  const submenuProducts = nav.querySelector('#submenu-products') || nav.querySelector('#submenu-produits');
+  const toggleProducts = nav.querySelector('[aria-controls="submenu-products"]') || nav.querySelector('[aria-controls="submenu-produits"]');
+
+  if (!submenuProducts || !toggleProducts) return;
+
+  if (isDesktop.matches) { // on desktop, collapse parent and open children
+    submenuProducts.setAttribute('aria-hidden', true);
+    toggleProducts.setAttribute('aria-expanded', false);
+
+    submenuProducts.querySelectorAll('ul').forEach((ul) => {
+      ul.setAttribute('aria-hidden', false);
+      const li = ul.closest('li');
+      const toggle = li.querySelector('.submenu-toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', true);
+    });
+  } else { // on mobile, open parent and allow children to toggle
+    submenuProducts.setAttribute('aria-hidden', false);
+    toggleProducts.setAttribute('aria-expanded', true);
+  }
+}
+
+/**
+ * Fetches navigation fragments from given link.
+ * @param {string} a - Anchor href pointing to a nav fragment
+ * @returns {Promise} NodeList of <ul> elements (or null on error)
+ */
+async function fetchNavFragments(a) {
+  try {
+    const { pathname } = new URL(a, window.location);
+    const fragment = await loadFragment(pathname);
+    const uls = fragment.querySelectorAll('div > ul');
+    return [...uls];
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching nav fragment:', error);
+  }
+  return null;
+}
+
+/**
+ * Replaces <li> element with new list items fetched from navigation fragment.
+ * @param {HTMLLIElement} li - Original list item element
+ * @param {string} a - URL to fetch the fragment from
+ */
+async function populateNavFragments(li, a) {
+  const ul = li.closest('ul');
+  if (!ul) return;
+
+  // remove the original <li> (to be replaced with fragment content)
+  li.remove();
+
+  const fragments = await fetchNavFragments(a);
+  if (!fragments) return;
+
+  // insert all <li> children from fetched fragment into current <ul>
+  fragments.forEach((fragmentUl) => {
+    [...fragmentUl.children].forEach((childLi) => {
+      ul.appendChild(childLi);
     });
   });
 
-  return toggle;
-}
+  const header = ul.closest('header');
+  const trigger = ul.closest('[data-source]');
+  const button = trigger.querySelector('button');
 
-/**
- * Creates share button
- * @returns {HTMLElement} Share button element
- */
-function createShareButton() {
-  const shareButton = document.createElement('button');
-  shareButton.className = 'header-share-btn';
-  shareButton.type = 'button';
-  shareButton.title = 'Share link will be available after page is saved';
-  shareButton.disabled = true;
-  shareButton.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-      <polyline points="16 6 12 2 8 6"/>
-      <line x1="12" y1="2" x2="12" y2="15"/>
-    </svg>
-    <span>Share</span>
-  `;
+  trigger.addEventListener('mouseenter', () => {
+    if (!isDesktop.matches) return; // only on desktop
+    if (button.getAttribute('aria-expanded') === 'false') button.click();
+  });
 
-  let publishedUrl = null;
-
-  // Show notification helper
-  const showCopyNotification = (message) => {
-    const notification = document.createElement('div');
-    notification.className = 'copy-notification';
-    notification.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 6L9 17l-5-5"/>
-      </svg>
-      <span>${message}</span>
-    `;
-    document.body.appendChild(notification);
-    requestAnimationFrame(() => notification.classList.add('show'));
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => notification.remove(), 300);
-    }, 2000);
-  };
-
-  // Click handler
-  shareButton.addEventListener('click', async () => {
-    if (!publishedUrl) return;
-    try {
-      await navigator.clipboard.writeText(publishedUrl);
-      showCopyNotification('Link copied to clipboard!');
-    } catch {
-      const textArea = document.createElement('textarea');
-      textArea.value = publishedUrl;
-      textArea.style.cssText = 'position:fixed;left:-9999px';
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      showCopyNotification('Link copied to clipboard!');
+  header.addEventListener('mouseleave', (e) => {
+    if (!isDesktop.matches) return; // only on desktop
+    const to = e.relatedTarget;
+    if (to && !header.contains(to)) {
+      if (button.getAttribute('aria-expanded') === 'true') button.click();
     }
   });
 
-  // Listen for page-published event
-  window.addEventListener('page-published', (e) => {
-    publishedUrl = e.detail.url;
-    shareButton.disabled = false;
-    shareButton.title = 'Copy link to this page';
-  });
-
-  return shareButton;
+  rewriteLinks(ul);
+  sanitizeNavList(ul);
 }
 
 /**
- * Loads and decorates the header
- * @param {Element} block - The header block element
+ * Attaches one-time listeners to load navigation fragments.
+ * @param {HTMLElement} nav - Nav container
+ * @param {HTMLElement} ul - List element whose link will trigger fragment loading
+ * @param {HTMLElement} li - List item whose link will trigger fragment loading
+ * @param {string} a - URL to fetch the fragment from
+ */
+function setupFragmentLoader(nav, ul, li, a) {
+  const hamburgerButton = nav.querySelector('.nav-hamburger button');
+  const fragment = li.closest('ul');
+  fragment.style.visibility = 'hidden';
+  fragment.parentElement.dataset.source = 'fragment';
+  let loaded = false;
+
+  // loads the fragment only once, triggered by either event type
+  const load = async (e) => {
+    if (loaded) return;
+    e.preventDefault();
+    ul.removeEventListener('mouseover', load);
+    hamburgerButton.removeEventListener('click', load);
+    loaded = true;
+
+    await populateNavFragments(li, a);
+    fragment.removeAttribute('style');
+    enforceSubmenuState(nav);
+  };
+
+  ul.addEventListener('mouseover', load);
+  hamburgerButton.addEventListener('click', load);
+}
+
+/**
+ * loads and decorates the header
+ * @param {Element} block The header block element
  */
 export default async function decorate(block) {
+  // load nav as fragment
+  const navMeta = getMetadata('nav');
+  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
+  const fragment = await loadFragment(navPath);
+  if (fragment.querySelector('.icon-logo-commercial')) {
+    block.closest('header').classList.add('header-commercial');
+  }
+  rewriteLinks(fragment);
+
+  // decorate nav DOM
   block.textContent = '';
-
-  // Create nav structure
-  const nav = document.createElement('nav');
+  const nav = document.createElement('section');
   nav.id = 'nav';
-  nav.setAttribute('aria-expanded', 'false');
+  while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
 
-  // Logo
-  const logo = document.createElement('div');
-  logo.className = 'nav-logo';
-  logo.innerHTML = `
-    <a href="/" aria-label="Vitamix Home">
-      <img src="/icons/logo.svg" alt="Vitamix" width="160" height="35">
-    </a>
-  `;
-
-  // Nav sections (main navigation links)
-  const sections = document.createElement('div');
-  sections.className = 'nav-sections';
-  sections.innerHTML = `
-    <ul>
-      <li><a href="https://www.vitamix.com/us/en_us/shop">Shop</a></li>
-      <li><a href="https://www.vitamix.com/us/en_us/why-vitamix">Why Vitamix</a></li>
-      <li><a href="https://www.vitamix.com/us/en_us/recipes">Recipes</a></li>
-      <li><a href="https://www.vitamix.com/us/en_us/support">Support</a></li>
-    </ul>
-  `;
-
-  // Tools (Account, Cart)
-  const tools = document.createElement('div');
-  tools.className = 'nav-tools';
-  tools.innerHTML = `
-    <a href="https://www.vitamix.com/us/en_us/customer/account" aria-label="Account">
-      <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      <span>Account</span>
-    </a>
-    <a href="https://www.vitamix.com/us/en_us/checkout/cart" aria-label="Cart">
-      <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
-      <span>Cart</span>
-    </a>
-  `;
-
-  // Hamburger menu (mobile)
-  const hamburger = document.createElement('div');
-  hamburger.className = 'nav-hamburger';
-  hamburger.innerHTML = `
-    <button type="button" aria-controls="nav" aria-label="Open navigation">
-      <span class="nav-hamburger-icon"></span>
-    </button>
-  `;
-  hamburger.addEventListener('click', () => toggleMenu(nav));
-
-  // Create search bar and controls
-  const searchContainer = createSearchBar();
-  const aiToggle = createAIModeToggle();
-  const shareButton = createShareButton();
-
-  // Search functionality
-  const searchInput = searchContainer.querySelector('input');
-  const searchButton = searchContainer.querySelector('.header-explore-btn');
-
-  const doSearch = () => {
-    const query = searchInput.value.trim();
-    if (!query) return;
-
-    // Show spinner
-    searchButton.disabled = true;
-    searchInput.disabled = true;
-    searchButton.innerHTML = '<div class="header-search-spinner"></div>';
-
-    // Get selected AI mode
-    const aiMode = sessionStorage.getItem('ai-mode') || 'quality';
-    const preset = aiMode === 'quality' ? 'production' : 'all-cerebras';
-    window.location.href = `/?q=${encodeURIComponent(query)}&preset=${preset}`;
-  };
-
-  searchButton.addEventListener('click', doSearch);
-  searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      doSearch();
+  const classes = ['title', 'sections', 'tools', 'cart'];
+  classes.forEach((c, i) => {
+    const section = nav.children[i];
+    if (section) {
+      section.id = `nav-${c}`;
+      section.classList.add(`nav-${c}`);
     }
   });
 
-  // Update AI toggle to reflect current page mode
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentPreset = urlParams.get('preset');
-  const aiToggleOptions = aiToggle.querySelectorAll('.ai-toggle-option');
+  // decorate icons
+  const icons = nav.querySelectorAll('li .icon');
+  icons.forEach((i) => {
+    const parent = i.parentElement;
+    parent.className = 'icon-wrapper';
+  });
 
-  if (currentPreset === 'all-cerebras') {
-    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
-    aiToggle.querySelector('[data-value="speed"]').classList.add('active');
-    sessionStorage.setItem('ai-mode', 'speed');
-  } else if (currentPreset === 'production' || urlParams.has('q')) {
-    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
-    aiToggle.querySelector('[data-value="quality"]').classList.add('active');
-    sessionStorage.setItem('ai-mode', 'quality');
+  // build mobile hamburger
+  const hamburgerWrapper = document.createElement('div');
+  hamburgerWrapper.className = 'nav-hamburger';
+  const hamburgerButton = document.createElement('button');
+  hamburgerButton.setAttribute('type', 'button');
+  hamburgerButton.setAttribute('aria-controls', 'nav-sections nav-tools');
+  hamburgerButton.setAttribute('aria-expanded', false);
+  hamburgerButton.setAttribute('aria-label', 'Open navigation');
+  const hamburger = document.createElement('i');
+  hamburger.className = 'symbol symbol-hamburger';
+  hamburgerButton.append(hamburger);
+  hamburgerButton.addEventListener('click', () => {
+    toggleHamburger(hamburgerButton, nav);
+  });
+
+  hamburgerButton.addEventListener('click', () => {
+    nav.querySelectorAll('[data-listener="mouseover"]').forEach((li) => {
+      const { a } = li.dataset;
+      li.removeEventListener('mouseover', populateNavFragments);
+      populateNavFragments(new Event('click'), a);
+    });
+  }, { once: true });
+
+  hamburgerWrapper.append(hamburgerButton);
+  nav.prepend(hamburgerWrapper);
+
+  // decorate title
+  const title = nav.querySelector('.nav-title');
+  if (title) {
+    const a = title.querySelector('a[href]');
+    if (!a) {
+      const content = title.querySelector('h1, h2, h3, h4, h5, h6, p');
+      content.className = 'title-content';
+      if (content && content.textContent) {
+        const link = document.createElement('a');
+        link.href = '/';
+        link.innerHTML = content.innerHTML;
+        content.innerHTML = link.outerHTML;
+      }
+    } else {
+      a.classList.remove('button');
+      a.parentElement.classList.remove('button-wrapper');
+    }
   }
 
-  // Assemble nav
-  nav.appendChild(hamburger);
-  nav.appendChild(logo);
-  nav.appendChild(sections);
+  // decorate sections
+  const sections = nav.querySelector('.nav-sections');
+  if (sections) {
+    const wrapper = document.createElement('nav');
+    const ul = sections.querySelector('ul');
 
-  // Only show search on non-home pages
-  const isHomePage = window.location.pathname === '/' && !window.location.search;
-  if (!isHomePage) {
-    nav.appendChild(searchContainer);
-    nav.appendChild(aiToggle);
-    nav.appendChild(shareButton);
+    sanitizeNavList(ul);
+
+    // set up fragment loading for all "/nav" links
+    ul.querySelectorAll('li a[href*="/nav"]').forEach((a) => {
+      const li = a.closest('li');
+      setupFragmentLoader(nav, ul, li, a);
+    });
+
+    wrapper.append(ul);
+    sections.replaceChildren(wrapper);
+    enforceSubmenuState(sections);
+
+    isDesktop.addEventListener('change', () => {
+      enforceSubmenuState(sections);
+    });
   }
 
-  nav.appendChild(tools);
+  // decorate tools
+  const tools = nav.querySelector('.nav-tools');
+  if (tools) {
+    tools.querySelectorAll('div > ul > li').forEach((t) => {
+      const tool = t.querySelector('.icon');
+      const type = [...tool.classList].filter((c) => c !== 'icon')[0].replace('icon-', '');
+      if (type.includes('flag')) {
+        // enable language selector
+        t.classList.add('nav-tools-language');
+        buildLanguageSelector(t);
+      } else if (type.includes('compare')) {
+        t.classList.add('nav-tools-compare');
+      }
+    });
+  }
 
-  // Responsive handling
-  toggleMenu(nav, isDesktop.matches);
-  isDesktop.addEventListener('change', () => toggleMenu(nav, isDesktop.matches));
+  toggleHeader(isDesktop.matches, nav, hamburgerButton);
 
-  // Wrap and append
+  // enable viewport responsive nav
+  isDesktop.addEventListener('change', (e) => {
+    toggleHeader(e.matches, nav, hamburgerButton);
+  });
+
   const navWrapper = document.createElement('div');
   navWrapper.className = 'nav-wrapper';
-  navWrapper.appendChild(nav);
-  block.appendChild(navWrapper);
+  navWrapper.append(nav);
+  block.append(navWrapper);
+
+  swapIcons(block);
+
+  /* cookie logic */
+  const cookies = getCookies();
+
+  const compareProducts = cookies.compare_products_count;
+  if (!compareProducts || compareProducts === '0') {
+    const compare = block.querySelector('li .icon-compare');
+    if (compare) {
+      const li = compare.closest('li');
+      li.setAttribute('aria-hidden', true);
+      li.replaceChildren();
+    }
+  }
+
+  const customer = cookies.vitamix_customer;
+  if (customer) {
+    const account = block.querySelector('.icon-account').parentElement;
+    account.lastChild.textContent = `${customer}'s Account`;
+  }
+
+  const cartItems = cookies.cart_items_count;
+  if (cartItems && +cartItems > 0) {
+    const cart = block.querySelector('.icon-cart').parentElement;
+    cart.dataset.cartItems = cartItems;
+    cart.lastChild.textContent = `Cart (${cartItems})`;
+  }
 }

@@ -15,6 +15,63 @@ import {
   loadCSS,
 } from './aem.js';
 
+/**
+ * Parses `document.cookie` into key-value map.
+ * @returns {Object} Object representing all cookies as key-value pairs
+ */
+export function getCookies() {
+  const cookies = document.cookie.split(';');
+  const cookieMap = {};
+  cookies.forEach((cookie) => {
+    const [key, value] = cookie.split('=');
+    if (key && value) cookieMap[key.trim()] = value.trim();
+  });
+  return cookieMap;
+}
+
+/**
+ * Replaces image icon with its SVG equivalent.
+ * @param {HTMLImageElement} icon - Icon image element
+ */
+function swapIcon(icon) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(async (entry) => {
+      if (entry.isIntersecting) {
+        try {
+          const resp = await fetch(icon.src);
+          const temp = document.createElement('div');
+          temp.innerHTML = await resp.text();
+          const svg = temp.querySelector('svg');
+          if (!svg) throw new Error('Icon does not contain an SVG');
+          temp.remove();
+          let style = svg.querySelector('style');
+          if (style) style = style.textContent.toLowerCase().includes('currentcolor');
+          const fill = [...svg.querySelectorAll('[fill]')].some(
+            (el) => el.getAttribute('fill').toLowerCase().includes('currentcolor'),
+          );
+          if ((style || fill) || (!style && !fill)) {
+            icon.replaceWith(svg);
+          }
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(`Unable to swap icon at ${icon.src}`, error);
+        }
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0 });
+  observer.observe(icon);
+}
+
+/**
+ * Replaces image icons with inline SVGs when they enter the viewport.
+ */
+export function swapIcons() {
+  document.querySelectorAll('span.icon > img[src]').forEach((i) => {
+    swapIcon(i);
+  });
+}
+
 // Experiment mode (progressive rendering)
 import { isExperimentRequest, initExperiment } from './experiment.js';
 

@@ -1,119 +1,165 @@
 /**
  * Comparison Table Block Styles
  *
- * Side-by-side product comparison with specs and winner indicators.
+ * Premium product comparison with clean typography and subtle styling.
+ * Matches Vitamix editorial aesthetic with charcoal/white color scheme.
  */
 
+/* ===== Container ===== */
 .comparison-table {
-  padding: var(--spacing-600) var(--spacing-300);
+  padding: var(--spacing-600) var(--spacing-400);
   max-width: var(--max-width-content);
   margin: 0 auto;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* ===== Table Grid ===== */
 .comparison-table-grid {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-100);
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  line-height: var(--line-height-m);
 }
 
-/* Header row - product names */
+/* ===== Header Row - Product Names ===== */
 .comparison-table-grid thead th {
-  padding: var(--spacing-200) var(--spacing-100);
+  padding: var(--spacing-300) var(--spacing-200);
   text-align: center;
-  font-weight: var(--weight-medium);
-  font-size: var(--font-size-200);
-  color: var(--color-dark-charcoal);
-  border-bottom: var(--border-m) solid var(--color-gray-400);
-  background: var(--color-gray-100);
+  vertical-align: bottom;
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-light);
+  color: var(--color-charcoal);
+  background: var(--color-white);
+  border-bottom: 2px solid var(--color-charcoal);
 }
 
 .comparison-table-grid thead th a {
-  color: var(--color-red);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color var(--transition-normal);
+  color: var(--color-charcoal);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-charcoal);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .comparison-table-grid thead th a:hover {
-  color: var(--color-madder);
+  color: var(--color-red);
+  border-color: var(--color-red);
 }
 
+/* Corner cell (empty or label) */
 .comparison-table-corner {
-  width: 180px;
-  min-width: 140px;
+  width: 200px;
+  min-width: 160px;
   text-align: left !important;
+  font-family: var(--body-font-family) !important;
+  font-size: var(--detail-size-s) !important;
+  font-weight: var(--weight-medium) !important;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-m);
+  color: var(--color-gray-900) !important;
 }
 
+/* Product column headers */
 .comparison-table-product {
-  min-width: 120px;
+  min-width: 140px;
 }
 
-/* Spec rows */
+/* ===== Spec Rows ===== */
 .comparison-table-grid tbody tr {
-  border-bottom: var(--border-s) solid var(--color-gray-400);
+  border-bottom: 1px solid var(--color-gray-300);
+  transition: background-color 0.15s ease;
 }
 
 .comparison-table-grid tbody tr:hover {
-  background: var(--color-gray-100);
+  background-color: var(--color-gray-100);
 }
 
+/* Spec label column */
 .comparison-table-spec {
-  padding: var(--spacing-100);
+  padding: var(--spacing-200) var(--spacing-200);
   text-align: left;
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
   font-weight: var(--weight-medium);
-  color: var(--color-dark-charcoal);
-  background: var(--color-gray-100);
+  color: var(--color-charcoal);
+  background: var(--color-white);
+  white-space: nowrap;
 }
 
+/* Value cells */
 .comparison-table-value {
-  padding: var(--spacing-100);
+  padding: var(--spacing-200) var(--spacing-200);
   text-align: center;
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
   color: var(--color-charcoal);
+  background: var(--color-white);
 }
 
 .comparison-table-value .value {
   display: block;
+  line-height: var(--line-height-l);
 }
 
-/* Winner indicator */
+/* ===== Winner/Missing Indicators ===== */
 .comparison-table-value.winner {
-  background: var(--color-avocado-alpha-50);
+  background: var(--color-success-bg);
+}
+
+.comparison-table-value.winner .value {
+  color: var(--color-success-text);
+  font-weight: var(--weight-medium);
 }
 
 .winner-indicator {
   display: inline-block;
-  margin-left: var(--spacing-40);
-  color: var(--color-avocado-dark);
+  margin-left: var(--spacing-60);
+  color: var(--color-success);
   font-weight: var(--weight-medium);
 }
 
-/* Missing indicator */
 .comparison-table-value.missing {
-  color: var(--color-gray-600);
+  color: var(--color-gray-800);
 }
 
 .missing-indicator {
   display: inline-block;
-  margin-left: var(--spacing-40);
+  margin-left: var(--spacing-60);
   color: var(--color-error);
 }
 
-/* Recommended column highlight */
+/* ===== Recommended Column Highlight ===== */
 .comparison-table-grid th.recommended-column,
 .comparison-table-grid td.recommended-column {
-  background: var(--color-gray-200);
-  border-left: 3px solid var(--color-red);
-  border-right: 3px solid var(--color-red);
-}
-
-.comparison-table-grid th.recommended-column {
-  border-top: 3px solid var(--color-red);
+  background: var(--color-gray-100);
   position: relative;
 }
 
-.comparison-table-grid tbody tr:last-child td.recommended-column {
-  border-bottom: 3px solid var(--color-red);
+.comparison-table-grid th.recommended-column {
+  background: var(--color-gray-100);
+}
+
+.comparison-table-grid th.recommended-column::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-red);
+}
+
+.comparison-table-grid tbody tr:last-child td.recommended-column::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-red);
 }
 
 /* Recommended ribbon badge */
@@ -121,74 +167,23 @@
   display: block;
   background: var(--color-red);
   color: var(--color-white);
-  font-size: var(--font-size-20);
+  font-family: var(--body-font-family);
+  font-size: 10px;
   font-weight: var(--weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
+  letter-spacing: var(--letter-spacing-m);
   text-transform: uppercase;
-  padding: var(--spacing-40) var(--spacing-60);
-  border-radius: 0;
-  margin-top: var(--spacing-40);
+  padding: var(--spacing-60) var(--spacing-100);
+  margin-top: var(--spacing-100);
 }
 
-/* Section variants */
-.section.highlight .comparison-table {
-  background: transparent;
-}
-
-.section.highlight .comparison-table-grid thead th,
-.section.highlight .comparison-table-spec {
-  background: var(--color-white-alpha-60);
-}
-
-.section.dark .comparison-table {
-  background: transparent;
-}
-
-.section.dark .comparison-table-grid thead th {
-  background: var(--color-white-alpha-10);
-  color: var(--color-white);
-  border-color: var(--color-white-alpha-20);
-}
-
-.section.dark .comparison-table-grid thead th a {
-  color: var(--color-red-light);
-  text-decoration: underline;
-}
-
-.section.dark .comparison-table-grid thead th a:hover {
-  color: var(--color-red-lighter);
-}
-
-.section.dark .comparison-table-grid tbody tr {
-  border-color: var(--color-white-alpha-10);
-}
-
-.section.dark .comparison-table-grid tbody tr:hover {
-  background: var(--color-white-alpha-5);
-}
-
-.section.dark .comparison-table-spec {
-  background: var(--color-white-alpha-5);
-  color: var(--color-white);
-}
-
-.section.dark .comparison-table-value {
-  color: var(--color-white-alpha-90);
-}
-
-.section.dark .comparison-table-value.winner {
-  background: var(--color-avocado-alpha-15);
-}
-
-/* Recommendation banner */
+/* ===== Recommendation Banner (tfoot) ===== */
 .comparison-table-recommendation {
   border: none;
 }
 
 .comparison-table-recommendation-cell {
-  padding: var(--spacing-100) var(--spacing-300);
-  background: linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold-lighter) 100%);
-  border-radius: 0 0 var(--rounding-l) var(--rounding-l);
+  padding: var(--spacing-200) var(--spacing-300);
+  background: var(--color-charcoal);
   text-align: center;
 }
 
@@ -198,69 +193,158 @@
 }
 
 .recommendation-icon {
-  font-size: var(--font-size-300);
-  margin-right: var(--spacing-60);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-100);
+  vertical-align: middle;
+}
+
+.recommendation-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
 }
 
 .recommendation-text {
-  font-size: var(--font-size-80);
-  color: var(--color-dark-charcoal);
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  color: var(--color-white);
 }
 
 .recommendation-reason {
-  font-weight: var(--weight-normal);
+  font-weight: var(--weight-regular);
 }
 
 .recommendation-product {
-  font-weight: var(--weight-semibold);
-  color: var(--color-gold-dark);
+  font-weight: var(--weight-medium);
 }
 
 .recommendation-product a {
-  color: var(--color-gold-dark);
+  color: var(--color-white);
   text-decoration: none;
-  border-bottom: var(--border-s) solid var(--color-gold);
-  transition: all var(--transition-normal);
+  border-bottom: 1px solid var(--color-white);
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
 }
 
 .recommendation-product a:hover {
-  color: var(--color-gold-darker);
-  border-color: var(--color-gold-darker);
+  opacity: 0.8;
 }
 
-/* Dark section recommendation styles */
+/* ===== Section Variants ===== */
+
+/* Highlight section */
+.section.highlight .comparison-table {
+  background: transparent;
+}
+
+.section.highlight .comparison-table-grid thead th,
+.section.highlight .comparison-table-spec {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Dark section */
+.section.dark .comparison-table {
+  background: transparent;
+}
+
+.section.dark .comparison-table-grid thead th {
+  background: transparent;
+  color: var(--color-white);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.section.dark .comparison-table-grid thead th a {
+  color: var(--color-white);
+  border-bottom-color: var(--color-white);
+}
+
+.section.dark .comparison-table-grid thead th a:hover {
+  color: var(--color-red);
+  border-color: var(--color-red);
+}
+
+.section.dark .comparison-table-grid tbody tr {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.section.dark .comparison-table-grid tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.section.dark .comparison-table-spec {
+  background: transparent;
+  color: var(--color-gray-500);
+}
+
+.section.dark .comparison-table-value {
+  background: transparent;
+  color: var(--color-white);
+}
+
+.section.dark .comparison-table-value.winner {
+  background: rgba(22, 163, 74, 0.15);
+}
+
+.section.dark .comparison-table-grid th.recommended-column,
+.section.dark .comparison-table-grid td.recommended-column {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .section.dark .comparison-table-recommendation-cell {
-  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+  background: var(--color-red);
 }
 
-.section.dark .recommendation-text,
-.section.dark .recommendation-product {
-  color: var(--color-dark-charcoal);
-}
-
-.section.dark .recommendation-product a {
-  color: var(--color-gold-darker);
-  border-color: var(--color-gold-darker);
-}
-
-/* Responsive */
-@media (width < 768px) {
+/* ===== Responsive - Tablet ===== */
+@media (width < 900px) {
   .comparison-table {
-    padding: var(--spacing-400) var(--spacing-100);
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .comparison-table-grid thead th {
+    padding: var(--spacing-200) var(--spacing-100);
+    font-size: var(--font-size-300);
+  }
+
+  .comparison-table-corner {
+    width: 140px;
+    min-width: 120px;
+  }
+
+  .comparison-table-product {
+    min-width: 100px;
+  }
+
+  .comparison-table-spec,
+  .comparison-table-value {
+    padding: var(--spacing-100) var(--spacing-100);
+  }
+
+  .comparison-table-value .value {
+    font-size: var(--body-size-s);
+  }
+}
+
+/* ===== Responsive - Mobile ===== */
+@media (width < 600px) {
+  .comparison-table {
+    padding: var(--spacing-300) var(--spacing-100);
   }
 
   .comparison-table-grid {
-    font-size: var(--font-size-80);
+    font-size: var(--body-size-s);
   }
 
   .comparison-table-grid thead th {
     padding: var(--spacing-100) var(--spacing-80);
-    font-size: var(--font-size-100);
+    font-size: var(--font-size-200);
   }
 
   .comparison-table-corner {
     width: 100px;
-    min-width: 100px;
+    min-width: 90px;
+    font-size: 9px !important;
   }
 
   .comparison-table-product {
@@ -269,15 +353,39 @@
 
   .comparison-table-spec,
   .comparison-table-value {
-    padding: var(--spacing-80) var(--spacing-60);
+    padding: var(--spacing-100) var(--spacing-60);
+  }
+
+  .comparison-table-spec {
+    font-size: var(--detail-size-s);
+  }
+
+  .comparison-table-value .value {
+    font-size: var(--detail-size-s);
   }
 
   .comparison-table-recommendation-cell {
-    padding: var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-100);
+  }
+
+  .recommendation-text {
+    font-size: var(--body-size-s);
+  }
+
+  .recommended-ribbon {
+    font-size: 9px;
+    padding: var(--spacing-40) var(--spacing-60);
   }
 }
 
-/* For 4 products, make even more compact on mobile */
+/* ===== Product Count Variants ===== */
 .comparison-table[data-products="4"] .comparison-table-product {
   min-width: 70px;
+}
+
+@media (width < 600px) {
+  .comparison-table[data-products="4"] .comparison-table-corner {
+    width: 80px;
+    min-width: 70px;
+  }
 }

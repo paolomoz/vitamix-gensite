@@ -272,6 +272,13 @@ main .section.dark.product-recommendation-container {
   margin: 0;
 }
 
+/* Remove any section borders/gaps */
+.section:has(.product-recommendation.split) {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
 /* Split layout - full bleed, no gap */
 .product-recommendation.split {
   display: flex;
@@ -321,6 +328,12 @@ main .section.dark.product-recommendation-container {
   background-color: var(--color-black, #000);
   color: var(--color-white);
   align-self: stretch;
+  box-sizing: border-box;
+}
+
+/* Ensure all content inherits the dark background context */
+.product-recommendation.split > div > div:last-child * {
+  box-sizing: border-box;
 }
 
 /* Split eyebrow - gray, uppercase, small */
@@ -349,7 +362,7 @@ main .section.dark.product-recommendation-container {
 
 /* Split body text */
 .product-recommendation.split .product-recommendation-body,
-.product-recommendation.split p:not(:first-child):not(.product-recommendation-eyebrow) {
+.product-recommendation.split > div > div:last-child > p:not(:first-child):not(:has(a)) {
   font-size: var(--font-size-100);
   line-height: 1.625;
   color: var(--color-white);
@@ -371,9 +384,17 @@ main .section.dark.product-recommendation-container {
   margin-top: var(--spacing-300);
 }
 
+/* Target the paragraph containing the CTA link (DA structure) */
+.product-recommendation.split > div > div:last-child > p:has(a:only-child) {
+  margin-top: var(--spacing-300);
+  margin-bottom: 0;
+}
+
 .product-recommendation.split .product-recommendation-ctas .button,
-.product-recommendation.split .product-recommendation-ctas a {
+.product-recommendation.split .product-recommendation-ctas a,
+.product-recommendation.split > div > div:last-child > p > a {
   display: inline-block;
+  width: fit-content;
   padding: 17px 36px;
   font-size: 14px;
   font-weight: var(--weight-normal);
@@ -388,7 +409,8 @@ main .section.dark.product-recommendation-container {
 }
 
 .product-recommendation.split .product-recommendation-ctas .button:hover,
-.product-recommendation.split .product-recommendation-ctas a:hover {
+.product-recommendation.split .product-recommendation-ctas a:hover,
+.product-recommendation.split > div > div:last-child > p > a:hover {
   background-color: var(--color-gray-200);
 }
 

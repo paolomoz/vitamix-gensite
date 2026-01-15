@@ -18,3 +18,4 @@ workers/vitamix-gensite-analytics/node_modules/*
 # Cloudflare Workers secrets and temp files
 .dev.vars
 .wrangler/
+.env.swp

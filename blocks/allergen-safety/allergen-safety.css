@@ -4,6 +4,10 @@
  * and generous whitespace. Matches vitamix.com aesthetic.
  */
 
+ .section[class*="allergen-safety-container"] > div[class*="-wrapper"] {
+  padding: 0;
+ }
+
 /* ===== Section Container - Full Width ===== */
 .section.allergen-safety-container {
   max-width: none;

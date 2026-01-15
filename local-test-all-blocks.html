@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Generation Blocks Test (Local)</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-aem' 'strict-dynamic' 'unsafe-inline' http: https:; base-uri 'self'; object-src 'none';" move-to-http-header="true">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script nonce="aem" src="/scripts/aem.js" type="module"></script>
+  <script nonce="aem" src="/scripts/scripts.js" type="module"></script>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <style>
+    /* Section separators for test page */
+    .test-section {
+      border-top: 2px solid var(--color-gray-300, #e9e9e9);
+      padding-top: var(--spacing-400, 32px);
+      margin-top: var(--spacing-600, 40px);
+    }
+    .test-section h2 {
+      color: var(--color-gray-900, #666);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--spacing-100, 16px);
+    }
+    .test-section p {
+      color: var(--color-gray-900, #666);
+      font-size: 14px;
+      margin-bottom: var(--spacing-200, 20px);
+    }
+  </style>
+</head>
+<body>
+  <header></header>
+  <main>
+    <div>
+      <h1>Generation Blocks Test Page</h1>
+      <p>All 24 blocks used in AI page generation. Open this file directly at <code>/local-test-all-blocks.html</code></p>
+    </div>
+
+    <!-- 1. HERO -->
+    <div class="test-section">
+      <h2>1. Hero Block</h2>
+      <p>Full-width banner with headline and image</p>
+    </div>
+    <div class="hero">
+      <div>
+        <div>
+          <picture>
+            <img loading="lazy" alt="Vitamix blender" src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=1200&h=600&fit=crop">
+          </picture>
+        </div>
+        <div>
+          <h1>Discover the Power of Vitamix</h1>
+          <p>Professional-grade blending for your home kitchen.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PRODUCT-HERO -->
+    <div class="test-section">
+      <h2>2. Product Hero Block</h2>
+      <p>Product-focused hero with image and specs</p>
+    </div>
+    <div class="product-hero">
+      <div>
+        <div>
+          <picture>
+            <img loading="lazy" alt="Vitamix A3500" src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=800&h=800&fit=crop">
+          </picture>
+        </div>
+        <div>
+          <h1>Vitamix A3500</h1>
+          <p>The ultimate smart blender with touchscreen controls.</p>
+          <p><strong>$649.95</strong></p>
+          <p>2.2 HP Motor | 64 oz Container | 5 Programs</p>
+          <p><a href="https://www.vitamix.com">View Details</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PRODUCT-CARDS -->
+    <div class="test-section">
+      <h2>3. Product Cards Block</h2>
+      <p>Grid of product cards</p>
+    </div>
+    <div class="product-cards">
+      <div>
+        <div><picture><img alt="A3500" src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&h=400&fit=crop"></picture></div>
+        <div><h3>Vitamix A3500</h3><p>Smart blender</p><p>$649.95</p><p><a href="#">View</a></p></div>
+      </div>
+      <div>
+        <div><picture><img alt="E310" src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&h=400&fit=crop"></picture></div>
+        <div><h3>Vitamix E310</h3><p>Compact</p><p>$349.95</p><p><a href="#">View</a></p></div>
+      </div>
+      <div>
+        <div><picture><img alt="A2500" src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&h=400&fit=crop"></picture></div>
+        <div><h3>Vitamix A2500</h3><p>Simple</p><p>$549.95</p><p><a href="#">View</a></p></div>
+      </div>
+    </div>
+
+    <!-- 4. RECIPE-CARDS -->
+    <div class="test-section">
+      <h2>4. Recipe Cards Block</h2>
+      <p>Grid of recipe cards</p>
+    </div>
+    <div class="recipe-cards">
+      <div class="recipe-card" data-href="#">
+        <div class="recipe-card-image"><picture><img alt="Smoothie" src="https://images.unsplash.com/photo-1638176066666-ffb2f013c7dd?w=400&h=300&fit=crop"></picture></div>
+        <div class="recipe-card-content"><h4 class="recipe-card-title">Green Smoothie</h4><p class="recipe-card-description">5 min, easy</p></div>
+      </div>
+      <div class="recipe-card" data-href="#">
+        <div class="recipe-card-image"><picture><img alt="Soup" src="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop"></picture></div>
+        <div class="recipe-card-content"><h4 class="recipe-card-title">Tomato Soup</h4><p class="recipe-card-description">10 min, easy</p></div>
+      </div>
+      <div class="recipe-card" data-href="#">
+        <div class="recipe-card-image"><picture><img alt="Butter" src="https://images.unsplash.com/photo-1612187209234-a762e93a0f55?w=400&h=300&fit=crop"></picture></div>
+        <div class="recipe-card-content"><h4 class="recipe-card-title">Almond Butter</h4><p class="recipe-card-description">3 min, easy</p></div>
+      </div>
+    </div>
+
+    <!-- 5. COMPARISON-TABLE -->
+    <div class="test-section">
+      <h2>5. Comparison Table Block</h2>
+      <p>Side-by-side product comparison</p>
+    </div>
+    <div class="comparison-table">
+      <div><div></div><div><strong>A3500</strong></div><div><strong>A2500</strong></div><div><strong>E310</strong></div></div>
+      <div><div><strong>Price</strong></div><div>$649</div><div>$549</div><div>$349</div></div>
+      <div><div><strong>Motor</strong></div><div>2.2 HP</div><div>2.2 HP</div><div>2.0 HP</div></div>
+      <div><div><strong>Container</strong></div><div>64 oz</div><div>64 oz</div><div>48 oz</div></div>
+      <div><div><strong>Programs</strong></div><div>5</div><div>3</div><div>Manual</div></div>
+      <div><div><strong>Warranty</strong></div><div>10 yr</div><div>10 yr</div><div>5 yr</div></div>
+    </div>
+
+    <!-- 6. SPECS-TABLE -->
+    <div class="test-section">
+      <h2>6. Specs Table Block</h2>
+      <p>Technical specifications</p>
+    </div>
+    <div class="specs-table">
+      <h3>Vitamix A3500 Specifications</h3>
+      <div><div>Motor</div><div>2.2 HP Peak</div></div>
+      <div><div>Container</div><div>64 oz</div></div>
+      <div><div>Programs</div><div>5</div></div>
+      <div><div>Dimensions</div><div>11"W x 8"D x 17"H</div></div>
+      <div><div>Weight</div><div>12.5 lbs</div></div>
+      <div><div>Warranty</div><div>10 Years</div></div>
+    </div>
+
+    <!-- 7. PRODUCT-RECOMMENDATION -->
+    <div class="test-section">
+      <h2>7. Product Recommendation Block</h2>
+      <p>Featured product recommendation</p>
+    </div>
+    <div class="product-recommendation split">
+      <div>
+        <div><picture><img alt="A3500" src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=800&h=800&fit=crop"></picture></div>
+        <div>
+          <p>PERFECT FOR YOU</p>
+          <h2>Vitamix A3500</h2>
+          <p>Our top recommendation for smart features and automated programs.</p>
+          <p><a href="#">Learn More</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. FEATURE-HIGHLIGHTS -->
+    <div class="test-section">
+      <h2>8. Feature Highlights Block</h2>
+      <p>Key features showcase</p>
+    </div>
+    <div class="feature-highlights">
+      <div><div><h3>Self-Detect</h3><p>Containers communicate with the base.</p></div></div>
+      <div><div><h3>Variable Speed</h3><p>10 speeds for precision.</p></div></div>
+      <div><div><h3>5 Programs</h3><p>Smoothies, Soups, Dips, Desserts, Clean.</p></div></div>
+    </div>
+
+    <!-- 9. USE-CASE-CARDS -->
+    <div class="test-section">
+      <h2>9. Use Case Cards Block</h2>
+      <p>Use case selection grid</p>
+    </div>
+    <div class="use-case-cards">
+      <div class="use-case-card"><div class="use-case-content"><h4 class="use-case-title">Smoothies</h4><p class="use-case-description">Silky smooth drinks</p></div></div>
+      <div class="use-case-card"><div class="use-case-content"><h4 class="use-case-title">Hot Soups</h4><p class="use-case-description">Friction-heated soups</p></div></div>
+      <div class="use-case-card"><div class="use-case-content"><h4 class="use-case-title">Nut Butters</h4><p class="use-case-description">Creamy nut butters</p></div></div>
+      <div class="use-case-card"><div class="use-case-content"><h4 class="use-case-title">Frozen Desserts</h4><p class="use-case-description">Healthy ice cream</p></div></div>
+    </div>
+
+    <!-- 10. TESTIMONIALS -->
+    <div class="test-section">
+      <h2>10. Testimonials Block</h2>
+      <p>Customer reviews</p>
+    </div>
+    <div class="testimonials">
+      <div><h3>What Customers Say</h3></div>
+      <div><div></div><div><p>"Best kitchen investment ever."</p><p><strong>Sarah M.</strong></p><p>Purchased: A3500</p></div></div>
+      <div><div></div><div><p>"Hot soup in 10 minutes!"</p><p><strong>Michael R.</strong></p><p>Purchased: A2500</p></div></div>
+    </div>
+
+    <!-- 11. FAQ -->
+    <div class="test-section">
+      <h2>11. FAQ Block</h2>
+      <p>Common questions accordion</p>
+    </div>
+    <div class="faq">
+      <div><div>What's the A3500 vs A2500 difference?</div><div>A3500 has touchscreen and 5 programs vs A2500's dial and 3 programs.</div></div>
+      <div><div>Can I make hot soup?</div><div>Yes! Friction heats soup in 5-10 minutes.</div></div>
+      <div><div>What's covered by warranty?</div><div>Motor, base, container, blades, and lid with free shipping.</div></div>
+    </div>
+
+    <!-- 12. FOLLOW-UP -->
+    <div class="test-section">
+      <h2>12. Follow-up Block</h2>
+      <p>Suggestion chips</p>
+    </div>
+    <div class="follow-up">
+      <div>Compare A3500 vs E310</div>
+      <div>Show smoothie recipes</div>
+      <div>What about noise?</div>
+      <div>Is refurbished worth it?</div>
+    </div>
+
+    <!-- 13. QUICK-ANSWER -->
+    <div class="test-section">
+      <h2>13. Quick Answer Block</h2>
+      <p>Direct yes/no answers</p>
+    </div>
+    <div class="quick-answer">
+      <div>Yes, Vitamix can make hot soup!</div>
+      <div>Friction heats soup in 5-10 minutes.</div>
+      <div>Hot Soup program automates it completely.</div>
+    </div>
+
+    <!-- 14. SUPPORT-TRIAGE -->
+    <div class="test-section">
+      <h2>14. Support Triage Block</h2>
+      <p>Help frustrated customers</p>
+    </div>
+    <div class="support-triage">
+      <div>Container Wobble Issue</div>
+      <div>We understand this is frustrating.</div>
+      <div>Your warranty covers this at no cost.</div>
+      <div><a href="#">Start Warranty Claim</a></div>
+      <div><a href="#">Chat with Support</a></div>
+      <div>Try: Reseat container, tighten blade assembly.</div>
+    </div>
+
+    <!-- 15. BUDGET-BREAKDOWN -->
+    <div class="test-section">
+      <h2>15. Budget Breakdown Block</h2>
+      <p>Price/value transparency</p>
+    </div>
+    <div class="budget-breakdown">
+      <div>Your Options by Budget</div>
+      <div><div>Under $400</div><div>E310: $349 • Refurb A2300: $289</div></div>
+      <div><div>$400-$550</div><div>A2500: $549 • Refurb A3500: $449</div></div>
+      <div><div>Premium</div><div>A3500: $649 • X5: $749</div></div>
+    </div>
+
+    <!-- 16. ACCESSIBILITY-SPECS -->
+    <div class="test-section">
+      <h2>16. Accessibility Specs Block</h2>
+      <p>Ergonomic specifications</p>
+    </div>
+    <div class="accessibility-specs">
+      <div>Ease of Use Specs</div>
+      <div><div><a href="#">E310</a></div><div>10.5 lbs</div><div>Snap lid</div><div>Dial</div></div>
+      <div><div><a href="#">A2500</a></div><div>12 lbs</div><div>Snap lid</div><div>Dial</div></div>
+      <div><div><a href="#">A3500</a></div><div>12.5 lbs</div><div>Snap lid</div><div>Touch</div></div>
+    </div>
+
+    <!-- 17. EMPATHY-HERO -->
+    <div class="test-section">
+      <h2>17. Empathy Hero Block</h2>
+      <p>Warm, acknowledging hero</p>
+    </div>
+    <div class="empathy-hero">
+      <div>We Understand Your Journey</div>
+      <div>Living with arthritis makes everyday tasks challenging.</div>
+      <div>Let us help find a blender designed for accessibility.</div>
+    </div>
+
+    <!-- 18. BEST-PICK -->
+    <div class="test-section">
+      <h2>18. Best Pick Block</h2>
+      <p>"Our Top Pick" callout</p>
+    </div>
+    <div class="best-pick">
+      <div>BEST FOR SMOOTHIES</div>
+      <div><h2>Vitamix A3500</h2></div>
+      <div>The Smoothie program delivers consistent results.</div>
+      <div>$649.95 | 10-Year Warranty</div>
+      <div><a href="#">View on Vitamix.com</a></div>
+    </div>
+
+    <!-- 19. SUSTAINABILITY-INFO -->
+    <div class="test-section">
+      <h2>19. Sustainability Info Block</h2>
+      <p>Environmental responsibility</p>
+    </div>
+    <div class="sustainability-info">
+      <div>Environmental Responsibility</div>
+      <div>Made in Ohio since 1921.</div>
+      <div>BPA-free Tritan containers.</div>
+      <div>Built to last 10-20+ years.</div>
+      <div>Recycling program available.</div>
+    </div>
+
+    <!-- 20. SMART-FEATURES -->
+    <div class="test-section">
+      <h2>20. Smart Features Block</h2>
+      <p>Connected/app capabilities</p>
+    </div>
+    <div class="smart-features">
+      <div>Smart Features</div>
+      <div>500+ guided recipes in app.</div>
+      <div>Works with Alexa for timers.</div>
+      <div>Set timers that sync with blender.</div>
+      <div>Cannot remotely start blender (safety).</div>
+    </div>
+
+    <!-- 21. ENGINEERING-SPECS -->
+    <div class="test-section">
+      <h2>21. Engineering Specs Block</h2>
+      <p>Deep technical data</p>
+    </div>
+    <div class="engineering-specs">
+      <div>A3500 Technical Specs</div>
+      <div><div>Motor</div><div>2.2 HP (1640W)</div><div>Continuous: 1.2 HP</div></div>
+      <div><div>Blade Speed</div><div>37,000 RPM</div><div>No-load max</div></div>
+      <div><div>Sound</div><div>88 dBA</div><div>At 1 meter</div></div>
+      <div><div>Voltage</div><div>120V 60Hz</div><div>12A peak</div></div>
+    </div>
+
+    <!-- 22. NOISE-CONTEXT -->
+    <div class="test-section">
+      <h2>22. Noise Context Block</h2>
+      <p>Real-world noise comparisons</p>
+    </div>
+    <div class="noise-context">
+      <div>Noise Comparison</div>
+      <div><div>Conversation</div><div>60 dB</div><div>Normal speaking</div></div>
+      <div><div>Vitamix low</div><div>75 dB</div><div>Like vacuum</div></div>
+      <div><div>Vitamix high</div><div>88 dB</div><div>Like food processor</div></div>
+      <div><div>Quiet One</div><div>64 dB</div><div>Like dishwasher</div></div>
+    </div>
+
+    <!-- 23. ALLERGEN-SAFETY -->
+    <div class="test-section">
+      <h2>23. Allergen Safety Block</h2>
+      <p>Cross-contamination protocols</p>
+    </div>
+    <div class="allergen-safety">
+      <div>Allergen Safety Guide</div>
+      <div>Self-cleaning removes most residue. Run 60 sec on high.</div>
+      <div>Color containers available for dedicated allergen-free use.</div>
+      <div>BPA-free Tritan. Phthalate-free. Dishwasher safe.</div>
+    </div>
+
+    <!-- 24. CTA -->
+    <div class="test-section">
+      <h2>24. CTA Block</h2>
+      <p>Call-to-action buttons</p>
+    </div>
+    <div>
+      <p><a href="https://www.vitamix.com" class="button primary">Explore Vitamix</a></p>
+      <p><a href="https://www.vitamix.com/recipes" class="button secondary">Browse Recipes</a></p>
+    </div>
+
+    <div class="test-section">
+      <hr>
+      <p><em>End of test page. All 24 blocks demonstrated.</em></p>
+    </div>
+
+  </main>
+  <footer></footer>
+</body>
+</html>

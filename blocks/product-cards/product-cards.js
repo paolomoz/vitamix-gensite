@@ -120,10 +120,10 @@ function parsePrice(text) {
 }
 
 export default function decorate(block) {
-  // Handle header element if present
-  const header = block.querySelector('.pcheader, header');
-  if (header) {
-    header.classList.add('product-cards-header');
+  // Handle block header element if present
+  const blockHeader = block.querySelector('.pcheader');
+  if (blockHeader) {
+    blockHeader.classList.add('product-cards-header');
   }
 
   // Check if already structured (AI-generated content with product-card classes)
@@ -140,8 +140,8 @@ export default function decorate(block) {
         ul.appendChild(li);
       });
       block.textContent = '';
-      if (header) {
-        block.appendChild(header);
+      if (blockHeader) {
+        block.appendChild(blockHeader);
       }
       block.appendChild(ul);
     } else {
@@ -252,8 +252,8 @@ export default function decorate(block) {
 
     ul.dataset.cardCount = ul.children.length;
     block.textContent = '';
-    if (header) {
-      block.appendChild(header);
+    if (blockHeader) {
+      block.appendChild(blockHeader);
     }
     block.appendChild(ul);
     return;
@@ -372,8 +372,8 @@ export default function decorate(block) {
   ul.dataset.cardCount = ul.children.length;
 
   block.textContent = '';
-  if (header) {
-    block.appendChild(header);
+  if (blockHeader) {
+    block.appendChild(blockHeader);
   }
   block.appendChild(ul);
 }

@@ -230,10 +230,10 @@ function getBlockTemplate(blockType: string): string {
 ## HTML Template (REQUIRED: header + 3-4 cards):
 
 YOU MUST OUTPUT THIS HEADER FIRST - IT IS REQUIRED:
-<header class="ucheader">
+<div class="ucheader">
   <h2 class="uctitle">[WRITE A TITLE TAILORED TO THE USER'S QUESTION]</h2>
   <p class="ucsubtitle">[Brief subtitle about what these use cases help accomplish]</p>
-</header>
+</div>
 
 THEN output 3-4 use case cards:
 <div class="use-case-card">
@@ -291,10 +291,10 @@ IMPORTANT:
 ## HTML Template (REQUIRED: header + 3-4 product cards):
 
 YOU MUST OUTPUT THIS HEADER FIRST - IT IS REQUIRED:
-<header class="pcheader">
+<div class="pcheader">
   <h2 class="pctitle">[WRITE A TITLE TAILORED TO THE USER'S QUESTION - e.g., "Blenders Perfect for Smoothies"]</h2>
   <p class="pcsubtitle">[Brief subtitle about why these products match their needs]</p>
-</header>
+</div>
 
 CRITICAL RULES:
 - Use EXACT image URLs and product URLs from the context below
@@ -329,10 +329,10 @@ CRITICAL: The header element MUST be the first thing in your output. Each produc
 ## HTML Template (REQUIRED: header + 3-4 feature rows):
 
 YOU MUST OUTPUT THIS HEADER FIRST - IT IS REQUIRED:
-<header class="fhheader">
+<div class="fhheader">
   <h2 class="fhtitle">[WRITE A TITLE TAILORED TO THE USER'S QUESTION]</h2>
   <p class="fhsubtitle">[Brief subtitle about what these features help accomplish]</p>
-</header>
+</div>
 
 THEN output 3-4 feature rows like this:
 <div>

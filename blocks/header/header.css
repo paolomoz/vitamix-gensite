@@ -40,14 +40,7 @@ header nav {
   font-family: var(--body-font-family);
 }
 
-header nav[aria-expanded='true'] {
-  flex-wrap: wrap;
-  height: auto;
-  min-height: 100dvh;
-  align-content: flex-start;
-  background-color: var(--color-gray-100);
-}
-
+/* Mobile menu expanded state - only on small screens */
 @media (width < 1000px) {
   header nav[aria-expanded='true'] {
     position: fixed;
@@ -57,6 +50,11 @@ header nav[aria-expanded='true'] {
     bottom: 0;
     z-index: 1000;
     overflow-y: auto;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 100dvh;
+    align-content: flex-start;
+    background-color: var(--color-gray-100);
   }
 }
 

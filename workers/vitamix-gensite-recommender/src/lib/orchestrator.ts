@@ -543,7 +543,7 @@ CTA TEXT MUST BE VALUE-DRIVEN (NOT generic):
 NEVER use "View on Vitamix", "Learn More", or "View Details"
 
 OUTPUT THIS EXACT STRUCTURE (replace placeholders with actual values from context):
-<div class="product-recommendation">
+<div class="product-recommendation split">
   <div>
     <div>
       <picture><img src="USE_THE_IMAGE_URL_FROM_PRODUCT_CONTEXT" alt="Product Name"></picture>

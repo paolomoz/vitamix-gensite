@@ -1,100 +1,158 @@
 /**
  * Follow-up Block Styles
+ * Aligned to Vitamix Design System (reference: ../vitamix/)
+ *
+ * Design tokens used:
+ * - Typography: Gotham Narrow (body), proper font sizes
+ * - Colors: charcoal background, white/gray-200 text, red accent
+ * - Spacing: design system spacing tokens
+ * - Borders: rounding-s (2px) for subtle corners
  */
 
+ .section[class*="follow-up-container"] > div[class*="-wrapper"] {
+  padding: var(--spacing-600) var(--horizontal-spacing);
+ }
+
+/* ===== Section Container ===== */
 .follow-up-container {
-  background: var(--color-dark-charcoal);
+  background: var(--color-charcoal);
+  margin: 0;
   padding: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 
 .follow-up-wrapper {
   max-width: var(--max-width-content);
   margin: 0 auto;
-  padding: var(--spacing-600) var(--spacing-400);
 }
 
+/* ===== Block Base ===== */
 .follow-up.block {
   background: transparent;
-  padding: var(--spacing-200) 0;
+  padding: 0;
 }
 
+/* ===== Header ===== */
 .follow-up-header {
-  margin-bottom: var(--spacing-200);
+  margin-bottom: var(--spacing-300);
 }
 
 .follow-up-header h4 {
-  font-size: var(--font-size-300);
-  font-weight: var(--weight-semibold);
-  color: var(--color-gray-200);
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-m);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--color-white);
   margin: 0;
 }
 
+/* ===== Chips Container ===== */
 .follow-up-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-80);
+  gap: var(--spacing-100);
 }
 
+/* ===== Individual Chip =====
+ * Follows Vitamix secondary button pattern:
+ * - Outlined style with transparent background
+ * - Subtle rounding (2px)
+ * - Uppercase text with letter-spacing
+ * - Red accent on hover
+ */
 .follow-up-chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-80);
-  padding: var(--spacing-80) var(--spacing-200);
-  font-size: var(--font-size-80);
-  font-weight: var(--weight-medium);
-  background: var(--color-white);
-  border: var(--border-s) solid var(--color-gray-400);
-  border-radius: var(--radius-full);
+  gap: var(--spacing-60);
+  padding: 14px 20px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-s);
+  letter-spacing: 0.02em;
+  color: var(--color-gray-200);
+  background: transparent;
+  border: var(--border-s) solid var(--color-gray-700);
+  border-radius: var(--rounding-s);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  color: var(--color-charcoal);
+  transition: all 0.2s ease;
   text-align: left;
-  line-height: var(--line-height-l);
 }
 
-.follow-up-chip .cta-icon-ai-generated {
+/* ===== AI Icon ===== */
+.follow-up-chip .cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 16px;
   height: 16px;
   flex-shrink: 0;
 }
 
 .follow-up-chip .cta-icon-ai-generated::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
   background-image: url('/icons/ai-sparkle.svg');
-  opacity: 0.6;
-  transition: opacity var(--transition-normal);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 .follow-up-chip:hover .cta-icon-ai-generated::before {
   opacity: 1;
 }
 
+/* ===== Chip Text ===== */
 .follow-up-chip-text {
   flex: 1;
 }
 
+/* ===== Hover State =====
+ * Red accent border and text, matching Vitamix hover pattern
+ */
 .follow-up-chip:hover {
   border-color: var(--color-red);
-  background: var(--color-red-alpha-5);
-  color: var(--color-red);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  color: var(--color-white);
+  background: transparent;
 }
 
+/* ===== Active State ===== */
 .follow-up-chip:active {
-  transform: translateY(0);
+  background: rgba(200, 16, 46, 0.1);
 }
 
+/* ===== Focus State =====
+ * Visible focus ring for accessibility
+ */
 .follow-up-chip:focus {
   outline: var(--border-m) solid var(--color-red);
   outline-offset: 2px;
 }
 
-/* Arrow icon on hover */
+.follow-up-chip:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.follow-up-chip:focus-visible {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+/* ===== Arrow Indicator =====
+ * Subtle arrow appears on hover
+ */
 .follow-up-chip::after {
   content: '\2192';
+  margin-left: var(--spacing-60);
   opacity: 0;
-  transform: translateX(calc(-1 * var(--spacing-60)));
-  transition: all var(--transition-normal);
+  transform: translateX(-4px);
+  transition: all 0.2s ease;
 }
 
 .follow-up-chip:hover::after {
@@ -102,10 +160,10 @@
   transform: translateX(0);
 }
 
-/* Responsive */
-@media (width < 768px) {
+/* ===== Responsive: Tablet ===== */
+@media (width < 900px) {
   .follow-up-wrapper {
-    padding: var(--spacing-400) var(--spacing-200);
+    padding: var(--spacing-500) var(--spacing-400);
   }
 
   .follow-up-chips {
@@ -113,14 +171,34 @@
   }
 
   .follow-up-chip {
-    padding: var(--spacing-80) var(--spacing-100);
-    font-size: var(--font-size-60);
+    padding: 12px 16px;
   }
 }
 
-@media (width < 480px) {
+/* ===== Responsive: Mobile ===== */
+@media (width < 600px) {
+  .follow-up-wrapper {
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .follow-up-header h4 {
+    font-size: var(--heading-size-s);
+  }
+
+  .follow-up-chips {
+    flex-direction: column;
+    gap: var(--spacing-60);
+  }
+
   .follow-up-chip {
     width: 100%;
+    padding: 14px 16px;
+    font-size: var(--body-size-xs);
     justify-content: space-between;
+  }
+
+  .follow-up-chip::after {
+    opacity: 0.5;
+    transform: translateX(0);
   }
 }

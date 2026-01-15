@@ -856,9 +856,7 @@ main > div:has(.recipe-sidebar-container) > .recipe-directions-container {
 }
 
 main .section.follow-up-container {
-  margin-top: 30px;
-  margin-bottom: 30px;
-  border-radius: 10px;
+  margin: 0;
 }
 
 /* ===== Hero Video Section (DA-authored) ===== */

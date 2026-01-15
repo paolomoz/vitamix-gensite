@@ -289,7 +289,7 @@
       <div class="bookmarklet-container">
         <a
           class="bookmarklet-link"
-          href="javascript:(function(){if(window.__demoOverlay){window.__demoOverlay.toggle();return;}var s=document.createElement('script');s.src='https://main--vitamix-gensite--paoloexcat.aem.live/demo-tool/demo-overlay-bundle.js';document.body.appendChild(s);})();"
+          href="javascript:(function(){if(window.__demoOverlay){window.__demoOverlay.toggle();return;}var s=document.createElement('script');s.src='https://main--vitamix-gensite--paolomoz.aem.live/demo-tool/demo-overlay-bundle.js';document.body.appendChild(s);})();"
           onclick="event.preventDefault();alert('Drag this button to your bookmark bar!');"
         >
           🎯 Demo Tool
@@ -402,7 +402,7 @@
   }
   // Load bundled script from POC site - works on any domain
   var s = document.createElement('script');
-  s.src = 'https://main--vitamix-gensite--paoloexcat.aem.live/demo-tool/demo-overlay-bundle.js';
+  s.src = 'https://main--vitamix-gensite--paolomoz.aem.live/demo-tool/demo-overlay-bundle.js';
   document.body.appendChild(s);
 })();</div>
 
@@ -427,7 +427,7 @@
       }
       // Use relative path when on POC site, or full URL otherwise
       const isLocalOrPOC = location.hostname === 'localhost' || location.hostname.includes('aem.live');
-      const src = isLocalOrPOC ? '/demo-tool/demo-overlay-bundle.js' : 'https://main--vitamix-gensite--paoloexcat.aem.live/demo-tool/demo-overlay-bundle.js';
+      const src = isLocalOrPOC ? '/demo-tool/demo-overlay-bundle.js' : 'https://main--vitamix-gensite--paolomoz.aem.live/demo-tool/demo-overlay-bundle.js';
       const js = document.createElement('script');
       js.src = src;
       document.body.appendChild(js);

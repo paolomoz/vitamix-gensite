@@ -12,7 +12,7 @@
   }
 
   // POC site base URL - where generated pages are created
-  const POC_BASE_URL = 'https://main--vitamix-gensite--paoloexcat.aem.live';
+  const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
 
   // ============================================
   // DEMO EXAMPLES DATA

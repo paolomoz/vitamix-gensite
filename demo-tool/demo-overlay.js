@@ -12,7 +12,7 @@ import { demoExamples, getConfidenceLevel, getWeightColor } from './demo-example
 // Use localhost for local testing, aem.live for production
 const POC_BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:3000'
-  : 'https://main--vitamix-gensite--paoloexcat.aem.live';
+  : 'https://main--vitamix-gensite--paolomoz.aem.live';
 
 class DemoOverlay {
   constructor() {

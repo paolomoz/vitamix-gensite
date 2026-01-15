@@ -1008,9 +1008,9 @@ function wrapBlockHTML(type: string, content: string, variant?: string): string 
   // Strip markdown code fences if LLM included them (handles ``` html, ```html, etc.)
   html = html.replace(/^```\s*html?\s*\n?/i, '').replace(/\n?```\s*$/g, '').trim();
 
-  // Force split variant for hero blocks (full-bleed 50/50 layout)
+  // Force split quote variant for hero blocks (50/50 layout with charcoal content area)
   if (type === 'hero' && !variant) {
-    variant = 'split';
+    variant = 'split quote';
   }
 
   // If content doesn't start with the block div, wrap it

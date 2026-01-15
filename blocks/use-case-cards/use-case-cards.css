@@ -1,209 +1,243 @@
 /**
  * Use Case Cards Block Styles
+ * Aligned to Vitamix Design System - Filled Cards Pattern
+ * Reference: vitamix.com/vr/en_us/ homepage cards
+ *
+ * Design: Solid color backgrounds, white centered text,
+ * eyebrow + title with arrow + description, subtle rounded corners
  */
 
-/* Header */
-.ucheader,
-.use-case-cards-header {
-  grid-column: 1 / -1;
-  margin-bottom: var(--spacing-300);
-  text-align: center;
-}
-
-.uctitle {
-  font-size: var(--font-size-500);
-  font-weight: var(--weight-medium);
-  color: var(--color-dark-charcoal);
-  margin: 0 0 var(--spacing-60);
-}
-
-.ucsubtitle {
-  font-size: var(--font-size-100);
-  line-height: var(--line-height-xl);
-  color: var(--color-gray-900);
-  margin: 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
+/* ===== Container ===== */
 .use-case-cards-container {
   padding: var(--spacing-600) 0;
+  background: var(--color-white);
 }
 
 .use-case-cards-wrapper {
   max-width: var(--max-width-wide);
   margin: 0 auto;
-  padding: 0 var(--spacing-400);
+  padding: 0 var(--horizontal-spacing);
 }
 
+/* ===== Header ===== */
+.ucheader,
+.use-case-cards-header {
+  grid-column: 1 / -1;
+  margin-bottom: var(--spacing-400);
+  text-align: center;
+}
+
+.uctitle {
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-xl);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--color-charcoal);
+  margin: 0 0 var(--spacing-100);
+}
+
+.ucsubtitle {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  line-height: var(--line-height-l);
+  color: var(--color-gray-900);
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* ===== Grid Layout ===== */
 .use-case-cards.block,
 .use-case-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-300);
+  grid-template-columns: 1fr;
+  gap: var(--spacing-60);
   width: 100%;
-  justify-content: center;
 }
 
-/* 2 cards: 1 row with 2 columns */
-.use-case-cards.block[data-card-count="2"],
-.use-case-cards-grid[data-card-count="2"] {
-  grid-template-columns: repeat(2, 1fr);
+@media (width >= 800px) {
+  .use-case-cards.block,
+  .use-case-cards-grid,
+  .use-case-cards.block[data-card-count="2"],
+  .use-case-cards-grid[data-card-count="2"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .use-case-cards.block[data-card-count="3"],
+  .use-case-cards-grid[data-card-count="3"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .use-case-cards.block[data-card-count="4"],
+  .use-case-cards-grid[data-card-count="4"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* 3 cards: 1 row with 3 columns */
-.use-case-cards.block[data-card-count="3"],
-.use-case-cards-grid[data-card-count="3"] {
-  grid-template-columns: repeat(3, 1fr);
+@media (width >= 1000px) {
+  .use-case-cards.block[data-card-count="4"],
+  .use-case-cards-grid[data-card-count="4"] {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-/* 4 cards: 1 row with 4 columns */
-.use-case-cards.block[data-card-count="4"],
-.use-case-cards-grid[data-card-count="4"] {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* 5-6 cards: 2 rows with 3 columns each */
-.use-case-cards.block[data-card-count="5"],
-.use-case-cards-grid[data-card-count="5"],
-.use-case-cards.block[data-card-count="6"],
-.use-case-cards-grid[data-card-count="6"] {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-/* 7-8 cards: 2 rows with 4 columns each */
-.use-case-cards.block[data-card-count="7"],
-.use-case-cards-grid[data-card-count="7"],
-.use-case-cards.block[data-card-count="8"],
-.use-case-cards-grid[data-card-count="8"] {
-  grid-template-columns: repeat(4, 1fr);
-}
-
+/* ===== Individual Card =====
+ * Solid color filled card with centered white text
+ */
 .use-case-card {
-  background: var(--color-white);
-  border: var(--border-s) solid var(--color-gray-400);
-  border-radius: var(--rounding-l);
-  padding: var(--spacing-300);
-  transition: all var(--transition-slow);
-  cursor: pointer;
-}
-
-.use-case-card:hover {
-  border-color: var(--color-red);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(calc(-1 * var(--spacing-40)));
-}
-
-.use-case-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: var(--spacing-100);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-red-alpha-5);
-  border-radius: var(--rounding-l);
-  color: var(--color-red);
+  min-height: 180px;
+  padding: var(--spacing-600) var(--spacing-400);
+  border-radius: var(--rounding-m);
+  cursor: pointer;
+  color: var(--color-white);
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
 }
 
-.use-case-icon img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
+.use-case-card:hover {
+  opacity: 0.92;
 }
 
+/* Card color variants - cycle through brand colors */
+.use-case-card:nth-child(3n + 1) {
+  background-color: var(--color-steel);
+}
+
+.use-case-card:nth-child(3n + 2) {
+  background-color: var(--color-charcoal);
+}
+
+.use-case-card:nth-child(3n + 3) {
+  background-color: var(--color-xanadu);
+}
+
+/* Alternative: 2-card layout colors */
+.use-case-cards-grid[data-card-count="2"] .use-case-card:nth-child(1) {
+  background-color: var(--color-steel);
+}
+
+.use-case-cards-grid[data-card-count="2"] .use-case-card:nth-child(2) {
+  background-color: var(--color-charcoal);
+}
+
+/* Hide the icon container (no images in this design) */
+.use-case-icon {
+  display: none;
+}
+
+/* ===== Card Content ===== */
 .use-case-content {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-60);
 }
 
+/* Eyebrow text */
+.use-case-eyebrow {
+  display: block;
+  font-family: var(--body-font-family);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--letter-spacing-m);
+  text-transform: uppercase;
+  color: var(--color-gray-600);
+}
+
+/* Title with arrow */
 .use-case-title {
-  font-size: var(--font-size-300);
-  font-weight: var(--weight-semibold);
-  color: var(--color-charcoal);
-  margin: 0 0 var(--spacing-60);
-}
-
-.use-case-description {
-  font-size: var(--font-size-80);
-  line-height: var(--line-height-xl);
-  color: var(--color-gray-900);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-60);
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-l);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--color-white);
   margin: 0;
 }
 
-/* AI indicator for cards that generate AI pages */
+/* Arrow indicator after title */
+.use-case-title::after {
+  content: '\25B8';
+  font-size: 0.6em;
+  transition: transform 0.2s ease;
+}
+
+.use-case-card:hover .use-case-title::after {
+  transform: translateX(4px);
+}
+
+/* Description */
+.use-case-description {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  line-height: var(--line-height-l);
+  color: var(--color-white);
+  margin: 0;
+  opacity: 0.85;
+  max-width: 280px;
+}
+
+/* ===== AI Indicator (hidden by default, shows on hover) ===== */
 .use-case-ai-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-40);
-  margin-top: var(--spacing-80);
-  font-size: var(--font-size-40);
-  color: var(--color-gray-900);
-  opacity: 0;
-  transform: translateY(var(--spacing-40));
-  transition: all var(--transition-normal);
+  display: none;
 }
 
-.use-case-card:hover .use-case-ai-indicator {
-  opacity: 1;
-  transform: translateY(0);
+/* ===== Focus States ===== */
+.use-case-card:focus {
+  outline: var(--border-m) solid var(--color-white);
+  outline-offset: -4px;
 }
 
-.use-case-ai-indicator .cta-icon-ai-generated {
-  width: 14px;
-  height: 14px;
+.use-case-card:focus:not(:focus-visible) {
+  outline: none;
 }
 
-.use-case-ai-indicator .cta-icon-ai-generated::before {
-  background-image: url('/icons/ai-sparkle.svg');
+.use-case-card:focus-visible {
+  outline: var(--border-m) solid var(--color-white);
+  outline-offset: -4px;
 }
 
-@media (width < 900px) {
+/* ===== Responsive: Tablet ===== */
+@media (width < 800px) {
+  .use-case-cards-wrapper {
+    padding: 0 var(--spacing-400);
+  }
+
+  .use-case-card {
+    min-height: 160px;
+    padding: var(--spacing-500) var(--spacing-300);
+  }
+
+  .use-case-title {
+    font-size: var(--heading-size-m);
+  }
+}
+
+/* ===== Responsive: Mobile ===== */
+@media (width < 600px) {
+  .use-case-cards-container {
+    padding: var(--spacing-400) 0;
+  }
+
   .use-case-cards-wrapper {
     padding: 0 var(--spacing-200);
   }
 
-  /* Tablet: max 2 columns */
-  .use-case-cards.block,
-  .use-case-cards-grid,
-  .use-case-cards.block[data-card-count="3"],
-  .use-case-cards-grid[data-card-count="3"],
-  .use-case-cards.block[data-card-count="4"],
-  .use-case-cards-grid[data-card-count="4"],
-  .use-case-cards.block[data-card-count="5"],
-  .use-case-cards-grid[data-card-count="5"],
-  .use-case-cards.block[data-card-count="6"],
-  .use-case-cards-grid[data-card-count="6"],
-  .use-case-cards.block[data-card-count="7"],
-  .use-case-cards-grid[data-card-count="7"],
-  .use-case-cards.block[data-card-count="8"],
-  .use-case-cards-grid[data-card-count="8"] {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .use-case-card {
-    padding: var(--spacing-200);
+    min-height: 140px;
+    padding: var(--spacing-400) var(--spacing-300);
   }
-}
 
-@media (width < 480px) {
-  /* Mobile: single column */
-  .use-case-cards.block,
-  .use-case-cards-grid,
-  .use-case-cards.block[data-card-count="2"],
-  .use-case-cards-grid[data-card-count="2"],
-  .use-case-cards.block[data-card-count="3"],
-  .use-case-cards-grid[data-card-count="3"],
-  .use-case-cards.block[data-card-count="4"],
-  .use-case-cards-grid[data-card-count="4"],
-  .use-case-cards.block[data-card-count="5"],
-  .use-case-cards-grid[data-card-count="5"],
-  .use-case-cards.block[data-card-count="6"],
-  .use-case-cards-grid[data-card-count="6"],
-  .use-case-cards.block[data-card-count="7"],
-  .use-case-cards-grid[data-card-count="7"],
-  .use-case-cards.block[data-card-count="8"],
-  .use-case-cards-grid[data-card-count="8"] {
-    grid-template-columns: 1fr;
+  .use-case-title {
+    font-size: var(--heading-size-s);
+  }
+
+  .use-case-description {
+    font-size: var(--body-size-xs);
   }
 }

@@ -767,10 +767,6 @@ main .section.dark a:any-link:not(.button):hover {
   color: var(--color-white);
 }
 
-main .section.dark .button:any-link {
-  color: var(--color-white);
-}
-
 main .section.dark .button.secondary:any-link {
   background-color: transparent;
   border-color: var(--color-white);

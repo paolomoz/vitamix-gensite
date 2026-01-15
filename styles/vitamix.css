@@ -16,7 +16,6 @@
 /* ===== MAIN CONTENT CENTERING ===== */
 
 #generation-content {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -27,16 +26,8 @@
 }
 
 .section[class*="-container"] > div[class*="-wrapper"] {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-}
-
-/* Ensure blocks inside sections are centered */
-.section .block {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* ===== REASONING BLOCK ===== */

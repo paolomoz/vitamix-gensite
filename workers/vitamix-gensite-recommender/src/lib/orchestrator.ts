@@ -1009,7 +1009,8 @@ function wrapBlockHTML(type: string, content: string, variant?: string): string 
   html = html.replace(/^```\s*html?\s*\n?/i, '').replace(/\n?```\s*$/g, '').trim();
 
   // Force split quote variant for hero blocks (50/50 layout with charcoal content area)
-  if (type === 'hero' && !variant) {
+  // Override any variant set by reasoning engine to ensure consistent layout
+  if (type === 'hero') {
     variant = 'split quote';
   }
 

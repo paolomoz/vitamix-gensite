@@ -11,9 +11,6 @@
  */
 
 /* Container reset - match hero-container */
-main .section.dark.product-recommendation-container {
-  padding: var(--spacing-500) 0;
-}
 
 .product-recommendation-container .product-recommendation-wrapper {
   max-width: unset;

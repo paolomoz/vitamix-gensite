@@ -155,7 +155,7 @@ header .nav-sections ul li a:hover {
 
   header .nav-sections ul li a {
     padding: var(--spacing-100) 0;
-    font-size: var(--body-size-s);
+    font-size: var(--body-size-m);
     border-bottom: none;
   }
 }

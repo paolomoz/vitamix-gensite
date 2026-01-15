@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-01-15T14:32:15.125Z",
-  "total_analyzed": 47,
-  "hero_suitable_count": 39,
+  "total_analyzed": 45,
+  "hero_suitable_count": 37,
   "categories": {
-    "product": 13,
+    "product": 11,
     "drink": 4,
     "smoothie": 5,
     "soup": 3,
@@ -269,23 +269,6 @@
       "hero_suitable": true,
       "hero_notes": "Clean product shot with excellent brand representation. White background provides space for text overlays. Centered composition may need adjustment for wide hero formats, but the clean aesthetic and premium look align well with Vitamix brand positioning. The green contents suggest healthy lifestyle while showcasing the product in use."
     },
-    "https://www.vitamix.com/content/dam/vitamix/home/products/nav-blenders-explorian-3x.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "colorful",
-        "fresh",
-        "kitchen"
-      ],
-      "dominant_colors": [
-        "black",
-        "orange"
-      ],
-      "mood": "premium",
-      "content_description": "Black Vitamix blender with colorful diced vegetables (appears to be bell peppers and other produce) in the container, shot against a clean white background",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner candidate with clean composition, professional lighting, and premium product presentation. The colorful ingredients create visual interest against the sleek black blender and white background. Clean layout with no text overlays allows for hero text placement. High-quality product photography that showcases the blender's capabilities while maintaining brand sophistication."
-    },
     "https://www.vitamix.com/content/dam/vitamix/migration/media/other/images/n/nav-blenders-legacy-3x.jpg": {
       "primary_category": "product",
       "secondary_tags": [
@@ -353,23 +336,6 @@
       "quality_score": 7,
       "hero_suitable": true,
       "hero_notes": "Clean product shot with good lighting and colorful ingredients that showcase the blender's capabilities. The composition focuses well on the product with appealing fresh ingredients. Could work as hero banner with proper cropping, though the aspect ratio may need adjustment for wide banner format."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/products/nav-blenders-explorianAccessories-3X.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "colorful",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "orange",
-        "red"
-      ],
-      "mood": "vibrant",
-      "content_description": "Vitamix blender with vibrant orange and red layered smoothie or juice blend in the pitcher, showcasing the product in action",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner image - clean product shot with vibrant, appetizing colors that would grab attention. Good composition with the blender prominently featured and colorful contents creating visual interest. High quality lighting and no text overlays. The layered drink effect demonstrates the product's capabilities while maintaining premium brand aesthetic."
     },
     "https://www.vitamix.com/content/dam/vitamix/migration/media/other/images/n/nav-accessories-legacy-3x.jpg": {
       "primary_category": "product",

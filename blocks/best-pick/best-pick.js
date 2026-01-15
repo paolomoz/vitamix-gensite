@@ -16,6 +16,13 @@
  */
 
 export default function decorate(block) {
+  // Check if already decorated (AI-generated content)
+  const existingWrapper = block.querySelector('.best-pick-wrapper');
+  if (existingWrapper) {
+    // Already structured - no need to re-decorate
+    return;
+  }
+
   const rows = [...block.children];
   if (rows.length === 0) return;
 

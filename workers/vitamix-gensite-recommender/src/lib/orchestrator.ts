@@ -845,19 +845,21 @@ CTA TEXT MUST BE VALUE-DRIVEN AND PERSONALIZED:
 NEVER use "View on Vitamix", "Learn More", or "View Details"
 
 OUTPUT THIS EXACT STRUCTURE (replace placeholders with actual values from context):
-<div class="best-pick-wrapper">
-  <div class="best-pick-badge">OUR TOP PICK</div>
-  <div class="best-pick-container">
-    <div class="best-pick-content">
-      <p class="best-pick-eyebrow">BEST FOR [USE CASE FROM QUERY]</p>
-      <h2 class="best-pick-headline">[Product Name from Context]</h2>
-      <p class="best-pick-rationale">[1-2 sentences explaining WHY this is the best choice for their specific need]</p>
-      <div class="best-pick-details">
-        <span class="best-pick-price">$[PRICE]</span>
-        <span class="best-pick-warranty">[WARRANTY]</span>
-      </div>
-      <div class="best-pick-cta">
-        <a href="[PRODUCT_URL_FROM_CONTEXT]" class="button primary" target="_blank">[VALUE-DRIVEN CTA - e.g., "Get the A3500 for Silky Smoothies"]</a>
+<div class="best-pick">
+  <div class="best-pick-wrapper">
+    <div class="best-pick-badge">OUR TOP PICK</div>
+    <div class="best-pick-container">
+      <div class="best-pick-content">
+        <p class="best-pick-eyebrow">BEST FOR [USE CASE FROM QUERY]</p>
+        <h2 class="best-pick-headline">[Product Name from Context]</h2>
+        <p class="best-pick-rationale">[1-2 sentences explaining WHY this is the best choice for their specific need]</p>
+        <div class="best-pick-details">
+          <span class="best-pick-price">$[PRICE]</span>
+          <span class="best-pick-warranty">[WARRANTY]</span>
+        </div>
+        <div class="best-pick-cta">
+          <a href="[PRODUCT_URL_FROM_CONTEXT]" class="button primary" target="_blank">[VALUE-DRIVEN CTA - e.g., "Get the A3500 for Silky Smoothies"]</a>
+        </div>
       </div>
     </div>
   </div>

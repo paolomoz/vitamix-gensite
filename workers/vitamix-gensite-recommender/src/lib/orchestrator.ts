@@ -30,8 +30,14 @@ import {
   getProductsByUseCase,
   getAllReviews,
   getFAQsForQuery,
+  getSafetyGuidelines,
+  getCleaningGuidelines,
+  getAllergenGuidelines,
+  getMaterialInfo,
+  getContainerSizes,
   type RAGContext,
   type FAQ,
+  type SafetyGuidelines,
 } from '../content/content-service';
 import { selectHeroImage } from './hero-images';
 
@@ -798,25 +804,53 @@ Generate honest noise comparisons. Structure:
 </div>`,
 
     'allergen-safety': `
-## HTML Template (cross-contamination protocols):
-Generate allergen safety content. Structure:
-- Row 1: Title
-- Row 2: Sanitization protocol
-- Row 3: Container strategy
-- Row 4: Material safety info
+## HTML Template - CRITICAL: USE ONLY OFFICIAL VITAMIX CONTENT PROVIDED
+
+This block displays allergen safety information. You MUST use ONLY the exact content provided in the context below.
+DO NOT add, modify, or invent any safety claims, temperatures, chemical ratios, or medical advice.
+
+Structure (4 rows):
+- Row 1: Title only
+- Row 2: Self-cleaning steps (copy EXACTLY from context)
+- Row 3: Dedicated container info with product link (copy EXACTLY from context)
+- Row 4: Material info (copy EXACTLY from context)
+
+OUTPUT THIS EXACT STRUCTURE - filling in ONLY from the provided official content:
 
 <div>
   <div>Allergen Safety Guide</div>
 </div>
 <div>
-  <div><ol><li>Disassemble blade from container</li><li>Wash with hot soapy water (140°F+)</li><li>Rinse thoroughly</li><li>Sanitize: 1 tsp bleach per gallon water, soak 2 min</li><li>Final rinse and air dry</li></ol></div>
+  <div>
+    <h4>Cleaning Your Container</h4>
+    <p><strong>Self-Cleaning Method:</strong></p>
+    <ol>
+      <!-- Copy the EXACT self-cleaning steps from context -->
+    </ol>
+  </div>
 </div>
 <div>
-  <div><p>Dedicated container strategy:</p><ul><li>Container 1: Allergen-free only</li><li>Container 2: Contains allergens</li><li>Color-coded labels recommended</li></ul></div>
+  <div>
+    <h4>Dedicated Container Strategy</h4>
+    <p><!-- Copy the EXACT official description from context --></p>
+    <p><a href="PRODUCT_URL_FROM_CONTEXT" target="_blank">Shop Color Containers</a></p>
+  </div>
 </div>
 <div>
-  <div><ul><li>All containers BPA-free</li><li>Tritan plastic is non-porous</li><li>Stainless steel blades sanitize with heat</li><li>Inspect gaskets for wear regularly</li></ul></div>
-</div>`,
+  <div>
+    <h4>Material Safety</h4>
+    <ul>
+      <!-- List the EXACT material notes from context -->
+    </ul>
+  </div>
+</div>
+
+CRITICAL RULES:
+1. DO NOT invent temperatures (no "140°F" unless in context)
+2. DO NOT invent chemical ratios (no bleach dilutions unless in context)
+3. DO NOT add medical or health claims
+4. DO NOT modify the official Vitamix descriptions
+5. The disclaimer from context MUST appear at the bottom`,
 
     'best-pick': `
 ## HTML Template - Prominent "Our Top Pick" callout (TEXT ONLY - NO IMAGE)
@@ -943,9 +977,49 @@ async function generateBlockContent(
     if (mainProduct) {
       dataContext = `\n\n## Product Context:\n- ${mainProduct.name}\n- Price: $${mainProduct.price}\n- Features: ${mainProduct.features?.join(', ') || 'High performance blending'}`;
     }
-  } else if (['sustainability-info', 'allergen-safety', 'smart-features'].includes(block.type)) {
+  } else if (['sustainability-info', 'smart-features'].includes(block.type)) {
     // For informational blocks, provide general context
     dataContext = `\n\n## Related Products:\n${buildProductContext(ragContext.relevantProducts.slice(0, 2))}`;
+  } else if (block.type === 'allergen-safety') {
+    // For allergen safety, use ONLY vetted official Vitamix content
+    const safety = getSafetyGuidelines();
+    const cleaning = safety.cleaning;
+    const allergen = safety.allergenManagement;
+    const materials = safety.materials;
+    const containers = safety.containerSizes;
+
+    dataContext = `
+## OFFICIAL VITAMIX CONTENT (USE EXACTLY AS PROVIDED - DO NOT MODIFY OR ADD TO THIS)
+
+### Self-Cleaning Method (Source: ${cleaning.selfClean.source})
+${cleaning.selfClean.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+### Deep Cleaning for Stubborn Residue (Source: ${cleaning.deepClean.source})
+${cleaning.deepClean.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+### Safety Tips
+${cleaning.safetyTips.map(t => `- ${t.tip} (Source: ${t.source})`).join('\n')}
+
+### Materials (Source: ${materials.containers.source})
+- Container material: ${materials.containers.material}
+${materials.containers.notes.map(n => `- ${n}`).join('\n')}
+
+### Blade Information (Source: ${materials.blades.source})
+- Blade material: ${materials.blades.material}
+${materials.blades.notes.map(n => `- ${n}`).join('\n')}
+
+### Dedicated Container Strategy (Source: ${allergen.dedicatedContainers.source})
+Official description: "${allergen.dedicatedContainers.officialDescription}"
+Product: ${allergen.dedicatedContainers.productName}
+Product URL: ${allergen.dedicatedContainers.productUrl}
+Compatible with: ${allergen.dedicatedContainers.compatibleSeries.join(', ')}
+
+### Available Container Sizes
+${containers.map(c => `- ${c.size}: ${c.bestFor}`).join('\n')}
+
+### REQUIRED DISCLAIMER
+"${allergen.disclaimer.text}"
+`;
   } else if (['accessibility-specs'].includes(block.type)) {
     // For accessibility specs, provide multiple products with details for comparison
     dataContext = `\n\n## Products for Accessibility Comparison (USE THESE EXACT URLs):\n${buildProductContext(ragContext.relevantProducts.slice(0, 4))}`;
@@ -1206,6 +1280,74 @@ function generateFollowUpBlock(userJourney: ReasoningResult['userJourney']): Gen
 }
 
 // ============================================
+// Allergen Safety Block Generation (NO LLM - vetted content only)
+// ============================================
+
+/**
+ * Generates allergen-safety block HTML directly from vetted Vitamix content.
+ * This bypasses the LLM entirely to prevent hallucinated safety claims.
+ * All content comes from official Vitamix sources stored in safety-guidelines.json.
+ */
+function generateAllergenSafetyBlock(): GeneratedBlock {
+  const safety = getSafetyGuidelines();
+  const cleaning = safety.cleaning;
+  const allergen = safety.allergenManagement;
+  const materials = safety.materials;
+
+  // Build cleaning steps HTML from vetted content
+  const cleaningStepsHTML = cleaning.selfClean.steps
+    .map((step) => `<li>${step}</li>`)
+    .join('\n          ');
+
+  // Build material notes HTML from vetted content
+  const materialNotesHTML = [
+    `Container material: ${materials.containers.material}`,
+    ...materials.containers.notes,
+  ]
+    .map((note) => `<li>${note}</li>`)
+    .join('\n          ');
+
+  return {
+    type: 'allergen-safety',
+    html: `
+      <div class="allergen-safety">
+        <div>
+          <div>Allergen Safety Guide</div>
+        </div>
+        <div>
+          <div>
+            <h4>Cleaning Your Container</h4>
+            <p><strong>Official Vitamix Self-Cleaning Method:</strong></p>
+            <ol>
+              ${cleaningStepsHTML}
+            </ol>
+            <p><em>Source: <a href="${cleaning.selfClean.source}" target="_blank" rel="noopener">Vitamix Official Cleaning Guide</a></em></p>
+          </div>
+        </div>
+        <div>
+          <div>
+            <h4>Dedicated Container Strategy</h4>
+            <p>${allergen.dedicatedContainers.officialDescription}</p>
+            <p><strong>Product:</strong> <a href="${allergen.dedicatedContainers.productUrl}" target="_blank" rel="noopener">${allergen.dedicatedContainers.productName}</a></p>
+            <p>Compatible with: ${allergen.dedicatedContainers.compatibleSeries.join(', ')} series</p>
+          </div>
+        </div>
+        <div>
+          <div>
+            <h4>Material Information</h4>
+            <ul>
+              ${materialNotesHTML}
+            </ul>
+            <p><em>Source: <a href="${materials.containers.source}" target="_blank" rel="noopener">Vitamix Product Specifications</a></em></p>
+          </div>
+        </div>
+      </div>
+    `,
+    sectionStyle: 'default',
+  };
+}
+
+// ============================================
 // Main Orchestrator
 // ============================================
 
@@ -1282,11 +1424,14 @@ export async function orchestrate(
 
       let block: GeneratedBlock;
 
-      // Special handling for reasoning-user and follow-up blocks
+      // Special handling for blocks that bypass LLM generation
       if (blockSelection.type === 'reasoning-user') {
         block = generateReasoningUserBlock(ctx.reasoningResult);
       } else if (blockSelection.type === 'follow-up') {
         block = generateFollowUpBlock(ctx.reasoningResult.userJourney);
+      } else if (blockSelection.type === 'allergen-safety') {
+        // SAFETY: Allergen-safety uses only vetted content, no LLM generation
+        block = generateAllergenSafetyBlock();
       } else {
         block = await generateBlockContent(blockSelection, ctx.ragContext, env, preset, ctx.intent, ctx.query);
       }

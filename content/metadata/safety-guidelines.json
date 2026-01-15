@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-01-15T00:00:00.000Z",
+  "description": "Vetted safety and cleaning content sourced from official Vitamix materials",
+  "sources": [
+    "https://www.vitamix.com/us/en_us/articles/how-to-clean-a-blender-guide",
+    "https://www.vitamix.com/us/en_us/owners-resources/product-support/faqs/care-and-maintenance",
+    "https://www.vitamix.com/us/en_us/products/48-ounce-color-containers-with-self-detect"
+  ],
+  "cleaning": {
+    "selfClean": {
+      "title": "Self-Cleaning (Official Vitamix Method)",
+      "source": "https://www.vitamix.com/us/en_us/articles/how-to-clean-a-blender-guide",
+      "steps": [
+        "Fill the container halfway with warm water",
+        "Add a drop of dish soap",
+        "Secure the lid",
+        "Start the machine and slowly increase to its highest speed",
+        "Run for 30-60 seconds (or use the Self-Cleaning Program if available)",
+        "Pour contents out and rinse thoroughly",
+        "Turn the container upside down and let air dry"
+      ]
+    },
+    "deepClean": {
+      "title": "Deep Cleaning for Cloudy Containers",
+      "source": "https://www.vitamix.com/us/en_us/articles/how-to-clean-a-cloudy-vitamix",
+      "steps": [
+        "Pour 1 cup of white vinegar into the container",
+        "Fill halfway with warm water",
+        "Soak for several hours or overnight",
+        "Use a soft pot scrubber to remove remaining residue",
+        "Be cautious around the blade assembly - blades are sharp"
+      ],
+      "alternative": {
+        "title": "Baking Soda Method",
+        "steps": [
+          "Mix baking soda and water into a paste",
+          "Apply with a soft cloth in circular motions",
+          "Avoid abrasive tools to prevent scratching"
+        ]
+      }
+    },
+    "accessories": {
+      "title": "Accessories Cleaning",
+      "source": "https://www.vitamix.com/us/en_us/articles/how-to-clean-a-blender-guide",
+      "notes": [
+        "Lids, lid plugs, and tampers: wash in warm, soapy water or place on top rack of dishwasher (if model allows)",
+        "Motor base: use a soft, damp cloth to wipe clean - never submerge in water or place in dishwasher"
+      ]
+    },
+    "safetyTips": [
+      {
+        "tip": "Use a long-handle brush when cleaning inside containers to maintain safe distance from blades",
+        "source": "https://www.vitamix.com/us/en_us/articles/how-to-clean-a-blender-guide"
+      }
+    ]
+  },
+  "materials": {
+    "containers": {
+      "material": "BPA-free Eastman Tritan Copolyester",
+      "source": "https://www.vitamix.com/us/en_us/products/48-ounce-color-containers-with-self-detect",
+      "notes": [
+        "All Vitamix containers are BPA-free",
+        "Many newer containers are dishwasher-safe - consult your Owner's Manual for specifics"
+      ]
+    },
+    "blades": {
+      "material": "Laser-cut, hardened stainless steel",
+      "source": "https://www.vitamix.com/us/en_us/owners-resources/product-support/faqs/care-and-maintenance",
+      "notes": [
+        "Blades use a hammermill design intended to pulverize rather than slice",
+        "Blades do not need to be sharpened"
+      ]
+    }
+  },
+  "allergenManagement": {
+    "dedicatedContainers": {
+      "title": "Color-Coded Container Strategy",
+      "source": "https://www.vitamix.com/us/en_us/products/48-ounce-color-containers-with-self-detect",
+      "officialDescription": "The Vitamix Color Container is perfect for color-coded uses, like allergen-sensitive cooking and non-food blending. Feel confident avoiding cross-contamination in the kitchen.",
+      "productUrl": "https://www.vitamix.com/us/en_us/products/48-ounce-color-containers-with-self-detect",
+      "productName": "48-ounce Color Container with SELF-DETECT",
+      "compatibleSeries": ["Ascent", "Venturist", "Propel", "Legacy"]
+    },
+    "disclaimer": {
+      "text": "For specific allergen safety guidance, consult your allergist or healthcare provider. Vitamix does not provide medical advice.",
+      "important": true
+    }
+  },
+  "containerSizes": [
+    {
+      "size": "64 oz",
+      "bestFor": "Large batches, soups, family meals",
+      "source": "vitamix.com product catalog"
+    },
+    {
+      "size": "48 oz",
+      "bestFor": "Medium batches, family portions",
+      "source": "vitamix.com product catalog"
+    },
+    {
+      "size": "32 oz",
+      "bestFor": "Smaller batches, sauces",
+      "source": "vitamix.com product catalog"
+    },
+    {
+      "size": "20 oz",
+      "bestFor": "Personal smoothies, travel",
+      "source": "vitamix.com product catalog"
+    },
+    {
+      "size": "8 oz",
+      "bestFor": "Sauces, dressings, small portions",
+      "source": "vitamix.com product catalog"
+    }
+  ],
+  "warranty": {
+    "note": "Warranty coverage varies by model. Check your specific product's warranty terms at vitamix.com or in your Owner's Manual.",
+    "supportUrl": "https://www.vitamix.com/us/en_us/support"
+  }
+}

@@ -1,215 +1,493 @@
 /**
  * Allergen Safety Block Styles
+ * Premium Vitamix design with full-width layout, editorial typography,
+ * and generous whitespace. Matches vitamix.com aesthetic.
  */
 
+/* ===== Section Container - Full Width ===== */
+.section.allergen-safety-container {
+  max-width: none;
+  background: var(--color-white);
+}
+
+.section.allergen-safety-container > .allergen-safety-wrapper {
+  max-width: none;
+  padding: 0;
+}
+
+/* ===== Main Block ===== */
 .allergen-safety {
-  padding: var(--spacing-600) var(--spacing-300);
-  max-width: var(--max-width-content);
+  width: 100%;
+}
+
+/* ===== Hero Header Section ===== */
+.allergen-header {
+  background: linear-gradient(135deg, var(--color-gray-200) 0%, var(--color-gray-100) 100%);
+  padding: var(--spacing-700) var(--spacing-300);
+  text-align: center;
+}
+
+.allergen-header-inner {
+  max-width: 800px;
   margin: 0 auto;
 }
 
-.allergen-safety-header {
+.allergen-eyebrow {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-red);
+  margin-bottom: var(--spacing-100);
+}
+
+.allergen-title {
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-200);
+}
+
+.allergen-subtitle {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-charcoal);
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== Disclaimer Banner ===== */
+.allergen-disclaimer {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+  padding: var(--spacing-200) var(--spacing-300);
+  text-align: center;
+}
+
+.allergen-disclaimer p {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-80);
+  line-height: var(--line-height-m);
+  margin: 0;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.allergen-disclaimer strong {
+  color: var(--color-white);
+  font-weight: var(--weight-medium);
+}
+
+/* ===== Content Grid - 3 Column Layout ===== */
+.allergen-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.allergen-card {
+  position: relative;
+  padding: var(--spacing-600) var(--spacing-400);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-300);
+  transition: background-color 0.3s ease;
+}
+
+.allergen-card:hover {
+  background: var(--color-gray-100);
+}
+
+/* Card Icon */
+.allergen-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-gray-200);
   display: flex;
   align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-200);
+  font-size: 24px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.allergen-card:hover .allergen-card-icon {
+  background: var(--color-red);
+  transform: scale(1.05);
+}
+
+.allergen-card:hover .allergen-card-icon svg {
+  stroke: var(--color-white);
+}
+
+.allergen-card-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: var(--color-charcoal);
+  stroke-width: 1.5;
+  fill: none;
+  transition: stroke 0.3s ease;
+}
+
+/* Card Content */
+.allergen-card-title {
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-400);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-100);
+  line-height: var(--line-height-s);
+}
+
+.allergen-card-content {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-80);
+  line-height: var(--line-height-xl);
+  color: var(--color-gray-900);
+}
+
+.allergen-card-content h4 {
+  display: none; /* Hide duplicate titles from generated content */
+}
+
+.allergen-card-content p {
+  margin: 0 0 var(--spacing-100);
+}
+
+.allergen-card-content p:last-child {
+  margin-bottom: 0;
+}
+
+.allergen-card-content ol,
+.allergen-card-content ul {
+  margin: 0;
+  padding-left: var(--spacing-200);
+}
+
+.allergen-card-content li {
+  margin-bottom: var(--spacing-60);
+  padding-left: var(--spacing-40);
+}
+
+.allergen-card-content li:last-child {
+  margin-bottom: 0;
+}
+
+.allergen-card-content li::marker {
+  color: var(--color-red);
+}
+
+.allergen-card-content strong {
+  color: var(--color-dark-charcoal);
+  font-weight: var(--weight-medium);
+}
+
+.allergen-card-content a {
+  color: var(--color-red);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+  transition: color 0.2s ease;
+}
+
+.allergen-card-content a:hover {
+  color: var(--color-madder);
+  text-decoration: underline;
+}
+
+.allergen-card-content em {
+  font-size: var(--font-size-60);
+  color: var(--color-gray-800);
+}
+
+/* ===== Container Sizes Section ===== */
+.allergen-containers {
+  background: var(--color-gray-200);
+  padding: var(--spacing-600) var(--spacing-300);
+}
+
+.allergen-containers-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.allergen-containers-header {
+  text-align: center;
+  margin-bottom: var(--spacing-400);
+}
+
+.allergen-containers-title {
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-500);
+  font-weight: var(--weight-light);
+  color: var(--color-dark-charcoal);
+  margin: 0 0 var(--spacing-60);
+}
+
+.allergen-containers-subtitle {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-80);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+/* Container Options Grid */
+.container-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-100);
   margin-bottom: var(--spacing-300);
 }
 
-.allergen-safety-icon {
-  color: var(--color-red);
-}
-
-.allergen-safety-icon svg {
-  width: 40px;
-  height: 40px;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  fill: none;
-}
-
-.allergen-safety-title {
-  font-size: var(--font-size-700);
-  font-weight: var(--weight-light);
-  color: var(--color-dark-charcoal);
-  margin: 0;
-}
-
-/* Notice */
-.allergen-notice {
-  background: var(--color-gray-200);
-  border-left: var(--spacing-40) solid var(--color-red);
-  padding: var(--spacing-300);
-  margin-bottom: var(--spacing-400);
-}
-
-.allergen-notice strong {
-  display: block;
-  color: var(--color-dark-charcoal);
-  font-weight: var(--weight-medium);
-  margin-bottom: var(--spacing-40);
-}
-
-.allergen-notice p {
-  margin: 0;
-  color: var(--color-charcoal);
-  line-height: var(--line-height-xl);
-  font-size: var(--font-size-80);
-}
-
-/* Sections */
-.allergen-sections {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-300);
-  margin-bottom: var(--spacing-400);
-}
-
-.allergen-section {
-  background: var(--color-white);
-  border: var(--border-s) solid var(--color-gray-400);
-  padding: var(--spacing-300);
-  box-shadow: var(--shadow-sm);
-}
-
-.section-icon {
-  font-size: var(--font-size-400);
-  display: block;
-  margin-bottom: var(--spacing-60);
-}
-
-.section-title {
-  font-size: var(--font-size-40);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  color: var(--color-red);
-  margin: 0 0 var(--spacing-100);
-}
-
-.section-content {
-  color: var(--color-gray-900);
-  line-height: var(--line-height-xl);
-  font-size: var(--font-size-80);
-}
-
-.section-content ol,
-.section-content ul {
-  margin: 0;
-  padding-left: var(--spacing-300);
-}
-
-.section-content li {
-  margin-bottom: var(--spacing-60);
-}
-
-.section-content li:last-child {
-  margin-bottom: 0;
-}
-
-.section-content strong {
-  color: var(--color-charcoal);
-  font-weight: var(--weight-medium);
-}
-
-.section-content p {
-  margin: 0 0 var(--spacing-60);
-}
-
-/* Container options */
-.allergen-containers {
-  background: var(--color-gray-200);
-  border: var(--border-s) solid var(--color-gray-400);
-  padding: var(--spacing-300);
-  margin-bottom: var(--spacing-300);
-}
-
-.allergen-containers h3 {
-  font-size: var(--font-size-40);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  color: var(--color-red);
-  margin: 0 0 var(--spacing-40);
-}
-
-.allergen-containers > p {
-  color: var(--color-gray-900);
-  margin: 0 0 var(--spacing-100);
-  font-size: var(--font-size-80);
-}
-
-.container-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--spacing-60);
-  margin-bottom: var(--spacing-100);
-}
-
 .container-option {
   background: var(--color-white);
-  border: var(--border-s) solid var(--color-gray-400);
-  padding: var(--spacing-60);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-300) var(--spacing-200);
   text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.container-option:hover {
+  border-color: var(--color-red);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 .option-size {
   display: block;
-  font-weight: var(--weight-medium);
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-500);
+  font-weight: var(--weight-light);
   color: var(--color-dark-charcoal);
-  font-size: var(--font-size-200);
+  margin-bottom: var(--spacing-40);
 }
 
 .option-use {
   display: block;
-  font-size: var(--font-size-40);
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-60);
   color: var(--color-gray-900);
-  margin-top: var(--spacing-40);
+  line-height: var(--line-height-m);
+}
+
+/* CTA Link */
+.containers-cta {
+  text-align: center;
 }
 
 .containers-link {
-  display: inline-block;
-  color: var(--color-red);
-  font-weight: var(--weight-medium);
-  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-60);
+  font-family: var(--sans-serif-font-family);
   font-size: var(--font-size-80);
-  transition: color var(--transition-normal);
+  font-weight: var(--weight-medium);
+  color: var(--color-red);
+  text-decoration: none;
+  transition: color 0.2s ease, gap 0.2s ease;
 }
 
 .containers-link:hover {
   color: var(--color-madder);
+  gap: var(--spacing-100);
 }
 
-/* Consult note */
+.containers-link::after {
+  content: '\2192';
+  transition: transform 0.2s ease;
+}
+
+.containers-link:hover::after {
+  transform: translateX(4px);
+}
+
+/* ===== Resources Section ===== */
+.allergen-resources {
+  background: var(--color-white);
+  padding: var(--spacing-600) var(--spacing-300);
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.allergen-resources-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-600);
+  align-items: start;
+}
+
+.resources-content h4 {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-red);
+  margin: 0 0 var(--spacing-200);
+}
+
+.resources-content ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resources-content li {
+  margin-bottom: var(--spacing-100);
+  padding-left: var(--spacing-200);
+  position: relative;
+}
+
+.resources-content li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background: var(--color-red);
+  border-radius: 50%;
+}
+
+.resources-content li:last-child {
+  margin-bottom: 0;
+}
+
+.resources-content a {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-80);
+  color: var(--color-charcoal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.resources-content a:hover {
+  color: var(--color-red);
+}
+
+/* ===== Consult CTA Section ===== */
 .allergen-consult {
+  background: var(--color-dark-charcoal);
+  padding: var(--spacing-500) var(--spacing-300);
   text-align: center;
-  padding: var(--spacing-100);
-  background: var(--color-gray-200);
-  border: var(--border-s) solid var(--color-gray-400);
 }
 
 .allergen-consult p {
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-m);
+  color: var(--color-white);
   margin: 0;
-  color: var(--color-charcoal);
-  font-size: var(--font-size-80);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .allergen-consult strong {
-  color: var(--color-dark-charcoal);
+  color: var(--color-white);
   font-weight: var(--weight-medium);
 }
 
-/* Responsive */
-@media (width < 600px) {
-  .allergen-safety {
-    padding: var(--spacing-300) var(--spacing-100);
+/* ===== Responsive - Tablet ===== */
+@media (width >= 768px) {
+  .allergen-header {
+    padding: var(--spacing-800) var(--spacing-400);
   }
 
-  .allergen-safety-header {
-    flex-direction: column;
-    text-align: center;
+  .allergen-title {
+    font-size: var(--font-size-800);
+  }
+
+  .allergen-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .allergen-card {
+    border-bottom: none;
+    border-right: 1px solid var(--color-gray-300);
+  }
+
+  .allergen-card:last-child {
+    border-right: none;
+  }
+
+  .allergen-card {
+    padding: var(--spacing-600);
+  }
+}
+
+/* ===== Responsive - Desktop ===== */
+@media (width >= 1024px) {
+  .allergen-header {
+    padding: var(--spacing-900) var(--spacing-600);
+  }
+
+  .allergen-title {
+    font-size: var(--font-size-900);
+  }
+
+  .allergen-subtitle {
+    font-size: var(--font-size-200);
+  }
+
+  .allergen-card {
+    padding: var(--spacing-700);
+  }
+
+  .allergen-card-title {
+    font-size: var(--font-size-500);
+  }
+
+  .allergen-card-content {
+    font-size: var(--font-size-90);
+  }
+
+  .allergen-containers {
+    padding: var(--spacing-700) var(--spacing-400);
+  }
+
+  .allergen-containers-title {
+    font-size: var(--font-size-600);
+  }
+}
+
+/* ===== Responsive - Mobile ===== */
+@media (width < 768px) {
+  .allergen-header {
+    padding: var(--spacing-500) var(--spacing-200);
+  }
+
+  .allergen-title {
+    font-size: var(--font-size-500);
+  }
+
+  .allergen-card {
+    padding: var(--spacing-400) var(--spacing-200);
   }
 
   .container-options {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .allergen-resources-inner {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-400);
+  }
+
+  .allergen-consult {
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .allergen-consult p {
+    font-size: var(--font-size-80);
   }
 }

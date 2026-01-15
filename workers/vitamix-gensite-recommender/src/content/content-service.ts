@@ -30,6 +30,7 @@ import personasData from '../../../../content/metadata/personas.json';
 import productProfilesData from '../../../../content/metadata/product-profiles.json';
 import recipeAssociationsData from '../../../../content/metadata/recipe-associations.json';
 import faqsData from '../../../../content/metadata/faqs.json';
+import safetyGuidelinesData from '../../../../content/metadata/safety-guidelines.json';
 
 // Type the imported data
 interface ProductsFile {
@@ -92,6 +93,65 @@ interface FAQsFile {
   faqs: FAQ[];
 }
 
+// Safety Guidelines types (vetted from official Vitamix sources)
+export interface CleaningStep {
+  title: string;
+  source: string;
+  steps: string[];
+  alternative?: {
+    title: string;
+    steps: string[];
+  };
+}
+
+export interface SafetyGuidelines {
+  cleaning: {
+    selfClean: CleaningStep;
+    deepClean: CleaningStep;
+    accessories: {
+      title: string;
+      source: string;
+      notes: string[];
+    };
+    safetyTips: Array<{ tip: string; source: string }>;
+  };
+  materials: {
+    containers: {
+      material: string;
+      source: string;
+      notes: string[];
+    };
+    blades: {
+      material: string;
+      source: string;
+      notes: string[];
+    };
+  };
+  allergenManagement: {
+    dedicatedContainers: {
+      title: string;
+      source: string;
+      officialDescription: string;
+      productUrl: string;
+      productName: string;
+      compatibleSeries: string[];
+    };
+    disclaimer: {
+      text: string;
+      important: boolean;
+    };
+  };
+  containerSizes: Array<{
+    size: string;
+    bestFor: string;
+    source: string;
+  }>;
+  warranty: {
+    note: string;
+    supportUrl: string;
+  };
+}
+
 // Cast imported data
 const products = (productsData as ProductsFile).products;
 const recipes = (recipesData as RecipesFile).recipes;
@@ -104,6 +164,31 @@ const personas = (personasData as PersonasFile).personas;
 const productProfiles = (productProfilesData as ProductProfilesFile).profiles;
 const recipeAssociations = recipeAssociationsData as RecipeAssociationsFile;
 const faqs = (faqsData as FAQsFile).faqs;
+const safetyGuidelines = safetyGuidelinesData as SafetyGuidelines;
+
+// ============================================
+// Safety Guidelines Queries
+// ============================================
+
+export function getSafetyGuidelines(): SafetyGuidelines {
+  return safetyGuidelines;
+}
+
+export function getCleaningGuidelines(): SafetyGuidelines['cleaning'] {
+  return safetyGuidelines.cleaning;
+}
+
+export function getAllergenGuidelines(): SafetyGuidelines['allergenManagement'] {
+  return safetyGuidelines.allergenManagement;
+}
+
+export function getMaterialInfo(): SafetyGuidelines['materials'] {
+  return safetyGuidelines.materials;
+}
+
+export function getContainerSizes(): SafetyGuidelines['containerSizes'] {
+  return safetyGuidelines.containerSizes;
+}
 
 // ============================================
 // Product Queries
@@ -994,6 +1079,13 @@ export default {
   getAllFAQs,
   getFAQsByCategory,
   getFAQsForQuery,
+
+  // Safety Guidelines
+  getSafetyGuidelines,
+  getCleaningGuidelines,
+  getAllergenGuidelines,
+  getMaterialInfo,
+  getContainerSizes,
 
   // Utilities
   getContentSummary,

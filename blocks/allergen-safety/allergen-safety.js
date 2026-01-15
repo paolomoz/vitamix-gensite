@@ -1,15 +1,34 @@
 /**
  * Allergen Safety Block
- * Cross-contamination prevention and sanitization protocols
- * for users with severe food allergies.
+ * Premium Vitamix design with full-width layout and editorial typography.
+ *
+ * IMPORTANT: This block displays only vetted content from official Vitamix sources.
+ * No medical or safety claims are generated - all content comes from vitamix.com.
  */
 
+// SVG Icons for each section
+const ICONS = {
+  cleaning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>`,
+  containers: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+    <line x1="12" y1="22.08" x2="12" y2="12"/>
+  </svg>`,
+  materials: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0-6v6"/>
+    <circle cx="12" cy="12" r="2"/>
+  </svg>`,
+};
+
 export default function decorate(block) {
-  // Expected structure from AI:
+  // Expected structure from AI (using vetted content only):
   // Row 1: Title
-  // Row 2: Sanitization protocol
-  // Row 3: Container strategy
-  // Row 4: Material safety info
+  // Row 2: Cleaning information (from official Vitamix guides)
+  // Row 3: Container strategy (with real product link)
+  // Row 4: Material information (from product specs)
 
   const rows = [...block.children];
   if (rows.length < 3) {
@@ -22,97 +41,68 @@ export default function decorate(block) {
   // Clear the block
   block.innerHTML = '';
 
-  // Create header with warning
+  // ===== Hero Header Section =====
   const header = document.createElement('div');
-  header.className = 'allergen-safety-header';
-
-  const icon = document.createElement('div');
-  icon.className = 'allergen-safety-icon';
-  icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
-  header.appendChild(icon);
-
-  const titleEl = document.createElement('h2');
-  titleEl.className = 'allergen-safety-title';
-  titleEl.textContent = title;
-  header.appendChild(titleEl);
-
+  header.className = 'allergen-header';
+  header.innerHTML = `
+    <div class="allergen-header-inner">
+      <p class="allergen-eyebrow">Official Vitamix Resources</p>
+      <h2 class="allergen-title">${title}</h2>
+      <p class="allergen-subtitle">Everything you need to know about keeping your Vitamix clean and safe for allergen-sensitive food preparation.</p>
+    </div>
+  `;
   block.appendChild(header);
 
-  // Important notice
-  const notice = document.createElement('div');
-  notice.className = 'allergen-notice';
-  notice.innerHTML = `
-    <strong>⚠️ Important Safety Note</strong>
-    <p>While thorough cleaning significantly reduces allergen residue, no cleaning method can guarantee 100% removal. For severe allergies, dedicated equipment is the safest approach.</p>
+  // ===== Disclaimer Banner =====
+  const disclaimer = document.createElement('div');
+  disclaimer.className = 'allergen-disclaimer';
+  disclaimer.innerHTML = `
+    <p><strong>Important:</strong> For specific allergen safety guidance, consult your allergist or healthcare provider. The information below is sourced from official Vitamix documentation.</p>
   `;
-  block.appendChild(notice);
+  block.appendChild(disclaimer);
 
-  // Sections
+  // ===== Content Grid =====
   const sections = [
     {
-      icon: '🧼',
-      title: 'Sanitization Protocol',
+      icon: ICONS.cleaning,
+      title: 'Cleaning Your Container',
       row: 1,
-      defaultContent: `
-        <ol>
-          <li>Disassemble: Remove blade assembly from container</li>
-          <li>Hot wash: Clean all parts with hot soapy water (140°F+)</li>
-          <li>Rinse thoroughly with clean water</li>
-          <li>Sanitize: Soak in diluted bleach solution (1 tsp per gallon) for 2 minutes</li>
-          <li>Final rinse with clean water</li>
-          <li>Air dry completely before use</li>
-        </ol>
-      `,
     },
     {
-      icon: '📦',
+      icon: ICONS.containers,
       title: 'Dedicated Container Strategy',
       row: 2,
-      defaultContent: `
-        <p>Consider purchasing multiple containers for allergen separation:</p>
-        <ul>
-          <li><strong>Container 1:</strong> Allergen-free recipes only</li>
-          <li><strong>Container 2:</strong> Recipes containing allergens</li>
-          <li>Label containers clearly with color-coded tape</li>
-          <li>Store separately to prevent cross-contact</li>
-        </ul>
-      `,
     },
     {
-      icon: '🔬',
-      title: 'Material Safety',
+      icon: ICONS.materials,
+      title: 'Material Information',
       row: 3,
-      defaultContent: `
-        <ul>
-          <li>All Vitamix containers are <strong>BPA-free</strong></li>
-          <li>Tritan plastic is non-porous and easier to sanitize</li>
-          <li>Stainless steel blades can be sanitized with high heat</li>
-          <li>Gaskets should be inspected regularly for wear</li>
-        </ul>
-      `,
     },
   ];
 
   const grid = document.createElement('div');
-  grid.className = 'allergen-sections';
+  grid.className = 'allergen-grid';
 
   sections.forEach((section) => {
-    const card = document.createElement('div');
-    card.className = 'allergen-section';
+    const rowContent = rows[section.row]?.innerHTML?.trim();
+    if (!rowContent) return;
 
-    const cardIcon = document.createElement('span');
-    cardIcon.className = 'section-icon';
-    cardIcon.textContent = section.icon;
+    const card = document.createElement('div');
+    card.className = 'allergen-card';
+
+    const cardIcon = document.createElement('div');
+    cardIcon.className = 'allergen-card-icon';
+    cardIcon.innerHTML = section.icon;
     card.appendChild(cardIcon);
 
     const cardTitle = document.createElement('h3');
-    cardTitle.className = 'section-title';
+    cardTitle.className = 'allergen-card-title';
     cardTitle.textContent = section.title;
     card.appendChild(cardTitle);
 
     const cardContent = document.createElement('div');
-    cardContent.className = 'section-content';
-    cardContent.innerHTML = rows[section.row]?.innerHTML || section.defaultContent;
+    cardContent.className = 'allergen-card-content';
+    cardContent.innerHTML = rowContent;
     card.appendChild(cardContent);
 
     grid.appendChild(card);
@@ -120,39 +110,68 @@ export default function decorate(block) {
 
   block.appendChild(grid);
 
-  // Container options
+  // ===== Container Sizes Section =====
   const containers = document.createElement('div');
   containers.className = 'allergen-containers';
   containers.innerHTML = `
-    <h3>Recommended: Additional Containers</h3>
-    <p>Vitamix offers various container sizes compatible with your base:</p>
-    <div class="container-options">
-      <div class="container-option">
-        <span class="option-size">64 oz</span>
-        <span class="option-use">Large batches, soups</span>
+    <div class="allergen-containers-inner">
+      <div class="allergen-containers-header">
+        <h3 class="allergen-containers-title">Available Container Sizes</h3>
+        <p class="allergen-containers-subtitle">Choose dedicated containers for allergen-free preparation</p>
       </div>
-      <div class="container-option">
-        <span class="option-size">48 oz</span>
-        <span class="option-use">Family portions</span>
+      <div class="container-options">
+        <div class="container-option">
+          <span class="option-size">64 oz</span>
+          <span class="option-use">Large batches, soups</span>
+        </div>
+        <div class="container-option">
+          <span class="option-size">48 oz</span>
+          <span class="option-use">Family portions</span>
+        </div>
+        <div class="container-option">
+          <span class="option-size">20 oz</span>
+          <span class="option-use">Personal smoothies</span>
+        </div>
+        <div class="container-option">
+          <span class="option-size">8 oz</span>
+          <span class="option-use">Sauces, dressings</span>
+        </div>
       </div>
-      <div class="container-option">
-        <span class="option-size">20 oz</span>
-        <span class="option-use">Personal smoothies</span>
-      </div>
-      <div class="container-option">
-        <span class="option-size">8 oz</span>
-        <span class="option-use">Sauces, dressings</span>
+      <div class="containers-cta">
+        <a href="https://www.vitamix.com/us/en_us/shop/containers" target="_blank" rel="noopener" class="containers-link">Shop Containers on Vitamix.com</a>
       </div>
     </div>
-    <a href="https://www.vitamix.com/us/en_us/shop/containers" target="_blank" class="containers-link">Shop Containers →</a>
   `;
   block.appendChild(containers);
 
-  // Consult note
+  // ===== Resources Section =====
+  const resources = document.createElement('div');
+  resources.className = 'allergen-resources';
+  resources.innerHTML = `
+    <div class="allergen-resources-inner">
+      <div class="resources-content">
+        <h4>Official Guides</h4>
+        <ul>
+          <li><a href="https://www.vitamix.com/us/en_us/articles/how-to-clean-a-blender-guide" target="_blank" rel="noopener">How to Clean Your Vitamix</a></li>
+          <li><a href="https://www.vitamix.com/us/en_us/owners-resources/product-support/faqs/care-and-maintenance" target="_blank" rel="noopener">Care & Maintenance FAQs</a></li>
+        </ul>
+      </div>
+      <div class="resources-content">
+        <h4>Allergen Solutions</h4>
+        <ul>
+          <li><a href="https://www.vitamix.com/us/en_us/products/48-ounce-color-containers-with-self-detect" target="_blank" rel="noopener">Color Containers for Separation</a></li>
+          <li><a href="https://www.vitamix.com/us/en_us/support" target="_blank" rel="noopener">Vitamix Support Center</a></li>
+        </ul>
+      </div>
+    </div>
+  `;
+  block.appendChild(resources);
+
+  // ===== Consult CTA =====
   const consult = document.createElement('div');
   consult.className = 'allergen-consult';
   consult.innerHTML = `
-    <p>🩺 <strong>Always consult with your allergist</strong> about safe food preparation practices specific to your allergies.</p>
+    <p><strong>Always consult with your allergist</strong> about safe food preparation practices specific to your allergies.</p>
   `;
   block.appendChild(consult);
 }

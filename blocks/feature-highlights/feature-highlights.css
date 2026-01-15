@@ -1,12 +1,23 @@
 /**
  * Feature Highlights Block Styles
  *
- * Key features with images and descriptions.
+ * Knockout-style cards matching vitamix.com reference design.
+ * Cards with bordered grid layout, image knockout on gray background,
+ * and dark fill hover effect.
  */
 
+/* Section container - full width */
+.section.feature-highlights-container {
+  max-width: none;
+}
+
+.section.feature-highlights-container > .feature-highlights-wrapper {
+  max-width: none;
+  padding: 0;
+}
+
 .feature-highlights {
-  padding: var(--spacing-700) var(--spacing-300);
-  max-width: var(--max-width-wide);
+  padding: var(--spacing-700) 0;
   margin: 0 auto;
   width: 100%;
 }
@@ -43,147 +54,238 @@
   color: var(--color-white-alpha-70);
 }
 
+/* Grid layout - knockout style with shared borders */
 .feature-highlights-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-400);
-  justify-content: center;
+  gap: 0;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  font-size: var(--detail-size-s);
+  grid-template-columns: 1fr;
 }
 
-/* 2 cards: 1 row with 2 columns */
+/* 2 cards */
 .feature-highlights-grid[data-card-count="2"] {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* 3 cards: 1 row with 3 columns */
+/* 3 cards */
 .feature-highlights-grid[data-card-count="3"] {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
 }
 
-/* 4 cards: 1 row with 4 columns */
+/* 4 cards */
 .feature-highlights-grid[data-card-count="4"] {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
-/* 5-6 cards: 2 rows with 3 columns each */
-.feature-highlights-grid[data-card-count="5"],
-.feature-highlights-grid[data-card-count="6"] {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-/* 7-8 cards: 2 rows with 4 columns each */
-.feature-highlights-grid[data-card-count="7"],
-.feature-highlights-grid[data-card-count="8"] {
-  grid-template-columns: repeat(4, 1fr);
-}
-
+/* Card base styles - knockout variant */
 .feature-highlight-card {
-  background: var(--color-white);
-  border-radius: var(--rounding-m);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+  border: 1px solid var(--color-gray-300);
+  padding: var(--spacing-300);
+  background-color: var(--color-background);
+  transition: border-color 0.2s;
+  z-index: 1;
+  text-align: center;
+}
+
+/* Dark fill hover effect */
+.feature-highlight-card::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background-color: var(--color-charcoal);
+  z-index: -1;
+  transition: height 0.4s;
 }
 
 .feature-highlight-card:hover {
-  transform: translateY(calc(-1 * var(--spacing-40)));
-  box-shadow: var(--shadow-lg);
+  border-color: var(--color-charcoal) !important;
 }
 
+.feature-highlight-card:hover::after {
+  height: 100%;
+}
+
+/* Border collapse for 2 columns */
+.feature-highlights-grid[data-card-count="2"] .feature-highlight-card:nth-child(2n),
+.feature-highlights-grid[data-card-count="4"] .feature-highlight-card:nth-child(2n) {
+  border-left-color: transparent;
+}
+
+.feature-highlights-grid[data-card-count="2"] .feature-highlight-card:nth-child(n + 3),
+.feature-highlights-grid[data-card-count="4"] .feature-highlight-card:nth-child(n + 3) {
+  border-top-color: transparent;
+}
+
+/* Single column border collapse */
+.feature-highlights-grid[data-card-count="1"] .feature-highlight-card + .feature-highlight-card,
+.feature-highlights-grid[data-card-count="3"] .feature-highlight-card + .feature-highlight-card {
+  border-top-color: transparent;
+}
+
+/* Image container - knockout style with gray background */
 .feature-highlight-image {
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: var(--color-gray-200);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-300) 0;
+  background-color: var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .feature-highlight-image picture {
   display: block;
-  width: 100%;
-  height: 100%;
+  line-height: 0;
 }
 
 .feature-highlight-image img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
+  max-width: 104px;
+  height: auto;
+  transition: transform 0.4s;
 }
 
+/* Image hover - lift up effect */
 .feature-highlight-card:hover .feature-highlight-image img {
-  transform: scale(1.05);
+  transform: translateY(-0.5ch);
 }
 
+/* Content area */
 .feature-highlight-content {
-  padding: var(--spacing-300);
+  padding: var(--spacing-100) 0 0;
+  text-align: center;
 }
 
 .feature-highlight-title {
-  font-size: var(--font-size-300);
-  font-weight: var(--weight-medium);
+  font-family: var(--heading-font-family);
+  font-size: var(--body-size-l);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-s);
   color: var(--color-dark-charcoal);
-  margin: 0 0 var(--spacing-80);
+  margin: 0 0 var(--spacing-60);
+  transition: color 0.4s;
+  text-align: center;
+}
+
+/* Title color change on hover */
+.feature-highlight-card:hover .feature-highlight-title {
+  color: var(--color-white);
 }
 
 .feature-highlight-description {
-  font-size: var(--font-size-100);
-  line-height: var(--line-height-xl);
+  font-size: var(--detail-size-s);
+  line-height: var(--line-height-m);
   color: var(--color-gray-900);
   margin: 0;
+  transition: color 0.4s;
+  text-align: center;
+}
+
+/* Description color change on hover */
+.feature-highlight-card:hover .feature-highlight-description {
+  color: var(--color-white);
+}
+
+/* Link styling */
+.feature-highlight-card a {
+  color: var(--color-dark-charcoal);
+  text-decoration: none;
+  transition: color 0.4s;
+}
+
+.feature-highlight-card:hover a {
+  color: var(--color-white);
 }
 
 /* Section variants */
-.section.highlight .feature-highlight-card {
-  box-shadow: var(--shadow-lg);
+.section.dark .feature-highlight-card {
+  background-color: var(--color-dark-charcoal);
+  border-color: var(--color-gray-700);
 }
 
-.section.dark .feature-highlight-card {
-  background: var(--color-white-alpha-5);
+.section.dark .feature-highlight-card::after {
+  background-color: var(--color-white);
 }
 
 .section.dark .feature-highlight-title {
   color: var(--color-white);
 }
 
+.section.dark .feature-highlight-card:hover .feature-highlight-title {
+  color: var(--color-dark-charcoal);
+}
+
 .section.dark .feature-highlight-description {
-  color: var(--color-white-alpha-70);
+  color: var(--color-gray-500);
 }
 
-/* Responsive */
-@media (width < 900px) {
-  /* Tablet: max 2 columns */
-  .feature-highlights-grid,
-  .feature-highlights-grid[data-card-count="3"],
-  .feature-highlights-grid[data-card-count="4"],
-  .feature-highlights-grid[data-card-count="5"],
-  .feature-highlights-grid[data-card-count="6"],
-  .feature-highlights-grid[data-card-count="7"],
-  .feature-highlights-grid[data-card-count="8"] {
-    grid-template-columns: repeat(2, 1fr);
+.section.dark .feature-highlight-card:hover .feature-highlight-description {
+  color: var(--color-dark-charcoal);
+}
+
+/* Tablet breakpoint */
+@media (width >= 600px) {
+  .feature-highlights-grid[data-card-count="3"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .feature-highlights-grid[data-card-count="3"] .feature-highlight-card:nth-child(n + 4) {
+    border-top-color: transparent;
+  }
+
+  .feature-highlights-grid[data-card-count="3"] .feature-highlight-card:nth-child(3n),
+  .feature-highlights-grid[data-card-count="3"] .feature-highlight-card:nth-child(3n - 1) {
+    border-left-color: transparent;
+  }
+
+  .feature-highlights-grid[data-card-count="3"] .feature-highlight-card + .feature-highlight-card {
+    border-top-color: var(--color-gray-300);
   }
 }
 
-@media (width < 600px) {
+/* Desktop breakpoint */
+@media (width >= 800px) {
   .feature-highlights {
-    padding: var(--spacing-600) var(--spacing-100);
+    font-size: var(--body-size-l);
   }
 
-  /* Mobile: single column */
-  .feature-highlights-grid,
-  .feature-highlights-grid[data-card-count="2"],
-  .feature-highlights-grid[data-card-count="3"],
-  .feature-highlights-grid[data-card-count="4"],
-  .feature-highlights-grid[data-card-count="5"],
-  .feature-highlights-grid[data-card-count="6"],
-  .feature-highlights-grid[data-card-count="7"],
-  .feature-highlights-grid[data-card-count="8"] {
-    grid-template-columns: 1fr;
+  .feature-highlights-grid[data-card-count="2"] .feature-highlight-card,
+  .feature-highlights-grid[data-card-count="4"] .feature-highlight-card {
+    padding: var(--spacing-600);
   }
 
-  .feature-highlight-content {
-    padding: var(--spacing-200);
+  .feature-highlight-image img {
+    max-height: 151px;
+    max-width: 151px;
   }
 
   .feature-highlight-title {
-    font-size: var(--font-size-200);
+    font-size: var(--body-size-l);
+  }
+}
+
+/* Large desktop breakpoint */
+@media (width >= 1000px) {
+  .feature-highlights-grid[data-card-count="4"] {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .feature-highlights-grid[data-card-count="4"] .feature-highlight-card,
+  .feature-highlights-grid[data-card-count="4"] .feature-highlight-card:nth-child(n + 3) {
+    padding: var(--spacing-600) var(--spacing-400);
+    border-top-color: var(--color-gray-300);
+  }
+
+  .feature-highlights-grid[data-card-count="4"] .feature-highlight-card:nth-child(4n),
+  .feature-highlights-grid[data-card-count="4"] .feature-highlight-card:nth-child(4n - 1),
+  .feature-highlights-grid[data-card-count="4"] .feature-highlight-card:nth-child(4n - 2) {
+    border-left-color: transparent;
   }
 }

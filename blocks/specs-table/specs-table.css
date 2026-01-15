@@ -1,91 +1,120 @@
 /**
  * Specs Table Block Styles
  *
- * Vertical list layout with label/value pairs.
- * Handles long text values gracefully.
+ * Premium product specifications panel with refined typography
+ * and editorial aesthetic matching the Vitamix design system.
  */
 
 .specs-table {
-  padding: var(--spacing-600) var(--spacing-300);
-  max-width: 800px;
+  --specs-bg-alt: var(--color-gray-200);
+  --specs-bg-hover: var(--color-gray-300);
+  --specs-label-color: var(--color-gray-900);
+  --specs-value-color: var(--color-charcoal);
+  --specs-title-color: var(--color-charcoal);
+  --specs-accent: var(--color-red);
+
+  max-width: 720px;
   margin: 0 auto;
+  padding: var(--spacing-600) 0;
 }
 
-/* Title with model name */
+/* Title with model name - Sentinel serif, light weight */
 .specs-table-title {
-  font-size: var(--font-size-400);
-  font-weight: var(--weight-semibold);
-  color: var(--color-dark-charcoal);
-  margin: 0 0 var(--spacing-300);
-  padding: 0;
+  font-family: var(--heading-font-family, var(--serif-font-family));
+  font-size: var(--font-size-500);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--specs-title-color);
+  margin: 0 0 var(--spacing-400);
+  padding: 0 0 var(--spacing-200);
+  border-bottom: 2px solid var(--specs-accent);
 }
 
 /* Each row is a spec item */
 .specs-table > div {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: var(--spacing-300);
-  padding: var(--spacing-200) 0;
-  border-bottom: var(--border-s) solid var(--color-gray-400);
+  grid-template-columns: 180px 1fr;
+  gap: var(--spacing-400);
+  padding: var(--spacing-200) var(--spacing-300);
   align-items: baseline;
+  transition: background-color 0.2s ease;
 }
 
-/* First div after title or first child gets top border */
-.specs-table > div:first-of-type {
-  border-top: var(--border-s) solid var(--color-gray-400);
+/* Alternating row backgrounds for subtle rhythm */
+.specs-table > div:nth-of-type(odd) {
+  background-color: var(--specs-bg-alt);
 }
 
-/* Label column */
+/* Refined hover state */
+.specs-table > div:hover {
+  background-color: var(--specs-bg-hover);
+}
+
+/* Label column - uppercase eyebrow style */
 .specs-table-label {
-  font-size: var(--font-size-80);
+  font-family: var(--body-font-family, var(--sans-serif-font-family));
+  font-size: var(--font-size-60);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wider);
-  color: var(--color-gray-900);
+  letter-spacing: var(--letter-spacing-m, 0.14em);
+  color: var(--specs-label-color);
+  line-height: var(--line-height-m);
 }
 
-/* Value column */
+/* Value column - clear, readable */
 .specs-table-value {
+  font-family: var(--body-font-family, var(--sans-serif-font-family));
   font-size: var(--font-size-100);
-  color: var(--color-dark-charcoal);
+  font-weight: var(--weight-regular);
+  color: var(--specs-value-color);
   line-height: var(--line-height-l);
 }
 
-/* Section variants */
-.section.highlight .specs-table > div {
-  border-color: var(--color-gray-500);
+/* Highlight section variant */
+.section.highlight .specs-table {
+  --specs-bg-alt: var(--color-white);
+  --specs-bg-hover: var(--color-gray-100);
 }
 
-.section.dark .specs-table > div {
-  border-color: var(--color-white-alpha-15);
+/* Dark section variant */
+.section.dark .specs-table {
+  --specs-bg-alt: rgba(255 255 255 / 5%);
+  --specs-bg-hover: rgba(255 255 255 / 10%);
+  --specs-label-color: var(--color-gray-500);
+  --specs-value-color: var(--color-white);
+  --specs-title-color: var(--color-white);
+  --specs-accent: var(--color-gray-500);
 }
 
-.section.dark .specs-table-title {
-  color: var(--color-white);
+/* Responsive - tablet */
+@media (width < 900px) {
+  .specs-table > div {
+    grid-template-columns: 160px 1fr;
+    gap: var(--spacing-300);
+  }
 }
 
-.section.dark .specs-table-label {
-  color: var(--color-white-alpha-60);
-}
-
-.section.dark .specs-table-value {
-  color: var(--color-white);
-}
-
-/* Responsive */
+/* Responsive - mobile */
 @media (width < 600px) {
   .specs-table {
-    padding: var(--spacing-400) var(--spacing-100);
+    padding: var(--spacing-400) 0;
+  }
+
+  .specs-table-title {
+    font-size: var(--font-size-400);
+    margin-bottom: var(--spacing-300);
+    padding-bottom: var(--spacing-100);
   }
 
   .specs-table > div {
     grid-template-columns: 1fr;
     gap: var(--spacing-60);
-    padding: var(--spacing-100) 0;
+    padding: var(--spacing-200) var(--spacing-200);
   }
 
   .specs-table-label {
     font-size: var(--font-size-40);
+    margin-bottom: var(--spacing-20);
   }
 
   .specs-table-value {

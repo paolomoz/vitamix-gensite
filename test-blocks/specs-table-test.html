@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specs Table - Design Test</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/blocks/specs-table/specs-table.css">
+  <style>
+    body {
+      display: block !important;
+      font-family: var(--body-font-family);
+      background: var(--color-gray-100);
+    }
+    .test-section {
+      padding: var(--spacing-600) var(--spacing-400);
+      margin: 0;
+    }
+    .test-section h2 {
+      text-align: center;
+      margin-bottom: var(--spacing-400);
+      font-family: var(--heading-font-family);
+      font-weight: var(--weight-light);
+    }
+    .section.dark {
+      background-color: var(--color-charcoal);
+      color: var(--color-white);
+    }
+    .section.highlight {
+      background-color: var(--color-gray-200);
+    }
+  </style>
+</head>
+<body class="appear">
+  <main>
+    <!-- Default Light Section -->
+    <section class="test-section section">
+      <h2>Default (Light Background)</h2>
+      <div class="specs-table-wrapper">
+        <div class="specs-table">
+          <h3 class="specs-table-title">Vitamix A3500 Specifications</h3>
+          <div>
+            <div class="specs-table-label">Motor</div>
+            <div class="specs-table-value">2.2 Peak HP</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Container</div>
+            <div class="specs-table-value">64 oz Low-Profile</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Dimensions</div>
+            <div class="specs-table-value">17.25" H x 7.75" W x 9.75" D</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Weight</div>
+            <div class="specs-table-value">14.92 lbs</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Blade Material</div>
+            <div class="specs-table-value">Stainless Steel</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Warranty</div>
+            <div class="specs-table-value">10-Year Full Warranty</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Programs</div>
+            <div class="specs-table-value">Smoothies, Hot Soups, Frozen Desserts, Dips & Spreads, Self-Cleaning</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Highlight Section -->
+    <section class="test-section section highlight">
+      <h2>Highlight Section (Off-White Background)</h2>
+      <div class="specs-table-wrapper">
+        <div class="specs-table">
+          <h3 class="specs-table-title">Vitamix 5200 Specifications</h3>
+          <div>
+            <div class="specs-table-label">Motor</div>
+            <div class="specs-table-value">2 Peak HP</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Container</div>
+            <div class="specs-table-value">64 oz Classic</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Speed Control</div>
+            <div class="specs-table-value">Variable Speed + Pulse</div>
+          </div>
+          <div>
+            <div class="specs-table-label">BPA-Free</div>
+            <div class="specs-table-value">Yes</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Origin</div>
+            <div class="specs-table-value">Made in USA</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dark Section -->
+    <section class="test-section section dark">
+      <h2>Dark Section</h2>
+      <div class="specs-table-wrapper">
+        <div class="specs-table">
+          <h3 class="specs-table-title">Commercial Quiet One Specifications</h3>
+          <div>
+            <div class="specs-table-label">Motor</div>
+            <div class="specs-table-value">3 Peak HP</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Sound Level</div>
+            <div class="specs-table-value">18 dB below competition</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Container</div>
+            <div class="specs-table-value">48 oz Advance</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Programs</div>
+            <div class="specs-table-value">6 Optimized Blend Cycles</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Electrical</div>
+            <div class="specs-table-value">120V / 11.5 Amps</div>
+          </div>
+          <div>
+            <div class="specs-table-label">Warranty</div>
+            <div class="specs-table-value">3-Year Commercial Warranty</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

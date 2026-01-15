@@ -1,168 +1,37 @@
-import { getMetadata } from '../../scripts/aem.js';
-import { loadFragment } from '../fragment/fragment.js';
+/**
+ * Header Block
+ *
+ * Clean, professional header matching vitamix.com.
+ * Features: Logo, navigation, AI-powered search, tools.
+ */
 
-// media query match that indicates mobile/tablet width
-const isDesktop = window.matchMedia('(min-width: 900px)');
-
-function closeOnEscape(e) {
-  if (e.code === 'Escape') {
-    const nav = document.getElementById('nav');
-    const navSections = nav.querySelector('.nav-sections');
-    const navSectionExpanded = navSections.querySelector('[aria-expanded="true"]');
-    if (navSectionExpanded && isDesktop.matches) {
-      // eslint-disable-next-line no-use-before-define
-      toggleAllNavSections(navSections);
-      navSectionExpanded.focus();
-    } else if (!isDesktop.matches) {
-      // eslint-disable-next-line no-use-before-define
-      toggleMenu(nav, navSections);
-      nav.querySelector('button').focus();
-    }
-  }
-}
-
-function closeOnFocusLost(e) {
-  const nav = e.currentTarget;
-  if (!nav.contains(e.relatedTarget)) {
-    const navSections = nav.querySelector('.nav-sections');
-    const navSectionExpanded = navSections.querySelector('[aria-expanded="true"]');
-    if (navSectionExpanded && isDesktop.matches) {
-      // eslint-disable-next-line no-use-before-define
-      toggleAllNavSections(navSections, false);
-    } else if (!isDesktop.matches) {
-      // eslint-disable-next-line no-use-before-define
-      toggleMenu(nav, navSections, false);
-    }
-  }
-}
-
-function openOnKeydown(e) {
-  const focused = document.activeElement;
-  const isNavDrop = focused.className === 'nav-drop';
-  if (isNavDrop && (e.code === 'Enter' || e.code === 'Space')) {
-    const dropExpanded = focused.getAttribute('aria-expanded') === 'true';
-    // eslint-disable-next-line no-use-before-define
-    toggleAllNavSections(focused.closest('.nav-sections'));
-    focused.setAttribute('aria-expanded', dropExpanded ? 'false' : 'true');
-  }
-}
-
-function focusNavSection() {
-  document.activeElement.addEventListener('keydown', openOnKeydown);
-}
+// Media query for desktop
+const isDesktop = window.matchMedia('(min-width: 1000px)');
 
 /**
- * Toggles all nav sections
- * @param {Element} sections The container element
- * @param {Boolean} expanded Whether the element should be expanded or collapsed
+ * Toggles mobile menu state
+ * @param {HTMLElement} nav - Navigation element
+ * @param {boolean} forceExpanded - Force expand/collapse state
  */
-function toggleAllNavSections(sections, expanded = false) {
-  sections.querySelectorAll('.nav-sections .default-content-wrapper > ul > li').forEach((section) => {
-    section.setAttribute('aria-expanded', expanded);
-  });
-}
+function toggleMenu(nav, forceExpanded = null) {
+  const expanded = forceExpanded !== null
+    ? !forceExpanded
+    : nav.getAttribute('aria-expanded') === 'true';
 
-/**
- * Toggles the entire nav
- * @param {Element} nav The container element
- * @param {Element} navSections The nav sections within the container element
- * @param {*} forceExpanded Optional param to force nav expand behavior when not null
- */
-function toggleMenu(nav, navSections, forceExpanded = null) {
-  const expanded = forceExpanded !== null ? !forceExpanded : nav.getAttribute('aria-expanded') === 'true';
-  const button = nav.querySelector('.nav-hamburger button');
-  document.body.style.overflowY = (expanded || isDesktop.matches) ? '' : 'hidden';
   nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-  toggleAllNavSections(navSections, expanded || isDesktop.matches ? 'false' : 'true');
-  button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
-  // enable nav dropdown keyboard accessibility
-  const navDrops = navSections.querySelectorAll('.nav-drop');
-  if (isDesktop.matches) {
-    navDrops.forEach((drop) => {
-      if (!drop.hasAttribute('tabindex')) {
-        drop.setAttribute('tabindex', 0);
-        drop.addEventListener('focus', focusNavSection);
-      }
-    });
-  } else {
-    navDrops.forEach((drop) => {
-      drop.removeAttribute('tabindex');
-      drop.removeEventListener('focus', focusNavSection);
-    });
-  }
+  document.body.style.overflowY = expanded || isDesktop.matches ? '' : 'hidden';
 
-  // enable menu collapse on escape keypress
-  if (!expanded || isDesktop.matches) {
-    // collapse menu on escape press
-    window.addEventListener('keydown', closeOnEscape);
-    // collapse menu on focus lost
-    nav.addEventListener('focusout', closeOnFocusLost);
-  } else {
-    window.removeEventListener('keydown', closeOnEscape);
-    nav.removeEventListener('focusout', closeOnFocusLost);
+  const button = nav.querySelector('.nav-hamburger button');
+  if (button) {
+    button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
   }
 }
 
 /**
- * loads and decorates the header, mainly the nav
- * @param {Element} block The header block element
+ * Creates the search bar component
+ * @returns {HTMLElement} Search container element
  */
-export default async function decorate(block) {
-  // load nav as fragment
-  const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
-  const fragment = await loadFragment(navPath);
-
-  // decorate nav DOM
-  block.textContent = '';
-  const nav = document.createElement('nav');
-  nav.id = 'nav';
-  while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
-
-  const classes = ['brand', 'sections', 'tools'];
-  classes.forEach((c, i) => {
-    const section = nav.children[i];
-    if (section) section.classList.add(`nav-${c}`);
-  });
-
-  const navBrand = nav.querySelector('.nav-brand');
-  // Replace brand content with Vitamix logo
-  if (navBrand) {
-    navBrand.innerHTML = `
-      <a href="/" aria-label="Vitamix Home">
-        <img src="/icons/vitamix-logo.svg" alt="Vitamix" width="160" height="35">
-      </a>
-    `;
-  }
-
-  const navSections = nav.querySelector('.nav-sections');
-  if (navSections) {
-    navSections.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((navSection) => {
-      if (navSection.querySelector('ul')) navSection.classList.add('nav-drop');
-      navSection.addEventListener('click', () => {
-        if (isDesktop.matches) {
-          const expanded = navSection.getAttribute('aria-expanded') === 'true';
-          toggleAllNavSections(navSections);
-          navSection.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-        }
-      });
-    });
-  }
-
-  // hamburger for mobile
-  const hamburger = document.createElement('div');
-  hamburger.classList.add('nav-hamburger');
-  hamburger.innerHTML = `<button type="button" aria-controls="nav" aria-label="Open navigation">
-      <span class="nav-hamburger-icon"></span>
-    </button>`;
-  hamburger.addEventListener('click', () => toggleMenu(nav, navSections));
-  nav.prepend(hamburger);
-  nav.setAttribute('aria-expanded', 'false');
-  // prevent mobile nav behavior on window resize
-  toggleMenu(nav, navSections, isDesktop.matches);
-  isDesktop.addEventListener('change', () => toggleMenu(nav, navSections, isDesktop.matches));
-
-  // Add search bar to header
+function createSearchBar() {
   const searchContainer = document.createElement('div');
   searchContainer.className = 'nav-search';
   searchContainer.innerHTML = `
@@ -170,36 +39,47 @@ export default async function decorate(block) {
       <input type="text" placeholder="What would you like to explore?" aria-label="Search query">
       <button type="button" class="header-explore-btn">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
-          <path d="M20 3v4"></path>
-          <path d="M22 5h-4"></path>
-          <path d="M4 17v2"></path>
-          <path d="M5 18H3"></path>
+          <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+          <path d="M20 3v4"/><path d="M22 5h-4"/>
+          <path d="M4 17v2"/><path d="M5 18H3"/>
         </svg>
         <span>Explore</span>
       </button>
     </div>
   `;
+  return searchContainer;
+}
 
-  // Add AI mode toggle (Speed = Cerebras, Quality = Claude)
-  const aiModeToggle = document.createElement('div');
-  aiModeToggle.className = 'nav-ai-toggle';
+/**
+ * Creates AI mode toggle
+ * @returns {HTMLElement} Toggle element
+ */
+function createAIModeToggle() {
   const savedMode = sessionStorage.getItem('ai-mode') || 'speed';
-  aiModeToggle.innerHTML = `
+  const toggle = document.createElement('div');
+  toggle.className = 'nav-ai-toggle';
+  toggle.innerHTML = `
     <button type="button" class="ai-toggle-option${savedMode === 'speed' ? ' active' : ''}" data-value="speed" title="Fast generation with Cerebras">Speed</button>
     <button type="button" class="ai-toggle-option${savedMode === 'quality' ? ' active' : ''}" data-value="quality" title="Quality generation with Claude">Quality</button>
   `;
 
-  // Add image quality toggle to the right of the header
-  const qualityToggle = document.createElement('div');
-  qualityToggle.className = 'nav-quality-toggle';
-  qualityToggle.innerHTML = `
-    <span class="quality-label">Images:</span>
-    <button type="button" class="quality-option active" data-value="fast">Fast</button>
-    <button type="button" class="quality-option" data-value="best">Best</button>
-  `;
+  // Toggle click handler
+  toggle.querySelectorAll('.ai-toggle-option').forEach((option) => {
+    option.addEventListener('click', () => {
+      toggle.querySelectorAll('.ai-toggle-option').forEach((opt) => opt.classList.remove('active'));
+      option.classList.add('active');
+      sessionStorage.setItem('ai-mode', option.dataset.value);
+    });
+  });
 
-  // Add Share button (disabled during generation, enabled when published)
+  return toggle;
+}
+
+/**
+ * Creates share button
+ * @returns {HTMLElement} Share button element
+ */
+function createShareButton() {
   const shareButton = document.createElement('button');
   shareButton.className = 'header-share-btn';
   shareButton.type = 'button';
@@ -214,11 +94,10 @@ export default async function decorate(block) {
     <span>Share</span>
   `;
 
-  // Store published URL for sharing
   let publishedUrl = null;
 
-  // Show notification
-  function showCopyNotification(message) {
+  // Show notification helper
+  const showCopyNotification = (message) => {
     const notification = document.createElement('div');
     notification.className = 'copy-notification';
     notification.innerHTML = `
@@ -228,28 +107,20 @@ export default async function decorate(block) {
       <span>${message}</span>
     `;
     document.body.appendChild(notification);
-
-    // Trigger show animation
-    requestAnimationFrame(() => {
-      notification.classList.add('show');
-    });
-
-    // Auto-dismiss after 2 seconds
+    requestAnimationFrame(() => notification.classList.add('show'));
     setTimeout(() => {
       notification.classList.remove('show');
       setTimeout(() => notification.remove(), 300);
     }, 2000);
-  }
+  };
 
-  // Share button click handler
+  // Click handler
   shareButton.addEventListener('click', async () => {
     if (!publishedUrl) return;
-
     try {
       await navigator.clipboard.writeText(publishedUrl);
       showCopyNotification('Link copied to clipboard!');
-    } catch (err) {
-      // Fallback for older browsers
+    } catch {
       const textArea = document.createElement('textarea');
       textArea.value = publishedUrl;
       textArea.style.cssText = 'position:fixed;left:-9999px';
@@ -266,33 +137,77 @@ export default async function decorate(block) {
     publishedUrl = e.detail.url;
     shareButton.disabled = false;
     shareButton.title = 'Copy link to this page';
-    console.log('[Header] Share button enabled for:', publishedUrl);
   });
 
-  // Add search interactivity
+  return shareButton;
+}
+
+/**
+ * Loads and decorates the header
+ * @param {Element} block - The header block element
+ */
+export default async function decorate(block) {
+  block.textContent = '';
+
+  // Create nav structure
+  const nav = document.createElement('nav');
+  nav.id = 'nav';
+  nav.setAttribute('aria-expanded', 'false');
+
+  // Logo
+  const logo = document.createElement('div');
+  logo.className = 'nav-logo';
+  logo.innerHTML = `
+    <a href="/" aria-label="Vitamix Home">
+      <img src="/icons/logo.svg" alt="Vitamix" width="160" height="35">
+    </a>
+  `;
+
+  // Nav sections (main navigation links)
+  const sections = document.createElement('div');
+  sections.className = 'nav-sections';
+  sections.innerHTML = `
+    <ul>
+      <li><a href="https://www.vitamix.com/us/en_us/shop">Shop</a></li>
+      <li><a href="https://www.vitamix.com/us/en_us/why-vitamix">Why Vitamix</a></li>
+      <li><a href="https://www.vitamix.com/us/en_us/recipes">Recipes</a></li>
+      <li><a href="https://www.vitamix.com/us/en_us/support">Support</a></li>
+    </ul>
+  `;
+
+  // Tools (Account, Cart)
+  const tools = document.createElement('div');
+  tools.className = 'nav-tools';
+  tools.innerHTML = `
+    <a href="https://www.vitamix.com/us/en_us/customer/account" aria-label="Account">
+      <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span>Account</span>
+    </a>
+    <a href="https://www.vitamix.com/us/en_us/checkout/cart" aria-label="Cart">
+      <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+      <span>Cart</span>
+    </a>
+  `;
+
+  // Hamburger menu (mobile)
+  const hamburger = document.createElement('div');
+  hamburger.className = 'nav-hamburger';
+  hamburger.innerHTML = `
+    <button type="button" aria-controls="nav" aria-label="Open navigation">
+      <span class="nav-hamburger-icon"></span>
+    </button>
+  `;
+  hamburger.addEventListener('click', () => toggleMenu(nav));
+
+  // Create search bar and controls
+  const searchContainer = createSearchBar();
+  const aiToggle = createAIModeToggle();
+  const shareButton = createShareButton();
+
+  // Search functionality
   const searchInput = searchContainer.querySelector('input');
   const searchButton = searchContainer.querySelector('.header-explore-btn');
 
-  // AI mode toggle click handler
-  const aiToggleOptions = aiModeToggle.querySelectorAll('.ai-toggle-option');
-  aiToggleOptions.forEach((option) => {
-    option.addEventListener('click', () => {
-      aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
-      option.classList.add('active');
-      sessionStorage.setItem('ai-mode', option.dataset.value);
-    });
-  });
-
-  // Image quality toggle click handler
-  const toggleOptions = qualityToggle.querySelectorAll('.quality-option');
-  toggleOptions.forEach((option) => {
-    option.addEventListener('click', () => {
-      toggleOptions.forEach((opt) => opt.classList.remove('active'));
-      option.classList.add('active');
-    });
-  });
-
-  // Simple search with spinner
   const doSearch = () => {
     const query = searchInput.value.trim();
     if (!query) return;
@@ -302,29 +217,11 @@ export default async function decorate(block) {
     searchInput.disabled = true;
     searchButton.innerHTML = '<div class="header-search-spinner"></div>';
 
-    // Get selected AI mode (default to quality/Claude)
+    // Get selected AI mode
     const aiMode = sessionStorage.getItem('ai-mode') || 'quality';
-
-    // Navigate based on AI mode - both use same worker with different presets:
-    // - speed: preset=all-cerebras (Cerebras for everything)
-    // - quality: preset=production (Claude for reasoning, Cerebras for content)
     const preset = aiMode === 'quality' ? 'production' : 'all-cerebras';
     window.location.href = `/?q=${encodeURIComponent(query)}&preset=${preset}`;
   };
-
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // Update AI toggle to reflect current page mode based on preset parameter
-  const currentPreset = urlParams.get('preset');
-  if (currentPreset === 'all-cerebras') {
-    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
-    aiModeToggle.querySelector('[data-value="speed"]').classList.add('active');
-    sessionStorage.setItem('ai-mode', 'speed');
-  } else if (currentPreset === 'production' || urlParams.has('q')) {
-    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
-    aiModeToggle.querySelector('[data-value="quality"]').classList.add('active');
-    sessionStorage.setItem('ai-mode', 'quality');
-  }
 
   searchButton.addEventListener('click', doSearch);
   searchInput.addEventListener('keydown', (e) => {
@@ -334,16 +231,43 @@ export default async function decorate(block) {
     }
   });
 
-  // Only show nav-search on non-home pages (home page has its own search form)
+  // Update AI toggle to reflect current page mode
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentPreset = urlParams.get('preset');
+  const aiToggleOptions = aiToggle.querySelectorAll('.ai-toggle-option');
+
+  if (currentPreset === 'all-cerebras') {
+    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
+    aiToggle.querySelector('[data-value="speed"]').classList.add('active');
+    sessionStorage.setItem('ai-mode', 'speed');
+  } else if (currentPreset === 'production' || urlParams.has('q')) {
+    aiToggleOptions.forEach((opt) => opt.classList.remove('active'));
+    aiToggle.querySelector('[data-value="quality"]').classList.add('active');
+    sessionStorage.setItem('ai-mode', 'quality');
+  }
+
+  // Assemble nav
+  nav.appendChild(hamburger);
+  nav.appendChild(logo);
+  nav.appendChild(sections);
+
+  // Only show search on non-home pages
   const isHomePage = window.location.pathname === '/' && !window.location.search;
   if (!isHomePage) {
     nav.appendChild(searchContainer);
-    nav.appendChild(qualityToggle);
+    nav.appendChild(aiToggle);
     nav.appendChild(shareButton);
   }
 
+  nav.appendChild(tools);
+
+  // Responsive handling
+  toggleMenu(nav, isDesktop.matches);
+  isDesktop.addEventListener('change', () => toggleMenu(nav, isDesktop.matches));
+
+  // Wrap and append
   const navWrapper = document.createElement('div');
   navWrapper.className = 'nav-wrapper';
-  navWrapper.append(nav);
-  block.append(navWrapper);
+  navWrapper.appendChild(nav);
+  block.appendChild(navWrapper);
 }

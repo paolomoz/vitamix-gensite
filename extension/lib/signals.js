@@ -3,6 +3,29 @@
  * Generic signals with context-based classification
  */
 
+/**
+ * Strip null, undefined, and empty string values from an object
+ * Recursively cleans nested objects
+ */
+export function stripNulls(obj) {
+  if (obj === null || obj === undefined) return undefined;
+  if (typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) {
+    const cleaned = obj.map(stripNulls).filter(v => v !== undefined);
+    return cleaned.length > 0 ? cleaned : undefined;
+  }
+
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === null || value === undefined || value === '') continue;
+    const cleaned = stripNulls(value);
+    if (cleaned !== undefined) {
+      result[key] = cleaned;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
 // Signal weight mappings
 export const SIGNAL_WEIGHTS = {
   VERY_HIGH: 0.20,
@@ -189,7 +212,7 @@ export function createSignal(type, data = {}) {
     weightLabel: getWeightLabel(classification.weight),
     icon: baseType.icon,
     timestamp: Date.now(),
-    data,
+    data: stripNulls(data) || {},
     product,
   };
 }

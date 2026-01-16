@@ -255,11 +255,12 @@
   }
 
   /**
-   * Capture scroll depth
+   * Capture scroll depth - emits single signal with max depth reached
+   * Debounced to avoid multiple events, sent when scrolling stops or page unloads
    */
   function setupScrollCapture() {
-    let ticking = false;
-    const triggeredThresholds = new Set();
+    let debounceTimer = null;
+    let lastSentDepth = 0;
 
     function updateScrollDepth() {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -269,32 +270,35 @@
       if (depth > scrollDepthMax) {
         scrollDepthMax = depth;
       }
+    }
 
-      const thresholds = [25, 50, 75, 100];
-      for (const threshold of thresholds) {
-        if (depth >= threshold && !triggeredThresholds.has(threshold)) {
-          triggeredThresholds.add(threshold);
-          console.log('[VitamixIntent] Scroll depth:', threshold + '%');
-          sendSignal('scroll', {
-            depth: threshold,
-            maxDepth: scrollDepthMax,
-            page: {
-              url: window.location.href,
-              path: window.location.pathname,
-            }
-          });
-        }
+    function sendScrollSignal() {
+      // Only send if we've scrolled past a meaningful threshold and it's new
+      const threshold = Math.floor(scrollDepthMax / 25) * 25; // Round to nearest 25%
+      if (threshold > 0 && threshold > lastSentDepth) {
+        lastSentDepth = threshold;
+        console.log('[VitamixIntent] Scroll depth:', scrollDepthMax + '%');
+        sendSignal('scroll', {
+          depth: scrollDepthMax,
+          page: {
+            url: window.location.href,
+            path: window.location.pathname,
+          }
+        });
       }
-      ticking = false;
     }
 
     window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateScrollDepth);
-        ticking = true;
-      }
+      updateScrollDepth();
+      // Debounce: send signal 1s after scrolling stops
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(sendScrollSignal, 1000);
     }, { passive: true });
 
+    // Also send on page unload to capture final depth
+    window.addEventListener('beforeunload', sendScrollSignal);
+
+    // Initial check after page load
     setTimeout(updateScrollDepth, 500);
   }
 

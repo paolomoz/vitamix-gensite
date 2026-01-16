@@ -36,62 +36,70 @@ export type { SignalInterpretation } from '../types';
 const SIGNAL_INTERPRETATION_PROMPT = `You are analyzing a user's browsing behavior on Vitamix.com to understand their intent.
 
 ## Your Task
-Interpret the raw browsing signals below to understand:
-1. What is this person actually trying to accomplish?
+Interpret the browsing signals to understand:
+1. What is this person trying to accomplish?
 2. What specific needs or concerns do they have?
 3. Where are they in their decision journey?
 4. What would be most helpful to show them?
 
-## Signal Types You'll See
-- **search**: User searched for something (query field contains their search)
-- **page_view**: User viewed a page (h1, path, title describe the page)
-- **click**: User clicked something (category indicates what type)
-- **referrer**: How they arrived (domain, searchQuery if from search engine)
-- **video_play/video_complete**: Video engagement
-- **time_on_page**: How long they spent (indicates interest level)
+## Signal Format (Compact JSON)
+You'll receive signals in this format:
+{
+  "searches": ["query1", "query2"],           // HIGHEST PRIORITY - explicit intent
+  "ref": "google:\\"search terms\\"",          // How they arrived (referrer + search query)
+  "journey": [                                // Chronological actions
+    {"t": 0, "a": "page", "d": "Home"},       // t=seconds, a=action, d=description
+    {"t": 5, "a": "click", "d": "Recipes"},
+    {"t": 8, "a": "page", "d": "Recipe Center", "c": "recipe"},  // c=category when significant
+    {"t": 15, "a": "click", "d": "A3500", "p": "A3500"}          // p=product when applicable
+  ],
+  "products": ["A3500", "E310"],              // Products they've viewed
+  "scrolls": {"/recipes": 100, "/a3500": 50}, // Max scroll depth per page
+  "timeSpent": {"/a3500": 120}                // Seconds spent (when significant)
+}
 
-## Important Guidelines
-- Pay close attention to SEARCH QUERIES - they reveal explicit intent
-- Look for patterns across signals (e.g., multiple product views = comparison shopping)
-- Recent signals are more relevant than older ones
-- High-weight signals (VERY_HIGH, HIGH) indicate stronger intent signals
-- Don't just categorize - UNDERSTAND the human behind the signals
-- Be specific: "find kid-friendly recipes to hide vegetables" not just "recipes"
+Action types: page, click, video, video_done
 
-## Common Patterns to Recognize
+## Key Interpretation Guidelines
+- SEARCH QUERIES reveal explicit intent - prioritize these
+- Journey sequence shows browsing patterns (e.g., multiple product pages = comparison shopping)
+- High scroll depth + time spent = strong interest
+- "ref" with search query shows what brought them to the site
+- Categories (c field): recipe, product, compare, support, etc.
+
+## Common Patterns
 - "kids", "children", "family", "picky eater" → Family-focused, may want to hide vegetables
 - "baby", "infant", "toddler", "puree" → New parent, needs baby food guidance
 - "gift", "wedding", "registry" → Buying for someone else
-- "upgrade", "vs", "compare", "replace" → Existing owner considering upgrade
-- Multiple product pages → Comparison shopping
-- Reviews + product pages → Thorough researcher
+- Multiple products in journey → Comparison shopping
+- Compare pages or "vs" searches → Active comparison
 - Financing/reconditioned pages → Price-sensitive
 
-## Output Format (JSON only, no markdown)
+## Output Format (JSON only)
 {
   "interpretation": {
-    "primaryIntent": "What they're fundamentally trying to do (be specific)",
-    "specificNeeds": ["List of specific needs/concerns extracted from signals"],
-    "emotionalContext": "What might they be feeling? (e.g., 'frustrated parent', 'excited gift-giver')",
+    "primaryIntent": "What they're trying to do (be specific)",
+    "specificNeeds": ["Specific needs/concerns from signals"],
+    "emotionalContext": "What they might be feeling",
     "journeyStage": "exploring | comparing | deciding",
-    "keyInsights": ["Important observations about this user"]
+    "keyInsights": ["Important observations"]
   },
   "classification": {
     "intentType": "discovery|comparison|product-detail|use-case|specs|reviews|price|recommendation|support|gift|medical|accessibility|partnership",
     "confidence": 0.0-1.0,
     "entities": {
       "products": ["products they're interested in"],
-      "useCases": ["specific use cases like 'smoothies', 'soups', 'kids_recipes', 'hiding_vegetables', 'baby_food'"],
+      "useCases": ["e.g. 'smoothies', 'soups', 'kids_recipes', 'baby_food'"],
       "features": ["features they care about"],
       "priceRange": "budget|mid|premium|null"
     },
     "journeyStage": "exploring|comparing|deciding"
   },
   "contentRecommendation": {
-    "heroTone": "How should the hero speak to them? (e.g., 'empathetic - acknowledge parenting challenge')",
-    "prioritizeBlocks": ["Which block types would be most helpful"],
-    "avoidBlocks": ["Which blocks would be irrelevant"],
-    "specialGuidance": "Any specific content guidance based on their signals"
+    "heroTone": "How should the hero speak to them?",
+    "prioritizeBlocks": ["Block types most helpful"],
+    "avoidBlocks": ["Irrelevant blocks"],
+    "specialGuidance": "Content guidance based on signals"
   }
 }`;
 
@@ -100,95 +108,188 @@ Interpret the raw browsing signals below to understand:
 // ============================================
 
 /**
- * Format timestamp as relative time
+ * Signal type abbreviations for compact format
  */
-function formatTimestamp(ts: number): string {
-  const ago = Date.now() - ts;
-  if (ago < 60000) return '(just now)';
-  if (ago < 3600000) return `(${Math.floor(ago / 60000)}m ago)`;
-  if (ago < 86400000) return `(${Math.floor(ago / 3600000)}h ago)`;
-  return `(${Math.floor(ago / 86400000)}d ago)`;
+const TYPE_ABBREV: Record<string, string> = {
+  page_view: 'page',
+  click: 'click',
+  search: 'search',
+  scroll: 'scroll',
+  referrer: 'ref',
+  time_on_page: 'time',
+  video_play: 'video',
+  video_complete: 'video_done',
+};
+
+/**
+ * Extract the essential descriptive content from a signal
+ * Returns only what's needed to understand the action
+ */
+function extractEssence(signal: ExtensionSignal): string {
+  const data = signal.data as Record<string, unknown> | undefined;
+
+  switch (signal.type) {
+    case 'search':
+      return String(data?.query || '');
+
+    case 'page_view': {
+      // Prefer h1, fall back to path
+      const h1 = data?.h1 as string | undefined;
+      const path = data?.path as string | undefined;
+      const price = data?.price as string | undefined;
+      let result = h1 || path || '';
+      if (price) result += ` ($${price.replace(/[^0-9.]/g, '')})`;
+      return result;
+    }
+
+    case 'click': {
+      // Prefer meaningful text, fall back to imgAlt or category
+      const text = data?.text as string | undefined;
+      const imgAlt = data?.imgAlt as string | undefined;
+      return text || imgAlt || signal.category || '';
+    }
+
+    case 'scroll':
+      return `${data?.depth || 0}%`;
+
+    case 'referrer': {
+      const domain = data?.domain as string | undefined;
+      const searchQuery = data?.searchQuery as string | undefined;
+      return searchQuery ? `${domain}:"${searchQuery}"` : (domain || 'direct');
+    }
+
+    case 'time_on_page':
+      return `${data?.seconds || 0}s`;
+
+    case 'video_play':
+    case 'video_complete':
+      return String(data?.title || data?.src || 'video');
+
+    default:
+      return signal.label || signal.type;
+  }
 }
 
 /**
- * Format signals for direct LLM interpretation
- * Unlike the old formatSignalsForPrompt, this preserves MORE context
- * and organizes signals by type for clarity
+ * Format signals as compact JSON for LLM interpretation
+ * Optimized for token efficiency while preserving semantic meaning
+ *
+ * Output format:
+ * {
+ *   "searches": ["query1", "query2"],
+ *   "ref": "google:\"blender for smoothies\"",
+ *   "journey": [
+ *     {"t": 0, "a": "page", "d": "Home", "p": null},
+ *     {"t": 5, "a": "click", "d": "Recipes", "p": null},
+ *     {"t": 8, "a": "page", "d": "Recipe Center", "p": null, "c": "recipe"}
+ *   ],
+ *   "products": ["A3500", "E310"],
+ *   "scrolls": {"Recipe Center": 100, "A3500": 50},
+ *   "timeSpent": {"A3500": 120}
+ * }
  */
 function formatSignalsForInterpretation(signals: ExtensionSignal[]): string {
   if (signals.length === 0) {
-    return 'No browsing signals captured yet.';
+    return JSON.stringify({ journey: [], products: [] });
   }
 
-  // Sort by timestamp (most recent first)
-  const sorted = [...signals]
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, 50); // Increased from 20 to 50 for better context
+  // Sort by timestamp (oldest first for journey narrative)
+  const sorted = [...signals].sort((a, b) => a.timestamp - b.timestamp);
+  const startTime = sorted[0].timestamp;
 
-  const sections: string[] = [];
+  // Extract searches (highest priority - shown separately)
+  const searches = sorted
+    .filter(s => s.type === 'search')
+    .map(s => (s.data as Record<string, unknown>)?.query as string)
+    .filter(Boolean);
 
-  // Group by signal type for clarity
-  const searches = sorted.filter(s => s.type === 'search');
-  const pageViews = sorted.filter(s => s.type === 'page_view');
-  const clicks = sorted.filter(s => s.type === 'click');
-  const referrers = sorted.filter(s => s.type === 'referrer');
-  const videos = sorted.filter(s => s.type === 'video_play' || s.type === 'video_complete');
-  const other = sorted.filter(s =>
-    !['search', 'page_view', 'click', 'referrer', 'video_play', 'video_complete'].includes(s.type)
-  );
+  // Extract referrer
+  const referrer = sorted.find(s => s.type === 'referrer');
+  const refStr = referrer ? extractEssence(referrer) : null;
 
-  // Search queries are the most important - explicit intent
+  // Build journey array (exclude searches, referrers, and aggregate scrolls/time)
+  const scrollsByPage: Record<string, number> = {};
+  const timeByPage: Record<string, number> = {};
+
+  const journey = sorted
+    .filter(s => !['search', 'referrer', 'scroll', 'time_on_page'].includes(s.type))
+    .map(s => {
+      const entry: Record<string, unknown> = {
+        t: Math.round((s.timestamp - startTime) / 1000), // seconds since start
+        a: TYPE_ABBREV[s.type] || s.type,
+        d: extractEssence(s),
+      };
+
+      // Add product if present
+      if (s.product) {
+        entry.p = s.product;
+      }
+
+      // Add category for high-weight signals
+      if (s.weight >= 0.15 && s.category && s.category !== s.type) {
+        entry.c = s.category;
+      }
+
+      return entry;
+    });
+
+  // Aggregate scroll depths by page
+  sorted
+    .filter(s => s.type === 'scroll')
+    .forEach(s => {
+      const data = s.data as Record<string, unknown>;
+      const path = (data?.page as Record<string, unknown>)?.path as string || 'unknown';
+      const depth = (data?.depth as number) || 0;
+      if (!scrollsByPage[path] || depth > scrollsByPage[path]) {
+        scrollsByPage[path] = depth;
+      }
+    });
+
+  // Aggregate time on page
+  sorted
+    .filter(s => s.type === 'time_on_page')
+    .forEach(s => {
+      const data = s.data as Record<string, unknown>;
+      const path = (data?.page as Record<string, unknown>)?.path as string || 'unknown';
+      const seconds = (data?.seconds as number) || 0;
+      if (!timeByPage[path] || seconds > timeByPage[path]) {
+        timeByPage[path] = seconds;
+      }
+    });
+
+  // Extract unique products
+  const products = [...new Set(
+    sorted
+      .filter(s => s.product)
+      .map(s => s.product as string)
+  )];
+
+  // Build compact output object
+  const output: Record<string, unknown> = {};
+
   if (searches.length > 0) {
-    sections.push(`### Search Queries (HIGHEST PRIORITY - explicit intent)\n${searches.map(s =>
-      `- "${s.data?.query || 'unknown'}" [${s.weightLabel}] ${formatTimestamp(s.timestamp)}`
-    ).join('\n')}`);
+    output.searches = searches;
   }
 
-  // Referrers show how they arrived
-  if (referrers.length > 0) {
-    sections.push(`### How They Arrived\n${referrers.map(s => {
-      const domain = s.data?.domain || 'direct';
-      const searchQuery = s.data?.searchQuery ? ` (searched: "${s.data.searchQuery}")` : '';
-      return `- From ${domain}${searchQuery} [${s.weightLabel}]`;
-    }).join('\n')}`);
+  if (refStr && refStr !== 'direct') {
+    output.ref = refStr;
   }
 
-  // Page views show browsing patterns
-  if (pageViews.length > 0) {
-    sections.push(`### Pages Viewed\n${pageViews.map(s => {
-      const page = s.data?.h1 || s.data?.title || s.data?.path || 'unknown page';
-      const product = s.product ? ` [Product: ${s.product}]` : '';
-      const category = s.category ? ` (${s.category})` : '';
-      return `- ${page}${product}${category} [${s.weightLabel}] ${formatTimestamp(s.timestamp)}`;
-    }).join('\n')}`);
+  output.journey = journey;
+
+  if (products.length > 0) {
+    output.products = products;
   }
 
-  // Clicks show engagement
-  if (clicks.length > 0) {
-    sections.push(`### Clicks & Interactions\n${clicks.map(s => {
-      const detail = s.data?.text || s.category || s.label || 'click';
-      const product = s.product ? ` [Product: ${s.product}]` : '';
-      return `- ${detail}${product} [${s.weightLabel}] ${formatTimestamp(s.timestamp)}`;
-    }).join('\n')}`);
+  if (Object.keys(scrollsByPage).length > 0) {
+    output.scrolls = scrollsByPage;
   }
 
-  // Video engagement
-  if (videos.length > 0) {
-    sections.push(`### Video Engagement\n${videos.map(s => {
-      const action = s.type === 'video_complete' ? 'Completed' : 'Started';
-      const title = s.data?.title || 'video';
-      return `- ${action}: ${title} [${s.weightLabel}]`;
-    }).join('\n')}`);
+  if (Object.keys(timeByPage).length > 0) {
+    output.timeSpent = timeByPage;
   }
 
-  // Other signals
-  if (other.length > 0) {
-    sections.push(`### Other Signals\n${other.map(s =>
-      `- ${s.label}: ${s.type} [${s.weightLabel}]`
-    ).join('\n')}`);
-  }
-
-  return sections.join('\n\n');
+  return JSON.stringify(output);
 }
 
 /**
@@ -226,31 +327,42 @@ export async function interpretSignals(
 ): Promise<SignalInterpretation> {
   const modelFactory = createModelFactory(env, preset);
 
-  // Format signals for interpretation
-  const signalsText = formatSignalsForInterpretation(context.signals);
+  // Format signals as compact JSON
+  const signalsJson = formatSignalsForInterpretation(context.signals);
 
-  // Extract products from signals for context
+  // Extract products from signals for context (already in the JSON, but needed for fallback)
   const productsConsidered = extractProductsFromSignals(context.signals);
-  const productsText = productsConsidered.length > 0
-    ? `\n\n### Products They've Viewed\n${productsConsidered.map(p => `- ${p}`).join('\n')}`
-    : '';
+
+  // Build additional context as compact additions to the signal object
+  const additionalContext: Record<string, unknown> = {};
 
   // Include conversation history if available
-  const historyText = context.previousQueries.length > 0
-    ? `\n\n### Conversation History (previous questions in this session)\n${context.previousQueries.map((q, i) => `${i + 1}. "${q}"`).join('\n')}`
-    : '';
+  if (context.previousQueries.length > 0) {
+    additionalContext.previousQueries = context.previousQueries;
+  }
 
-  // Include explicit query if present
-  const queryText = context.query
-    ? `\n\n### Current Query (IMPORTANT - what they just asked)\nThe user just asked: "${context.query}"`
-    : '';
+  // Include explicit query if present (highest priority)
+  if (context.query) {
+    additionalContext.currentQuery = context.query;
+  }
 
-  // Include profile hints from rule-based engine (as supplementary info, not primary)
-  const profileHints = context.profile.segments.length > 0 || context.profile.use_cases.length > 0
-    ? `\n\n### Profile Hints (from rule-based pre-processing, use as supplementary info)\nSegments: ${context.profile.segments.join(', ') || 'none'}\nUse Cases: ${context.profile.use_cases.join(', ') || 'none'}`
-    : '';
+  // Include profile hints if useful
+  if (context.profile.segments.length > 0 || context.profile.use_cases.length > 0) {
+    additionalContext.profileHints = {
+      segments: context.profile.segments,
+      useCases: context.profile.use_cases,
+    };
+  }
 
-  const fullContext = `## Browsing Signals (${context.signals.length} total)\n\n${signalsText}${productsText}${historyText}${queryText}${profileHints}`;
+  // Merge additional context into signals JSON
+  let fullContext: string;
+  if (Object.keys(additionalContext).length > 0) {
+    const signalsObj = JSON.parse(signalsJson);
+    Object.assign(signalsObj, additionalContext);
+    fullContext = JSON.stringify(signalsObj);
+  } else {
+    fullContext = signalsJson;
+  }
 
   console.log('[SignalInterpreter] Interpreting signals for context:', {
     signalCount: context.signals.length,

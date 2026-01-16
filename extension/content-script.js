@@ -30,6 +30,11 @@
    * Initialize signal capture
    */
   function init() {
+    console.log('[VitamixIntent] Initializing on:', window.location.pathname);
+
+    // Send page view signal from content script (more reliable than webNavigation)
+    sendPageViewSignal();
+
     // Capture referrer on page load
     captureReferrer();
 
@@ -42,6 +47,66 @@
     setupTimeOnPage();
 
     console.log('[VitamixIntent] Event listeners initialized');
+  }
+
+  /**
+   * Send page view signal based on current URL
+   */
+  function sendPageViewSignal() {
+    const path = window.location.pathname;
+    const url = window.location.href;
+
+    // Product page: /shop/blenders/{product}
+    const productMatch = path.match(/\/shop\/blenders\/([^/?]+)/);
+    if (productMatch) {
+      const product = productMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      console.log('[VitamixIntent] Product page view:', product);
+      sendSignal('product_page_view', { product, path, url });
+      return;
+    }
+
+    // Accessory page: /shop/accessories/{product}
+    const accessoryMatch = path.match(/\/shop\/accessories\/([^/?]+)/);
+    if (accessoryMatch) {
+      const product = accessoryMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      console.log('[VitamixIntent] Accessory page view:', product);
+      sendSignal('accessory_page_view', { product, path, url });
+      return;
+    }
+
+    // Recipe page: /recipes/{slug}
+    const recipeMatch = path.match(/\/recipes\/([^/?]+)/);
+    if (recipeMatch) {
+      const recipe = recipeMatch[1];
+      console.log('[VitamixIntent] Recipe page view:', recipe);
+      sendSignal('recipe_page_view', { recipe, path, url });
+      return;
+    }
+
+    // Category page: /shop/blenders or /shop/accessories
+    const categoryMatch = path.match(/\/shop\/(blenders|accessories|containers)(?:\?|$)/);
+    if (categoryMatch) {
+      const category = categoryMatch[1];
+      console.log('[VitamixIntent] Category page view:', category);
+      sendSignal('category_page_view', { category, path, url });
+      return;
+    }
+
+    // Compare page
+    if (path.includes('/compare')) {
+      console.log('[VitamixIntent] Compare page view');
+      sendSignal('compare_tool_used', { source: 'page_view', path, url });
+      return;
+    }
+
+    // Article/blog pages
+    const articleMatch = path.match(/\/(articles?|blog|learn|inspiration)\/([^/?]+)/);
+    if (articleMatch) {
+      const article = articleMatch[2];
+      console.log('[VitamixIntent] Article page view:', article);
+      sendSignal('article_page_view', { article, path, url });
+      return;
+    }
   }
 
   /**
@@ -144,74 +209,85 @@
    */
   function setupClickCapture() {
     document.addEventListener('click', (e) => {
-      const target = e.target.closest('a, button, [role="button"]');
+      const target = e.target.closest('a, button, [role="button"], [onclick], [data-action]');
       if (!target) return;
 
-      const text = target.textContent?.toLowerCase() || '';
+      const text = (target.textContent || '').toLowerCase().trim();
       const href = target.href || '';
-      const className = target.className || '';
+      const className = (target.className || '').toString().toLowerCase();
+      const ariaLabel = (target.getAttribute('aria-label') || '').toLowerCase();
+      const dataAction = (target.dataset.action || '').toLowerCase();
 
-      // Reviews "Load More" or "Show More"
+      // Combine all text sources for matching
+      const allText = `${text} ${ariaLabel} ${dataAction}`;
+
+      // Reviews interactions
       if (
-        (text.includes('load more') || text.includes('show more') || text.includes('see all')) &&
-        (text.includes('review') || className.includes('review') || target.closest('[class*="review"]'))
+        allText.match(/load\s*more|show\s*more|see\s*(all|more)|read\s*more/i) &&
+        (allText.includes('review') || className.includes('review') || target.closest('[class*="review"], [id*="review"], [data-component*="review"]'))
       ) {
         console.log('[VitamixIntent] Reviews load more clicked');
-        sendSignal('reviews_load_more', { buttonText: text });
+        sendSignal('reviews_load_more', { buttonText: text.slice(0, 50) });
         return;
       }
 
-      // Review filter
-      if (target.closest('[class*="filter"]') && target.closest('[class*="review"]')) {
-        console.log('[VitamixIntent] Review filter applied');
-        sendSignal('review_filter_applied', { filter: text });
-        return;
-      }
-
-      // Add to cart
+      // Review filter/sort
       if (
-        text.includes('add to cart') ||
-        text.includes('add to bag') ||
-        className.includes('add-to-cart')
+        target.closest('[class*="filter"], [class*="sort"], [id*="filter"], [id*="sort"]') ||
+        allText.match(/filter|sort|rating|stars/i)
+      ) {
+        if (target.closest('[class*="review"], [id*="review"]') || allText.includes('review')) {
+          console.log('[VitamixIntent] Review filter applied');
+          sendSignal('review_filter_applied', { filter: text.slice(0, 50) });
+          return;
+        }
+      }
+
+      // Add to cart (multiple patterns)
+      if (
+        allText.match(/add\s*to\s*(cart|bag|basket)|buy\s*now|purchase/i) ||
+        className.match(/add.*cart|cart.*add|buy.*btn/i) ||
+        dataAction.includes('cart')
       ) {
         console.log('[VitamixIntent] Add to cart clicked');
         sendSignal('add_to_cart', { product: getProductFromPage() });
         return;
       }
 
-      // Spec/Details tabs
+      // Spec/Details tabs (look for tab-like behavior)
       if (
-        text.includes('specification') ||
-        text.includes('tech specs') ||
-        text.includes('details')
+        allText.match(/specification|tech\s*spec|features|details|overview/i) ||
+        (target.getAttribute('role') === 'tab' && allText.match(/spec|detail|feature/i))
       ) {
         console.log('[VitamixIntent] Spec tab opened');
-        sendSignal('spec_tab_opened', { tab: text });
+        sendSignal('spec_tab_opened', { tab: text.slice(0, 50) });
         return;
       }
 
-      // What's in the box
-      if (
-        text.includes("what's in the box") ||
-        text.includes('whats in the box') ||
-        text.includes('package contents')
-      ) {
+      // What's in the box / Package contents
+      if (allText.match(/what.*in.*box|package\s*content|included|in\s*the\s*box/i)) {
         console.log('[VitamixIntent] What\'s in box expanded');
         sendSignal('whats_in_box_expanded', {});
         return;
       }
 
-      // Image gallery
-      if (
-        target.closest('[class*="gallery"]') ||
-        target.closest('[class*="carousel"]') ||
-        target.closest('[class*="slider"]')
-      ) {
-        if (target.tagName === 'IMG' || target.closest('button')) {
+      // Image gallery/carousel interactions
+      const galleryContainer = target.closest('[class*="gallery"], [class*="carousel"], [class*="slider"], [class*="lightbox"], [class*="media"], [class*="image"]');
+      if (galleryContainer) {
+        const isNavButton = target.closest('button, [role="button"]') || allText.match(/next|prev|arrow|thumb/i);
+        const isImage = target.tagName === 'IMG' || target.closest('picture');
+        if (isNavButton || isImage) {
           console.log('[VitamixIntent] Image gallery interaction');
           sendSignal('image_gallery_interaction', {});
           return;
         }
+      }
+
+      // Compare product links
+      if (href.includes('compare') || allText.match(/compare|vs\b/i)) {
+        console.log('[VitamixIntent] Compare clicked');
+        sendSignal('compare_tool_used', { source: 'click' });
+        return;
       }
     }, true);
   }
@@ -221,23 +297,25 @@
    */
   function setupScrollCapture() {
     let ticking = false;
+    const triggeredThresholds = new Set();
 
     function updateScrollDepth() {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
       const scrollTop = window.scrollY;
       const depth = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
 
+      // Update max depth
       if (depth > scrollDepthMax) {
         scrollDepthMax = depth;
+      }
 
-        // Only send signal at 25%, 50%, 75%, 100% thresholds
-        const thresholds = [25, 50, 75, 100];
-        const threshold = thresholds.find(t => depth >= t && scrollDepthMax < t + 5);
-
-        if (threshold && Date.now() - lastScrollUpdate > 1000) {
-          console.log('[VitamixIntent] Scroll depth:', threshold);
+      // Check thresholds - send signal when crossing each threshold for the first time
+      const thresholds = [25, 50, 75, 100];
+      for (const threshold of thresholds) {
+        if (depth >= threshold && !triggeredThresholds.has(threshold)) {
+          triggeredThresholds.add(threshold);
+          console.log('[VitamixIntent] Scroll depth reached:', threshold + '%');
           sendSignal('scroll_depth', { depth: threshold, maxDepth: scrollDepthMax });
-          lastScrollUpdate = Date.now();
         }
       }
 
@@ -250,6 +328,9 @@
         ticking = true;
       }
     }, { passive: true });
+
+    // Also check initial scroll position (in case page loads scrolled)
+    setTimeout(updateScrollDepth, 500);
   }
 
   /**

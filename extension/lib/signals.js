@@ -12,6 +12,9 @@ export const SIGNAL_WEIGHTS = {
   LOW: 0.05,
 };
 
+// Language-agnostic path prefix pattern (matches /vr/en_us/, /us/en_us/, etc.)
+const LANG_PREFIX = /\/[^/]+\/[a-z]{2}_[a-z]{2}/;
+
 // Signal type definitions
 export const SIGNAL_TYPES = {
   // Tier 1: MVP Signals (Essential)
@@ -21,7 +24,8 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.MEDIUM,
     tier: 1,
     icon: '📦',
-    urlPattern: /\/us\/en_us\/shop\/(blenders|accessories|containers)\/([^/?]+)/,
+    // Matches: /vr/en_us/shop/blenders/e310, /us/en_us/shop/blenders/a3500, etc.
+    urlPattern: /\/shop\/blenders\/([^/?]+)/,
   },
   SEARCH_QUERY: {
     id: 'search_query',
@@ -36,7 +40,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.HIGH,
     tier: 1,
     icon: '🍳',
-    urlPattern: /\/us\/en_us\/recipes\/([^/?]+)/,
+    urlPattern: /\/recipes\/([^/?]+)/,
   },
   ARTICLE_PAGE_VIEW: {
     id: 'article_page_view',
@@ -44,7 +48,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.HIGH,
     tier: 1,
     icon: '📄',
-    urlPattern: /\/us\/en_us\/(articles?|blog|learn)\/([^/?]+)/,
+    urlPattern: /\/(articles?|blog|learn|inspiration)\/([^/?]+)/,
   },
   REVIEWS_LOAD_MORE: {
     id: 'reviews_load_more',
@@ -59,7 +63,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.VERY_HIGH,
     tier: 1,
     icon: '⚖️',
-    urlPattern: /\/us\/en_us\/compare/,
+    urlPattern: /\/compare/,
   },
   RETURN_VISIT: {
     id: 'return_visit',
@@ -111,7 +115,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.MEDIUM,
     tier: 2,
     icon: '🔌',
-    urlPattern: /\/us\/en_us\/shop\/accessories\/([^/?]+)/,
+    urlPattern: /\/shop\/accessories\/([^/?]+)/,
   },
   REFERRER_CONTEXT: {
     id: 'referrer_context',
@@ -163,7 +167,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.HIGH,
     tier: 3,
     icon: '🚚',
-    urlPattern: /\/us\/en_us\/(shipping|delivery)/,
+    urlPattern: /\/(shipping|delivery)/,
   },
   RETURN_POLICY_VIEWED: {
     id: 'return_policy_viewed',
@@ -171,7 +175,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.MEDIUM,
     tier: 3,
     icon: '↩️',
-    urlPattern: /\/us\/en_us\/(returns?|policy)/,
+    urlPattern: /\/(returns?|return-policy|policy)/,
   },
   FINANCING_VIEWED: {
     id: 'financing_viewed',
@@ -179,7 +183,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.MEDIUM,
     tier: 3,
     icon: '💳',
-    urlPattern: /\/us\/en_us\/(financing|affirm|payment)/,
+    urlPattern: /\/(financing|affirm|payment|klarna)/,
   },
   CATEGORY_PAGE_VIEW: {
     id: 'category_page_view',
@@ -187,7 +191,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.MEDIUM,
     tier: 3,
     icon: '📂',
-    urlPattern: /\/us\/en_us\/shop\/(blenders|accessories|containers)$/,
+    urlPattern: /\/shop\/(blenders|accessories|containers)(?:\?|$)/,
   },
   CERTIFIED_RECONDITIONED_VIEW: {
     id: 'certified_reconditioned_view',
@@ -195,7 +199,7 @@ export const SIGNAL_TYPES = {
     weight: SIGNAL_WEIGHTS.HIGH,
     tier: 3,
     icon: '♻️',
-    urlPattern: /\/us\/en_us\/(certified-reconditioned|reconditioned)/,
+    urlPattern: /\/(certified-reconditioned|reconditioned|refurbished)/,
   },
 };
 
@@ -299,10 +303,11 @@ export function detectPageType(url) {
 }
 
 /**
- * Extract product name from URL path
+ * Extract product name from URL path (language-agnostic)
  */
 export function extractProductName(path) {
-  const match = path.match(/\/us\/en_us\/shop\/(?:blenders|accessories|containers)\/([^/?]+)/);
+  // Match /shop/blenders/{product} regardless of language prefix
+  const match = path.match(/\/shop\/(?:blenders|accessories|containers)\/([^/?]+)/);
   if (match && match[1]) {
     const slug = match[1].toLowerCase();
     return PRODUCT_MAPPINGS[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -311,10 +316,11 @@ export function extractProductName(path) {
 }
 
 /**
- * Extract recipe category from URL path
+ * Extract recipe category from URL path (language-agnostic)
  */
 export function extractRecipeCategory(path) {
-  const match = path.match(/\/us\/en_us\/recipes\/([^/?]+)/);
+  // Match /recipes/{slug} regardless of language prefix
+  const match = path.match(/\/recipes\/([^/?]+)/);
   if (match && match[1]) {
     const slug = match[1].toLowerCase();
     // Check if it's a category page

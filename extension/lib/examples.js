@@ -1,6 +1,5 @@
 /**
  * Example Scenarios - Pre-configured intent inference examples
- * Ported from demo-tool/demo-examples.js for use in the extension
  */
 
 export const examples = [

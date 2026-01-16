@@ -26,6 +26,7 @@ export interface Product {
   crawledAt?: string;
   sourceUrl?: string;
   contentHash?: string;
+  isCommercial?: boolean;
 }
 
 export interface ProductSpecs {
@@ -566,4 +567,45 @@ export interface Env {
   // Configuration
   MODEL_PRESET?: string;
   DEBUG?: string;
+}
+
+// ============================================
+// Signal Interpretation Types (Direct LLM Analysis)
+// ============================================
+
+/**
+ * Result of direct LLM interpretation of browsing signals.
+ * This replaces the rule-based profile engine for understanding user intent.
+ *
+ * Benefits over rule-based approach:
+ * - Flexibility: Understands "kids recipes" without explicit rule
+ * - Specificity: Captures nuances like "hiding vegetables from picky toddler"
+ * - Zero maintenance: No rules to update for new use cases
+ */
+export interface SignalInterpretation {
+  interpretation: {
+    /** What the user is fundamentally trying to accomplish (specific) */
+    primaryIntent: string;
+    /** List of specific needs/concerns extracted from signals */
+    specificNeeds: string[];
+    /** Emotional context (e.g., "frustrated parent", "excited gift-giver") */
+    emotionalContext: string;
+    /** Where they are in their decision journey */
+    journeyStage: 'exploring' | 'comparing' | 'deciding';
+    /** Important observations about this user */
+    keyInsights: string[];
+  };
+  /** Intent classification derived from signal interpretation */
+  classification: IntentClassification;
+  /** Content recommendations based on signal analysis */
+  contentRecommendation: {
+    /** How should the hero speak to them */
+    heroTone: string;
+    /** Which block types would be most helpful */
+    prioritizeBlocks: string[];
+    /** Which blocks would be irrelevant */
+    avoidBlocks: string[];
+    /** Specific content guidance based on their signals */
+    specialGuidance: string;
+  };
 }

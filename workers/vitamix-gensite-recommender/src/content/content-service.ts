@@ -981,6 +981,25 @@ export function buildRAGContext(
   // Dedupe and limit products
   relevantProducts = [...new Map(relevantProducts.map(p => [p.id, p])).values()];
 
+  // CRITICAL: Filter out commercial products for non-commercial queries
+  // Commercial products (like Vita-Prep 3, Quick & Quiet) are B2B only and
+  // should never be recommended to consumers looking for home use
+  if (!isCommercialQuery(query)) {
+    relevantProducts = relevantProducts.filter(p => {
+      const isCommercial =
+        p.isCommercial === true ||
+        p.series?.toLowerCase() === 'commercial';
+      return !isCommercial;
+    });
+  } else {
+    // For commercial queries, prioritize commercial products
+    relevantProducts.sort((a, b) => {
+      const aCommercial = (a.isCommercial || a.series?.toLowerCase() === 'commercial') ? 1 : 0;
+      const bCommercial = (b.isCommercial || b.series?.toLowerCase() === 'commercial') ? 1 : 0;
+      return bCommercial - aCommercial;
+    });
+  }
+
   // CRITICAL: Filter out reconditioned/refurbished products for gift queries
   // Reconditioned products are inappropriate for gift-giving
   if (intent === 'gift') {

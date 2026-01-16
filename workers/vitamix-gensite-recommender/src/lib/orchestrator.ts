@@ -26,6 +26,7 @@ import type {
 } from '../types';
 import { createModelFactory, type Message } from '../ai-clients/model-factory';
 import { analyzeAndSelectBlocks, formatReasoningForDisplay } from '../ai-clients/reasoning-engine';
+import { interpretSignals, type SignalInterpretation } from './signal-interpreter';
 import {
   buildRAGContext,
   getProductById,
@@ -1690,6 +1691,12 @@ function buildSessionContextFromExtension(context: ExtensionContext): SessionCon
 
 /**
  * Orchestrate page generation from full extension context
+ *
+ * NEW ARCHITECTURE: Uses direct signal interpretation via LLM instead of
+ * rule-based profile engine for understanding user intent. This provides:
+ * - Better flexibility (understands "kids recipes" without explicit rule)
+ * - More specificity (captures nuances like "hiding vegetables from picky toddler")
+ * - Zero maintenance (no rules to update for new use cases)
  */
 export async function orchestrateFromContext(
   context: ExtensionContext,
@@ -1704,39 +1711,93 @@ export async function orchestrateFromContext(
 }> {
   const startTime = Date.now();
 
-  // Build effective query from context
-  const effectiveQuery = context.query || buildQueryFromContext(context);
-
-  // Build session context from extension profile
-  const sessionContext = buildSessionContextFromExtension(context);
-
   // Log context for debugging
-  console.log('[OrchestrateFromContext] Effective query:', effectiveQuery);
-  console.log('[OrchestrateFromContext] Signals count:', context.signals.length);
-  console.log('[OrchestrateFromContext] Profile segments:', context.profile.segments);
-  console.log('[OrchestrateFromContext] Products considered:', context.profile.products_considered);
+  console.log('[OrchestrateFromContext] Starting with signals:', context.signals.length);
+  console.log('[OrchestrateFromContext] Query:', context.query);
+  console.log('[OrchestrateFromContext] Previous queries:', context.previousQueries.length);
 
-  // Emit start with context info
+  // ============================================
+  // Stage 1: Direct Signal Interpretation (NEW)
+  // ============================================
+  // Instead of rule-based profile engine, send signals directly to LLM
+  // for holistic interpretation of user intent
+
+  onEvent({
+    event: 'reasoning-step',
+    data: {
+      stage: 'signals',
+      title: 'Interpreting Your Browsing Behavior',
+      content: `Analyzing ${context.signals.length} signals to understand your intent...`,
+    },
+  });
+
+  let signalInterpretation: SignalInterpretation | undefined;
+
+  try {
+    signalInterpretation = await interpretSignals(context, env, preset);
+
+    console.log('[OrchestrateFromContext] Signal interpretation:', {
+      primaryIntent: signalInterpretation.interpretation.primaryIntent,
+      useCases: signalInterpretation.classification.entities.useCases,
+      emotionalContext: signalInterpretation.interpretation.emotionalContext,
+    });
+
+    // Emit interpretation insights to user
+    onEvent({
+      event: 'reasoning-step',
+      data: {
+        stage: 'understanding',
+        title: 'Understanding Your Intent',
+        content: `**${signalInterpretation.interpretation.primaryIntent}**\n\n${signalInterpretation.interpretation.keyInsights.length > 0
+          ? `Key insights:\n${signalInterpretation.interpretation.keyInsights.map(i => `• ${i}`).join('\n')}`
+          : `Emotional context: ${signalInterpretation.interpretation.emotionalContext}`
+        }`,
+      },
+    });
+  } catch (error) {
+    console.error('[OrchestrateFromContext] Signal interpretation failed:', error);
+    // Continue without interpretation - will fall back to old behavior
+  }
+
+  // ============================================
+  // Stage 2: Build Effective Query
+  // ============================================
+  // Use interpretation's primary intent as query if no explicit query provided
+
+  const effectiveQuery = context.query
+    || signalInterpretation?.interpretation.primaryIntent
+    || buildQueryFromContext(context);
+
+  // Use the LLM's classification directly if available, otherwise fall back to old method
+  let intent: IntentClassification;
+
+  if (signalInterpretation) {
+    intent = signalInterpretation.classification;
+    console.log('[OrchestrateFromContext] Using direct interpretation for intent:', intent.intentType);
+  } else {
+    // Fall back to old classification method
+    intent = await classifyIntentFromContext(effectiveQuery, context, env, preset);
+    console.log('[OrchestrateFromContext] Using fallback classification for intent:', intent.intentType);
+  }
+
+  // Emit start with context info (including interpretation)
   onEvent({
     event: 'generation-start',
     data: {
       query: effectiveQuery,
       estimatedBlocks: 5,
+      // Include interpretation metadata for debugging/analytics
+      ...(signalInterpretation && {
+        interpretation: {
+          primaryIntent: signalInterpretation.interpretation.primaryIntent,
+          emotionalContext: signalInterpretation.interpretation.emotionalContext,
+          specificNeeds: signalInterpretation.interpretation.specificNeeds,
+        },
+      }),
     },
   });
 
-  // Add context metadata as a reasoning step
-  if (context.signals.length > 0) {
-    onEvent({
-      event: 'reasoning-step',
-      data: {
-        stage: 'context',
-        title: 'Browsing Context',
-        content: `Analyzing ${context.signals.length} browsing signals:\n${formatSignalsForPrompt(context.signals)}`,
-      },
-    });
-  }
-
+  // Add conversation history as reasoning step (if any)
   if (context.previousQueries.length > 0) {
     onEvent({
       event: 'reasoning-step',
@@ -1748,31 +1809,37 @@ export async function orchestrateFromContext(
     });
   }
 
-  // Use the existing orchestrate function with the enriched context
-  const ctx: OrchestrationContext = { query: effectiveQuery, slug };
+  // Build session context from extension profile (for backward compatibility)
+  const sessionContext = buildSessionContextFromExtension(context);
+
+  const ctx: OrchestrationContext = { query: effectiveQuery, slug, intent };
 
   try {
-    // Stage 2: Fast intent classification (with full context)
-    ctx.intent = await classifyIntentFromContext(effectiveQuery, context, env, preset);
+    // ============================================
+    // Stage 3: Get RAG Context
+    // ============================================
+    ctx.ragContext = await getRAGContext(effectiveQuery, intent, env);
 
-    // Stage 3: Get RAG context
-    ctx.ragContext = await getRAGContext(effectiveQuery, ctx.intent, env);
-
-    // Stage 4: Deep reasoning
+    // ============================================
+    // Stage 4: Deep Reasoning (with signal interpretation)
+    // ============================================
     const effectivePreset = preset || env.MODEL_PRESET || 'production';
     const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-gpt-oss-120b' : 'claude-opus-4-5';
+
     onEvent({
       event: 'reasoning-start',
       data: { model: reasoningModel, preset: effectivePreset },
     });
 
+    // Pass signal interpretation to reasoning engine for content guidance
     ctx.reasoningResult = await analyzeAndSelectBlocks(
       effectiveQuery,
-      ctx.intent,
+      intent,
       ctx.ragContext,
       env,
       sessionContext,
-      preset
+      preset,
+      signalInterpretation // NEW: Pass interpretation for content guidance
     );
 
     // Stream reasoning steps
@@ -1792,7 +1859,9 @@ export async function orchestrateFromContext(
       },
     });
 
-    // Stage 5: Generate blocks
+    // ============================================
+    // Stage 5: Generate Blocks
+    // ============================================
     const blocks: GeneratedBlock[] = [];
 
     for (const blockSelection of ctx.reasoningResult.selectedBlocks) {
@@ -1810,7 +1879,7 @@ export async function orchestrateFromContext(
       } else if (blockSelection.type === 'allergen-safety') {
         block = generateAllergenSafetyBlock();
       } else {
-        block = await generateBlockContent(blockSelection, ctx.ragContext, env, preset, ctx.intent, ctx.query);
+        block = await generateBlockContent(blockSelection, ctx.ragContext, env, preset, intent, ctx.query);
       }
 
       blocks.push(block);
@@ -1828,7 +1897,9 @@ export async function orchestrateFromContext(
 
     ctx.generatedBlocks = blocks;
 
+    // ============================================
     // Stage 6: Complete
+    // ============================================
     const duration = Date.now() - startTime;
     const extractedProducts = extractProductNamesFromBlocks(blocks);
     const extractedRecipes = extractRecipeNamesFromBlocks(blocks);
@@ -1838,7 +1909,7 @@ export async function orchestrateFromContext(
       data: {
         totalBlocks: blocks.length,
         duration,
-        intent: ctx.intent,
+        intent,
         reasoning: {
           journeyStage: ctx.reasoningResult.userJourney.currentStage,
           confidence: ctx.reasoningResult.confidence,
@@ -1850,6 +1921,14 @@ export async function orchestrateFromContext(
           recipes: extractedRecipes,
           blockTypes: blocks.map(b => b.type),
         },
+        // Include interpretation summary for analytics
+        ...(signalInterpretation && {
+          signalInterpretation: {
+            primaryIntent: signalInterpretation.interpretation.primaryIntent,
+            specificNeeds: signalInterpretation.interpretation.specificNeeds,
+            emotionalContext: signalInterpretation.interpretation.emotionalContext,
+          },
+        }),
       },
     });
 

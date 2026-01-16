@@ -107,26 +107,18 @@
   justify-content: center;
   gap: var(--spacing-60);
   width: 100%;
-  background: transparent;
-  border: none;
   color: var(--color-gray);
   font-family: var(--sans-serif-font-family);
   font-size: 11px;
   font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  cursor: pointer;
   padding: var(--spacing-60) 0;
   transition: color var(--transition-normal);
 }
 
 .quick-answer-toggle:hover {
   color: var(--color-charcoal);
-}
-
-.quick-answer-toggle:focus {
-  outline: 2px solid var(--color-red);
-  outline-offset: 2px;
 }
 
 /* Toggle icon */

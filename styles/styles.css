@@ -453,9 +453,32 @@ a:hover {
   text-decoration: underline;
 }
 
-/* buttons - Vitamix style */
-a.button:any-link,
+/* ===== Button Base Reset ===== */
+/* Minimal reset for all buttons - allows blocks to style their own buttons */
 button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+button:focus {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ===== Styled Buttons - Vitamix Design System ===== */
+/* Only applies to elements with .button class */
+a.button:any-link,
+button.button {
   box-sizing: border-box;
   display: inline-block;
   max-width: 100%;
@@ -468,7 +491,6 @@ button {
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
   letter-spacing: 0.05em;
-  /* text-transform: uppercase; */
   line-height: 1.25;
   text-align: center;
   text-decoration: none;
@@ -483,23 +505,24 @@ button {
 
 a.button:hover,
 a.button:focus,
-button:hover,
-button:focus {
+button.button:hover,
+button.button:focus {
   background-color: var(--color-brand-red-dark);
   cursor: pointer;
   text-decoration: none;
 }
 
-button:disabled,
-button:disabled:hover {
+button.button:disabled,
+button.button:disabled:hover {
   background-color: var(--color-light-gray);
   color: var(--color-medium-gray);
   cursor: not-allowed;
+  opacity: 1;
 }
 
 /* Secondary button - outlined */
 a.button.secondary,
-button.secondary {
+button.button.secondary {
   background-color: transparent;
   border: 1px solid var(--color-brand-dark);
   color: var(--color-brand-dark);
@@ -507,15 +530,15 @@ button.secondary {
 
 a.button.secondary:hover,
 a.button.secondary:focus,
-button.secondary:hover,
-button.secondary:focus {
+button.button.secondary:hover,
+button.button.secondary:focus {
   background-color: var(--color-brand-dark);
   color: var(--color-white);
 }
 
 /* Ghost/link button */
 a.button.ghost,
-button.ghost {
+button.button.ghost {
   background-color: transparent;
   color: var(--color-brand-red);
   text-decoration: underline;
@@ -523,28 +546,28 @@ button.ghost {
 }
 
 a.button.ghost:hover,
-button.ghost:hover {
+button.button.ghost:hover {
   background-color: transparent;
   text-decoration-thickness: 2px;
 }
 
 /* Emphasis button (filled gray) - Vitamix reference pattern */
 a.button.emphasis,
-button.emphasis {
+button.button.emphasis {
   border-color: var(--color-gray);
   background-color: var(--color-gray);
   color: var(--color-white);
 }
 
 a.button.emphasis:hover,
-button.emphasis:hover {
+button.button.emphasis:hover {
   background-color: var(--color-charcoal);
   border-color: var(--color-charcoal);
 }
 
 /* Link button (text only, underlined) - Vitamix reference pattern */
 a.button.link,
-button.link {
+button.button.link {
   padding-left: 0;
   padding-right: 0;
   border-color: transparent;
@@ -556,7 +579,7 @@ button.link {
 }
 
 a.button.link:hover,
-button.link:hover {
+button.button.link:hover {
   box-shadow: none;
   background-color: transparent;
   color: var(--color-charcoal);
@@ -564,28 +587,28 @@ button.link:hover {
 
 /* Accent button (red filled) - Vitamix reference pattern */
 a.button.accent,
-button.accent {
+button.button.accent {
   border-color: var(--color-red);
   background-color: var(--color-red);
   color: var(--color-white);
 }
 
 a.button.accent:hover,
-button.accent:hover {
+button.button.accent:hover {
   background-color: var(--color-madder);
   border-color: var(--color-madder);
 }
 
 /* Outline button (ghost with border) - for dark sections */
 a.button.outline,
-button.outline {
+button.button.outline {
   background-color: transparent;
   border: 1px solid currentcolor;
   color: inherit;
 }
 
 a.button.outline:hover,
-button.outline:hover {
+button.button.outline:hover {
   background-color: var(--color-white);
   color: var(--color-charcoal);
 }
@@ -594,7 +617,6 @@ button.outline:hover {
 button.close {
   width: 40px;
   height: 40px;
-  border-color: transparent;
   border-radius: 50%;
   padding: 0.4em;
   background-color: transparent;

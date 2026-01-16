@@ -144,6 +144,35 @@ Using Skill: content-driven-development
 - `testing-blocks` - Test code changes
 - `page-import` - Import external pages
 
+## Frontend & Block Design
+
+For frontend design work—especially block design—use **impeccable** capabilities to create distinctive, brand-aligned interfaces that match the Vitamix design system documented above.
+
+### When to Use Impeccable
+- Creating new blocks or components
+- Redesigning or enhancing existing blocks
+- Building any user-facing UI elements
+- Reviewing design quality before shipping
+
+### Key Impeccable Capabilities
+| Capability | When to Use |
+|------------|-------------|
+| `impeccable:frontend-design` | Primary tool for creating new blocks and components. Generates production-grade code aligned with brand aesthetics. |
+| `impeccable:normalize` | After creating/modifying blocks, ensure consistency with the Vitamix design system (colors, typography, spacing tokens). |
+| `impeccable:polish` | Final pass before shipping. Fixes alignment, spacing, and detail issues. |
+| `impeccable:audit` | Comprehensive quality check across accessibility, performance, theming, and responsive design. |
+| `impeccable:critique` | Evaluate design effectiveness—visual hierarchy, information architecture, and overall UX quality. |
+| `impeccable:clarify` | Improve labels, error messages, and microcopy for better usability. |
+| `impeccable:adapt` | Ensure blocks work across different screen sizes and devices. |
+
+### Design Alignment Checklist
+When designing blocks, ensure:
+- Colors use Vitamix tokens (`--color-red`, `--color-charcoal`, etc.)
+- Typography follows Sentinel (headings) + Gotham Narrow (body) hierarchy
+- Spacing uses system tokens (`--spacing-100`, `--spacing-400`, etc.)
+- Visual tone matches: clean, premium, editorial, photography-forward
+- Reference `../vitamix/` (EDS production site) as the source of truth
+
 ## Testing
 - `/test-blocks/` - Visual test pages
 - `/test-results/` - Test result reports

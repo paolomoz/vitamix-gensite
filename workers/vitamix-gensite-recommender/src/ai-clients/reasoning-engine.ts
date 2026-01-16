@@ -242,8 +242,35 @@ Respond with valid JSON only:
     "nextBestAction": "explore_use_cases",
     "suggestedFollowUps": ["What can I make with a Vitamix?", "Compare top models"]
   },
-  "confidence": 0.92
+  "confidence": {
+    "intent": 0.92,
+    "productMatch": 0.45,
+    "productMatchRationale": "Brief explanation of why product match is high or low"
+  }
 }
+
+## CRITICAL: Dual Confidence Scores
+
+You must provide TWO separate confidence scores:
+
+1. **intent** (0.0-1.0): How confident are you that you understand what the user wants?
+   - HIGH (0.8+): Clear, specific request ("quietest blender", "best for soups", "X4 vs X5")
+   - MEDIUM (0.5-0.8): General but understandable ("kids recipes", "smoothies")
+   - LOW (<0.5): Vague or ambiguous ("blender", "help me decide")
+
+2. **productMatch** (0.0-1.0): How confident are you that ONE specific product is clearly best?
+   - HIGH (0.8+): One product is objectively best for their stated need
+     Examples: "quietest" → Vitamix ONE, "under $350" → E320, "most programs" → X5
+   - MEDIUM (0.5-0.8): A product stands out but others are close
+     Examples: "soups" → X5 (but X4, A3500 also good), "families" → X5 (but X4 works too)
+   - LOW (<0.5): Multiple products work equally well, no clear winner
+     Examples: "kids recipes" → ANY blender works, "smoothies" → ALL models excel
+
+**IMPORTANT**: A user can have HIGH intent confidence but LOW product match confidence.
+"kids recipes" = HIGH intent (we know what they want) + LOW product match (any Vitamix works).
+
+Only recommend a single product (product-recommendation block) when productMatch >= 0.8.
+If productMatch < 0.8, prefer comparison-table or product-cards to show options.
 
 ## CRITICAL: Follow-up Suggestion Guidelines
 
@@ -517,11 +544,38 @@ function parseReasoningResponse(content: string): ReasoningResult {
       throw new Error('Missing userJourney');
     }
 
+    // Parse confidence - handle both old (single number) and new (object) formats
+    let confidence: { intent: number; productMatch: number };
+    if (typeof parsed.confidence === 'object' && parsed.confidence !== null) {
+      // New format: { intent: 0.92, productMatch: 0.45 }
+      confidence = {
+        intent: parsed.confidence.intent ?? 0.8,
+        productMatch: parsed.confidence.productMatch ?? 0.5,
+      };
+      if (parsed.confidence.productMatchRationale) {
+        console.log('[ReasoningEngine] Product match rationale:', parsed.confidence.productMatchRationale);
+      }
+    } else if (typeof parsed.confidence === 'number') {
+      // Old format: single number - use as intent, assume moderate product match
+      console.log('[ReasoningEngine] Legacy confidence format detected, converting to dual format');
+      confidence = {
+        intent: parsed.confidence,
+        productMatch: 0.5, // Conservative default when not specified
+      };
+    } else {
+      // Fallback defaults
+      confidence = {
+        intent: 0.8,
+        productMatch: 0.5,
+      };
+    }
+
     return {
       selectedBlocks: parsed.selectedBlocks,
       reasoning: parsed.reasoning,
       userJourney: parsed.userJourney,
-      confidence: parsed.confidence || 0.8,
+      confidence,
+      confidenceLegacy: typeof parsed.confidence === 'number' ? parsed.confidence : confidence.intent,
     };
   } catch (e) {
     throw new Error(`Failed to parse reasoning JSON: ${e}`);
@@ -610,15 +664,19 @@ function ensureRequiredBlocks(blocks: BlockSelection[]): BlockSelection[] {
 /**
  * Enforce confidence thresholds for recommendation blocks.
  *
- * This is the core fix for the issue where low-confidence scenarios
- * (e.g., 29% confidence from "kids recipes" + E320 page visit) were
- * still generating single product recommendations.
+ * Uses DUAL confidence scores:
+ * - intentConfidence: How well we understand what the user wants
+ * - productMatchConfidence: How confident we are that a specific product is best
  *
- * The function filters/substitutes blocks based on confidence:
- * - >= 80%: Allow product-recommendation, best-pick
- * - 60-79%: Allow best-pick + comparison, but not standalone product-recommendation
- * - 40-59%: Comparison only, no "best" labels
- * - < 40%: Discovery mode with use-case-cards
+ * Product recommendations require high productMatchConfidence, not just high intentConfidence.
+ * A user might have a clear need ("kids recipes" = 94% intent) but no single product
+ * is obviously best for that need (productMatch = 35%).
+ *
+ * Thresholds (based on productMatchConfidence):
+ * - >= 80%: Allow product-recommendation
+ * - >= 60%: Allow best-pick + comparison
+ * - >= 40%: Comparison only, no "best" labels
+ * - < 40%: Discovery mode with use-case-cards (if intent also low)
  */
 function enforceConfidenceThresholds(
   result: ReasoningResult,
@@ -626,21 +684,28 @@ function enforceConfidenceThresholds(
 ): ReasoningResult {
   const { confidence, selectedBlocks } = result;
 
-  // Blocks that require high confidence
+  // Extract dual confidence scores
+  const intentConfidence = confidence.intent;
+  const productMatchConfidence = confidence.productMatch;
+
+  // Blocks that require high product match confidence
   const singleRecommendationBlocks = ['product-recommendation'];
   const bestPickBlocks = ['best-pick'];
 
   // Log for debugging
-  console.log(`[ReasoningEngine] Confidence check: ${(confidence * 100).toFixed(0)}%`);
+  console.log(`[ReasoningEngine] Dual confidence check:`);
+  console.log(`  - Intent: ${(intentConfidence * 100).toFixed(0)}% (do we understand what they want?)`);
+  console.log(`  - Product Match: ${(productMatchConfidence * 100).toFixed(0)}% (is one product clearly best?)`);
   console.log(`[ReasoningEngine] Original blocks: ${selectedBlocks.map(b => b.type).join(', ')}`);
 
   let filteredBlocks = [...selectedBlocks];
   const substitutionsMade: string[] = [];
 
   // ----------------------------------------
-  // Check 1: If confidence < 80%, remove product-recommendation
+  // Check 1: If productMatchConfidence < 80%, remove product-recommendation
+  // This is the key change - we use productMatchConfidence, not general confidence
   // ----------------------------------------
-  if (confidence < CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION) {
+  if (productMatchConfidence < CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION) {
     const hasProductRec = filteredBlocks.some(b =>
       singleRecommendationBlocks.includes(b.type)
     );
@@ -651,12 +716,12 @@ function enforceConfidenceThresholds(
         !singleRecommendationBlocks.includes(b.type)
       );
       substitutionsMade.push(
-        `Removed product-recommendation (${(confidence * 100).toFixed(0)}% < ${CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION * 100}% threshold)`
+        `Removed product-recommendation (productMatch ${(productMatchConfidence * 100).toFixed(0)}% < ${CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION * 100}% threshold)`
       );
 
-      // Add comparison-table if not present and confidence >= 40%
+      // Add comparison-table if not present and productMatch >= 40%
       if (
-        confidence >= CONFIDENCE_THRESHOLDS.COMPARISON_ONLY &&
+        productMatchConfidence >= CONFIDENCE_THRESHOLDS.COMPARISON_ONLY &&
         !filteredBlocks.some(b => b.type === 'comparison-table')
       ) {
         // Find best insertion point (after hero or best-pick, or at position 1)
@@ -668,7 +733,7 @@ function enforceConfidenceThresholds(
         filteredBlocks.splice(insertIndex, 0, {
           type: 'comparison-table',
           priority: insertIndex + 1,
-          rationale: 'Showing comparison instead of single recommendation due to lower confidence',
+          rationale: 'Showing comparison instead of single recommendation - multiple products work well for this need',
           contentGuidance: 'Compare relevant products based on user signals without declaring a winner',
         });
         substitutionsMade.push('Added comparison-table as substitute');
@@ -691,9 +756,9 @@ function enforceConfidenceThresholds(
   }
 
   // ----------------------------------------
-  // Check 2: If confidence < 60%, remove best-pick
+  // Check 2: If productMatchConfidence < 60%, remove best-pick
   // ----------------------------------------
-  if (confidence < CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON) {
+  if (productMatchConfidence < CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON) {
     const hasBestPick = filteredBlocks.some(b =>
       bestPickBlocks.includes(b.type)
     );
@@ -704,15 +769,17 @@ function enforceConfidenceThresholds(
         !bestPickBlocks.includes(b.type)
       );
       substitutionsMade.push(
-        `Removed best-pick (${(confidence * 100).toFixed(0)}% < ${CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON * 100}% threshold)`
+        `Removed best-pick (productMatch ${(productMatchConfidence * 100).toFixed(0)}% < ${CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON * 100}% threshold)`
       );
     }
   }
 
   // ----------------------------------------
-  // Check 3: If confidence < 40%, switch to discovery mode
+  // Check 3: If BOTH confidences are low, switch to discovery mode
+  // Low intent + low product match = user needs help exploring
   // ----------------------------------------
-  if (confidence < CONFIDENCE_THRESHOLDS.COMPARISON_ONLY) {
+  if (intentConfidence < CONFIDENCE_THRESHOLDS.COMPARISON_ONLY &&
+      productMatchConfidence < CONFIDENCE_THRESHOLDS.COMPARISON_ONLY) {
     // Check if we have discovery blocks
     const hasDiscoveryBlocks = filteredBlocks.some(b =>
       ['use-case-cards', 'feature-highlights'].includes(b.type)
@@ -726,10 +793,10 @@ function enforceConfidenceThresholds(
       filteredBlocks.splice(insertIndex, 0, {
         type: 'use-case-cards',
         priority: insertIndex + 1,
-        rationale: 'Low confidence - help user explore use cases before suggesting products',
+        rationale: 'Low confidence on both intent and product match - help user explore use cases first',
         contentGuidance: 'Show use cases relevant to user signals to help narrow down their needs',
       });
-      substitutionsMade.push('Added use-case-cards for discovery mode (confidence < 40%)');
+      substitutionsMade.push(`Added use-case-cards for discovery mode (intent ${(intentConfidence * 100).toFixed(0)}%, productMatch ${(productMatchConfidence * 100).toFixed(0)}%)`);
     }
   }
 
@@ -811,33 +878,62 @@ export async function analyzeAndSelectBlocks(
     const response = await modelFactory.call('reasoning', messages, env);
     let result = parseReasoningResponse(response.content);
 
-    // CRITICAL: Use MINIMUM confidence from multiple sources
-    // This prevents an overconfident LLM from overriding weak input signals
-    const confidenceSources = [
-      result.confidence,                                    // Reasoning engine's confidence
+    // CRITICAL: Apply external confidence modifiers to the dual confidence scores
+    // External sources (profile, signal interpretation) provide context about signal quality
+    // These should cap the productMatchConfidence when signals are weak
+
+    // Gather external confidence sources (single numbers representing signal quality)
+    const externalConfidenceSources = [
       intent.confidence,                                    // Intent classification confidence
       signalInterpretation?.classification.confidence,      // Signal interpretation confidence
       profileConfidence,                                    // Profile confidence from rule-based engine
     ].filter((c): c is number => typeof c === 'number' && !isNaN(c));
 
-    const effectiveConfidence = Math.min(...confidenceSources);
+    // External confidence is the minimum of all external sources (how good are our signals?)
+    const externalConfidence = externalConfidenceSources.length > 0
+      ? Math.min(...externalConfidenceSources)
+      : 1.0;
 
-    console.log('[ReasoningEngine] Confidence sources:', {
-      reasoning: result.confidence,
-      intent: intent.confidence,
-      signalInterpretation: signalInterpretation?.classification.confidence,
-      profile: profileConfidence,
-      effective: effectiveConfidence,
+    // For intentConfidence: LLM's assessment of query clarity, moderated by external sources
+    const effectiveIntentConfidence = Math.min(
+      result.confidence.intent,
+      Math.max(externalConfidence, 0.5) // Don't let external sources reduce intent below 50%
+    );
+
+    // For productMatchConfidence: CRITICAL - this must respect weak signals
+    // If external confidence is low (weak signals), we can't be confident about product match
+    // even if LLM thinks a product is "best" based on the query alone
+    const effectiveProductMatchConfidence = Math.min(
+      result.confidence.productMatch,
+      externalConfidence // Weak signals = low product match confidence
+    );
+
+    console.log('[ReasoningEngine] Dual confidence calculation:', {
+      llmIntent: result.confidence.intent,
+      llmProductMatch: result.confidence.productMatch,
+      externalSources: {
+        intent: intent.confidence,
+        signalInterpretation: signalInterpretation?.classification.confidence,
+        profile: profileConfidence,
+      },
+      externalMin: externalConfidence,
+      effective: {
+        intent: effectiveIntentConfidence,
+        productMatch: effectiveProductMatchConfidence,
+      },
     });
 
-    // Override the result's confidence with the effective (minimum) confidence
+    // Override the result's confidence with the effective dual confidence
     result = {
       ...result,
-      confidence: effectiveConfidence,
+      confidence: {
+        intent: effectiveIntentConfidence,
+        productMatch: effectiveProductMatchConfidence,
+      },
     };
 
     // CRITICAL: Enforce confidence thresholds BEFORE block normalization
-    // This prevents low-confidence scenarios from making specific recommendations
+    // This uses productMatchConfidence to gate product recommendations
     result = enforceConfidenceThresholds(result, intent);
 
     // Ensure required blocks are present
@@ -903,7 +999,10 @@ function getFallbackReasoningResult(
         'Compare models',
       ],
     },
-    confidence: 0.6,
+    confidence: {
+      intent: 0.6,
+      productMatch: 0.4, // Conservative - fallback shouldn't recommend specific products
+    },
   };
 }
 

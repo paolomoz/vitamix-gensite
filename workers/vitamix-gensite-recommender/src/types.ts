@@ -350,7 +350,26 @@ export interface ReasoningResult {
   selectedBlocks: BlockSelection[];
   reasoning: ReasoningTrace;
   userJourney: UserJourneyPlan;
-  confidence: number;
+  /**
+   * Dual confidence scores for more nuanced recommendation decisions.
+   *
+   * - intentConfidence: How well we understand what the user wants (0-1)
+   *   Example: "kids recipes" → 0.94 (clear intent)
+   *
+   * - productMatchConfidence: How confident we are that a specific product
+   *   is clearly the best choice for their needs (0-1)
+   *   Example: "kids recipes" → 0.35 (many products work equally well)
+   *
+   * Product recommendations require high productMatchConfidence, not just
+   * high intentConfidence. A user might have a clear need but no single
+   * product is obviously best for that need.
+   */
+  confidence: {
+    intent: number;
+    productMatch: number;
+  };
+  /** @deprecated Use confidence.intent instead. Kept for backward compatibility. */
+  confidenceLegacy?: number;
 }
 
 export interface ReasoningTrace {
@@ -490,7 +509,7 @@ export type SSEEvent =
   | { event: 'generation-start'; data: { query: string; estimatedBlocks: number } }
   | { event: 'reasoning-start'; data: { model: string; preset?: string } }
   | { event: 'reasoning-step'; data: { stage: string; title: string; content: string } }
-  | { event: 'reasoning-complete'; data: { confidence: number; duration: number } }
+  | { event: 'reasoning-complete'; data: { confidence: { intent: number; productMatch: number }; duration: number } }
   | { event: 'block-start'; data: { blockType: BlockType; index: number } }
   | { event: 'block-content'; data: { html: string; sectionStyle?: string } }
   | { event: 'block-rationale'; data: { blockType: BlockType; rationale: string } }
@@ -505,7 +524,7 @@ export interface GenerationCompleteData {
   intent?: IntentClassification;
   reasoning?: {
     journeyStage: JourneyStage;
-    confidence: number;
+    confidence: { intent: number; productMatch: number };
     nextBestAction: string;
     suggestedFollowUps: string[];
   };

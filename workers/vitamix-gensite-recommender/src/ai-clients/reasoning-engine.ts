@@ -215,6 +215,18 @@ IMPORTANT for soup/hot food queries during comparison:
 - Add "Hot Soup Program" row to comparison table
 - Clearly indicate which models have this feature
 
+### 14. Recipe/Soup/Cooking Queries (CRITICAL)
+Keywords: "recipe", "recipes", "soup", "soups", "hot soup", "make a", "cook", "prepare", "meal ideas", "what can I make", "show me more"
+Detection: Query asks for recipes, cooking ideas, or specific food items to make
+- ALWAYS include recipe-cards block to show relevant recipes from the Vitamix recipe database
+- Lead with hero acknowledging their cooking interest and Vitamix capabilities
+- For soup-specific queries, emphasize hot-blending and friction-heat technology in hero
+- Can optionally include feature-highlights about cooking capabilities if user seems new
+- Block sequence: hero (cooking-focused), recipe-cards, follow-up
+- Content guidance: Focus on inspiring them with what they can create, not on selling products
+
+IMPORTANT: This rule takes priority over generic discovery/comparison flows when recipe keywords are present.
+
 ## Output Format
 
 Respond with valid JSON only:

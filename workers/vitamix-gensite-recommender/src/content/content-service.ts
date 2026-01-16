@@ -905,11 +905,38 @@ function extractProductModels(query: string): string[] {
   return [...new Set(models)];
 }
 
+/**
+ * Session context for enriching RAG searches with conversation history
+ */
+interface SessionContextForRAG {
+  previousQueries?: Array<{
+    query: string;
+    intent?: string;
+  }>;
+}
+
+/**
+ * Extract keywords from a list of previous queries to enrich current search.
+ * This enables conversational context like "I have 4 kids" + "they love soups!"
+ * to find kid-friendly soup recipes.
+ */
+function extractKeywordsFromHistory(previousQueries: Array<{ query: string }> | undefined): string[] {
+  if (!previousQueries || previousQueries.length === 0) return [];
+
+  const allKeywords: string[] = [];
+  for (const pq of previousQueries) {
+    const keywords = extractKeywords(pq.query);
+    allKeywords.push(...keywords);
+  }
+  return [...new Set(allKeywords)]; // Dedupe
+}
+
 export function buildRAGContext(
   query: string,
   intent?: string,
   maxProducts = 5,
-  maxRecipes = 6
+  maxRecipes = 6,
+  sessionContext?: SessionContextForRAG
 ): RAGContext {
   const lowerQuery = query.toLowerCase();
 
@@ -918,6 +945,17 @@ export function buildRAGContext(
 
   // Extract use case keywords from query
   const detectedKeywords = extractKeywords(query);
+
+  // Extract keywords from session history (conversation context)
+  // This enables "I have 4 kids" + "they love soups!" to find kid-friendly soup recipes
+  const historyKeywords = extractKeywordsFromHistory(sessionContext?.previousQueries);
+  const combinedKeywords = [...new Set([...detectedKeywords, ...historyKeywords])];
+
+  // Log for debugging
+  if (historyKeywords.length > 0) {
+    console.log('[RAG] Enriching search with history keywords:', historyKeywords);
+    console.log('[RAG] Combined keywords:', combinedKeywords);
+  }
 
   // Extract ingredient terms from query (NEW)
   const detectedIngredients = extractIngredients(query);
@@ -944,9 +982,9 @@ export function buildRAGContext(
     relevantProducts = searchProducts(query);
   }
 
-  // If still no products, try keyword-based search
-  if (relevantProducts.length === 0 && detectedKeywords.length > 0) {
-    for (const keyword of detectedKeywords) {
+  // If still no products, try keyword-based search (using combined keywords for context)
+  if (relevantProducts.length === 0 && combinedKeywords.length > 0) {
+    for (const keyword of combinedKeywords) {
       const keywordProducts = products.filter(p =>
         p.bestFor?.some(bf => bf.toLowerCase().includes(keyword)) ||
         p.features?.some(f => f.toLowerCase().includes(keyword)) ||
@@ -1029,8 +1067,8 @@ export function buildRAGContext(
   // Products known to have Hot Soup Program
   const hotSoupProducts = ['ascent-x5', 'ascent-x4', 'ascent-x3', 'a3500', 'a2500', 'propel-750'];
 
-  // Check if any detected keyword matches a feature requirement
-  const primaryUseCase = detectedKeywords.find((kw) => featureRequirements[kw]);
+  // Check if any combined keyword matches a feature requirement (includes history)
+  const primaryUseCase = combinedKeywords.find((kw) => featureRequirements[kw]);
   if (primaryUseCase) {
     const requiredFeatures = featureRequirements[primaryUseCase];
 
@@ -1063,13 +1101,13 @@ export function buildRAGContext(
     });
   }
 
-  // Find relevant use cases
+  // Find relevant use cases (using combined keywords for context)
   let relevantUseCases = useCases.filter(
     (uc) =>
       lowerQuery.includes(uc.id) ||
       lowerQuery.includes(uc.name.toLowerCase()) ||
       uc.relevantFeatures.some((f) => lowerQuery.includes(f.toLowerCase())) ||
-      detectedKeywords.includes(uc.id)
+      combinedKeywords.includes(uc.id)
   );
 
   // Fallback: provide default use cases if nothing matched
@@ -1098,9 +1136,10 @@ export function buildRAGContext(
     }
   }
 
-  // PRIORITY 3: Try category-based recipe search
+  // PRIORITY 3: Try category-based recipe search using combined keywords (current + history)
+  // This is critical for conversational context like "I have 4 kids" + "they love soups!"
   if (relevantRecipes.length < maxRecipes) {
-    for (const keyword of detectedKeywords) {
+    for (const keyword of combinedKeywords) {
       const categoryRecipes = recipes.filter(r =>
         r.category?.toLowerCase().includes(keyword) ||
         r.name.toLowerCase().includes(keyword) ||

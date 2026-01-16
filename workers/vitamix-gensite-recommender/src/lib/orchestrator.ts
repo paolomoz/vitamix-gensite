@@ -137,10 +137,18 @@ async function classifyIntent(
 async function getRAGContext(
   query: string,
   intent: IntentClassification,
-  _env: Env
+  _env: Env,
+  sessionContext?: SessionContext
 ): Promise<RAGContext> {
-  // Build RAG context from local content
-  const context = buildRAGContext(query, intent.intentType);
+  // Build RAG context from local content, passing session context for conversation history
+  // This enables conversational context like "I have 4 kids" + "they love soups!"
+  // to find kid-friendly soup recipes
+  const context = buildRAGContext(query, intent.intentType, 5, 6, sessionContext ? {
+    previousQueries: sessionContext.previousQueries?.map(pq => ({
+      query: pq.query,
+      intent: pq.intent,
+    })),
+  } : undefined);
 
   return context;
 }
@@ -1440,7 +1448,7 @@ export async function orchestrate(
     ctx.intent = await classifyIntent(query, env, sessionContext, preset);
 
     // Stage 3: Get RAG context
-    ctx.ragContext = await getRAGContext(query, ctx.intent, env);
+    ctx.ragContext = await getRAGContext(query, ctx.intent, env, sessionContext);
 
     // Stage 4: Deep reasoning (model depends on preset)
     const effectivePreset = preset || env.MODEL_PRESET || 'production';
@@ -1818,7 +1826,7 @@ export async function orchestrateFromContext(
     // ============================================
     // Stage 3: Get RAG Context
     // ============================================
-    ctx.ragContext = await getRAGContext(effectiveQuery, intent, env);
+    ctx.ragContext = await getRAGContext(effectiveQuery, intent, env, sessionContext);
 
     // ============================================
     // Stage 4: Deep Reasoning (with signal interpretation)

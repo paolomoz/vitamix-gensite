@@ -27,6 +27,7 @@
     {
       "matches": ["*://www.vitamix.com/*", "*://vitamix.com/*"],
       "js": ["content-script.js"],
+      "css": ["hint-styles.css"],
       "run_at": "document_idle"
     }
   ],

@@ -383,6 +383,143 @@
     }, 5000);
   }
 
+  // ============================================
+  // Page Sections Extraction (for AI Hint)
+  // ============================================
+
+  /**
+   * Generate unique CSS selector for element
+   */
+  function getUniqueSelector(el) {
+    if (el.id) return `#${el.id}`;
+    if (el.className && typeof el.className === 'string') {
+      const classes = el.className.split(' ').filter(c => c && !c.startsWith('_')).slice(0, 2);
+      if (classes.length) return `${el.tagName.toLowerCase()}.${classes.join('.')}`;
+    }
+    return el.tagName.toLowerCase();
+  }
+
+  /**
+   * Extract page sections for LLM context
+   */
+  function getPageSections() {
+    const sections = [];
+    const selectors = [
+      'section',
+      '[class*="feature"]',
+      '[class*="spec"]',
+      '[class*="ingredient"]',
+      '[class*="instruction"]',
+      '[class*="product"]',
+      '[class*="recipe"]',
+      '[class*="hero"]',
+      'main > div',
+      'article > div',
+    ];
+
+    const seen = new Set();
+    document.querySelectorAll(selectors.join(', ')).forEach((el) => {
+      if (sections.length >= 10) return; // Limit to first 10 sections
+      const text = el.textContent?.trim().slice(0, 500);
+      if (text && text.length > 50) {
+        const selector = getUniqueSelector(el);
+        // Avoid duplicates
+        if (!seen.has(selector)) {
+          seen.add(selector);
+          sections.push({
+            selector,
+            tagName: el.tagName.toLowerCase(),
+            className: el.className?.toString().slice(0, 100) || '',
+            text,
+          });
+        }
+      }
+    });
+    return sections;
+  }
+
+  // ============================================
+  // Hint Injection (for AI Hint)
+  // ============================================
+
+  /**
+   * Inject hint at LLM-specified location
+   */
+  function injectHint(hintData) {
+    const { injectionPoint, hint } = hintData;
+
+    // Find injection target
+    let target = null;
+    if (injectionPoint && injectionPoint.selector) {
+      try {
+        target = document.querySelector(injectionPoint.selector);
+      } catch (e) {
+        console.log('[VitamixIntent] Invalid selector:', injectionPoint.selector);
+      }
+    }
+
+    // Fallback to first h2 in main content area
+    if (!target) {
+      target = document.querySelector('main h2, article h2, .content h2, h2');
+    }
+
+    if (!target) {
+      console.log('[VitamixIntent] Could not find injection target');
+      return false;
+    }
+
+    // Create hint element
+    const container = document.createElement('div');
+    container.className = 'vitamix-ai-hint-container';
+    container.innerHTML = `
+      <button class="vitamix-ai-hint">
+        <span class="vitamix-ai-hint-icon">✨</span>
+        <span class="vitamix-ai-hint-text">${hint.text}</span>
+      </button>
+    `;
+
+    // Insert based on position
+    const position = injectionPoint?.position || 'after';
+    if (position === 'before') {
+      target.parentNode.insertBefore(container, target);
+    } else {
+      target.parentNode.insertBefore(container, target.nextSibling);
+    }
+
+    // Handle click - open POC with query
+    container.querySelector('.vitamix-ai-hint').addEventListener('click', () => {
+      console.log('[VitamixIntent] Hint clicked, query:', hint.query);
+      chrome.runtime.sendMessage({
+        type: 'HINT_CLICKED',
+        query: hint.query,
+      });
+    });
+
+    console.log('[VitamixIntent] Hint injected:', hint.text);
+    return true;
+  }
+
+  // ============================================
+  // Message Listener (for AI Hint)
+  // ============================================
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'GET_PAGE_SECTIONS') {
+      const pageContext = getPageContext();
+      const sections = getPageSections();
+      sendResponse({ pageContext, sections });
+      return false;
+    }
+
+    if (message.type === 'INJECT_HINT') {
+      const success = injectHint(message.hintData);
+      sendResponse({ success });
+      return false;
+    }
+
+    return false;
+  });
+
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

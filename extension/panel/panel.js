@@ -76,6 +76,11 @@ function setupEventListeners() {
     handleGenerate();
   });
 
+  // Add AI Hint button
+  document.getElementById('add-hint-btn').addEventListener('click', () => {
+    handleAddHint();
+  });
+
   // Query input keyboard shortcut
   const queryInput = document.getElementById('query-input');
   queryInput.addEventListener('keydown', (e) => {
@@ -119,6 +124,54 @@ async function handleGenerate() {
 }
 
 /**
+ * Handle add AI hint to vitamix.com page
+ */
+async function handleAddHint() {
+  const btn = document.getElementById('add-hint-btn');
+  const statusEl = document.getElementById('hint-status');
+
+  // Disable button while processing
+  btn.disabled = true;
+  btn.innerHTML = '<span class="icon">⏳</span><span>Generating...</span>';
+  statusEl.textContent = 'Generating hint...';
+  statusEl.className = 'hint-status hint-status-loading';
+
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'GENERATE_HINT' });
+
+    if (response.success) {
+      statusEl.textContent = 'Hint added to page!';
+      statusEl.className = 'hint-status hint-status-success';
+      // Clear status after 3 seconds
+      setTimeout(() => {
+        statusEl.textContent = '';
+        statusEl.className = 'hint-status';
+      }, 3000);
+    } else {
+      statusEl.textContent = response.error || 'Failed to generate hint';
+      statusEl.className = 'hint-status hint-status-error';
+    }
+  } catch (error) {
+    console.error('[Panel] Hint error:', error);
+    statusEl.textContent = 'Failed: ' + error.message;
+    statusEl.className = 'hint-status hint-status-error';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="icon">✨</span><span>Add AI Hint</span>';
+    updateHintButton();
+  }
+}
+
+/**
+ * Update hint button enabled state
+ */
+function updateHintButton() {
+  const btn = document.getElementById('add-hint-btn');
+  // Enable only if we have signals (need context for hint generation)
+  btn.disabled = currentSignals.length < 1;
+}
+
+/**
  * Refresh state from background
  */
 async function refreshState() {
@@ -137,6 +190,7 @@ function render() {
   renderProfile();
   renderHistory();
   renderContextSummary();
+  updateHintButton();
 }
 
 /**

@@ -108,8 +108,13 @@
         </div>
       </section>
 
-      <!-- Generate Button & Context Summary -->
+      <!-- AI Hint & Generate Button -->
       <section class="panel-section generate-section" data-section="generate">
+        <button class="btn btn-hint" id="add-hint-btn" disabled>
+          <span class="icon">✨</span>
+          <span>Add AI Hint</span>
+        </button>
+        <div id="hint-status" class="hint-status"></div>
         <button class="btn btn-primary btn-large" id="generate-btn">
           <span class="icon">▶</span>
           <span>Generate Page</span>

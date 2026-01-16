@@ -96,6 +96,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       return true;
 
+    case 'GENERATE_HINT':
+      handleGenerateHint().then((result) => {
+        sendResponse(result);
+      });
+      return true;
+
+    case 'HINT_CLICKED':
+      handleHintClicked(message.query).then((result) => {
+        sendResponse(result);
+      });
+      return true;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return false;
@@ -229,6 +241,87 @@ async function handleLoadExample(example) {
 
   await saveProfileToStorage();
   await notifyPanel();
+}
+
+/**
+ * Generate hint via worker API
+ */
+async function handleGenerateHint() {
+  try {
+    // Get active vitamix.com tab
+    const tabs = await chrome.tabs.query({
+      active: true,
+      url: ['*://www.vitamix.com/*', '*://vitamix.com/*'],
+    });
+
+    if (tabs.length === 0) {
+      return { success: false, error: 'Open a vitamix.com page first' };
+    }
+
+    const tab = tabs[0];
+
+    // Get page sections from content script
+    let pageData;
+    try {
+      pageData = await chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_SECTIONS' });
+    } catch (e) {
+      console.error('[Background] Failed to get page sections:', e);
+      return { success: false, error: 'Could not read page content. Try refreshing the vitamix.com page.' };
+    }
+
+    if (!pageData || !pageData.pageContext) {
+      return { success: false, error: 'Could not extract page content' };
+    }
+
+    // Build hint request
+    const hintRequest = {
+      pageContext: pageData.pageContext,
+      sections: pageData.sections || [],
+      profile: profileEngine.getProfile(),
+      signals: profileEngine.getSignals().slice(-20), // Last 20 signals
+    };
+
+    console.log('[Background] Generating hint for:', pageData.pageContext.url);
+
+    // Call worker API
+    const response = await fetch(`${WORKER_API_URL}/generate-hint`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(hintRequest),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Background] Worker error:', errorText);
+      throw new Error(`Worker returned ${response.status}`);
+    }
+
+    const hintData = await response.json();
+    console.log('[Background] Hint generated:', hintData);
+
+    // Send hint to content script for injection
+    try {
+      await chrome.tabs.sendMessage(tab.id, {
+        type: 'INJECT_HINT',
+        hintData,
+      });
+    } catch (e) {
+      console.error('[Background] Failed to inject hint:', e);
+      return { success: false, error: 'Could not inject hint into page' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('[Background] Error generating hint:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Handle hint click - same as generate page but with hint query
+ */
+async function handleHintClicked(query) {
+  return handleGeneratePage(query, 'all-cerebras');
 }
 
 /**

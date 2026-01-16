@@ -263,6 +263,175 @@ function handleHealth(): Response {
 }
 
 /**
+ * Handle hint generation request from extension
+ */
+interface HintRequest {
+  pageContext: {
+    url: string;
+    path: string;
+    title: string;
+    h1: string;
+    h2s: string[];
+    metaDesc: string;
+  };
+  sections: Array<{
+    selector: string;
+    tagName: string;
+    className: string;
+    text: string;
+  }>;
+  profile: {
+    segments: string[];
+    use_cases: string[];
+    products_considered: string[];
+    price_sensitivity: string;
+    decision_style: string;
+    confidence_score: number;
+  };
+  signals: Array<{
+    label: string;
+    type: string;
+    product?: string;
+    data?: Record<string, unknown>;
+  }>;
+}
+
+interface HintResponse {
+  injectionPoint: {
+    selector: string;
+    position: 'before' | 'after';
+  };
+  hint: {
+    text: string;
+    query: string;
+  };
+}
+
+async function handleGenerateHint(request: Request, env: Env): Promise<Response> {
+  try {
+    const hintRequest: HintRequest = await request.json();
+    const { pageContext, sections, profile, signals } = hintRequest;
+
+    // Build prompt for Claude
+    const sectionsText = sections
+      .slice(0, 8)
+      .map((s, i) => `${i + 1}. [${s.selector}] ${s.text.slice(0, 200)}...`)
+      .join('\n');
+
+    const signalsText = signals
+      .slice(-10)
+      .map((s) => `- ${s.label}${s.product ? ` (${s.product})` : ''}`)
+      .join('\n');
+
+    const prompt = `You are helping a user discover personalized Vitamix content.
+
+Current page: ${pageContext.url}
+Page title: ${pageContext.title}
+Page H1: ${pageContext.h1 || 'N/A'}
+
+Page sections:
+${sectionsText || 'No sections detected'}
+
+User profile:
+- Products viewed: ${profile.products_considered?.join(', ') || 'none'}
+- Use cases: ${profile.use_cases?.join(', ') || 'none'}
+- Segments: ${profile.segments?.join(', ') || 'none'}
+- Decision style: ${profile.decision_style || 'unknown'}
+- Profile confidence: ${Math.round((profile.confidence_score || 0) * 100)}%
+
+Recent browsing signals:
+${signalsText || 'No signals captured'}
+
+Generate a single, highly specific hint that would be valuable for this user.
+
+The hint should:
+1. Reference something specific from their journey (products viewed, interests, or browsing behavior)
+2. Connect to something specific on the current page (a feature, spec, or section)
+3. Feel insightful, not generic - like a knowledgeable friend's suggestion
+4. Be actionable - clicking should lead to genuinely useful AI-generated content
+
+Examples of BAD hints (too generic):
+- "Learn more about this blender"
+- "View product details"
+- "See specifications"
+
+Examples of GOOD hints (specific and valuable):
+- "See how the A3500's self-detect compares to the E310 you viewed earlier"
+- "Find soup recipes that work with the hot soup program on this blender"
+- "Compare this to the A2300 - it's $100 less but has these key differences"
+
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "injectionPoint": {
+    "selector": "CSS selector for where to inject (use a selector from the sections list)",
+    "position": "after"
+  },
+  "hint": {
+    "text": "Short, compelling hint text (max 80 chars)",
+    "query": "Full query to send to AI page generator"
+  }
+}`;
+
+    // Call Claude for hint generation
+    const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!anthropicResponse.ok) {
+      const errorText = await anthropicResponse.text();
+      console.error('[GenerateHint] Anthropic API error:', errorText);
+      throw new Error(`Anthropic API error: ${anthropicResponse.status}`);
+    }
+
+    const completion = await anthropicResponse.json() as {
+      content: Array<{ type: string; text: string }>;
+    };
+
+    // Parse JSON from response
+    const responseText = completion.content[0]?.text || '';
+    console.log('[GenerateHint] Raw response:', responseText);
+
+    // Extract JSON from response (in case it includes markdown)
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+
+    const hintData: HintResponse = JSON.parse(jsonMatch[0]);
+
+    // Validate response structure
+    if (!hintData.hint?.text || !hintData.hint?.query) {
+      throw new Error('Invalid hint structure');
+    }
+
+    console.log('[GenerateHint] Generated hint:', hintData.hint.text);
+
+    return new Response(JSON.stringify(hintData), {
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  } catch (error) {
+    console.error('[GenerateHint] Error:', error);
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      }
+    );
+  }
+}
+
+/**
  * Persist request body structure
  */
 interface PersistRequest {
@@ -439,6 +608,11 @@ export default {
       case '/store-context':
         if (request.method === 'POST') {
           return handleStoreContext(request, env);
+        }
+        return new Response('Method not allowed', { status: 405 });
+      case '/generate-hint':
+        if (request.method === 'POST') {
+          return handleGenerateHint(request, env);
         }
         return new Response('Method not allowed', { status: 405 });
       case '/api/persist':

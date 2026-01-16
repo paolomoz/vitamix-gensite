@@ -565,6 +565,46 @@ body {
   cursor: not-allowed;
 }
 
+/* Hint Button */
+.btn-hint {
+  background: linear-gradient(135deg, #3dcbda 0%, #2bb5c4 100%);
+  color: white;
+  margin-bottom: 8px;
+}
+
+.btn-hint:hover {
+  background: linear-gradient(135deg, #4dd7e6 0%, #3dcbda 100%);
+  box-shadow: 0 2px 8px rgba(61, 203, 218, 0.3);
+}
+
+.btn-hint:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+/* Hint Status */
+.hint-status {
+  font-size: 11px;
+  text-align: center;
+  min-height: 16px;
+  margin-bottom: 8px;
+  transition: color 0.2s ease;
+}
+
+.hint-status-loading {
+  color: var(--text-secondary);
+}
+
+.hint-status-success {
+  color: var(--success-text);
+}
+
+.hint-status-error {
+  color: var(--warning);
+}
+
 .btn-secondary {
   background: var(--surface);
   color: var(--text);

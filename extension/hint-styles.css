@@ -1,0 +1,89 @@
+/**
+ * Vitamix AI Hint Styles
+ * Injected into vitamix.com pages for contextual AI hints
+ */
+
+/* Injected hint container */
+.vitamix-ai-hint-container {
+  margin: 16px 0;
+  padding: 12px 0;
+  animation: vitamix-hint-appear 0.3s ease-out;
+}
+
+.vitamix-ai-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #fafafa 0%, #f3f1eb 100%);
+  border: 1px solid #e9e9e9;
+  border-radius: 6px;
+  font-family: 'Gotham Narrow', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333f48;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 100%;
+  text-align: left;
+}
+
+.vitamix-ai-hint:hover {
+  background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+  border-color: #3dcbda;
+  box-shadow: 0 4px 16px rgba(61, 203, 218, 0.2);
+  transform: translateY(-2px);
+}
+
+.vitamix-ai-hint:active {
+  transform: translateY(0);
+}
+
+.vitamix-ai-hint-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.vitamix-ai-hint-text {
+  line-height: 1.3;
+}
+
+@keyframes vitamix-hint-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dismiss button for hints */
+.vitamix-ai-hint-dismiss {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #333f48;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.vitamix-ai-hint-container:hover .vitamix-ai-hint-dismiss {
+  opacity: 1;
+}
+
+.vitamix-ai-hint-container {
+  position: relative;
+}

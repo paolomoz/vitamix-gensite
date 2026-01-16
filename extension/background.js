@@ -139,7 +139,7 @@ async function handleClearProfile() {
 /**
  * Execute query - open POC site with query
  */
-function handleExecuteQuery(query, preset = 'production', tabId) {
+function handleExecuteQuery(query, preset = 'all-cerebras', tabId) {
   const url = `${POC_BASE_URL}/?q=${encodeURIComponent(query)}&preset=${preset}`;
   chrome.tabs.create({ url });
 }

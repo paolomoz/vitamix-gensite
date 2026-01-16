@@ -87,12 +87,10 @@ function executeCustomQuery() {
   const query = document.getElementById('custom-input').value.trim();
   if (!query) return;
 
-  const preset = document.querySelector('input[name="preset"]:checked').value;
-
   chrome.runtime.sendMessage({
     type: 'EXECUTE_QUERY',
     query,
-    preset,
+    preset: 'all-cerebras',
   });
 }
 
@@ -351,8 +349,6 @@ function renderQuery() {
     return;
   }
 
-  const preset = document.querySelector('input[name="preset"]:checked')?.value || 'production';
-
   container.innerHTML = `
     <div class="query-text">"${currentQuery.query}"</div>
     <div class="query-meta">
@@ -370,7 +366,7 @@ function renderQuery() {
     chrome.runtime.sendMessage({
       type: 'EXECUTE_QUERY',
       query: currentQuery.query,
-      preset,
+      preset: 'all-cerebras',
     });
   });
 }

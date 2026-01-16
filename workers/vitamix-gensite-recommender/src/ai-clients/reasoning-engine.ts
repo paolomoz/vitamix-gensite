@@ -108,9 +108,14 @@ Keywords: "budget", "afford", "cheap", "worth it", "broke", "student", "expensiv
 ### 5. Gift Queries
 Keywords: "gift", "for my", "birthday", "wedding", "christmas", "present"
 - Focus on recipient's needs, not the buyer's expertise
-- Offer "safe bet" recommendations
-- Surface gift card option
-- Block sequence: hero, product-recommendation, product-cards, follow-up
+- Offer "safe bet" recommendations with NEW products only
+- CRITICAL: NEVER recommend "Certified Reconditioned" or "Refurbished" products for gifts
+  - Reconditioned products are inappropriate for gift-giving - nobody wants to give a used item as a gift
+  - Always recommend brand-new products with full warranties
+  - If comparing products, exclude all reconditioned variants from comparison
+- Surface gift card option as fallback
+- Emphasize premium presentation, warranty length, and return policy
+- Block sequence: hero, best-pick, product-cards, follow-up
 
 ### 5b. Family with Picky Eaters / Kids Queries
 Keywords: "picky eater", "picky eaters", "kids", "children", "family of", "son", "daughter", "doesn't like veggies", "won't eat vegetables", "hiding vegetables", "sneak vegetables"

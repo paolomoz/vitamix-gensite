@@ -812,11 +812,34 @@ export function buildRAGContext(
 
   // Fallback: provide top products if nothing matched
   if (relevantProducts.length === 0) {
-    relevantProducts = products.slice(0, maxProducts);
+    // For gift queries, exclude reconditioned from fallback as well
+    if (intent === 'gift') {
+      relevantProducts = products
+        .filter(p => !p.series?.toLowerCase().includes('reconditioned') &&
+                     !p.name?.toLowerCase().includes('reconditioned'))
+        .slice(0, maxProducts);
+    } else {
+      relevantProducts = products.slice(0, maxProducts);
+    }
   }
 
   // Dedupe and limit products
-  relevantProducts = [...new Map(relevantProducts.map(p => [p.id, p])).values()].slice(0, maxProducts);
+  relevantProducts = [...new Map(relevantProducts.map(p => [p.id, p])).values()];
+
+  // CRITICAL: Filter out reconditioned/refurbished products for gift queries
+  // Reconditioned products are inappropriate for gift-giving
+  if (intent === 'gift') {
+    relevantProducts = relevantProducts.filter(p => {
+      const isReconditioned =
+        p.series?.toLowerCase().includes('reconditioned') ||
+        p.name?.toLowerCase().includes('reconditioned') ||
+        p.name?.toLowerCase().includes('refurbished') ||
+        p.id?.toLowerCase().includes('reconditioned');
+      return !isReconditioned;
+    });
+  }
+
+  relevantProducts = relevantProducts.slice(0, maxProducts);
 
   // Feature-aware ranking: prioritize products with required features for detected use case
   const featureRequirements: Record<string, string[]> = {

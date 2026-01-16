@@ -1037,6 +1037,8 @@ IMPORTANT RULES:
 3. Output valid HTML following the EXACT structure shown in the template
 4. Do NOT include <html>, <head>, or <body> tags - just the block content
 5. Populate the template with real data from the context provided
+6. CRITICAL: If a specific product mentioned in the guidance is NOT in the Available Products list below, DO NOT apologize or explain - instead, silently pick the BEST AVAILABLE product from the list that matches the user's needs. Never output apology text or meta-commentary.
+7. You MUST always output valid HTML. Never output conversational text like "I'm sorry" or "I can't".
 ${htmlTemplate}
 ${dataContext}`;
 
@@ -1053,6 +1055,42 @@ Rationale: ${block.rationale}`,
   try {
     const response = await modelFactory.call('content', messages, env);
     let html = wrapBlockHTML(block.type, response.content, block.variant);
+
+    // Safety check: detect apology/refusal text that shouldn't be rendered
+    const apologyPatterns = [
+      /I'm sorry/i,
+      /I cannot/i,
+      /I can't/i,
+      /I apologize/i,
+      /weren't included/i,
+      /not available/i,
+      /Let me know how you'd like to proceed/i,
+    ];
+    const hasApologyText = apologyPatterns.some(pattern => pattern.test(html));
+    if (hasApologyText) {
+      console.warn(`[ContentGen] Detected apology text in ${block.type} block, using fallback`);
+      // Return a minimal valid block instead of apology text
+      const fallbackProduct = ragContext.relevantProducts[0];
+      if (fallbackProduct && ['product-recommendation', 'best-pick'].includes(block.type)) {
+        html = `<div class="${block.type}">
+          <div class="${block.type}-wrapper">
+            <div class="${block.type}-content">
+              <h2>${fallbackProduct.name}</h2>
+              <p>${fallbackProduct.tagline || fallbackProduct.description?.slice(0, 150) || 'Premium Vitamix blender'}</p>
+              <p>$${fallbackProduct.price} · ${fallbackProduct.warranty || 'Full Warranty'}</p>
+              <p><a href="${fallbackProduct.url}" class="button primary" target="_blank">Explore the ${fallbackProduct.name}</a></p>
+            </div>
+          </div>
+        </div>`;
+      } else {
+        // Skip the block entirely for other block types
+        return {
+          type: block.type,
+          html: '',
+          sectionStyle: getSectionStyle(block.type),
+        };
+      }
+    }
 
     // For specs-table, add product name as data attribute for client-side title injection
     if (block.type === 'specs-table' && specsTableProductName) {

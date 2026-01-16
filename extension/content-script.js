@@ -518,9 +518,160 @@
   }
 
   // ============================================
-  // Message Listener (for AI Hint)
+  // Overlay Panel Injection (on-demand)
   // ============================================
 
+  let overlayContainer = null;
+  let panelIframe = null;
+  let stylesInjected = false;
+
+  /**
+   * Inject overlay panel CSS (once)
+   */
+  function injectOverlayStyles() {
+    if (stylesInjected) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.id = 'vitamix-intent-overlay-styles';
+    link.href = chrome.runtime.getURL('overlay-panel.css');
+    document.head.appendChild(link);
+    stylesInjected = true;
+  }
+
+  /**
+   * Create and inject the overlay panel
+   */
+  function enableOverlayPanel() {
+    // Don't inject if already present
+    if (document.querySelector('.vitamix-intent-overlay-container')) {
+      return;
+    }
+
+    // Check saved collapsed state BEFORE creating elements
+    const savedState = localStorage.getItem('vitamix-intent-panel-collapsed');
+    const shouldBeCollapsed = savedState !== 'false'; // Default to collapsed if no saved state
+
+    // Create container with correct initial state
+    overlayContainer = document.createElement('div');
+    overlayContainer.className = 'vitamix-intent-overlay-container';
+    if (shouldBeCollapsed) {
+      overlayContainer.classList.add('collapsed');
+    }
+
+    // Apply critical inline styles immediately (before CSS loads)
+    overlayContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2147483647;
+      pointer-events: none;
+    `;
+
+    // Create toggle button (for collapse/expand, not enable/disable)
+    const toggle = document.createElement('button');
+    toggle.className = 'vitamix-intent-toggle';
+    toggle.setAttribute('aria-label', 'Collapse/Expand Panel');
+    toggle.setAttribute('title', 'Collapse/Expand Panel');
+    toggle.innerHTML = `
+      <span class="vitamix-intent-toggle-icon">🎯</span>
+      <span class="vitamix-intent-toggle-chevron">◀</span>
+    `;
+
+    // Apply critical inline styles to toggle (before CSS loads)
+    toggle.style.cssText = `
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      right: ${shouldBeCollapsed ? '0' : '380px'};
+      width: 36px;
+      height: 80px;
+      z-index: 2147483647;
+      pointer-events: auto;
+      cursor: pointer;
+      background: linear-gradient(180deg, #2d2d2d 0%, #1e1e1e 100%);
+      border: 1px solid #404040;
+      border-right: none;
+      border-radius: 8px 0 0 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    `;
+
+    // Create panel container
+    const panel = document.createElement('div');
+    panel.className = 'vitamix-intent-panel';
+
+    // Apply critical inline styles to panel (before CSS loads)
+    panel.style.cssText = `
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 380px;
+      height: 100%;
+      background: #1e1e1e;
+      pointer-events: auto;
+      transform: ${shouldBeCollapsed ? 'translateX(100%)' : 'translateX(0)'};
+    `;
+
+    // Create iframe for panel content
+    panelIframe = document.createElement('iframe');
+    panelIframe.src = chrome.runtime.getURL('panel/panel.html');
+    panelIframe.setAttribute('allow', 'clipboard-write');
+    panelIframe.style.cssText = 'width: 100%; height: 100%; border: none;';
+    panel.appendChild(panelIframe);
+
+    // Assemble
+    overlayContainer.appendChild(toggle);
+    overlayContainer.appendChild(panel);
+    document.body.appendChild(overlayContainer);
+
+    // Inject styles (will override inline styles but maintain state)
+    injectOverlayStyles();
+
+    // After CSS loads, clear inline styles to let CSS take over
+    // but keep the state classes for proper styling
+    setTimeout(() => {
+      overlayContainer.style.cssText = '';
+      toggle.style.cssText = '';
+      panel.style.cssText = '';
+    }, 100);
+
+    // Toggle click handler (collapse/expand)
+    toggle.addEventListener('click', () => {
+      overlayContainer.classList.toggle('collapsed');
+      const isCollapsed = overlayContainer.classList.contains('collapsed');
+      localStorage.setItem('vitamix-intent-panel-collapsed', isCollapsed ? 'true' : 'false');
+    });
+
+    console.log('[VitamixIntent] Overlay panel enabled, collapsed:', shouldBeCollapsed);
+  }
+
+  /**
+   * Remove the overlay panel from the page
+   */
+  function disableOverlayPanel() {
+    if (overlayContainer) {
+      overlayContainer.remove();
+      overlayContainer = null;
+      panelIframe = null;
+      console.log('[VitamixIntent] Overlay panel disabled');
+    }
+  }
+
+  /**
+   * Check if panel is currently enabled on page
+   */
+  function isPanelEnabled() {
+    return !!document.querySelector('.vitamix-intent-overlay-container');
+  }
+
+
+  /**
+   * Listen for messages from background
+   */
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'GET_PAGE_SECTIONS') {
       const pageContext = getPageContext();
@@ -535,10 +686,27 @@
       return false;
     }
 
+    if (message.type === 'ENABLE_PANEL') {
+      enableOverlayPanel();
+      sendResponse({ success: true, enabled: true });
+      return false;
+    }
+
+    if (message.type === 'DISABLE_PANEL') {
+      disableOverlayPanel();
+      sendResponse({ success: true, enabled: false });
+      return false;
+    }
+
+    if (message.type === 'GET_PANEL_STATE') {
+      sendResponse({ enabled: isPanelEnabled() });
+      return false;
+    }
+
     return false;
   });
 
-  // Initialize when DOM is ready
+  // Initialize signal capture only (no panel auto-injection)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

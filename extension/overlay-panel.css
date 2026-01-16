@@ -1,0 +1,136 @@
+/**
+ * Overlay Panel Styles
+ * Injected into vitamix.com pages for the intent inference panel
+ */
+
+/* Container for the overlay panel system */
+.vitamix-intent-overlay-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2147483647; /* Maximum z-index */
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* The panel iframe container */
+.vitamix-intent-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100%;
+  background: #1e1e1e;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+  border-left: 1px solid #404040;
+}
+
+/* Panel iframe */
+.vitamix-intent-panel iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Collapsed state - panel slides off screen */
+.vitamix-intent-overlay-container.collapsed .vitamix-intent-panel {
+  transform: translateX(100%);
+}
+
+/* Toggle tab - always visible, positioned outside panel */
+.vitamix-intent-toggle {
+  position: fixed;
+  right: 380px; /* Positioned at panel edge when open */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 80px;
+  background: linear-gradient(180deg, #2d2d2d 0%, #1e1e1e 100%);
+  border: 1px solid #404040;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: auto;
+  z-index: 2147483647; /* Same max z-index as container */
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.15s ease,
+              box-shadow 0.15s ease;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.vitamix-intent-toggle:hover {
+  background: linear-gradient(180deg, #363636 0%, #2d2d2d 100%);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+/* When collapsed, toggle moves to edge of screen */
+.vitamix-intent-overlay-container.collapsed .vitamix-intent-toggle {
+  right: 0;
+}
+
+/* Toggle icon */
+.vitamix-intent-toggle-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Toggle chevron indicator */
+.vitamix-intent-toggle-chevron {
+  font-size: 10px;
+  color: #808080;
+  transition: transform 0.3s ease;
+}
+
+.vitamix-intent-overlay-container.collapsed .vitamix-intent-toggle-chevron {
+  transform: rotate(180deg);
+}
+
+/* Keyboard focus styles */
+.vitamix-intent-toggle:focus {
+  outline: 2px solid #0265dc;
+  outline-offset: 2px;
+}
+
+.vitamix-intent-toggle:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Responsive - smaller screens get narrower panel */
+@media (max-width: 768px) {
+  .vitamix-intent-panel {
+    width: 320px;
+  }
+
+  .vitamix-intent-overlay-container:not(.collapsed) .vitamix-intent-toggle {
+    right: 320px;
+  }
+}
+
+/* Very small screens - panel takes more width but stays overlay */
+@media (max-width: 480px) {
+  .vitamix-intent-panel {
+    width: 280px;
+  }
+
+  .vitamix-intent-overlay-container:not(.collapsed) .vitamix-intent-toggle {
+    right: 280px;
+  }
+}
+
+/* Suppress all animations/transitions during initial render */
+.vitamix-intent-overlay-container.no-animate,
+.vitamix-intent-overlay-container.no-animate .vitamix-intent-panel,
+.vitamix-intent-overlay-container.no-animate .vitamix-intent-toggle,
+.vitamix-intent-overlay-container.no-animate .vitamix-intent-toggle-chevron {
+  animation: none !important;
+  transition: none !important;
+}

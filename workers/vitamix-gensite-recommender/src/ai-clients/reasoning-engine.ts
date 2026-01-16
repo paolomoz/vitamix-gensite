@@ -23,6 +23,31 @@ import type { RAGContext } from '../content/content-service';
 import { ModelFactory, type Message } from './model-factory';
 
 // ============================================
+// Confidence Thresholds
+// ============================================
+
+/**
+ * Confidence thresholds for product recommendation blocks.
+ *
+ * These thresholds ensure that low-confidence scenarios don't make specific
+ * product recommendations. Instead, they default to comparison or discovery modes.
+ *
+ * Rationale:
+ * - A page visit alone (e.g., viewing E320) shouldn't recommend that product
+ * - Search queries like "kids recipes" need stronger signals to recommend specific models
+ * - The system should show options, not push products, when uncertain
+ */
+const CONFIDENCE_THRESHOLDS = {
+  /** >= 80%: Single product recommendation allowed (product-recommendation block) */
+  SINGLE_RECOMMENDATION: 0.8,
+  /** >= 60%: Best pick with comparison allowed (best-pick + comparison-table) */
+  BEST_PICK_WITH_COMPARISON: 0.6,
+  /** >= 40%: Comparison only, no "best" labels (comparison-table, product-cards) */
+  COMPARISON_ONLY: 0.4,
+  /** < 40%: Discovery mode - use-case-cards, feature-highlights, no recommendations */
+};
+
+// ============================================
 // Reasoning System Prompt
 // ============================================
 
@@ -583,6 +608,154 @@ function ensureRequiredBlocks(blocks: BlockSelection[]): BlockSelection[] {
 }
 
 /**
+ * Enforce confidence thresholds for recommendation blocks.
+ *
+ * This is the core fix for the issue where low-confidence scenarios
+ * (e.g., 29% confidence from "kids recipes" + E320 page visit) were
+ * still generating single product recommendations.
+ *
+ * The function filters/substitutes blocks based on confidence:
+ * - >= 80%: Allow product-recommendation, best-pick
+ * - 60-79%: Allow best-pick + comparison, but not standalone product-recommendation
+ * - 40-59%: Comparison only, no "best" labels
+ * - < 40%: Discovery mode with use-case-cards
+ */
+function enforceConfidenceThresholds(
+  result: ReasoningResult,
+  intent: IntentClassification
+): ReasoningResult {
+  const { confidence, selectedBlocks } = result;
+
+  // Blocks that require high confidence
+  const singleRecommendationBlocks = ['product-recommendation'];
+  const bestPickBlocks = ['best-pick'];
+
+  // Log for debugging
+  console.log(`[ReasoningEngine] Confidence check: ${(confidence * 100).toFixed(0)}%`);
+  console.log(`[ReasoningEngine] Original blocks: ${selectedBlocks.map(b => b.type).join(', ')}`);
+
+  let filteredBlocks = [...selectedBlocks];
+  const substitutionsMade: string[] = [];
+
+  // ----------------------------------------
+  // Check 1: If confidence < 80%, remove product-recommendation
+  // ----------------------------------------
+  if (confidence < CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION) {
+    const hasProductRec = filteredBlocks.some(b =>
+      singleRecommendationBlocks.includes(b.type)
+    );
+
+    if (hasProductRec) {
+      // Remove product-recommendation blocks
+      filteredBlocks = filteredBlocks.filter(b =>
+        !singleRecommendationBlocks.includes(b.type)
+      );
+      substitutionsMade.push(
+        `Removed product-recommendation (${(confidence * 100).toFixed(0)}% < ${CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION * 100}% threshold)`
+      );
+
+      // Add comparison-table if not present and confidence >= 40%
+      if (
+        confidence >= CONFIDENCE_THRESHOLDS.COMPARISON_ONLY &&
+        !filteredBlocks.some(b => b.type === 'comparison-table')
+      ) {
+        // Find best insertion point (after hero or best-pick, or at position 1)
+        const heroIndex = filteredBlocks.findIndex(b => b.type === 'hero');
+        const bestPickIndex = filteredBlocks.findIndex(b => b.type === 'best-pick');
+        const insertAfter = Math.max(heroIndex, bestPickIndex);
+        const insertIndex = insertAfter >= 0 ? insertAfter + 1 : Math.min(1, filteredBlocks.length);
+
+        filteredBlocks.splice(insertIndex, 0, {
+          type: 'comparison-table',
+          priority: insertIndex + 1,
+          rationale: 'Showing comparison instead of single recommendation due to lower confidence',
+          contentGuidance: 'Compare relevant products based on user signals without declaring a winner',
+        });
+        substitutionsMade.push('Added comparison-table as substitute');
+      }
+
+      // Add product-cards if not present (gives options without recommending)
+      if (!filteredBlocks.some(b => b.type === 'product-cards')) {
+        const compTableIndex = filteredBlocks.findIndex(b => b.type === 'comparison-table');
+        const insertIndex = compTableIndex >= 0 ? compTableIndex + 1 : filteredBlocks.length - 1;
+
+        filteredBlocks.splice(insertIndex, 0, {
+          type: 'product-cards',
+          priority: insertIndex + 1,
+          rationale: 'Showing product options for user to explore',
+          contentGuidance: 'Display relevant products without ranking or declaring a best choice',
+        });
+        substitutionsMade.push('Added product-cards for exploration');
+      }
+    }
+  }
+
+  // ----------------------------------------
+  // Check 2: If confidence < 60%, remove best-pick
+  // ----------------------------------------
+  if (confidence < CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON) {
+    const hasBestPick = filteredBlocks.some(b =>
+      bestPickBlocks.includes(b.type)
+    );
+
+    if (hasBestPick) {
+      // Remove best-pick blocks
+      filteredBlocks = filteredBlocks.filter(b =>
+        !bestPickBlocks.includes(b.type)
+      );
+      substitutionsMade.push(
+        `Removed best-pick (${(confidence * 100).toFixed(0)}% < ${CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON * 100}% threshold)`
+      );
+    }
+  }
+
+  // ----------------------------------------
+  // Check 3: If confidence < 40%, switch to discovery mode
+  // ----------------------------------------
+  if (confidence < CONFIDENCE_THRESHOLDS.COMPARISON_ONLY) {
+    // Check if we have discovery blocks
+    const hasDiscoveryBlocks = filteredBlocks.some(b =>
+      ['use-case-cards', 'feature-highlights'].includes(b.type)
+    );
+
+    if (!hasDiscoveryBlocks) {
+      // Add use-case-cards for discovery mode
+      const heroIndex = filteredBlocks.findIndex(b => b.type === 'hero');
+      const insertIndex = heroIndex >= 0 ? heroIndex + 1 : Math.min(1, filteredBlocks.length);
+
+      filteredBlocks.splice(insertIndex, 0, {
+        type: 'use-case-cards',
+        priority: insertIndex + 1,
+        rationale: 'Low confidence - help user explore use cases before suggesting products',
+        contentGuidance: 'Show use cases relevant to user signals to help narrow down their needs',
+      });
+      substitutionsMade.push('Added use-case-cards for discovery mode (confidence < 40%)');
+    }
+  }
+
+  // Log substitutions made
+  if (substitutionsMade.length > 0) {
+    console.log('[ReasoningEngine] Confidence threshold enforcement:');
+    substitutionsMade.forEach(s => console.log(`  - ${s}`));
+  } else {
+    console.log('[ReasoningEngine] No confidence threshold adjustments needed');
+  }
+
+  // Re-assign priorities
+  filteredBlocks = filteredBlocks.map((block, index) => ({
+    ...block,
+    priority: index + 1,
+  }));
+
+  console.log(`[ReasoningEngine] Final blocks: ${filteredBlocks.map(b => b.type).join(', ')}`);
+
+  return {
+    ...result,
+    selectedBlocks: filteredBlocks,
+  };
+}
+
+/**
  * Main reasoning function - analyzes intent and selects blocks
  *
  * @param signalInterpretation - Optional direct signal interpretation from LLM
@@ -595,7 +768,8 @@ export async function analyzeAndSelectBlocks(
   env: Env,
   sessionContext?: SessionContext,
   preset?: string,
-  signalInterpretation?: SignalInterpretation
+  signalInterpretation?: SignalInterpretation,
+  profileConfidence?: number
 ): Promise<ReasoningResult> {
   const modelFactory = new ModelFactory(preset || env.MODEL_PRESET || 'production');
 
@@ -635,7 +809,36 @@ export async function analyzeAndSelectBlocks(
 
   try {
     const response = await modelFactory.call('reasoning', messages, env);
-    const result = parseReasoningResponse(response.content);
+    let result = parseReasoningResponse(response.content);
+
+    // CRITICAL: Use MINIMUM confidence from multiple sources
+    // This prevents an overconfident LLM from overriding weak input signals
+    const confidenceSources = [
+      result.confidence,                                    // Reasoning engine's confidence
+      intent.confidence,                                    // Intent classification confidence
+      signalInterpretation?.classification.confidence,      // Signal interpretation confidence
+      profileConfidence,                                    // Profile confidence from rule-based engine
+    ].filter((c): c is number => typeof c === 'number' && !isNaN(c));
+
+    const effectiveConfidence = Math.min(...confidenceSources);
+
+    console.log('[ReasoningEngine] Confidence sources:', {
+      reasoning: result.confidence,
+      intent: intent.confidence,
+      signalInterpretation: signalInterpretation?.classification.confidence,
+      profile: profileConfidence,
+      effective: effectiveConfidence,
+    });
+
+    // Override the result's confidence with the effective (minimum) confidence
+    result = {
+      ...result,
+      confidence: effectiveConfidence,
+    };
+
+    // CRITICAL: Enforce confidence thresholds BEFORE block normalization
+    // This prevents low-confidence scenarios from making specific recommendations
+    result = enforceConfidenceThresholds(result, intent);
 
     // Ensure required blocks are present
     result.selectedBlocks = ensureRequiredBlocks(result.selectedBlocks);

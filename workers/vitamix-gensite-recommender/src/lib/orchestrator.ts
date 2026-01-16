@@ -1832,6 +1832,7 @@ export async function orchestrateFromContext(
     });
 
     // Pass signal interpretation to reasoning engine for content guidance
+    // Also pass profile confidence from rule-based engine to prevent overconfident LLM
     ctx.reasoningResult = await analyzeAndSelectBlocks(
       effectiveQuery,
       intent,
@@ -1839,7 +1840,8 @@ export async function orchestrateFromContext(
       env,
       sessionContext,
       preset,
-      signalInterpretation // NEW: Pass interpretation for content guidance
+      signalInterpretation,
+      context.profile.confidence_score // Profile confidence from rule-based engine
     );
 
     // Stream reasoning steps

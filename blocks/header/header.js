@@ -46,7 +46,7 @@ export default async function decorate(block) {
 
   // Extract content from fragment
   if (fragment) {
-    const sections = [...fragment.querySelectorAll(':scope > div > div')];
+    const sections = [...fragment.querySelectorAll(':scope > div')];
 
     // Logo/Title section (first div)
     const logoSection = document.createElement('div');
@@ -86,41 +86,181 @@ export default async function decorate(block) {
       }
     }
 
-    // Tools section (search icon, etc.)
+    // Tools section (from nav fragment 3rd section)
     const toolsSection = document.createElement('div');
     toolsSection.className = 'nav-tools';
     toolsSection.id = 'nav-tools';
 
-    // Add Account link
-    const accountLink = document.createElement('a');
-    accountLink.href = 'https://www.vitamix.com/us/en_us/customer/account';
-    accountLink.setAttribute('aria-label', 'Account');
-    accountLink.innerHTML = `
-      <span class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </span>
-      <span>Account</span>
-    `;
-    toolsSection.appendChild(accountLink);
+    if (sections[2]) {
+      const toolsUl = sections[2].querySelector('ul');
+      if (toolsUl) {
+        const toolsList = document.createElement('ul');
+        toolsUl.querySelectorAll(':scope > li').forEach((li) => {
+          const newLi = document.createElement('li');
+          // Handle both li > a and li > p > a structures
+          const link = li.querySelector(':scope > a') || li.querySelector(':scope > p > a');
+          const nestedUl = li.querySelector('ul');
 
-    // Add Cart link
-    const cartLink = document.createElement('a');
-    cartLink.href = 'https://www.vitamix.com/us/en_us/checkout/cart';
-    cartLink.setAttribute('aria-label', 'Cart');
-    cartLink.innerHTML = `
-      <span class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-        </svg>
-      </span>
-      <span>Cart</span>
-    `;
-    toolsSection.appendChild(cartLink);
+          if (link && !nestedUl) {
+            // Simple link item (Search, Sign Up, Log In)
+            const newLink = link.cloneNode(true);
+            newLink.classList.add('icon-wrapper');
+            // Ensure icon is loaded
+            const icon = newLink.querySelector('.icon');
+            if (icon) {
+              const iconName = [...icon.classList].find((c) => c.startsWith('icon-') && c !== 'icon')?.replace('icon-', '');
+              if (iconName && !icon.querySelector('svg, img')) {
+                icon.innerHTML = `<img data-icon-name="${iconName}" src="/icons/${iconName}.svg" alt="" loading="lazy">`;
+              }
+            }
+            newLi.appendChild(newLink);
+          } else if (nestedUl) {
+            // Language dropdown
+            newLi.className = 'nav-tools-language';
+
+            // Create button trigger
+            const button = document.createElement('button');
+            button.className = 'icon-wrapper';
+            button.setAttribute('aria-haspopup', 'true');
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-controls', 'language-menu');
+            button.setAttribute('aria-label', 'Choose Language');
+
+            // Get icon and label from <p> elements
+            const iconP = li.querySelector(':scope > p .icon');
+            const pElements = li.querySelectorAll(':scope > p');
+            // Label could be in second <p> or as text in first <p> after icon
+            let labelText = pElements[1]?.textContent?.trim();
+            if (!labelText && pElements[0]) {
+              // Get text content excluding the icon
+              const firstP = pElements[0].cloneNode(true);
+              firstP.querySelector('.icon')?.remove();
+              labelText = firstP.textContent?.trim();
+            }
+            if (!labelText) labelText = 'English (US)'; // Default
+
+            if (iconP) {
+              const iconClone = iconP.cloneNode(true);
+              const iconName = [...iconClone.classList].find((c) => c.startsWith('icon-') && c !== 'icon')?.replace('icon-', '');
+              if (iconName && !iconClone.querySelector('svg, img')) {
+                iconClone.innerHTML = `<img data-icon-name="${iconName}" src="/icons/${iconName}.svg" alt="" loading="lazy">`;
+              }
+              button.appendChild(iconClone);
+            }
+            button.appendChild(document.createTextNode(labelText));
+
+            // Create dropdown menu
+            const menu = document.createElement('ul');
+            menu.setAttribute('role', 'menu');
+            menu.id = 'language-menu';
+
+            nestedUl.querySelectorAll('li').forEach((langLi) => {
+              const menuItem = document.createElement('li');
+              const links = langLi.querySelectorAll('a');
+              const langIcon = langLi.querySelector('.icon');
+
+              // Handle both linked and text-only language items
+              if (links.length >= 1) {
+                // Has at least one link
+                const menuLink = document.createElement('a');
+                menuLink.href = links[0].href;
+                menuLink.className = 'icon-wrapper';
+
+                if (langIcon) {
+                  const iconClone = langIcon.cloneNode(true);
+                  const iconName = [...iconClone.classList].find((c) => c.startsWith('icon-') && c !== 'icon')?.replace('icon-', '');
+                  if (iconName && !iconClone.querySelector('svg, img')) {
+                    iconClone.innerHTML = `<img data-icon-name="${iconName}" src="/icons/${iconName}.svg" alt="" loading="lazy">`;
+                  }
+                  menuLink.appendChild(iconClone);
+                }
+
+                const textContainer = document.createElement('p');
+                if (links.length >= 2) {
+                  const countrySpan = document.createElement('span');
+                  countrySpan.textContent = links[1].textContent;
+                  const langSpan = document.createElement('span');
+                  langSpan.textContent = links[0].textContent.replace(/<\/?strong>/g, '');
+                  textContainer.appendChild(countrySpan);
+                  textContainer.appendChild(langSpan);
+                } else {
+                  textContainer.textContent = links[0].textContent;
+                }
+                menuLink.appendChild(textContainer);
+                menuItem.appendChild(menuLink);
+              } else if (langIcon || langLi.textContent.trim()) {
+                // Text-only item (no links)
+                const menuSpan = document.createElement('span');
+                menuSpan.className = 'icon-wrapper';
+
+                if (langIcon) {
+                  const iconClone = langIcon.cloneNode(true);
+                  const iconName = [...iconClone.classList].find((c) => c.startsWith('icon-') && c !== 'icon')?.replace('icon-', '');
+                  if (iconName && !iconClone.querySelector('svg, img')) {
+                    iconClone.innerHTML = `<img data-icon-name="${iconName}" src="/icons/${iconName}.svg" alt="" loading="lazy">`;
+                  }
+                  menuSpan.appendChild(iconClone);
+                }
+
+                // Get text without icon
+                const textClone = langLi.cloneNode(true);
+                textClone.querySelector('.icon')?.remove();
+                const itemText = textClone.textContent.trim();
+                if (itemText) {
+                  const textP = document.createElement('p');
+                  textP.textContent = itemText;
+                  menuSpan.appendChild(textP);
+                }
+
+                menuItem.appendChild(menuSpan);
+              }
+              if (menuItem.children.length) menu.appendChild(menuItem);
+            });
+
+            newLi.appendChild(button);
+            newLi.appendChild(menu);
+
+            // Add click handler for dropdown
+            button.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const expanded = button.getAttribute('aria-expanded') === 'true';
+              button.setAttribute('aria-expanded', !expanded);
+              newLi.classList.toggle('open', !expanded);
+            });
+
+            // Close on outside click
+            document.addEventListener('click', () => {
+              button.setAttribute('aria-expanded', 'false');
+              newLi.classList.remove('open');
+            });
+          }
+
+          toolsList.appendChild(newLi);
+        });
+        toolsSection.appendChild(toolsList);
+      }
+    }
+
+    // Add Cart link from 4th section
+    if (sections[3]) {
+      const cartLink = sections[3].querySelector('a');
+      if (cartLink) {
+        const cartLi = document.createElement('li');
+        const newCartLink = cartLink.cloneNode(true);
+        newCartLink.classList.add('icon-wrapper');
+        const icon = newCartLink.querySelector('.icon');
+        if (icon) {
+          const iconName = [...icon.classList].find((c) => c.startsWith('icon-') && c !== 'icon')?.replace('icon-', '');
+          if (iconName && !icon.querySelector('svg, img')) {
+            icon.innerHTML = `<img data-icon-name="${iconName}" src="/icons/${iconName}.svg" alt="" loading="lazy">`;
+          }
+        }
+        cartLi.appendChild(newCartLink);
+        const toolsList = toolsSection.querySelector('ul') || document.createElement('ul');
+        if (!toolsSection.querySelector('ul')) toolsSection.appendChild(toolsList);
+        toolsList.appendChild(cartLi);
+      }
+    }
 
     // Hamburger menu for mobile
     const hamburger = document.createElement('div');

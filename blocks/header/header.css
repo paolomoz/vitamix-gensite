@@ -111,7 +111,7 @@ header nav[aria-expanded='true'] .nav-sections {
   width: 100%;
   order: 10;
   padding: var(--spacing-200);
-  margin-top: var(--spacing-100);
+  /* margin-top: var(--spacing-100); */
   border-top: 1px solid var(--color-gray-300);
 }
 
@@ -164,24 +164,40 @@ header .nav-sections ul li a:hover {
 header .nav-tools {
   display: none;
   align-items: center;
-  gap: var(--spacing-200);
   margin-left: auto;
 }
 
-header .nav-tools a {
+header .nav-tools > ul {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-20);
+}
+
+header .nav-tools > ul > li {
+  position: relative;
+}
+
+header .nav-tools .icon-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-40);
-  font-size: var(--detail-size-xs);
-  font-weight: var(--weight-medium);
+  gap: 2px;
+  padding: var(--spacing-60) var(--spacing-80);
+  font-size: 10px;
+  font-weight: 600;
   color: var(--color-charcoal);
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   letter-spacing: 0.05em;
+  text-decoration: none;
   transition: color 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  white-space: nowrap;
 }
 
-header .nav-tools a:hover {
+header .nav-tools .icon-wrapper:hover {
   color: var(--color-red);
 }
 
@@ -193,14 +209,119 @@ header .nav-tools .icon {
   justify-content: center;
 }
 
+header .nav-tools .icon img,
 header .nav-tools .icon svg {
-  width: 100%;
-  height: 100%;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* Language Dropdown */
+header .nav-tools-language {
+  position: relative;
+}
+
+header .nav-tools-language > ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  background: var(--color-white, #fff);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--rounding-m, 5px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  z-index: 100;
+  padding: var(--spacing-100) 0;
+  margin-top: var(--spacing-60);
+}
+
+header .nav-tools-language.open > ul,
+header .nav-tools-language > button[aria-expanded="true"] + ul {
+  display: block;
+}
+
+header .nav-tools-language > ul > li {
+  padding: 0;
+}
+
+header .nav-tools-language > ul > li > a {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-100);
+  padding: var(--spacing-100) var(--spacing-200);
+  color: var(--color-charcoal);
+  text-decoration: none;
+  font-size: var(--body-size-s);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: background-color 0.2s ease;
+}
+
+header .nav-tools-language > ul > li > a:hover {
+  background-color: var(--color-gray-200);
+}
+
+header .nav-tools-language > ul > li > a .icon {
+  width: 24px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+header .nav-tools-language > ul > li > a .icon img {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+header .nav-tools-language > ul > li > a p {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+}
+
+header .nav-tools-language > ul > li > a p span:first-child {
+  font-weight: var(--weight-medium);
+  color: var(--color-charcoal);
+}
+
+header .nav-tools-language > ul > li > a p span:last-child {
+  font-size: var(--detail-size-xs);
+  color: var(--color-gray-900);
 }
 
 @media (width >= 1000px) {
   header .nav-tools {
     display: flex;
+  }
+}
+
+/* Mobile nav tools in expanded menu */
+@media (width < 1000px) {
+  header nav[aria-expanded='true'] .nav-tools {
+    display: flex;
+    width: 100%;
+    order: 5;
+    padding: var(--spacing-200);
+    border-top: 1px solid var(--color-gray-300);
+  }
+
+  header nav[aria-expanded='true'] .nav-tools > ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-200);
+  }
+
+  header nav[aria-expanded='true'] .nav-tools-language > ul {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    right: auto;
+    width: 90%;
+    max-width: 320px;
   }
 }
 

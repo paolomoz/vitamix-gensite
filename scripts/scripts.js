@@ -164,12 +164,13 @@ function isCerebrasRequest() {
 }
 
 /**
- * Check if this is a Vitamix Recommender request (has ?q= or ?query= or ?ctx= param)
- * Uses the new vitamix-recommender worker with Claude Opus reasoning
+ * Check if this is a Vitamix Recommender request (has ?q= or ?ctx= param)
+ * Uses the vitamix-recommender worker with Claude Opus reasoning
+ * NOTE: ?query= is deprecated - use ?q= instead
  */
 function isVitamixRecommenderRequest() {
   const params = new URLSearchParams(window.location.search);
-  return params.has('q') || params.has('query') || params.has('ctx');
+  return params.has('q') || params.has('ctx');
 }
 
 /**
@@ -739,8 +740,9 @@ async function renderFastGenerativePage() {
 }
 
 /**
- * Render a Vitamix Recommender page from ?q= or ?query= or ?ctx= parameter
+ * Render a Vitamix Recommender page from ?q= or ?ctx= parameter
  * Uses the vitamix-recommender worker with Claude Opus reasoning
+ * NOTE: ?query= is deprecated - use ?q= instead
  */
 async function renderVitamixRecommenderPage() {
   // Load skeleton/vitamix styles
@@ -750,7 +752,7 @@ async function renderVitamixRecommenderPage() {
   if (!main) return;
 
   const params = new URLSearchParams(window.location.search);
-  const query = params.get('q') || params.get('query');
+  const query = params.get('q'); // Only use 'q' parameter - 'query' is deprecated
   const ctxId = params.get('ctx'); // Context ID from extension (ctx_xxxx)
   const preset = params.get('preset') || 'production'; // Default to production (Claude reasoning)
 
@@ -776,11 +778,13 @@ async function renderVitamixRecommenderPage() {
   let streamUrl;
   if (isFullContextMode) {
     // Full context mode: pass context ID to worker (it will fetch from KV)
-    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?ctx=${encodeURIComponent(ctxId)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}`;
+    // If explicit query provided via q=, pass it to override context.query
+    const queryParam = query ? `&q=${encodeURIComponent(query)}` : '';
+    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?ctx=${encodeURIComponent(ctxId)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}${queryParam}`;
   } else {
     // Query mode: pass query with optional session context
     const contextParam = SessionContextManager.buildEncodedContextParam();
-    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?query=${encodeURIComponent(query)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}&ctx=${contextParam}`;
+    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?q=${encodeURIComponent(query)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}&ctx=${contextParam}`;
   }
   const eventSource = new EventSource(streamUrl);
   let blockCount = 0;
@@ -1237,7 +1241,7 @@ async function loadPage() {
     return;
   }
 
-  // Check if this is a Vitamix Recommender request (?q= or ?query=) - Claude Opus reasoning
+  // Check if this is a Vitamix Recommender request (?q= or ?ctx=) - Claude Opus reasoning
   if (isVitamixRecommenderRequest()) {
     document.documentElement.lang = 'en';
     decorateTemplateAndTheme();

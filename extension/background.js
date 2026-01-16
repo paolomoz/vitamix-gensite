@@ -153,8 +153,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
 
     case 'HINT_CLICKED':
+      // Note: Hint queries are signal-inferred, don't add to history
+      // The user didn't type or select this query - it was generated from signals
       handleHintClicked(message.query).then((result) => {
         sendResponse(result);
+      });
+      return true;
+
+    case 'QUERY_FROM_URL':
+      // Add follow-up query from POC site URL to conversation history
+      // This captures explicit user choices (clicking follow-up suggestions)
+      handleQueryFromUrl(message.query).then(() => {
+        sendResponse({ success: true });
       });
       return true;
 
@@ -209,6 +219,17 @@ async function handleClearSession() {
  * Generate page - store context on worker and navigate
  */
 async function handleGeneratePage(query, preset = 'all-cerebras') {
+  // Public API always adds query to history
+  return handleGeneratePageInternal(query, preset, true);
+}
+
+/**
+ * Internal generate page function with control over history addition
+ * @param {string|null} query - The query to use
+ * @param {string} preset - The model preset to use
+ * @param {boolean} addToHistory - Whether to add query to conversation history
+ */
+async function handleGeneratePageInternal(query, preset = 'all-cerebras', addToHistory = true) {
   try {
     // Build full context package
     const context = {
@@ -219,8 +240,9 @@ async function handleGeneratePage(query, preset = 'all-cerebras') {
       timestamp: Date.now(),
     };
 
-    // If we have a query, add it to conversation history
-    if (query && query.trim()) {
+    // If we have a query AND should add to history, add it to conversation history
+    // Signal-inferred queries (from hints) set addToHistory=false
+    if (addToHistory && query && query.trim()) {
       previousQueries.push(query.trim());
       // Keep only last 10 queries
       if (previousQueries.length > 10) {
@@ -372,10 +394,35 @@ async function handleGenerateHint() {
 }
 
 /**
- * Handle hint click - same as generate page but with hint query
+ * Handle hint click - generate page but DON'T add query to conversation history
+ * The hint query is signal-inferred (AI-generated from browsing context),
+ * not an explicit user choice, so it shouldn't appear in conversation history.
  */
 async function handleHintClicked(query) {
-  return handleGeneratePage(query, 'all-cerebras');
+  return handleGeneratePageInternal(query, 'all-cerebras', false);
+}
+
+/**
+ * Handle query captured from POC site URL (follow-up clicks)
+ * These ARE explicit user choices and SHOULD be in conversation history.
+ */
+async function handleQueryFromUrl(query) {
+  if (!query || !query.trim()) return;
+
+  // Add to conversation history
+  previousQueries.push(query.trim());
+
+  // Keep only last 10 queries
+  if (previousQueries.length > 10) {
+    previousQueries = previousQueries.slice(-10);
+  }
+
+  await chrome.storage.local.set({ previousQueries });
+
+  // Notify panel of updated state
+  await notifyPanel();
+
+  console.log('[Background] Added follow-up query to history:', query);
 }
 
 /**

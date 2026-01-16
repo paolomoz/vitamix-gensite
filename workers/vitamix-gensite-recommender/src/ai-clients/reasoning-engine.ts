@@ -40,13 +40,13 @@ import { ModelFactory, type Message } from './model-factory';
  * - The system should show options, not push products, when uncertain
  */
 const CONFIDENCE_THRESHOLDS = {
-  /** >= 80%: Single product recommendation allowed (product-recommendation block) */
-  SINGLE_RECOMMENDATION: 0.8,
-  /** >= 60%: Best pick with comparison allowed (best-pick + comparison-table) */
-  BEST_PICK_WITH_COMPARISON: 0.6,
-  /** >= 40%: Comparison only, no "best" labels (comparison-table, product-cards) */
-  COMPARISON_ONLY: 0.4,
-  /** < 40%: Discovery mode - use-case-cards, feature-highlights, no recommendations */
+  /** >= 70%: Single product recommendation allowed (product-recommendation block) */
+  SINGLE_RECOMMENDATION: 0.7,
+  /** >= 50%: Best pick with comparison allowed (best-pick + comparison-table) */
+  BEST_PICK_WITH_COMPARISON: 0.5,
+  /** >= 35%: Comparison only, no "best" labels (comparison-table, product-cards) */
+  COMPARISON_ONLY: 0.35,
+  /** < 35%: Discovery mode - use-case-cards, feature-highlights, no recommendations */
 };
 
 // ============================================
@@ -389,8 +389,16 @@ function detectComparisonQuery(query: string): boolean {
     /\be310\b/gi,
     /\be320\b/gi,
     /\bpropel\b/gi,
+    /\bpropel\s*750\b/gi,
+    /\bpropel\s*510\b/gi,
     /\bexplorian\b/gi,
     /\bascent\b/gi,
+    /\bv1200\b/gi,
+    /\bventurist\b/gi,
+    /\b5200\b/gi,
+    /\bvitamix\s*one\b/gi,
+    /\bs55\b/gi,
+    /\bs50\b/gi,
   ];
 
   const modelMatches = modelPatterns.filter((pattern) => pattern.test(lowerQuery));
@@ -417,6 +425,13 @@ function getComparisonDetails(query: string): string {
     [/\be310\b/gi, 'E310'],
     [/\be320\b/gi, 'E320'],
     [/\bpropel\s*750\b/gi, 'Propel 750'],
+    [/\bpropel\s*510\b/gi, 'Propel 510'],
+    [/\bv1200\b/gi, 'V1200'],
+    [/\bventurist\b/gi, 'Venturist'],
+    [/\b5200\b/gi, '5200'],
+    [/\bvitamix\s*one\b/gi, 'Vitamix ONE'],
+    [/\bs55\b/gi, 'S55'],
+    [/\bs50\b/gi, 'S50'],
   ];
 
   for (const [pattern, name] of modelPatterns) {
@@ -765,10 +780,10 @@ function ensureRequiredBlocks(blocks: BlockSelection[]): BlockSelection[] {
  * is obviously best for that need (productMatch = 35%).
  *
  * Thresholds (based on productMatchConfidence):
- * - >= 80%: Allow product-recommendation
- * - >= 60%: Allow best-pick + comparison
- * - >= 40%: Comparison only, no "best" labels
- * - < 40%: Discovery mode with use-case-cards (if intent also low)
+ * - >= 70%: Allow product-recommendation
+ * - >= 50%: Allow best-pick + comparison
+ * - >= 35%: Comparison only, no "best" labels
+ * - < 35%: Discovery mode with use-case-cards (if intent also low)
  */
 function enforceConfidenceThresholds(
   result: ReasoningResult,
@@ -794,7 +809,7 @@ function enforceConfidenceThresholds(
   const substitutionsMade: string[] = [];
 
   // ----------------------------------------
-  // Check 1: If productMatchConfidence < 80%, remove product-recommendation
+  // Check 1: If productMatchConfidence < 70%, remove product-recommendation
   // This is the key change - we use productMatchConfidence, not general confidence
   // ----------------------------------------
   if (productMatchConfidence < CONFIDENCE_THRESHOLDS.SINGLE_RECOMMENDATION) {
@@ -848,7 +863,7 @@ function enforceConfidenceThresholds(
   }
 
   // ----------------------------------------
-  // Check 2: If productMatchConfidence < 60%, remove best-pick
+  // Check 2: If productMatchConfidence < 50%, remove best-pick
   // ----------------------------------------
   if (productMatchConfidence < CONFIDENCE_THRESHOLDS.BEST_PICK_WITH_COMPARISON) {
     const hasBestPick = filteredBlocks.some(b =>
@@ -992,13 +1007,27 @@ export async function analyzeAndSelectBlocks(
       Math.max(externalConfidence, 0.5) // Don't let external sources reduce intent below 50%
     );
 
-    // For productMatchConfidence: CRITICAL - this must respect weak signals
-    // If external confidence is low (weak signals), we can't be confident about product match
-    // even if LLM thinks a product is "best" based on the query alone
+    // Determine if this is an explicit comparison or recommendation query
+    // These query types deserve higher confidence floors since user intent is clear
+    const isComparisonQuery = detectComparisonQuery(query);
+    const isRecommendationQuery = /\b(best|recommend|which|should i|for me)\b/i.test(query);
+    const hasExplicitIntent = isComparisonQuery || isRecommendationQuery;
+
+    // Set floor based on query type:
+    // - Explicit comparison/recommendation queries: floor at 0.55 (allows best-pick at 0.5 threshold)
+    // - Regular queries: floor at 0.4 (allows comparison-only at 0.35 threshold)
+    const productMatchFloor = hasExplicitIntent ? 0.55 : 0.4;
+
+    // For productMatchConfidence: Apply floor to prevent over-suppression of recommendations
+    // The LLM's assessment should be respected more when user intent is clear
     const effectiveProductMatchConfidence = Math.min(
       result.confidence.productMatch,
-      externalConfidence // Weak signals = low product match confidence
+      Math.max(externalConfidence, productMatchFloor)
     );
+
+    if (hasExplicitIntent) {
+      console.log(`[ReasoningEngine] Explicit intent detected (comparison=${isComparisonQuery}, recommendation=${isRecommendationQuery}) - using floor ${productMatchFloor}`);
+    }
 
     console.log('[ReasoningEngine] Dual confidence calculation:', {
       llmIntent: result.confidence.intent,
@@ -1009,6 +1038,8 @@ export async function analyzeAndSelectBlocks(
         profile: profileConfidence,
       },
       externalMin: externalConfidence,
+      productMatchFloor,
+      hasExplicitIntent,
       effective: {
         intent: effectiveIntentConfidence,
         productMatch: effectiveProductMatchConfidence,

@@ -1,56 +1,80 @@
 /**
- * Noise Context Block Styles
+ * Noise Context Block - Vitamix Design System
+ *
+ * Real-world noise comparisons for noise-sensitive users.
+ * Clean, informational design with clear visual hierarchy.
+ *
+ * Uses semantic status colors for noise levels:
+ * - Quiet (success): Safe, comfortable levels
+ * - Moderate (warning): Noticeable but manageable
+ * - Loud (warning-dark): Requires consideration
+ * - Very Loud (error): Hearing protection recommended
  */
 
+/* ===== Container ===== */
 .noise-context {
-  padding: var(--spacing-600) var(--spacing-300);
-  max-width: 800px;
+  padding: var(--spacing-700) var(--spacing-300);
+  max-width: 900px;
   margin: 0 auto;
 }
 
+/* ===== Header ===== */
 .noise-context-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-100);
+  gap: var(--spacing-200);
   margin-bottom: var(--spacing-600);
 }
 
 .noise-context-icon {
-  color: var(--color-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-gray-200);
+  border-radius: var(--rounding-m);
+  color: var(--color-charcoal);
+  flex-shrink: 0;
 }
 
 .noise-context-icon svg {
-  width: 36px;
-  height: 36px;
-  stroke: currentColor;
+  width: 24px;
+  height: 24px;
+  stroke: currentcolor;
   stroke-width: 1.5;
   fill: none;
 }
 
 .noise-context-title {
+  font-family: var(--heading-font-family);
   font-size: var(--font-size-700);
   font-weight: var(--weight-light);
-  color: var(--color-dark-charcoal);
+  color: var(--color-charcoal);
+  line-height: var(--line-height-s);
   margin: 0;
 }
 
-/* Noise scale */
+/* ===== Noise Scale ===== */
 .noise-scale {
-  margin-bottom: var(--spacing-400);
+  margin-bottom: var(--spacing-500);
 }
 
 .scale-title {
+  font-family: var(--body-font-family);
   font-size: var(--font-size-40);
   font-weight: var(--weight-medium);
   color: var(--color-gray-900);
-  margin-bottom: var(--spacing-60);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wider);
+  letter-spacing: var(--letter-spacing-m);
+  margin-bottom: var(--spacing-100);
 }
 
 .scale-bar {
   display: flex;
+  border-radius: var(--rounding-m);
   overflow: hidden;
+  border: 1px solid var(--color-gray-300);
 }
 
 .scale-segment {
@@ -58,116 +82,189 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-60);
+  padding: var(--spacing-100) var(--spacing-60);
   flex: 1;
+  text-align: center;
+  transition: transform var(--transition-fast);
 }
 
+.scale-segment:hover {
+  transform: scale(1.02);
+  z-index: 1;
+}
+
+/* Quiet - Green (Success) */
 .scale-segment.quiet {
-  background: var(--color-avocado-light);
-  color: var(--color-avocado-dark);
+  background: var(--color-success-bg-strong);
+  color: var(--color-success-text);
 }
 
+/* Moderate - Amber (Warning) */
 .scale-segment.moderate {
-  background: var(--color-gold-lighter);
-  color: var(--color-gold-darker);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
+/* Loud - Orange/Red transition */
 .scale-segment.loud {
-  background: var(--color-orange-light);
-  color: var(--color-orange-dark);
+  background: var(--color-error-bg-strong);
+  color: var(--color-error-dark);
 }
 
+/* Very Loud - Red (Error) */
 .scale-segment.very-loud {
-  background: var(--color-red-light);
-  color: var(--color-error);
+  background: var(--color-error);
+  color: var(--color-white);
 }
 
 .segment-label {
-  font-size: var(--font-size-40);
+  font-family: var(--body-font-family);
+  font-size: var(--font-size-60);
   font-weight: var(--weight-medium);
+  margin-bottom: var(--spacing-20);
 }
 
 .segment-range {
-  font-size: var(--font-size-20);
+  font-family: var(--body-font-family);
+  font-size: var(--font-size-40);
   opacity: 0.8;
 }
 
-/* Comparisons */
+/* ===== Comparisons List ===== */
 .noise-comparisons {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-60);
-  margin-bottom: var(--spacing-400);
+  gap: var(--spacing-100);
+  margin-bottom: var(--spacing-500);
 }
 
 .noise-comparison {
   display: grid;
-  grid-template-columns: 2fr 80px 2fr;
-  gap: var(--spacing-100);
+  grid-template-columns: 1fr 80px 1.5fr;
+  gap: var(--spacing-200);
   align-items: center;
-  padding: var(--spacing-100);
-  background: var(--color-gray-200);
-  border-left: var(--spacing-40) solid var(--color-gray-400);
+  padding: var(--spacing-200) var(--spacing-300);
+  background: var(--color-gray-100);
+  border-radius: var(--rounding-m);
+  border-left: 4px solid var(--color-gray-400);
+  transition: border-color var(--transition-normal), background-color var(--transition-normal);
 }
 
+.noise-comparison:hover {
+  background: var(--color-gray-200);
+}
+
+/* Level-specific border colors */
 .noise-comparison.quiet {
-  border-left-color: var(--color-avocado);
+  border-left-color: var(--color-success);
 }
 
 .noise-comparison.moderate {
-  border-left-color: var(--color-star-gold);
+  border-left-color: var(--color-warning);
 }
 
 .noise-comparison.loud {
-  border-left-color: var(--color-orange);
+  border-left-color: var(--color-error-light);
 }
 
 .noise-comparison.very-loud {
-  border-left-color: var(--color-red);
+  border-left-color: var(--color-error);
 }
 
 .comparison-item {
+  font-family: var(--body-font-family);
+  font-size: var(--font-size-100);
   font-weight: var(--weight-medium);
   color: var(--color-charcoal);
-  font-size: var(--font-size-80);
 }
 
 .comparison-db {
+  font-family: var(--body-font-family);
+  font-size: var(--font-size-300);
   font-weight: var(--weight-medium);
-  font-size: var(--font-size-200);
   text-align: center;
   color: var(--color-dark-charcoal);
 }
 
+/* Color-coded dB display */
+.noise-comparison.quiet .comparison-db {
+  color: var(--color-success-dark);
+}
+
+.noise-comparison.moderate .comparison-db {
+  color: var(--color-warning-dark);
+}
+
+.noise-comparison.loud .comparison-db {
+  color: var(--color-error-dark);
+}
+
+.noise-comparison.very-loud .comparison-db {
+  color: var(--color-error);
+}
+
 .comparison-context {
+  font-family: var(--body-font-family);
   font-size: var(--font-size-80);
+  line-height: var(--line-height-l);
   color: var(--color-gray-900);
 }
 
-/* Tips */
+/* ===== Tips Section ===== */
 .noise-tips {
   background: var(--color-white);
-  border: var(--border-s) solid var(--color-gray-400);
-  padding: var(--spacing-300);
-  margin-bottom: var(--spacing-300);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-400);
+  margin-bottom: var(--spacing-400);
+}
+
+.noise-tips-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-100);
+  margin-bottom: var(--spacing-200);
+}
+
+.noise-tips-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-gray-200);
+  border-radius: var(--rounding-s);
+  flex-shrink: 0;
+}
+
+.noise-tips-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--color-charcoal);
+  stroke-width: 1.5;
+  fill: none;
 }
 
 .noise-tips h3 {
-  font-size: var(--font-size-40);
+  font-family: var(--body-font-family);
+  font-size: var(--font-size-60);
   font-weight: var(--weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
+  letter-spacing: var(--letter-spacing-m);
   text-transform: uppercase;
-  color: var(--color-red);
-  margin: 0 0 var(--spacing-100);
+  color: var(--color-charcoal);
+  margin: 0;
 }
 
 .noise-tips ul {
   margin: 0;
-  padding-left: var(--spacing-300);
+  padding: 0;
+  list-style: none;
 }
 
 .noise-tips li {
-  margin-bottom: var(--spacing-60);
+  position: relative;
+  padding-left: var(--spacing-300);
+  margin-bottom: var(--spacing-100);
   line-height: var(--line-height-l);
   color: var(--color-charcoal);
   font-size: var(--font-size-80);
@@ -177,55 +274,99 @@
   margin-bottom: 0;
 }
 
+/* Custom bullet */
+.noise-tips li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background: var(--color-red);
+  border-radius: 50%;
+}
+
 .noise-tips strong {
   color: var(--color-dark-charcoal);
   font-weight: var(--weight-medium);
 }
 
-/* Direct answer */
+/* ===== Direct Answer / Callout ===== */
 .noise-answer {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-100);
+  gap: var(--spacing-200);
   background: var(--color-gray-200);
-  border-left: var(--spacing-40) solid var(--color-star-gold);
+  border-left: 4px solid var(--color-charcoal);
+  border-radius: 0 var(--rounding-m) var(--rounding-m) 0;
   padding: var(--spacing-300);
 }
 
 .answer-icon {
-  font-size: var(--font-size-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--color-charcoal);
+  border-radius: var(--rounding-s);
   flex-shrink: 0;
 }
 
+.answer-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--color-white);
+  stroke-width: 1.5;
+  fill: none;
+}
+
 .answer-content {
-  color: var(--color-charcoal);
+  flex: 1;
 }
 
 .answer-content strong {
   display: block;
-  font-size: var(--font-size-100);
-  font-weight: var(--weight-medium);
-  margin-bottom: var(--spacing-40);
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-light);
+  margin-bottom: var(--spacing-60);
   color: var(--color-dark-charcoal);
+  line-height: var(--line-height-m);
 }
 
 .answer-content p {
   margin: 0;
-  line-height: var(--line-height-xl);
+  font-family: var(--body-font-family);
   font-size: var(--font-size-80);
+  line-height: var(--line-height-xl);
+  color: var(--color-charcoal);
 }
 
-/* Responsive */
+/* ===== Responsive: Tablet ===== */
+@media (width >= 600px) and (width < 900px) {
+  .noise-context {
+    padding: var(--spacing-600) var(--spacing-300);
+  }
+}
+
+/* ===== Responsive: Mobile ===== */
 @media (width < 600px) {
   .noise-context {
-    padding: var(--spacing-300) var(--spacing-100);
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .noise-context-header {
     flex-direction: column;
     text-align: center;
+    gap: var(--spacing-100);
   }
 
+  .noise-context-title {
+    font-size: var(--font-size-500);
+  }
+
+  /* Vertical scale on mobile */
   .scale-bar {
     flex-direction: column;
   }
@@ -233,19 +374,102 @@
   .scale-segment {
     flex-direction: row;
     justify-content: space-between;
-    padding: var(--spacing-60) var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-200);
   }
 
+  .segment-label {
+    margin-bottom: 0;
+  }
+
+  /* Stack comparison cards on mobile */
   .noise-comparison {
     grid-template-columns: 1fr;
-    gap: var(--spacing-40);
+    gap: var(--spacing-60);
+    padding: var(--spacing-200);
   }
 
   .comparison-db {
     text-align: left;
+    font-size: var(--font-size-200);
   }
 
+  .comparison-context {
+    padding-top: var(--spacing-60);
+    border-top: 1px solid var(--color-gray-300);
+  }
+
+  /* Stack answer on mobile */
   .noise-answer {
     flex-direction: column;
+    gap: var(--spacing-100);
   }
+
+  .noise-tips {
+    padding: var(--spacing-300);
+  }
+}
+
+/* ===== Dark Section Support ===== */
+.section.dark .noise-context-title {
+  color: var(--color-white);
+}
+
+.section.dark .noise-context-icon {
+  background: rgb(255 255 255 / 10%);
+  color: var(--color-white);
+}
+
+.section.dark .scale-title {
+  color: var(--color-gray-500);
+}
+
+.section.dark .scale-bar {
+  border-color: rgb(255 255 255 / 20%);
+}
+
+.section.dark .noise-comparison {
+  background: rgb(255 255 255 / 5%);
+}
+
+.section.dark .noise-comparison:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.section.dark .comparison-item,
+.section.dark .comparison-db {
+  color: var(--color-white);
+}
+
+.section.dark .comparison-context {
+  color: var(--color-gray-500);
+}
+
+.section.dark .noise-tips {
+  background: rgb(255 255 255 / 5%);
+  border-color: rgb(255 255 255 / 10%);
+}
+
+.section.dark .noise-tips h3 {
+  color: var(--color-white);
+}
+
+.section.dark .noise-tips li {
+  color: var(--color-gray-300);
+}
+
+.section.dark .noise-tips strong {
+  color: var(--color-white);
+}
+
+.section.dark .noise-answer {
+  background: rgb(255 255 255 / 5%);
+  border-left-color: var(--color-gray-500);
+}
+
+.section.dark .answer-content strong {
+  color: var(--color-white);
+}
+
+.section.dark .answer-content p {
+  color: var(--color-gray-300);
 }

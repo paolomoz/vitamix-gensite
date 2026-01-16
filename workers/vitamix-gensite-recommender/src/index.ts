@@ -5,8 +5,14 @@
  * AI-driven Vitamix Blender Recommender.
  *
  * Endpoints:
- * - GET /generate?query=...&slug=...&ctx=... - Stream page generation via SSE
+ * - GET /generate?q=...&slug=...&ctx=... - Stream page generation via SSE
+ *   - q: User query (takes precedence over context)
+ *   - ctx: Context ID (ctx_xxx) or legacy session context JSON
+ *   - slug: URL slug for the page
+ *   - preset: Model preset (production, fast, all-cerebras)
  * - GET /health - Health check
+ *
+ * NOTE: 'query' parameter is deprecated - use 'q' instead
  */
 
 import type { Env, SessionContext, SSEEvent, IntentClassification, ExtensionContext } from './types';
@@ -69,14 +75,16 @@ function createSSEStream(): {
 
 async function handleGenerate(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  const query = url.searchParams.get('query') || url.searchParams.get('q');
+  // Only use 'q' parameter - 'query' is deprecated
+  const query = url.searchParams.get('q');
   const slug = url.searchParams.get('slug');
   const ctxParam = url.searchParams.get('ctx');
   const preset = url.searchParams.get('preset') || undefined;
 
   // Check if ctx is a stored context ID (full context mode)
+  // Pass query to override context.query when explicit query is provided
   if (ctxParam && ctxParam.startsWith(CONTEXT_PREFIX)) {
-    return handleGenerateFromContext(ctxParam, slug, preset, env);
+    return handleGenerateFromContext(ctxParam, slug, preset, env, query);
   }
 
   // Original query-based flow
@@ -133,12 +141,14 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
 
 /**
  * Handle generation from stored full context (extension flow)
+ * @param explicitQuery - Optional query from URL that overrides context.query
  */
 async function handleGenerateFromContext(
   contextId: string,
   slug: string | null,
   preset: string | undefined,
-  env: Env
+  env: Env,
+  explicitQuery?: string | null
 ): Promise<Response> {
   // Fetch context from KV
   if (!env.SESSIONS) {
@@ -164,6 +174,14 @@ async function handleGenerateFromContext(
       status: 500,
       headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
     });
+  }
+
+  // IMPORTANT: If explicit query provided via q= parameter, it takes precedence
+  // Context signals become secondary supporting information
+  if (explicitQuery) {
+    console.log(`[handleGenerateFromContext] Explicit query provided: "${explicitQuery}"`);
+    console.log(`[handleGenerateFromContext] Original context query: "${context.query || 'none'}"`);
+    context.query = explicitQuery;
   }
 
   // Create SSE stream

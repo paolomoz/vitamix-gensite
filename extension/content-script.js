@@ -706,10 +706,41 @@
     return false;
   });
 
+  // ============================================
+  // Query Capture from URL (for POC site follow-ups)
+  // ============================================
+
+  /**
+   * Check if current page is on POC site and has a query parameter
+   * If so, send it to background to add to conversation history
+   * This captures follow-up clicks on the POC site
+   */
+  function captureQueryFromUrl() {
+    const url = new URL(window.location.href);
+    const isPocSite = url.hostname.includes('aem.live');
+    const hasContextParam = url.searchParams.has('ctx');
+    const query = url.searchParams.get('query') || url.searchParams.get('q');
+
+    // Only capture if on POC site, has context (extension flow), and has a query
+    if (isPocSite && hasContextParam && query && query.trim()) {
+      console.log('[VitamixIntent] Capturing follow-up query from URL:', query);
+      chrome.runtime.sendMessage({
+        type: 'QUERY_FROM_URL',
+        query: query.trim(),
+      }).catch(e => {
+        console.log('[VitamixIntent] Could not send query:', e.message);
+      });
+    }
+  }
+
   // Initialize signal capture only (no panel auto-injection)
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      captureQueryFromUrl();
+    });
   } else {
     init();
+    captureQueryFromUrl();
   }
 })();

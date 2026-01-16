@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Answer Block - Design Test</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/blocks/quick-answer/quick-answer.css">
+  <style>
+    body {
+      display: block !important;
+      font-family: var(--body-font-family);
+      background: var(--color-gray-100);
+      margin: 0;
+      padding: 0;
+    }
+    .test-label {
+      text-align: center;
+      padding: var(--spacing-300);
+      background: var(--color-gray-200);
+      font-family: var(--sans-serif-font-family);
+      font-size: var(--font-size-40);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-gray-900);
+      border-bottom: 1px solid var(--color-gray-400);
+    }
+  </style>
+</head>
+<body class="appear">
+  <main>
+    <!-- Test 1: Full Quick Answer with Expandable -->
+    <div class="test-label">Quick Answer - Full (with expandable details)</div>
+    <div class="quick-answer">
+      <div class="quick-answer-wrapper">
+        <div class="quick-answer-card">
+          <div class="quick-answer-header">
+            <div class="quick-answer-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+              </svg>
+            </div>
+            <span class="quick-answer-eyebrow">Quick Answer</span>
+            <h2 class="quick-answer-headline">Yes, all Vitamix blenders can make hot soup</h2>
+          </div>
+          <div class="quick-answer-body">
+            <p class="quick-answer-explanation">The friction from the high-speed blades generates enough heat to bring cold ingredients to steaming hot in about 6 minutes. No stovetop needed.</p>
+          </div>
+          <div class="quick-answer-expander" id="expander1">
+            <button class="quick-answer-toggle" aria-expanded="false" onclick="this.parentElement.classList.toggle('expanded'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('expanded')); this.querySelector('.toggle-text').textContent = this.parentElement.classList.contains('expanded') ? 'Show Less' : 'Learn More';">
+              <span class="toggle-text">Learn More</span>
+              <span class="toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="quick-answer-details">
+              <div class="quick-answer-details-content">
+                The Vitamix motor spins at up to 240 mph, creating friction that heats ingredients naturally. For best results, start with room-temperature vegetables and run on high for 5-7 minutes. The soup will reach approximately 170°F (77°C), perfect for serving. Models with pre-programmed settings like the A3500 have a dedicated "Hot Soup" program that automatically adjusts speed and timing.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test 2: Simple Quick Answer (no expandable) -->
+    <div class="test-label">Quick Answer - Simple (no expandable)</div>
+    <div class="quick-answer">
+      <div class="quick-answer-wrapper">
+        <div class="quick-answer-card">
+          <div class="quick-answer-header">
+            <div class="quick-answer-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+              </svg>
+            </div>
+            <span class="quick-answer-eyebrow">Quick Answer</span>
+            <h2 class="quick-answer-headline">The A3500 is our most advanced home blender</h2>
+          </div>
+          <div class="quick-answer-body">
+            <p class="quick-answer-explanation">It features touchscreen controls, 5 pre-programmed settings, wireless connectivity, and a self-detect container system for optimal blending performance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test 3: Expanded State -->
+    <div class="test-label">Quick Answer - Expanded State</div>
+    <div class="quick-answer">
+      <div class="quick-answer-wrapper">
+        <div class="quick-answer-card">
+          <div class="quick-answer-header">
+            <div class="quick-answer-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+              </svg>
+            </div>
+            <span class="quick-answer-eyebrow">Quick Answer</span>
+            <h2 class="quick-answer-headline">Vitamix containers are dishwasher safe on the top rack</h2>
+          </div>
+          <div class="quick-answer-body">
+            <p class="quick-answer-explanation">However, the self-cleaning feature is faster and more effective. Just add warm water and a drop of dish soap, then blend on high for 60 seconds.</p>
+          </div>
+          <div class="quick-answer-expander expanded">
+            <button class="quick-answer-toggle" aria-expanded="true">
+              <span class="toggle-text">Show Less</span>
+              <span class="toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="quick-answer-details">
+              <div class="quick-answer-details-content">
+                For stubborn residue, try soaking the container in warm soapy water for a few minutes before running the self-clean cycle. The blade assembly can be removed for deep cleaning, but take care as the blades are extremely sharp. Never submerge the motor base in water. For best longevity, dry the container upside down on a clean towel after washing.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test 4: Long Headline -->
+    <div class="test-label">Quick Answer - Long Content Test</div>
+    <div class="quick-answer">
+      <div class="quick-answer-wrapper">
+        <div class="quick-answer-card">
+          <div class="quick-answer-header">
+            <div class="quick-answer-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+              </svg>
+            </div>
+            <span class="quick-answer-eyebrow">Quick Answer</span>
+            <h2 class="quick-answer-headline">The 10-year warranty covers the motor, container, blades, and all parts under normal household use</h2>
+          </div>
+          <div class="quick-answer-body">
+            <p class="quick-answer-explanation">Vitamix stands behind every machine with industry-leading warranty coverage. If anything fails due to manufacturing defects or normal wear, we'll repair or replace it at no cost. Commercial models have a 3-year warranty designed for high-volume use.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

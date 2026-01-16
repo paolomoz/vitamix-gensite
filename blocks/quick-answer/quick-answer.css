@@ -1,101 +1,153 @@
-/* Quick Answer Block - Vitamix Design System */
+/**
+ * Quick Answer Block - Vitamix Design System
+ * Premium dark section with white card, matching accessibility-specs patterns
+ */
+
+/* Section wrapper - dark charcoal background */
+.quick-answer-wrapper {
+  background-color: var(--color-charcoal);
+  padding: var(--spacing-700) var(--spacing-300);
+}
 
 .quick-answer {
-  padding: var(--spacing-300);
   max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
+/* Main card - white with subtle elevation */
 .quick-answer-card {
-  background: var(--color-gray-200);
+  background: var(--color-white);
   border: var(--border-s) solid var(--color-gray-400);
-  border-radius: var(--rounding-l);
-  padding: var(--spacing-400) var(--spacing-600);
-  text-align: center;
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-600);
   max-width: 800px;
   margin: 0 auto;
 }
 
-/* Icon */
+/* Header section */
+.quick-answer-header {
+  text-align: center;
+  margin-bottom: var(--spacing-400);
+}
+
+/* Icon - brand red accent */
 .quick-answer-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-700);
-  height: var(--spacing-700);
-  border: var(--border-m) solid var(--color-red);
-  border-radius: var(--radius-full);
+  width: 48px;
+  height: 48px;
   color: var(--color-red);
   margin-bottom: var(--spacing-100);
 }
 
 .quick-answer-icon svg {
-  width: var(--spacing-300);
-  height: var(--spacing-300);
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.5;
 }
 
-/* Badge */
-.quick-answer-badge {
-  display: inline-block;
-  background: var(--color-red);
-  color: var(--color-white);
-  font-size: var(--font-size-40);
+/* Eyebrow - Vitamix pattern */
+.quick-answer-eyebrow {
+  display: block;
+  margin-bottom: var(--spacing-60);
+  color: var(--color-red);
+  font-family: var(--sans-serif-font-family);
+  font-size: 11px;
   font-weight: var(--weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  padding: var(--spacing-40) var(--spacing-100);
-  border-radius: var(--radius-full);
-  margin-bottom: var(--spacing-100);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-/* Headline */
+/* Headline - serif, light weight */
 .quick-answer-headline {
-  font-size: var(--font-size-500);
-  font-weight: var(--weight-medium);
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
   color: var(--color-dark-charcoal);
-  margin: 0 0 var(--spacing-100);
+  margin: 0;
   line-height: var(--line-height-m);
 }
 
-/* Explanation */
+/* Body content */
+.quick-answer-body {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Explanation text */
 .quick-answer-explanation {
+  font-family: var(--body-font-family);
   font-size: var(--font-size-200);
   color: var(--color-charcoal);
   line-height: var(--line-height-l);
   margin: 0;
-  max-width: 640px;
-  margin-left: auto;
-  margin-right: auto;
+}
+
+/* Divider */
+.quick-answer-divider {
+  height: var(--border-s);
+  background: var(--color-gray-400);
+  margin: var(--spacing-400) 0;
+  border: none;
 }
 
 /* Expander Section */
 .quick-answer-expander {
   margin-top: var(--spacing-400);
-  padding-top: var(--spacing-300);
   border-top: var(--border-s) solid var(--color-gray-400);
+  padding-top: var(--spacing-300);
 }
 
+/* Toggle button - text link style */
 .quick-answer-toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-60);
+  width: 100%;
   background: transparent;
   border: none;
-  color: var(--color-gray-900);
-  font-size: var(--font-size-60);
+  color: var(--color-gray);
+  font-family: var(--sans-serif-font-family);
+  font-size: 11px;
   font-weight: var(--weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
-  padding: var(--spacing-60);
+  padding: var(--spacing-60) 0;
   transition: color var(--transition-normal);
 }
 
 .quick-answer-toggle:hover {
-  color: var(--color-dark-charcoal);
+  color: var(--color-charcoal);
 }
 
+.quick-answer-toggle:focus {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+/* Toggle icon */
 .toggle-icon {
-  font-size: var(--font-size-80);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
   transition: transform var(--transition-normal);
+}
+
+.toggle-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+/* Expanded state - rotate icon */
+.quick-answer-expander.expanded .toggle-icon {
+  transform: rotate(180deg);
 }
 
 /* Expanded details */
@@ -103,39 +155,68 @@
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: all var(--transition-slow);
-  background: var(--overlay-lighter);
-  border-radius: var(--rounding-m);
-  margin-top: 0;
-  padding: 0 var(--spacing-300);
+  transition: max-height var(--transition-slow), opacity var(--transition-slow), padding var(--transition-slow);
+}
+
+.quick-answer-expander.expanded .quick-answer-details {
+  max-height: 600px;
+  opacity: 1;
+  padding-top: var(--spacing-300);
+}
+
+/* Details content card */
+.quick-answer-details-content {
+  background: var(--color-gray-200);
+  padding: var(--spacing-300);
   text-align: left;
+  font-family: var(--body-font-family);
   font-size: var(--font-size-80);
   color: var(--color-charcoal);
   line-height: var(--line-height-xl);
 }
 
-.quick-answer-expander.expanded .quick-answer-details {
-  max-height: 500px;
-  opacity: 1;
-  padding: var(--spacing-300);
-  margin-top: var(--spacing-100);
-}
-
 /* Responsive */
 @media (width < 768px) {
-  .quick-answer {
-    padding: var(--spacing-100);
+  .quick-answer-wrapper {
+    padding: var(--spacing-400) var(--spacing-100);
   }
 
   .quick-answer-card {
-    padding: var(--spacing-300);
+    padding: var(--spacing-400) var(--spacing-300);
   }
 
   .quick-answer-headline {
-    font-size: var(--font-size-400);
+    font-size: var(--font-size-500);
   }
 
   .quick-answer-explanation {
     font-size: var(--font-size-100);
+  }
+
+  .quick-answer-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .quick-answer-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .quick-answer-wrapper {
+    background: none;
+    padding: 0;
+  }
+
+  .quick-answer-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .quick-answer-expander {
+    display: none;
   }
 }

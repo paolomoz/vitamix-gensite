@@ -1,7 +1,7 @@
 /**
  * Quick Answer Block
- * Simple, direct answer for questions that can be answered quickly.
- * Displays at the top with optional expandable "Tell me more" section.
+ * Premium quick answer display with dark section background and white card.
+ * Follows Vitamix design system patterns from accessibility-specs block.
  */
 
 export default function decorate(block) {
@@ -23,40 +23,55 @@ export default function decorate(block) {
   // Clear the block
   block.innerHTML = '';
 
+  // Create wrapper for dark background
+  const wrapper = document.createElement('div');
+  wrapper.className = 'quick-answer-wrapper';
+
   // Create card container
   const card = document.createElement('div');
   card.className = 'quick-answer-card';
 
-  // Icon
+  // Header section
+  const header = document.createElement('div');
+  header.className = 'quick-answer-header';
+
+  // Icon - lightbulb for "quick answer" semantic
   const icon = document.createElement('div');
   icon.className = 'quick-answer-icon';
   icon.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"></circle>
-      <line x1="12" y1="16" x2="12" y2="12"></line>
-      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18h6"></path>
+      <path d="M10 22h4"></path>
+      <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
     </svg>
   `;
-  card.appendChild(icon);
+  header.appendChild(icon);
 
-  // Badge
-  const badge = document.createElement('span');
-  badge.className = 'quick-answer-badge';
-  badge.textContent = 'QUICK ANSWER';
-  card.appendChild(badge);
+  // Eyebrow text
+  const eyebrow = document.createElement('span');
+  eyebrow.className = 'quick-answer-eyebrow';
+  eyebrow.textContent = 'Quick Answer';
+  header.appendChild(eyebrow);
 
   // Headline
   const headlineEl = document.createElement('h2');
   headlineEl.className = 'quick-answer-headline';
   headlineEl.textContent = headline;
-  card.appendChild(headlineEl);
+  header.appendChild(headlineEl);
 
-  // Explanation
+  card.appendChild(header);
+
+  // Body content
   if (explanation) {
+    const body = document.createElement('div');
+    body.className = 'quick-answer-body';
+
     const explanationEl = document.createElement('p');
     explanationEl.className = 'quick-answer-explanation';
     explanationEl.textContent = explanation;
-    card.appendChild(explanationEl);
+    body.appendChild(explanationEl);
+
+    card.appendChild(body);
   }
 
   // Expandable "Tell me more" section
@@ -64,21 +79,38 @@ export default function decorate(block) {
     const expander = document.createElement('div');
     expander.className = 'quick-answer-expander';
 
+    const toggleId = `quick-answer-toggle-${Date.now()}`;
+    const contentId = `quick-answer-content-${Date.now()}`;
+
     const toggle = document.createElement('button');
     toggle.className = 'quick-answer-toggle';
+    toggle.id = toggleId;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', contentId);
     toggle.innerHTML = `
-      <span class="toggle-text">TELL ME MORE</span>
-      <span class="toggle-icon">↑</span>
+      <span class="toggle-text">Learn More</span>
+      <span class="toggle-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </span>
     `;
 
     const content = document.createElement('div');
     content.className = 'quick-answer-details';
-    content.textContent = expandedDetails;
+    content.id = contentId;
+    content.setAttribute('role', 'region');
+    content.setAttribute('aria-labelledby', toggleId);
+
+    const contentInner = document.createElement('div');
+    contentInner.className = 'quick-answer-details-content';
+    contentInner.textContent = expandedDetails;
+    content.appendChild(contentInner);
 
     toggle.addEventListener('click', () => {
       const isExpanded = expander.classList.toggle('expanded');
-      toggle.querySelector('.toggle-text').textContent = isExpanded ? 'SHOW LESS' : 'TELL ME MORE';
-      toggle.querySelector('.toggle-icon').textContent = isExpanded ? '↓' : '↑';
+      toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      toggle.querySelector('.toggle-text').textContent = isExpanded ? 'Show Less' : 'Learn More';
     });
 
     expander.appendChild(toggle);
@@ -86,5 +118,6 @@ export default function decorate(block) {
     card.appendChild(expander);
   }
 
-  block.appendChild(card);
+  wrapper.appendChild(card);
+  block.appendChild(wrapper);
 }

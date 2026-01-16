@@ -159,6 +159,42 @@ export interface SafetyGuidelines {
   };
 }
 
+// ============================================
+// Compact Product Catalog (for LLM reasoning)
+// ============================================
+
+/**
+ * Compact product summary for LLM product selection.
+ * ~50 tokens per product = ~2K tokens for 40 products.
+ */
+export interface CompactProduct {
+  id: string;
+  name: string;
+  series: string;
+  price: number | null;
+  isCommercial: boolean;
+  bestFor: string[];
+  category: string;
+}
+
+/**
+ * Build a token-efficient product catalog for LLM reasoning.
+ * This allows the LLM to select products based on context rather than
+ * relying on hardcoded keyword filters.
+ */
+export function buildCompactProductCatalog(): CompactProduct[] {
+  return (productsData as ProductsFile).products.map(p => ({
+    id: p.id,
+    name: p.name,
+    series: p.series || '',
+    price: p.price ?? null,
+    isCommercial: p.isCommercial || false,
+    bestFor: (p.bestFor || []).slice(0, 5),
+    category: p.series?.toLowerCase().includes('commercial') ? 'commercial' :
+              p.series?.toLowerCase().includes('reconditioned') ? 'reconditioned' : 'consumer',
+  }));
+}
+
 // Cast imported data
 const products = (productsData as ProductsFile).products;
 const recipes = (recipesData as RecipesFile).recipes;
@@ -1022,18 +1058,15 @@ export function buildRAGContext(
   // Dedupe and limit products
   relevantProducts = [...new Map(relevantProducts.map(p => [p.id, p])).values()];
 
-  // CRITICAL: Filter out commercial products for non-commercial queries
-  // Commercial products (like Vita-Prep 3, Quick & Quiet) are B2B only and
-  // should never be recommended to consumers looking for home use
-  if (!isCommercialQuery(query)) {
-    relevantProducts = relevantProducts.filter(p => {
-      const isCommercial =
-        p.isCommercial === true ||
-        p.series?.toLowerCase() === 'commercial';
-      return !isCommercial;
-    });
-  } else {
-    // For commercial queries, prioritize commercial products
+  // NOTE: Commercial vs consumer product filtering is now handled by the LLM
+  // in the reasoning engine. The LLM receives the full product catalog and
+  // selects products based on user context (e.g., "cocktail bar" -> commercial).
+  // This replaces the previous hardcoded keyword-based filtering.
+  //
+  // For RAG context, we still prioritize commercial products for commercial queries
+  // to give the LLM relevant options, but we don't filter them out entirely.
+  if (isCommercialQuery(query)) {
+    // For commercial queries, prioritize commercial products in RAG results
     relevantProducts.sort((a, b) => {
       const aCommercial = (a.isCommercial || a.series?.toLowerCase() === 'commercial') ? 1 : 0;
       const bCommercial = (b.isCommercial || b.series?.toLowerCase() === 'commercial') ? 1 : 0;

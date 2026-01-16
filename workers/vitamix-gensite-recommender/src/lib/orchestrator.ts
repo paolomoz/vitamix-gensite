@@ -1487,6 +1487,23 @@ export async function orchestrate(
       },
     });
 
+    // Stage 4.5: Resolve LLM-selected products
+    // If the reasoning engine selected specific products, override RAG context
+    if (ctx.reasoningResult.selectedProducts && ctx.reasoningResult.selectedProducts.length > 0 && ctx.ragContext) {
+      const selectedIds = ctx.reasoningResult.selectedProducts.map(p => p.id);
+      const fullProducts = selectedIds
+        .map(id => getProductById(id))
+        .filter((p): p is Product => p !== undefined);
+
+      if (fullProducts.length > 0) {
+        console.log('[Orchestrator] LLM selected products:', fullProducts.map(p => p.name).join(', '));
+        console.log('[Orchestrator] Overriding RAG context products (was:', ctx.ragContext.relevantProducts.map(p => p.name).join(', '), ')');
+        ctx.ragContext.relevantProducts = fullProducts;
+      } else {
+        console.warn('[Orchestrator] LLM selected product IDs not found in catalog:', selectedIds);
+      }
+    }
+
     // Stage 5: Generate blocks in parallel
     const blocks: GeneratedBlock[] = [];
 
@@ -1871,6 +1888,23 @@ export async function orchestrateFromContext(
         duration: Date.now() - startTime,
       },
     });
+
+    // Stage 4.5: Resolve LLM-selected products
+    // If the reasoning engine selected specific products, override RAG context
+    if (ctx.reasoningResult.selectedProducts && ctx.reasoningResult.selectedProducts.length > 0 && ctx.ragContext) {
+      const selectedIds = ctx.reasoningResult.selectedProducts.map(p => p.id);
+      const fullProducts = selectedIds
+        .map(id => getProductById(id))
+        .filter((p): p is Product => p !== undefined);
+
+      if (fullProducts.length > 0) {
+        console.log('[OrchestrateFromContext] LLM selected products:', fullProducts.map(p => p.name).join(', '));
+        console.log('[OrchestrateFromContext] Overriding RAG context products (was:', ctx.ragContext.relevantProducts.map(p => p.name).join(', '), ')');
+        ctx.ragContext.relevantProducts = fullProducts;
+      } else {
+        console.warn('[OrchestrateFromContext] LLM selected product IDs not found in catalog:', selectedIds);
+      }
+    }
 
     // ============================================
     // Stage 5: Generate Blocks

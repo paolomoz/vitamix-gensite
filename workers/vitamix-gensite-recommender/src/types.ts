@@ -343,6 +343,26 @@ export type BlockType =
   | 'allergen-safety';    // Cross-contamination protocols
 
 // ============================================
+// Product Selection Types (LLM-driven)
+// ============================================
+
+/**
+ * LLM-selected product with rationale.
+ * The reasoning engine selects products from the full catalog based on
+ * user context, replacing hardcoded keyword filters.
+ */
+export interface ProductSelection {
+  /** Product ID from the catalog */
+  id: string;
+  /** Why this product was selected for this query */
+  rationale: string;
+  /** Whether this is the primary recommendation */
+  isPrimary: boolean;
+  /** Context type that drove selection */
+  contextType: 'commercial' | 'consumer' | 'either';
+}
+
+// ============================================
 // Reasoning Types
 // ============================================
 
@@ -370,6 +390,13 @@ export interface ReasoningResult {
   };
   /** @deprecated Use confidence.intent instead. Kept for backward compatibility. */
   confidenceLegacy?: number;
+  /**
+   * LLM-selected products from the full catalog.
+   * These override RAG context products when present.
+   */
+  selectedProducts?: ProductSelection[];
+  /** Rationale for overall product selection strategy */
+  productSelectionRationale?: string;
 }
 
 export interface ReasoningTrace {

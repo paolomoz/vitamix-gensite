@@ -18,8 +18,10 @@ import type {
   BlockType,
   UserJourneyPlan,
   SignalInterpretation,
+  ProductSelection,
 } from '../types';
 import type { RAGContext } from '../content/content-service';
+import { buildCompactProductCatalog } from '../content/content-service';
 import { ModelFactory, type Message } from './model-factory';
 
 // ============================================
@@ -227,6 +229,31 @@ Detection: Query asks for recipes, cooking ideas, or specific food items to make
 
 IMPORTANT: This rule takes priority over generic discovery/comparison flows when recipe keywords are present.
 
+## Product Selection (CRITICAL)
+
+You MUST select products from the catalog provided below. Do NOT rely on pre-filtered products.
+
+### Commercial vs Consumer Decision Tree
+
+| User Context Signals | Product Selection |
+|---------------------|-------------------|
+| "bar", "cocktail bar", "juice bar", "smoothie bar" | Commercial products (Drink Machine Advance, The Quiet One, Vita-Prep) |
+| "restaurant", "cafe", "hotel", "catering", "food service" | Commercial products |
+| "for my business", "high volume", "professional kitchen" | Commercial products |
+| "home", "family", "personal", "kitchen", "apartment" | Consumer products (Ascent, Explorian, Venturist) |
+| Ambiguous (no clear home/commercial signal) | Include BOTH or ask clarifying question |
+
+### Selection Rules
+
+1. **Always select 3-5 products** that best match the user's context
+2. **Mark ONE product as isPrimary=true** - your top recommendation
+3. **Provide rationale** for each selection explaining why it fits
+4. **Set contextType** to 'commercial', 'consumer', or 'either'
+5. **NEVER filter out commercial products for queries mentioning bars, restaurants, or businesses**
+
+### Product Catalog Reference
+The full product catalog will be provided in the prompt. Use product IDs exactly as shown.
+
 ## Output Format
 
 Respond with valid JSON only:
@@ -240,6 +267,21 @@ Respond with valid JSON only:
       "contentGuidance": "Focus on empowering headline about possibilities..."
     }
   ],
+  "selectedProducts": [
+    {
+      "id": "drink-machine-advance",
+      "rationale": "Commercial bar needs high-volume frozen drink capability",
+      "isPrimary": true,
+      "contextType": "commercial"
+    },
+    {
+      "id": "the-quiet-one",
+      "rationale": "Alternative for noise-sensitive bar environments",
+      "isPrimary": false,
+      "contextType": "commercial"
+    }
+  ],
+  "productSelectionRationale": "User mentioned 'cocktail bar' indicating commercial use. Selected commercial-grade blenders designed for bar environments.",
   "reasoning": {
     "intentAnalysis": "You're looking for... (UNDER 50 WORDS, speak directly to user with 'you')",
     "userNeedsAssessment": "What matters most to you is... (UNDER 50 WORDS, warm and understanding)",
@@ -404,6 +446,12 @@ function buildReasoningPrompt(
   sessionContext?: SessionContext,
   signalInterpretation?: SignalInterpretation
 ): string {
+  // Build compact product catalog for LLM product selection
+  const compactCatalog = buildCompactProductCatalog();
+  const catalogSection = compactCatalog
+    .map(p => `- ${p.id}: ${p.name} (${p.series}) | $${p.price || 'N/A'} | ${p.isCommercial ? 'COMMERCIAL' : 'Consumer'} | Best for: ${p.bestFor.join(', ') || 'general use'}`)
+    .join('\n');
+
   const productContext = ragContext.relevantProducts
     .slice(0, 5)
     .map((p) => `- ${p.name} (${p.series}): $${p.price} - ${p.tagline || (p.description?.slice(0, 100) ?? '')}`)
@@ -455,8 +503,12 @@ function buildReasoningPrompt(
 ## User Profile Analysis
 ${personaContext}
 
-## Available Products (${ragContext.contentSummary.productCount} total)
+## Available Products (pre-filtered, ${ragContext.contentSummary.productCount} total)
 ${productContext || 'No products matched'}
+
+## FULL PRODUCT CATALOG (for product selection)
+Select products from this complete list based on user context. Use exact product IDs.
+${catalogSection}
 
 ## Relevant Use Cases
 ${useCaseContext || 'No specific use cases matched'}
@@ -582,12 +634,37 @@ function parseReasoningResponse(content: string): ReasoningResult {
       };
     }
 
+    // Parse product selections (new field for LLM-driven product selection)
+    let selectedProducts: ProductSelection[] | undefined;
+    let productSelectionRationale: string | undefined;
+
+    if (parsed.selectedProducts && Array.isArray(parsed.selectedProducts)) {
+      const parsedProducts: ProductSelection[] = parsed.selectedProducts.map((p: Record<string, unknown>) => ({
+        id: String(p.id || ''),
+        rationale: String(p.rationale || ''),
+        isPrimary: Boolean(p.isPrimary),
+        contextType: (p.contextType as 'commercial' | 'consumer' | 'either') || 'either',
+      })).filter((p: ProductSelection) => p.id); // Filter out empty IDs
+
+      if (parsedProducts.length > 0) {
+        selectedProducts = parsedProducts;
+        console.log('[ReasoningEngine] LLM selected products:', parsedProducts.map(p => `${p.id} (${p.contextType}${p.isPrimary ? ', PRIMARY' : ''})`).join(', '));
+      }
+    }
+
+    if (parsed.productSelectionRationale) {
+      productSelectionRationale = String(parsed.productSelectionRationale);
+      console.log('[ReasoningEngine] Product selection rationale:', productSelectionRationale);
+    }
+
     return {
       selectedBlocks: parsed.selectedBlocks,
       reasoning: parsed.reasoning,
       userJourney: parsed.userJourney,
       confidence,
       confidenceLegacy: typeof parsed.confidence === 'number' ? parsed.confidence : confidence.intent,
+      selectedProducts,
+      productSelectionRationale,
     };
   } catch (e) {
     throw new Error(`Failed to parse reasoning JSON: ${e}`);

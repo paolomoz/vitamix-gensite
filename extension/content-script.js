@@ -27,6 +27,21 @@
   }
 
   /**
+   * Get clean text content from element (excluding script/style content)
+   */
+  function getCleanText(element) {
+    // Clone the element to avoid modifying the original
+    const clone = element.cloneNode(true);
+
+    // Remove script and style elements
+    const scriptsAndStyles = clone.querySelectorAll('script, style, noscript');
+    scriptsAndStyles.forEach(el => el.remove());
+
+    // Get text and clean up whitespace
+    return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  /**
    * Initialize signal capture
    */
   function init() {
@@ -227,7 +242,8 @@
     const element = target || directTarget;
     if (!element) return;
 
-    const text = (element.textContent || '').toLowerCase().replace(/\s+/g, ' ').trim().slice(0, 100);
+    // Get clean text content (exclude script/style tags)
+    const text = getCleanText(element).toLowerCase().slice(0, 100);
     const href = element.href || element.closest('a')?.href || '';
     const className = (element.className || '').toString().toLowerCase();
     const ariaLabel = (element.getAttribute('aria-label') || '').toLowerCase();
@@ -239,7 +255,7 @@
       tag: element.tagName,
       text: text.slice(0, 50),
       className: className.slice(0, 50),
-      href: href.slice(0, 50),
+      href: href.slice(0, 80),
     });
 
     // Combine all text sources for matching

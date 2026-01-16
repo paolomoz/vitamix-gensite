@@ -46,7 +46,6 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 | Block | Purpose |
 |-------|---------|
 | hero | Full-width banner with headline and image - for landing/discovery |
-| product-hero | Product-focused hero with image and specs - for product detail |
 | product-cards | Grid of 3-4 product cards - for browsing products |
 | recipe-cards | Grid of 3-4 recipe cards - for inspiration |
 | comparison-table | Side-by-side product comparison - for comparing models |
@@ -57,7 +56,6 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 | testimonials | Customer reviews - for social proof |
 | faq | Common questions - for support |
 | follow-up | Suggestion chips for next actions (always include at end) |
-| cta | Call-to-action button - for conversion |
 | quick-answer | Simple direct answer - for yes/no questions or quick confirmations |
 | support-triage | Help frustrated customers - for product issues/warranty |
 | budget-breakdown | Price/value transparency - for budget-conscious users |
@@ -74,11 +72,11 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 
 1. NEVER include 'reasoning' or 'reasoning-user' blocks - they are not displayed
 2. ALWAYS include 'follow-up' block at the end
-3. NEVER place 'hero', 'product-hero', 'product-recommendation', or 'best-pick' blocks consecutively - they use similar dark visual styling and must be separated by other content blocks
+3. NEVER place 'hero', 'product-recommendation', or 'best-pick' blocks consecutively - they use similar dark visual styling and must be separated by other content blocks
 4. Match blocks to user journey stage:
    - Exploring: hero, use-case-cards, feature-highlights, follow-up
    - Comparing: hero, comparison-table, product-cards, follow-up
-   - Deciding: product-hero, product-recommendation, recipe-cards, cta, follow-up
+   - Deciding: product-recommendation, recipe-cards, follow-up
 
 ## SPECIAL HANDLING RULES (CRITICAL - Follow These First!)
 
@@ -495,7 +493,7 @@ function normalizeBlockType(type: string): string {
  * These blocks all use similar dark styling, so they should be visually separated
  */
 function separateHeroAndProductRecommendation(blocks: BlockSelection[]): BlockSelection[] {
-  const heroLikeBlocks = ['hero', 'product-hero', 'product-recommendation', 'best-pick'];
+  const heroLikeBlocks = ['hero', 'product-recommendation', 'best-pick'];
   const result: BlockSelection[] = [];
 
   for (let i = 0; i < blocks.length; i++) {
@@ -616,7 +614,7 @@ function getFallbackReasoningResult(
   const blocksByIntent: Record<string, BlockType[]> = {
     discovery: ['hero', 'use-case-cards', 'product-cards', 'follow-up'],
     comparison: ['hero', 'comparison-table', 'product-cards', 'follow-up'],
-    'product-detail': ['product-hero', 'specs-table', 'recipe-cards', 'follow-up'],
+    'product-detail': ['product-recommendation', 'specs-table', 'recipe-cards', 'follow-up'],
     'use-case': ['hero', 'feature-highlights', 'recipe-cards', 'product-recommendation', 'follow-up'],
     specs: ['hero', 'specs-table', 'comparison-table', 'follow-up'],
     reviews: ['hero', 'testimonials', 'product-recommendation', 'follow-up'],

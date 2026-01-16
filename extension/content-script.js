@@ -443,12 +443,12 @@
   // ============================================
 
   /**
-   * Inject hint at LLM-specified location
+   * Inject hint as full-width content section
    */
   function injectHint(hintData) {
     const { injectionPoint, hint } = hintData;
 
-    // Find injection target
+    // Find injection target - prefer major section boundaries
     let target = null;
     if (injectionPoint && injectionPoint.selector) {
       try {
@@ -458,9 +458,16 @@
       }
     }
 
-    // Fallback to first h2 in main content area
+    // Fallback: find a good section boundary
     if (!target) {
-      target = document.querySelector('main h2, article h2, .content h2, h2');
+      target = document.querySelector(
+        'main section, article section, [class*="section"], main > div, article > div'
+      );
+    }
+
+    // Last resort: first h2
+    if (!target) {
+      target = document.querySelector('main h2, article h2, h2');
     }
 
     if (!target) {
@@ -468,34 +475,45 @@
       return false;
     }
 
-    // Create hint element
-    const container = document.createElement('div');
-    container.className = 'vitamix-ai-hint-container';
-    container.innerHTML = `
-      <button class="vitamix-ai-hint">
-        <span class="vitamix-ai-hint-icon">✨</span>
-        <span class="vitamix-ai-hint-text">${hint.text}</span>
-      </button>
+    // Create full-width hint section
+    const section = document.createElement('section');
+    section.className = 'vitamix-ai-hint-section';
+    section.innerHTML = `
+      <button class="vitamix-ai-hint-dismiss" aria-label="Dismiss">×</button>
+      <div class="vitamix-ai-hint-content">
+        <p class="vitamix-ai-hint-eyebrow">${hint.eyebrow || 'Personalized for You'}</p>
+        <h2 class="vitamix-ai-hint-headline">${hint.headline || hint.text}</h2>
+        <p class="vitamix-ai-hint-body">${hint.body || ''}</p>
+        <button class="vitamix-ai-hint-cta">${hint.cta || 'Learn More'}</button>
+      </div>
     `;
 
-    // Insert based on position
+    // Insert based on position - for full-width, prefer after sections
     const position = injectionPoint?.position || 'after';
+    const insertTarget = target.closest('section') || target;
+
     if (position === 'before') {
-      target.parentNode.insertBefore(container, target);
+      insertTarget.parentNode.insertBefore(section, insertTarget);
     } else {
-      target.parentNode.insertBefore(container, target.nextSibling);
+      insertTarget.parentNode.insertBefore(section, insertTarget.nextSibling);
     }
 
-    // Handle click - open POC with query
-    container.querySelector('.vitamix-ai-hint').addEventListener('click', () => {
-      console.log('[VitamixIntent] Hint clicked, query:', hint.query);
+    // Handle CTA click - open POC with query
+    section.querySelector('.vitamix-ai-hint-cta').addEventListener('click', () => {
+      console.log('[VitamixIntent] Hint CTA clicked, query:', hint.query);
       chrome.runtime.sendMessage({
         type: 'HINT_CLICKED',
         query: hint.query,
       });
     });
 
-    console.log('[VitamixIntent] Hint injected:', hint.text);
+    // Handle dismiss
+    section.querySelector('.vitamix-ai-hint-dismiss').addEventListener('click', () => {
+      section.style.animation = 'vitamix-hint-fade-out 0.3s ease forwards';
+      setTimeout(() => section.remove(), 300);
+    });
+
+    console.log('[VitamixIntent] Hint section injected:', hint.headline);
     return true;
   }
 

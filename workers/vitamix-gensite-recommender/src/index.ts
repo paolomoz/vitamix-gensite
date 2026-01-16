@@ -302,7 +302,10 @@ interface HintResponse {
     position: 'before' | 'after';
   };
   hint: {
-    text: string;
+    eyebrow: string;
+    headline: string;
+    body: string;
+    cta: string;
     query: string;
   };
 }
@@ -323,7 +326,7 @@ async function handleGenerateHint(request: Request, env: Env): Promise<Response>
       .map((s) => `- ${s.label}${s.product ? ` (${s.product})` : ''}`)
       .join('\n');
 
-    const prompt = `You are helping a user discover personalized Vitamix content.
+    const prompt = `You are a Vitamix brand copywriter creating a personalized content section for a user browsing vitamix.com.
 
 Current page: ${pageContext.url}
 Page title: ${pageContext.title}
@@ -342,33 +345,51 @@ User profile:
 Recent browsing signals:
 ${signalsText || 'No signals captured'}
 
-Generate a single, highly specific hint that would be valuable for this user.
+Create a full content section that feels like premium editorial content from Vitamix. The section should:
+1. Feel personalized - reference their specific journey, interests, or the products they've viewed
+2. Be insightful - offer a perspective or comparison they haven't considered
+3. Drive action - make them want to click to learn more
+4. Match Vitamix's voice: confident, helpful, premium, never salesy
 
-The hint should:
-1. Reference something specific from their journey (products viewed, interests, or browsing behavior)
-2. Connect to something specific on the current page (a feature, spec, or section)
-3. Feel insightful, not generic - like a knowledgeable friend's suggestion
-4. Be actionable - clicking should lead to genuinely useful AI-generated content
+CONTENT STRUCTURE:
+- eyebrow: Short uppercase label (2-4 words) that categorizes the insight, e.g., "WORTH COMPARING", "MADE FOR YOU", "A CLOSER LOOK"
+- headline: Compelling serif headline (5-10 words) that speaks directly to their situation, e.g., "A Reason to Believe", "The Feature That Changes Everything"
+- body: One insightful sentence (15-25 words) explaining why this matters to them specifically
+- cta: Action-oriented button text (2-4 words), e.g., "See the Comparison", "Explore Recipes", "Find Your Match"
+- query: The full query to send to the AI page generator when they click
 
-Examples of BAD hints (too generic):
-- "Learn more about this blender"
-- "View product details"
-- "See specifications"
+EXAMPLES OF GREAT CONTENT:
 
-Examples of GOOD hints (specific and valuable):
-- "See how the A3500's self-detect compares to the E310 you viewed earlier"
-- "Find soup recipes that work with the hot soup program on this blender"
-- "Compare this to the A2300 - it's $100 less but has these key differences"
+For someone comparing A3500 and E310:
+- eyebrow: "WORTH THE DIFFERENCE"
+- headline: "What $200 Actually Gets You"
+- body: "The A3500's touchscreen and wireless connectivity might matter more than you think. Here's the real comparison."
+- cta: "See the Breakdown"
 
-Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+For someone interested in soups:
+- eyebrow: "BEYOND SMOOTHIES"
+- headline: "Restaurant-Quality Soups at Home"
+- body: "The hot soup program heats while it blends—no stovetop needed. Discover what's possible."
+- cta: "Explore Soup Recipes"
+
+For someone who viewed multiple products:
+- eyebrow: "PERSONALIZED FOR YOU"
+- headline: "Let's Find Your Perfect Match"
+- body: "Based on what you've been exploring, we can help narrow down the choice."
+- cta: "Get Recommendations"
+
+Return ONLY valid JSON (no markdown, no explanation):
 {
   "injectionPoint": {
-    "selector": "CSS selector for where to inject (use a selector from the sections list)",
+    "selector": "CSS selector from the sections list",
     "position": "after"
   },
   "hint": {
-    "text": "Short, compelling hint text (max 80 chars)",
-    "query": "Full query to send to AI page generator"
+    "eyebrow": "SHORT UPPERCASE LABEL",
+    "headline": "Compelling Headline Here",
+    "body": "One insightful sentence about why this matters to them.",
+    "cta": "Action Text",
+    "query": "Full detailed query for AI page generator"
   }
 }`;
 
@@ -410,11 +431,11 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
     const hintData: HintResponse = JSON.parse(jsonMatch[0]);
 
     // Validate response structure
-    if (!hintData.hint?.text || !hintData.hint?.query) {
+    if (!hintData.hint?.headline || !hintData.hint?.query) {
       throw new Error('Invalid hint structure');
     }
 
-    console.log('[GenerateHint] Generated hint:', hintData.hint.text);
+    console.log('[GenerateHint] Generated hint:', hintData.hint.headline);
 
     return new Response(JSON.stringify(hintData), {
       headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },

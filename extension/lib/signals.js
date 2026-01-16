@@ -1,276 +1,196 @@
 /**
- * Signal Definitions & Weights
- * Defines all trackable user signals on vitamix.com
+ * Signal Definitions & Classification
+ * Generic signals with context-based classification
  */
 
 // Signal weight mappings
 export const SIGNAL_WEIGHTS = {
-  // Tier 1: Essential signals
   VERY_HIGH: 0.20,
   HIGH: 0.15,
   MEDIUM: 0.10,
   LOW: 0.05,
 };
 
-// Language-agnostic path prefix pattern (matches /vr/en_us/, /us/en_us/, etc.)
-const LANG_PREFIX = /\/[^/]+\/[a-z]{2}_[a-z]{2}/;
-
-// Signal type definitions
-export const SIGNAL_TYPES = {
-  // Tier 1: MVP Signals (Essential)
-  PRODUCT_PAGE_VIEW: {
-    id: 'product_page_view',
-    label: 'Product Page View',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 1,
-    icon: '📦',
-    // Matches: /vr/en_us/shop/blenders/e310, /us/en_us/shop/blenders/a3500, etc.
-    urlPattern: /\/shop\/blenders\/([^/?]+)/,
-  },
-  SEARCH_QUERY: {
-    id: 'search_query',
-    label: 'Search Query',
-    weight: SIGNAL_WEIGHTS.VERY_HIGH,
-    tier: 1,
-    icon: '🔍',
-  },
-  RECIPE_PAGE_VIEW: {
-    id: 'recipe_page_view',
-    label: 'Recipe Page View',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 1,
-    icon: '🍳',
-    urlPattern: /\/recipes\/([^/?]+)/,
-  },
-  ARTICLE_PAGE_VIEW: {
-    id: 'article_page_view',
-    label: 'Article Page View',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 1,
-    icon: '📄',
-    urlPattern: /\/(articles?|blog|learn|inspiration)\/([^/?]+)/,
-  },
-  REVIEWS_LOAD_MORE: {
-    id: 'reviews_load_more',
-    label: 'Reviews Load More',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 1,
-    icon: '⭐',
-  },
-  COMPARE_TOOL_USED: {
-    id: 'compare_tool_used',
-    label: 'Compare Tool Used',
-    weight: SIGNAL_WEIGHTS.VERY_HIGH,
-    tier: 1,
-    icon: '⚖️',
-    urlPattern: /\/compare/,
-  },
-  RETURN_VISIT: {
-    id: 'return_visit',
-    label: 'Return Visit',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 1,
-    icon: '🔄',
-  },
-
-  // Tier 2: Enhanced Signals
-  SCROLL_DEPTH: {
-    id: 'scroll_depth',
-    label: 'Scroll Depth',
-    weight: SIGNAL_WEIGHTS.LOW,
-    tier: 2,
-    icon: '📜',
-  },
-  TIME_ON_PAGE: {
-    id: 'time_on_page',
-    label: 'Time on Page',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 2,
-    icon: '⏱️',
-  },
-  VIDEO_PLAY: {
-    id: 'video_play',
-    label: 'Video Play',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 2,
-    icon: '▶️',
-  },
-  VIDEO_COMPLETION: {
-    id: 'video_completion',
-    label: 'Video Completion',
-    weight: SIGNAL_WEIGHTS.VERY_HIGH,
-    tier: 2,
-    icon: '🎬',
-  },
-  REVIEW_FILTER_APPLIED: {
-    id: 'review_filter_applied',
-    label: 'Review Filter Applied',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 2,
-    icon: '🔧',
-  },
-  ACCESSORY_PAGE_VIEW: {
-    id: 'accessory_page_view',
-    label: 'Accessory Page View',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 2,
-    icon: '🔌',
-    urlPattern: /\/shop\/accessories\/([^/?]+)/,
-  },
-  REFERRER_CONTEXT: {
-    id: 'referrer_context',
-    label: 'Referrer Context',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 2,
-    icon: '🌐',
-  },
-  SESSION_DURATION: {
-    id: 'session_duration',
-    label: 'Session Duration',
-    weight: SIGNAL_WEIGHTS.LOW,
-    tier: 2,
-    icon: '⌛',
-  },
-
-  // Tier 3: Advanced Signals
-  IMAGE_GALLERY_INTERACTION: {
-    id: 'image_gallery_interaction',
-    label: 'Image Gallery Interaction',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 3,
-    icon: '🖼️',
-  },
-  SPEC_TAB_OPENED: {
-    id: 'spec_tab_opened',
-    label: 'Spec Tab Opened',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 3,
-    icon: '📋',
-  },
-  WHATS_IN_BOX_EXPANDED: {
-    id: 'whats_in_box_expanded',
-    label: "What's in Box Expanded",
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 3,
-    icon: '📦',
-  },
-  ADD_TO_CART: {
-    id: 'add_to_cart',
-    label: 'Add to Cart',
-    weight: SIGNAL_WEIGHTS.VERY_HIGH,
-    tier: 3,
-    icon: '🛒',
-  },
-  SHIPPING_INFO_VIEWED: {
-    id: 'shipping_info_viewed',
-    label: 'Shipping Info Viewed',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 3,
-    icon: '🚚',
-    urlPattern: /\/(shipping|delivery)/,
-  },
-  RETURN_POLICY_VIEWED: {
-    id: 'return_policy_viewed',
-    label: 'Return Policy Viewed',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 3,
-    icon: '↩️',
-    urlPattern: /\/(returns?|return-policy|policy)/,
-  },
-  FINANCING_VIEWED: {
-    id: 'financing_viewed',
-    label: 'Financing Viewed',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 3,
-    icon: '💳',
-    urlPattern: /\/(financing|affirm|payment|klarna)/,
-  },
-  CATEGORY_PAGE_VIEW: {
-    id: 'category_page_view',
-    label: 'Category Page View',
-    weight: SIGNAL_WEIGHTS.MEDIUM,
-    tier: 3,
-    icon: '📂',
-    urlPattern: /\/shop\/(blenders|accessories|containers)(?:\?|$)/,
-  },
-  CERTIFIED_RECONDITIONED_VIEW: {
-    id: 'certified_reconditioned_view',
-    label: 'Certified Reconditioned View',
-    weight: SIGNAL_WEIGHTS.HIGH,
-    tier: 3,
-    icon: '♻️',
-    urlPattern: /\/(certified-reconditioned|reconditioned|refurbished)/,
-  },
+// Base signal types (what the content script sends)
+export const BASE_SIGNAL_TYPES = {
+  page_view: { icon: '📄', baseWeight: SIGNAL_WEIGHTS.MEDIUM },
+  click: { icon: '👆', baseWeight: SIGNAL_WEIGHTS.LOW },
+  search: { icon: '🔍', baseWeight: SIGNAL_WEIGHTS.VERY_HIGH },
+  scroll: { icon: '📜', baseWeight: SIGNAL_WEIGHTS.LOW },
+  referrer: { icon: '🌐', baseWeight: SIGNAL_WEIGHTS.MEDIUM },
+  time_on_page: { icon: '⏱️', baseWeight: SIGNAL_WEIGHTS.MEDIUM },
+  video_play: { icon: '▶️', baseWeight: SIGNAL_WEIGHTS.HIGH },
+  video_complete: { icon: '🎬', baseWeight: SIGNAL_WEIGHTS.VERY_HIGH },
 };
+
+// Classification rules for page views (based on URL/title/content patterns)
+const PAGE_CLASSIFIERS = [
+  { pattern: /\/shop\/(blenders|accessories|containers)\/[^/]+/i, category: 'product', weight: SIGNAL_WEIGHTS.MEDIUM },
+  { pattern: /\/shop\/[^/]+$/i, category: 'product', weight: SIGNAL_WEIGHTS.MEDIUM },
+  { pattern: /\/recipes?\//i, category: 'recipe', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /\/compare/i, category: 'compare', weight: SIGNAL_WEIGHTS.VERY_HIGH },
+  { pattern: /\/shop\/(blenders|accessories|containers)(?:\/)?$/i, category: 'category', weight: SIGNAL_WEIGHTS.LOW },
+  { pattern: /\/(articles?|blog|learn|inspiration)\//i, category: 'article', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /\/(support|help|faq|customer-service)/i, category: 'support', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /\/(shipping|delivery)/i, category: 'shipping', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /\/(returns?|return-policy|refund)/i, category: 'returns', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /\/(financing|affirm|payment|klarna)/i, category: 'financing', weight: SIGNAL_WEIGHTS.MEDIUM },
+  { pattern: /\/(warranty|guarantee)/i, category: 'warranty', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /\/(certified-reconditioned|reconditioned|refurbished)/i, category: 'reconditioned', weight: SIGNAL_WEIGHTS.HIGH },
+];
+
+// Classification rules for clicks (based on text/href/context)
+const CLICK_CLASSIFIERS = [
+  { pattern: /add.*(cart|bag)|buy\s*now|purchase/i, category: 'add_to_cart', weight: SIGNAL_WEIGHTS.VERY_HIGH },
+  { pattern: /compare/i, category: 'compare', weight: SIGNAL_WEIGHTS.VERY_HIGH },
+  { pattern: /review|rating|star/i, category: 'reviews', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /spec|feature|detail/i, category: 'specs', weight: SIGNAL_WEIGHTS.MEDIUM },
+  { pattern: /what.*box|included|contents/i, category: 'whats_in_box', weight: SIGNAL_WEIGHTS.MEDIUM },
+  { pattern: /warranty|guarantee/i, category: 'warranty', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /shipping|delivery/i, category: 'shipping', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /financing|payment|affirm/i, category: 'financing', weight: SIGNAL_WEIGHTS.MEDIUM },
+  { pattern: /recipe/i, category: 'recipe', weight: SIGNAL_WEIGHTS.HIGH },
+  { pattern: /video|play|watch/i, category: 'video', weight: SIGNAL_WEIGHTS.HIGH },
+];
 
 // Product name mappings from URLs
 export const PRODUCT_MAPPINGS = {
   'a3500': 'A3500',
+  'a3500i': 'A3500i',
   'a2500': 'A2500',
+  'a2500i': 'A2500i',
   'a2300': 'A2300',
+  'a2300i': 'A2300i',
   'explorian-e310': 'E310',
   'e310': 'E310',
   'x5': 'X5',
   'venturist-v1200': 'V1200',
+  'venturist-v1200i': 'V1200i',
+  'v1200': 'V1200',
+  'v1200i': 'V1200i',
   '5200': '5200',
   '5300': '5300',
   '7500': '7500',
-  'storewide': 'Storewide',
   'propel-series': 'Propel Series',
   'immersion-blender': 'Immersion Blender',
   'foodcycler': 'FoodCycler',
-};
-
-// Recipe category mappings
-export const RECIPE_CATEGORIES = {
-  'baby-food': 'baby_food',
-  'smoothies': 'smoothies',
-  'soups': 'soups',
-  'frozen-desserts': 'frozen_desserts',
-  'nut-butters': 'nut_butters',
-  'sauces': 'sauces',
-  'dressings': 'dressings',
-  'cocktails': 'cocktails',
-  'juices': 'juices',
+  'storewide': 'Storewide',
 };
 
 /**
- * Create a signal event object
+ * Classify a page view based on its context
+ */
+export function classifyPageView(data) {
+  const { url = '', path = '', title = '', h1 = '' } = data;
+  const textToMatch = `${url} ${path} ${title} ${h1}`.toLowerCase();
+
+  for (const classifier of PAGE_CLASSIFIERS) {
+    if (classifier.pattern.test(textToMatch)) {
+      return {
+        category: classifier.category,
+        weight: classifier.weight,
+      };
+    }
+  }
+
+  return { category: 'page', weight: SIGNAL_WEIGHTS.LOW };
+}
+
+/**
+ * Classify a click based on its context
+ */
+export function classifyClick(data) {
+  const { text = '', href = '', ariaLabel = '', className = '' } = data;
+  const textToMatch = `${text} ${href} ${ariaLabel} ${className}`.toLowerCase();
+
+  for (const classifier of CLICK_CLASSIFIERS) {
+    if (classifier.pattern.test(textToMatch)) {
+      return {
+        category: classifier.category,
+        weight: classifier.weight,
+      };
+    }
+  }
+
+  // Check if clicking to a product or recipe link
+  if (href) {
+    const pageClass = classifyPageView({ url: href, path: new URL(href, 'https://vitamix.com').pathname });
+    if (pageClass.category !== 'page') {
+      return {
+        category: `nav_to_${pageClass.category}`,
+        weight: SIGNAL_WEIGHTS.LOW,
+      };
+    }
+  }
+
+  return { category: 'interaction', weight: SIGNAL_WEIGHTS.LOW };
+}
+
+/**
+ * Extract product name from URL or title
+ */
+export function extractProductName(data) {
+  const { path = '', title = '', h1 = '' } = data;
+
+  // Try URL path
+  const pathMatch = path.match(/\/shop\/(?:blenders\/|accessories\/)?([^/?]+)/);
+  if (pathMatch) {
+    const slug = pathMatch[1].toLowerCase();
+    if (PRODUCT_MAPPINGS[slug]) {
+      return PRODUCT_MAPPINGS[slug];
+    }
+    // Convert slug to title case
+    return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  // Try h1
+  if (h1) {
+    // Look for known product names
+    for (const [slug, name] of Object.entries(PRODUCT_MAPPINGS)) {
+      if (h1.toLowerCase().includes(slug.replace(/-/g, ' '))) {
+        return name;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Create a signal event object with classification
  */
 export function createSignal(type, data = {}) {
-  console.log('[Signals] createSignal called with type:', type);
+  const baseType = BASE_SIGNAL_TYPES[type] || { icon: '📍', baseWeight: SIGNAL_WEIGHTS.LOW };
+  let classification = { category: type, weight: baseType.baseWeight };
+  let label = type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  let product = null;
 
-  const signalDef = typeof type === 'string'
-    ? Object.values(SIGNAL_TYPES).find(s => s.id === type)
-    : type;
-
-  if (!signalDef) {
-    console.warn('[Signals] Unknown signal type:', type);
-    console.log('[Signals] Available types:', Object.values(SIGNAL_TYPES).map(s => s.id));
-    // Create a generic signal for unknown types
-    return {
-      id: `unknown_${Date.now()}`,
-      type: type,
-      label: String(type).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      weight: SIGNAL_WEIGHTS.LOW,
-      weightLabel: 'Low',
-      icon: '📍',
-      tier: 3,
-      timestamp: Date.now(),
-      data,
-    };
+  // Classify based on type
+  if (type === 'page_view') {
+    classification = classifyPageView(data);
+    label = `${classification.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} Page View`;
+    product = extractProductName(data);
+  } else if (type === 'click') {
+    classification = classifyClick(data);
+    label = `Click: ${classification.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+  } else if (type === 'search') {
+    label = 'Search Query';
+    classification.weight = SIGNAL_WEIGHTS.VERY_HIGH;
+  } else if (type === 'scroll') {
+    label = `Scroll ${data.depth || 0}%`;
   }
 
   return {
-    id: `${signalDef.id}_${Date.now()}`,
-    type: signalDef.id,
-    label: signalDef.label,
-    weight: signalDef.weight,
-    weightLabel: getWeightLabel(signalDef.weight),
-    icon: signalDef.icon,
-    tier: signalDef.tier,
+    id: `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+    type,
+    category: classification.category,
+    label,
+    weight: classification.weight,
+    weightLabel: getWeightLabel(classification.weight),
+    icon: baseType.icon,
     timestamp: Date.now(),
     data,
+    product,
   };
 }
 
@@ -292,61 +212,4 @@ export function getWeightClass(weight) {
   if (weight >= SIGNAL_WEIGHTS.HIGH) return 'weight-high';
   if (weight >= SIGNAL_WEIGHTS.MEDIUM) return 'weight-medium';
   return 'weight-low';
-}
-
-/**
- * Detect page type from URL
- */
-export function detectPageType(url) {
-  const urlObj = new URL(url);
-  const path = urlObj.pathname;
-
-  // Check each signal type with URL pattern
-  for (const [key, signal] of Object.entries(SIGNAL_TYPES)) {
-    if (signal.urlPattern && signal.urlPattern.test(path)) {
-      const match = path.match(signal.urlPattern);
-      return {
-        signalType: signal,
-        match,
-        path,
-      };
-    }
-  }
-
-  return null;
-}
-
-/**
- * Extract product name from URL path (language-agnostic)
- */
-export function extractProductName(path) {
-  // Match /shop/blenders/{product} regardless of language prefix
-  const match = path.match(/\/shop\/(?:blenders|accessories|containers)\/([^/?]+)/);
-  if (match && match[1]) {
-    const slug = match[1].toLowerCase();
-    return PRODUCT_MAPPINGS[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  }
-  return null;
-}
-
-/**
- * Extract recipe category from URL path (language-agnostic)
- */
-export function extractRecipeCategory(path) {
-  // Match /recipes/{slug} regardless of language prefix
-  const match = path.match(/\/recipes\/([^/?]+)/);
-  if (match && match[1]) {
-    const slug = match[1].toLowerCase();
-    // Check if it's a category page
-    if (RECIPE_CATEGORIES[slug]) {
-      return RECIPE_CATEGORIES[slug];
-    }
-    // Otherwise it's a specific recipe - try to infer category from URL
-    for (const [category, value] of Object.entries(RECIPE_CATEGORIES)) {
-      if (slug.includes(category.replace('-', ''))) {
-        return value;
-      }
-    }
-  }
-  return null;
 }

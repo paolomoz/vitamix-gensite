@@ -7,7 +7,6 @@ import { SIGNAL_WEIGHTS } from './signals.js';
 
 // Default empty profile
 export const DEFAULT_PROFILE = {
-  // Inferred attributes
   segments: [],
   life_stage: null,
   use_cases: [],
@@ -18,12 +17,9 @@ export const DEFAULT_PROFILE = {
   shopping_for: null,
   occasion: null,
   brand_relationship: null,
-  current_product: null,
   content_engagement: null,
-  accessory_owner: null,
   time_sensitive: null,
 
-  // Metadata
   confidence_score: 0.0,
   signals_count: 0,
   session_count: 1,
@@ -31,13 +27,13 @@ export const DEFAULT_PROFILE = {
   last_visit: null,
 };
 
-// Inference rules - each rule specifies conditions and what to infer
+// Inference rules - updated for category-based signals
 const INFERENCE_RULES = [
   // New Parent Detection
   {
     id: 'new_parent_search',
     conditions: (signals) => signals.some(s =>
-      s.type === 'search_query' && s.data?.query?.toLowerCase().includes('baby')
+      s.type === 'search' && s.data?.query?.toLowerCase().match(/baby|infant|toddler|puree/)
     ),
     infer: {
       segments: ['new_parent'],
@@ -47,24 +43,17 @@ const INFERENCE_RULES = [
     confidence: 0.20,
   },
   {
-    id: 'new_parent_recipe',
+    id: 'new_parent_page',
     conditions: (signals) => signals.some(s =>
-      s.type === 'recipe_page_view' && s.data?.category === 'baby_food'
+      s.type === 'page_view' && (
+        s.data?.h1?.toLowerCase().includes('baby') ||
+        s.data?.path?.includes('baby') ||
+        s.data?.title?.toLowerCase().includes('baby')
+      )
     ),
     infer: {
       segments: ['new_parent', 'baby_feeding'],
       use_cases: ['baby_food', 'purees'],
-    },
-    confidence: 0.15,
-  },
-  {
-    id: 'new_parent_article',
-    conditions: (signals) => signals.some(s =>
-      s.type === 'article_page_view' && s.data?.path?.includes('baby')
-    ),
-    infer: {
-      segments: ['new_parent'],
-      use_cases: ['baby_food'],
     },
     confidence: 0.15,
   },
@@ -73,10 +62,10 @@ const INFERENCE_RULES = [
   {
     id: 'gift_buyer_referrer',
     conditions: (signals) => signals.some(s =>
-      s.type === 'referrer_context' && (
-        s.data?.referrer?.includes('gift') ||
-        s.data?.referrer?.includes('wedding') ||
-        s.data?.referrer?.includes('registry')
+      s.type === 'referrer' && (
+        s.data?.domain?.includes('gift') ||
+        s.data?.searchQuery?.toLowerCase().includes('gift') ||
+        s.data?.searchQuery?.toLowerCase().includes('wedding')
       )
     ),
     infer: {
@@ -89,40 +78,22 @@ const INFERENCE_RULES = [
   {
     id: 'gift_buyer_search',
     conditions: (signals) => signals.some(s =>
-      s.type === 'search_query' && (
-        s.data?.query?.toLowerCase().includes('gift') ||
-        s.data?.query?.toLowerCase().includes('wedding')
-      )
+      s.type === 'search' && s.data?.query?.toLowerCase().match(/gift|wedding|registry|present/)
     ),
     infer: {
       segments: ['gift_buyer'],
       shopping_for: 'someone_else',
-      occasion: 'wedding',
+      occasion: 'gift',
       use_cases: ['gift'],
     },
     confidence: 0.20,
-  },
-  {
-    id: 'gift_buyer_compare',
-    conditions: (signals, profile) =>
-      profile.segments.includes('gift_buyer') &&
-      signals.some(s => s.type === 'compare_tool_used'),
-    infer: {
-      decision_style: 'efficient_comparison',
-      segments: ['premium_preference'],
-    },
-    confidence: 0.10,
   },
 
   // Existing Owner / Upgrader Detection
   {
     id: 'upgrader_search',
     conditions: (signals) => signals.some(s =>
-      s.type === 'search_query' && (
-        s.data?.query?.toLowerCase().includes('upgrade') ||
-        s.data?.query?.toLowerCase().includes('vs') ||
-        s.data?.query?.toLowerCase().includes('compare')
-      )
+      s.type === 'search' && s.data?.query?.toLowerCase().match(/upgrade|vs|compare|replace|old/)
     ),
     infer: {
       segments: ['existing_owner', 'upgrade_intent'],
@@ -134,8 +105,8 @@ const INFERENCE_RULES = [
   {
     id: 'upgrader_direct',
     conditions: (signals) =>
-      signals.some(s => s.type === 'referrer_context' && s.data?.referrer === 'direct') &&
-      signals.some(s => s.type === 'search_query'),
+      signals.some(s => s.type === 'referrer' && s.data?.type === 'direct') &&
+      signals.some(s => s.type === 'search'),
     infer: {
       segments: ['existing_owner'],
       brand_relationship: 'loyal_customer',
@@ -144,7 +115,11 @@ const INFERENCE_RULES = [
   },
   {
     id: 'upgrader_reconditioned',
-    conditions: (signals) => signals.some(s => s.type === 'certified_reconditioned_view'),
+    conditions: (signals) => signals.some(s =>
+      s.category === 'reconditioned' ||
+      s.data?.path?.includes('reconditioned') ||
+      s.data?.h1?.toLowerCase().includes('reconditioned')
+    ),
     infer: {
       segments: ['value_conscious'],
       price_sensitivity: 'moderate',
@@ -156,9 +131,9 @@ const INFERENCE_RULES = [
   {
     id: 'thorough_researcher',
     conditions: (signals) => {
-      const reviewSignals = signals.filter(s => s.type === 'reviews_load_more');
-      const recipeViews = signals.filter(s => s.type === 'recipe_page_view');
-      return reviewSignals.length >= 1 && recipeViews.length >= 2;
+      const reviewClicks = signals.filter(s => s.category === 'reviews');
+      const recipeViews = signals.filter(s => s.category === 'recipe');
+      return reviewClicks.length >= 1 && recipeViews.length >= 2;
     },
     infer: {
       decision_style: 'thorough_researcher',
@@ -169,7 +144,7 @@ const INFERENCE_RULES = [
   {
     id: 'content_engaged',
     conditions: (signals) => {
-      const recipeViews = signals.filter(s => s.type === 'recipe_page_view');
+      const recipeViews = signals.filter(s => s.category === 'recipe');
       return recipeViews.length >= 4;
     },
     infer: {
@@ -181,8 +156,8 @@ const INFERENCE_RULES = [
   {
     id: 'comparison_shopper',
     conditions: (signals) =>
-      signals.some(s => s.type === 'compare_tool_used') &&
-      signals.filter(s => s.type === 'product_page_view').length >= 2,
+      signals.some(s => s.category === 'compare') &&
+      signals.filter(s => s.category === 'product').length >= 2,
     infer: {
       segments: ['comparison_shopper'],
       decision_style: 'informed_comparison',
@@ -194,8 +169,9 @@ const INFERENCE_RULES = [
   {
     id: 'smoothie_maker',
     conditions: (signals) => signals.some(s =>
-      (s.type === 'search_query' && s.data?.query?.toLowerCase().includes('smoothie')) ||
-      (s.type === 'recipe_page_view' && s.data?.category === 'smoothies')
+      (s.type === 'search' && s.data?.query?.toLowerCase().includes('smoothie')) ||
+      (s.data?.h1?.toLowerCase().includes('smoothie')) ||
+      (s.data?.path?.includes('smoothie'))
     ),
     infer: {
       use_cases: ['smoothies'],
@@ -205,11 +181,23 @@ const INFERENCE_RULES = [
   {
     id: 'soup_maker',
     conditions: (signals) => signals.some(s =>
-      (s.type === 'search_query' && s.data?.query?.toLowerCase().includes('soup')) ||
-      (s.type === 'recipe_page_view' && s.data?.category === 'soups')
+      (s.type === 'search' && s.data?.query?.toLowerCase().includes('soup')) ||
+      (s.data?.h1?.toLowerCase().includes('soup')) ||
+      (s.data?.path?.includes('soup'))
     ),
     infer: {
       use_cases: ['soups', 'hot_blending'],
+    },
+    confidence: 0.08,
+  },
+  {
+    id: 'nut_butter_maker',
+    conditions: (signals) => signals.some(s =>
+      (s.type === 'search' && s.data?.query?.toLowerCase().match(/nut butter|almond butter|peanut/)) ||
+      (s.data?.path?.includes('nut-butter'))
+    ),
+    infer: {
+      use_cases: ['nut_butters'],
     },
     confidence: 0.08,
   },
@@ -218,7 +206,10 @@ const INFERENCE_RULES = [
   {
     id: 'price_sensitive',
     conditions: (signals) => signals.some(s =>
-      s.type === 'financing_viewed' || s.type === 'certified_reconditioned_view'
+      s.category === 'financing' ||
+      s.category === 'reconditioned' ||
+      s.data?.path?.includes('financing') ||
+      s.data?.path?.includes('affirm')
     ),
     infer: {
       price_sensitivity: 'high',
@@ -229,7 +220,7 @@ const INFERENCE_RULES = [
     id: 'premium_buyer',
     conditions: (signals, profile) => {
       const products = profile.products_considered || [];
-      const premiumProducts = ['X5', 'A3500', 'A2500'];
+      const premiumProducts = ['X5', 'A3500', 'A3500i', 'A2500', 'A2500i'];
       return products.some(p => premiumProducts.includes(p));
     },
     infer: {
@@ -243,8 +234,8 @@ const INFERENCE_RULES = [
   {
     id: 'high_purchase_intent',
     conditions: (signals) =>
-      signals.some(s => s.type === 'add_to_cart') ||
-      signals.some(s => s.type === 'shipping_info_viewed'),
+      signals.some(s => s.category === 'add_to_cart') ||
+      signals.some(s => s.category === 'shipping'),
     infer: {
       purchase_readiness: 'high',
     },
@@ -254,7 +245,7 @@ const INFERENCE_RULES = [
     id: 'medium_purchase_intent',
     conditions: (signals, profile) =>
       profile.products_considered?.length >= 1 &&
-      signals.some(s => s.type === 'reviews_load_more'),
+      signals.some(s => s.category === 'reviews'),
     infer: {
       purchase_readiness: 'medium_high',
     },
@@ -265,8 +256,8 @@ const INFERENCE_RULES = [
   {
     id: 'time_sensitive_buyer',
     conditions: (signals) =>
-      signals.some(s => s.type === 'shipping_info_viewed') &&
-      signals.some(s => s.type === 'return_policy_viewed'),
+      signals.some(s => s.category === 'shipping') &&
+      signals.some(s => s.category === 'returns'),
     infer: {
       time_sensitive: true,
     },
@@ -278,7 +269,7 @@ const INFERENCE_RULES = [
     id: 'first_time_buyer',
     conditions: (signals, profile) =>
       !profile.segments.includes('existing_owner') &&
-      signals.some(s => s.type === 'whats_in_box_expanded'),
+      signals.some(s => s.category === 'whats_in_box'),
     infer: {
       segments: ['first_time_buyer'],
     },
@@ -288,12 +279,22 @@ const INFERENCE_RULES = [
   // Video Engagement
   {
     id: 'video_engaged',
-    conditions: (signals) => signals.some(s => s.type === 'video_completion'),
+    conditions: (signals) => signals.some(s => s.type === 'video_complete'),
     infer: {
       decision_style: 'visual',
       content_engagement: 'high',
     },
     confidence: 0.12,
+  },
+
+  // Support/FAQ visitor
+  {
+    id: 'support_visitor',
+    conditions: (signals) => signals.some(s => s.category === 'support'),
+    infer: {
+      segments: ['support_seeker'],
+    },
+    confidence: 0.08,
   },
 ];
 
@@ -320,9 +321,19 @@ export class ProfileEngine {
       this.profile.first_visit = Date.now();
     }
 
-    // Extract product from product page views
-    if (signal.type === 'product_page_view' && signal.data?.product) {
-      this.addProductConsidered(signal.data.product);
+    // Extract product from signals
+    if (signal.product) {
+      this.addProductConsidered(signal.product);
+    }
+
+    // Also check for product in page title/h1 for product pages
+    if (signal.category === 'product' && signal.data) {
+      const name = signal.data.h1 || signal.product;
+      if (name) {
+        // Clean up the product name
+        const cleanName = name.replace(/®|™/g, '').trim().split(' - ')[0].trim();
+        this.addProductConsidered(cleanName);
+      }
     }
 
     // Run inference rules
@@ -335,8 +346,11 @@ export class ProfileEngine {
    * Add product to considered list (deduped)
    */
   addProductConsidered(product) {
-    if (!this.profile.products_considered.includes(product)) {
-      this.profile.products_considered.push(product);
+    if (!product) return;
+    // Normalize product name
+    const normalized = product.trim();
+    if (normalized && !this.profile.products_considered.includes(normalized)) {
+      this.profile.products_considered.push(normalized);
     }
   }
 
@@ -360,10 +374,7 @@ export class ProfileEngine {
     }
 
     // Calculate confidence score (capped at 1.0)
-    // Base confidence from signal weights
     const signalConfidence = this.signals.reduce((sum, s) => sum + (s.weight || 0), 0);
-
-    // Combined confidence from rules and signals
     this.profile.confidence_score = Math.min(1.0, (totalConfidence + signalConfidence * 0.3));
 
     // Ensure confidence is at least proportional to signals
@@ -378,7 +389,6 @@ export class ProfileEngine {
   applyInference(infer) {
     for (const [key, value] of Object.entries(infer)) {
       if (Array.isArray(value)) {
-        // Merge arrays (dedupe)
         if (!this.profile[key]) {
           this.profile[key] = [];
         }
@@ -388,7 +398,6 @@ export class ProfileEngine {
           }
         }
       } else if (value !== null && value !== undefined) {
-        // Only set if not already set or if this is a stronger signal
         if (!this.profile[key]) {
           this.profile[key] = value;
         }
@@ -429,7 +438,6 @@ export class ProfileEngine {
     if (data.signals) {
       this.signals = data.signals;
     }
-    // Increment session count on load
     this.profile.session_count = (this.profile.session_count || 0) + 1;
   }
 

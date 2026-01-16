@@ -1,6 +1,6 @@
 /**
  * Content Script - Injected on vitamix.com
- * Captures DOM events and sends signals to background
+ * Captures ALL page views and clicks, sending rich context for classification
  */
 
 (function() {
@@ -11,7 +11,6 @@
   // Track page load time
   const pageLoadTime = Date.now();
   let scrollDepthMax = 0;
-  let lastScrollUpdate = 0;
 
   /**
    * Send signal to background
@@ -21,24 +20,89 @@
       type: 'SIGNAL',
       data: { type, data },
     }).catch(e => {
-      // Background might not be ready yet
       console.log('[VitamixIntent] Could not send signal:', e.message);
     });
   }
 
   /**
-   * Get clean text content from element (excluding script/style content)
+   * Extract page context - URL, title, headings, meta
    */
-  function getCleanText(element) {
-    // Clone the element to avoid modifying the original
+  function getPageContext() {
+    const url = window.location.href;
+    const path = window.location.pathname;
+    const title = document.title || '';
+    const h1 = document.querySelector('h1')?.textContent?.trim() || '';
+    const h2s = [...document.querySelectorAll('h2')].slice(0, 3).map(el => el.textContent?.trim()).filter(Boolean);
+    const metaDesc = document.querySelector('meta[name="description"]')?.content || '';
+    const canonical = document.querySelector('link[rel="canonical"]')?.href || '';
+
+    // Try to extract product price if present
+    const priceEl = document.querySelector('[class*="price"], [data-price], .price');
+    const price = priceEl?.textContent?.trim() || null;
+
+    // Try to extract breadcrumbs for context
+    const breadcrumbs = [...document.querySelectorAll('[class*="breadcrumb"] a, nav[aria-label*="breadcrumb"] a')]
+      .map(a => a.textContent?.trim())
+      .filter(Boolean);
+
+    return {
+      url,
+      path,
+      title,
+      h1,
+      h2s,
+      metaDesc,
+      canonical,
+      price,
+      breadcrumbs,
+    };
+  }
+
+  /**
+   * Get clean text from element (excluding scripts/styles)
+   */
+  function getCleanText(element, maxLength = 100) {
     const clone = element.cloneNode(true);
+    clone.querySelectorAll('script, style, noscript').forEach(el => el.remove());
+    return (clone.textContent || '').replace(/\s+/g, ' ').trim().slice(0, maxLength);
+  }
 
-    // Remove script and style elements
-    const scriptsAndStyles = clone.querySelectorAll('script, style, noscript');
-    scriptsAndStyles.forEach(el => el.remove());
+  /**
+   * Extract click context from element
+   */
+  function getClickContext(element) {
+    const text = getCleanText(element);
+    const href = element.href || element.closest('a')?.href || null;
+    const ariaLabel = element.getAttribute('aria-label') || null;
+    const title = element.getAttribute('title') || null;
+    const role = element.getAttribute('role') || null;
+    const tagName = element.tagName.toLowerCase();
+    const className = (element.className || '').toString();
+    const id = element.id || null;
+    const dataAction = element.dataset?.action || null;
 
-    // Get text and clean up whitespace
-    return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+    // Get section context - what part of page was clicked
+    const section = element.closest('header, footer, nav, main, aside, [role="main"], [class*="hero"], [class*="product"], [class*="recipe"]');
+    const sectionType = section ? (section.tagName.toLowerCase() + (section.className ? '.' + section.className.split(' ')[0] : '')) : null;
+
+    // Check if it's an image
+    const isImage = tagName === 'img' || element.querySelector('img') !== null;
+    const imgAlt = element.querySelector('img')?.alt || element.alt || null;
+
+    return {
+      text,
+      href,
+      ariaLabel,
+      title,
+      role,
+      tagName,
+      className: className.slice(0, 100),
+      id,
+      dataAction,
+      sectionType,
+      isImage,
+      imgAlt,
+    };
   }
 
   /**
@@ -47,81 +111,29 @@
   function init() {
     console.log('[VitamixIntent] Initializing on:', window.location.pathname);
 
-    // Send page view signal from content script (more reliable than webNavigation)
+    // Send page view signal with full context
     sendPageViewSignal();
 
-    // Capture referrer on page load
+    // Capture referrer
     captureReferrer();
 
     // Set up event listeners
-    setupSearchCapture();
     setupClickCapture();
     setupScrollCapture();
     setupVideoCapture();
-    setupFormCapture();
+    setupSearchCapture();
     setupTimeOnPage();
 
     console.log('[VitamixIntent] Event listeners initialized');
   }
 
   /**
-   * Send page view signal based on current URL
+   * Send page view signal with rich context
    */
   function sendPageViewSignal() {
-    const path = window.location.pathname;
-    const url = window.location.href;
-
-    // Product page: /shop/blenders/{product}
-    const productMatch = path.match(/\/shop\/blenders\/([^/?]+)/);
-    if (productMatch) {
-      const product = productMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-      console.log('[VitamixIntent] Product page view:', product);
-      sendSignal('product_page_view', { product, path, url });
-      return;
-    }
-
-    // Accessory page: /shop/accessories/{product}
-    const accessoryMatch = path.match(/\/shop\/accessories\/([^/?]+)/);
-    if (accessoryMatch) {
-      const product = accessoryMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-      console.log('[VitamixIntent] Accessory page view:', product);
-      sendSignal('accessory_page_view', { product, path, url });
-      return;
-    }
-
-    // Recipe page: /recipes/{slug}
-    const recipeMatch = path.match(/\/recipes\/([^/?]+)/);
-    if (recipeMatch) {
-      const recipe = recipeMatch[1];
-      console.log('[VitamixIntent] Recipe page view:', recipe);
-      sendSignal('recipe_page_view', { recipe, path, url });
-      return;
-    }
-
-    // Category page: /shop/blenders or /shop/accessories
-    const categoryMatch = path.match(/\/shop\/(blenders|accessories|containers)(?:\?|$)/);
-    if (categoryMatch) {
-      const category = categoryMatch[1];
-      console.log('[VitamixIntent] Category page view:', category);
-      sendSignal('category_page_view', { category, path, url });
-      return;
-    }
-
-    // Compare page
-    if (path.includes('/compare')) {
-      console.log('[VitamixIntent] Compare page view');
-      sendSignal('compare_tool_used', { source: 'page_view', path, url });
-      return;
-    }
-
-    // Article/blog pages
-    const articleMatch = path.match(/\/(articles?|blog|learn|inspiration)\/([^/?]+)/);
-    if (articleMatch) {
-      const article = articleMatch[2];
-      console.log('[VitamixIntent] Article page view:', article);
-      sendSignal('article_page_view', { article, path, url });
-      return;
-    }
+    const context = getPageContext();
+    console.log('[VitamixIntent] Page view:', context.path, '| Title:', context.title);
+    sendSignal('page_view', context);
   }
 
   /**
@@ -129,48 +141,70 @@
    */
   function captureReferrer() {
     const referrer = document.referrer;
-
     if (!referrer) {
-      sendSignal('referrer_context', { referrer: 'direct' });
+      sendSignal('referrer', { type: 'direct' });
       return;
     }
 
     try {
       const refUrl = new URL(referrer);
-
-      // Check if it's from a search engine
-      const searchEngines = ['google', 'bing', 'duckduckgo', 'yahoo'];
+      const searchEngines = ['google', 'bing', 'duckduckgo', 'yahoo', 'ecosia'];
       const isSearch = searchEngines.some(se => refUrl.hostname.includes(se));
+      const isInternal = refUrl.hostname === window.location.hostname;
 
-      if (isSearch) {
-        // Try to extract search query from referrer
-        const params = new URLSearchParams(refUrl.search);
-        const query = params.get('q') || params.get('query') || params.get('p');
-
-        sendSignal('referrer_context', {
-          referrer: referrer,
-          type: 'search',
-          searchEngine: refUrl.hostname,
-          searchQuery: query,
-        });
-      } else if (refUrl.hostname !== window.location.hostname) {
-        // External referrer
-        sendSignal('referrer_context', {
-          referrer: referrer,
-          type: 'external',
-          domain: refUrl.hostname,
-        });
+      if (isInternal) {
+        return; // Don't track internal navigation as referrer
       }
+
+      const params = new URLSearchParams(refUrl.search);
+      const searchQuery = params.get('q') || params.get('query') || params.get('p') || null;
+
+      sendSignal('referrer', {
+        type: isSearch ? 'search' : 'external',
+        domain: refUrl.hostname,
+        searchQuery,
+        fullUrl: referrer,
+      });
     } catch (e) {
       console.log('[VitamixIntent] Error parsing referrer:', e);
     }
   }
 
   /**
-   * Capture search form submissions
+   * Capture all clicks with context
+   */
+  function setupClickCapture() {
+    document.addEventListener('click', handleClick, true);
+    console.log('[VitamixIntent] Click capture set up');
+  }
+
+  function handleClick(e) {
+    // Find the nearest interactive element or use direct target
+    const target = e.target.closest('a, button, [role="button"], [onclick], [data-action], input[type="submit"], [tabindex], img, video') || e.target;
+
+    if (!target || target === document.body || target === document.documentElement) {
+      return;
+    }
+
+    const clickContext = getClickContext(target);
+    const pageContext = {
+      url: window.location.href,
+      path: window.location.pathname,
+      pageTitle: document.title,
+    };
+
+    console.log('[VitamixIntent] Click:', clickContext.text || clickContext.tagName, '| href:', clickContext.href);
+
+    sendSignal('click', {
+      ...clickContext,
+      page: pageContext,
+    });
+  }
+
+  /**
+   * Capture search queries
    */
   function setupSearchCapture() {
-    // Look for search forms/inputs
     const searchSelectors = [
       'input[type="search"]',
       'input[name="q"]',
@@ -184,21 +218,24 @@
     function handleSearch(input) {
       const query = input.value.trim();
       if (query.length >= 2) {
-        console.log('[VitamixIntent] Search query captured:', query);
-        sendSignal('search_query', { query });
+        console.log('[VitamixIntent] Search query:', query);
+        sendSignal('search', {
+          query,
+          page: {
+            url: window.location.href,
+            path: window.location.pathname,
+          }
+        });
       }
     }
 
-    // Monitor search inputs
     document.querySelectorAll(searchSelectors.join(', ')).forEach(input => {
-      // Capture on enter key
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           handleSearch(e.target);
         }
       });
 
-      // Capture on blur with debounce
       let blurTimeout;
       input.addEventListener('blur', (e) => {
         clearTimeout(blurTimeout);
@@ -206,138 +243,15 @@
       });
     });
 
-    // Also capture form submissions
+    // Form submissions
     document.querySelectorAll('form').forEach(form => {
       if (form.querySelector('input[type="search"], input[name*="search" i]')) {
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', () => {
           const input = form.querySelector('input[type="search"], input[name*="search" i], input[type="text"]');
-          if (input) {
-            handleSearch(input);
-          }
+          if (input) handleSearch(input);
         });
       }
     });
-  }
-
-  /**
-   * Capture clicks on important elements
-   */
-  function setupClickCapture() {
-    // Use capture phase to catch clicks before they're stopped
-    document.addEventListener('click', handleClick, true);
-    // Also listen on body as backup
-    document.body?.addEventListener('click', handleClick, true);
-
-    console.log('[VitamixIntent] Click capture set up');
-  }
-
-  function handleClick(e) {
-    // Find the nearest interactive element
-    const target = e.target.closest('a, button, [role="button"], [onclick], [data-action], input[type="submit"], [tabindex]');
-
-    // Also check the direct target
-    const directTarget = e.target;
-
-    // Get info from target or direct click target
-    const element = target || directTarget;
-    if (!element) return;
-
-    // Get clean text content (exclude script/style tags)
-    const text = getCleanText(element).toLowerCase().slice(0, 100);
-    const href = element.href || element.closest('a')?.href || '';
-    const className = (element.className || '').toString().toLowerCase();
-    const ariaLabel = (element.getAttribute('aria-label') || '').toLowerCase();
-    const dataAction = (element.dataset?.action || '').toLowerCase();
-    const id = (element.id || '').toLowerCase();
-
-    // Debug: log all clicks on interactive elements
-    console.log('[VitamixIntent] Click detected:', {
-      tag: element.tagName,
-      text: text.slice(0, 50),
-      className: className.slice(0, 50),
-      href: href.slice(0, 80),
-    });
-
-    // Combine all text sources for matching
-    const allText = `${text} ${ariaLabel} ${dataAction} ${id}`;
-    const allContext = `${allText} ${className}`;
-
-    // Reviews interactions - be very broad
-    if (allContext.match(/review/i)) {
-      if (allText.match(/load|more|show|see|all|read|next|prev|\d+/i)) {
-        console.log('[VitamixIntent] Reviews interaction detected');
-        sendSignal('reviews_load_more', { buttonText: text.slice(0, 50) });
-        return;
-      }
-      if (allContext.match(/filter|sort|star|rating/i)) {
-        console.log('[VitamixIntent] Review filter detected');
-        sendSignal('review_filter_applied', { filter: text.slice(0, 50) });
-        return;
-      }
-    }
-
-    // Add to cart - broad matching
-    if (
-      allText.match(/add.*(cart|bag|basket)|cart|buy\s*now|purchase|shop\s*now/i) ||
-      className.match(/cart|buy|purchase|add-to/i) ||
-      dataAction.match(/cart|add|buy/i)
-    ) {
-      console.log('[VitamixIntent] Add to cart detected');
-      sendSignal('add_to_cart', { product: getProductFromPage() });
-      return;
-    }
-
-    // Tabs and accordions - specs, details, features
-    if (
-      allText.match(/spec|feature|detail|overview|description|about/i) ||
-      (element.getAttribute('role') === 'tab')
-    ) {
-      console.log('[VitamixIntent] Tab/accordion detected:', text.slice(0, 30));
-      sendSignal('spec_tab_opened', { tab: text.slice(0, 50) });
-      return;
-    }
-
-    // What's in the box
-    if (allText.match(/what.*box|package|included|contents|comes\s*with/i)) {
-      console.log('[VitamixIntent] What\'s in box detected');
-      sendSignal('whats_in_box_expanded', {});
-      return;
-    }
-
-    // Image/media interactions
-    if (
-      element.tagName === 'IMG' ||
-      element.closest('picture') ||
-      allContext.match(/gallery|carousel|slider|lightbox|zoom|enlarge|thumbnail|media/i) ||
-      (element.tagName === 'BUTTON' && element.closest('[class*="image"], [class*="photo"], [class*="media"]'))
-    ) {
-      console.log('[VitamixIntent] Image interaction detected');
-      sendSignal('image_gallery_interaction', {});
-      return;
-    }
-
-    // Compare
-    if (href.includes('compare') || allText.match(/compare|vs\b|versus/i)) {
-      console.log('[VitamixIntent] Compare detected');
-      sendSignal('compare_tool_used', { source: 'click' });
-      return;
-    }
-
-    // Product links - track clicks to product pages
-    if (href.match(/\/shop\/(blenders|accessories)\/[^/?]+/)) {
-      const productMatch = href.match(/\/shop\/(?:blenders|accessories)\/([^/?]+)/);
-      if (productMatch) {
-        const product = productMatch[1].replace(/-/g, ' ');
-        console.log('[VitamixIntent] Product link clicked:', product);
-        // Don't send signal here - will be captured on page load
-      }
-    }
-
-    // Recipe links
-    if (href.match(/\/recipes\/[^/?]+/)) {
-      console.log('[VitamixIntent] Recipe link clicked');
-      // Don't send signal here - will be captured on page load
-    }
   }
 
   /**
@@ -352,21 +266,25 @@
       const scrollTop = window.scrollY;
       const depth = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
 
-      // Update max depth
       if (depth > scrollDepthMax) {
         scrollDepthMax = depth;
       }
 
-      // Check thresholds - send signal when crossing each threshold for the first time
       const thresholds = [25, 50, 75, 100];
       for (const threshold of thresholds) {
         if (depth >= threshold && !triggeredThresholds.has(threshold)) {
           triggeredThresholds.add(threshold);
-          console.log('[VitamixIntent] Scroll depth reached:', threshold + '%');
-          sendSignal('scroll_depth', { depth: threshold, maxDepth: scrollDepthMax });
+          console.log('[VitamixIntent] Scroll depth:', threshold + '%');
+          sendSignal('scroll', {
+            depth: threshold,
+            maxDepth: scrollDepthMax,
+            page: {
+              url: window.location.href,
+              path: window.location.pathname,
+            }
+          });
         }
       }
-
       ticking = false;
     }
 
@@ -377,7 +295,6 @@
       }
     }, { passive: true });
 
-    // Also check initial scroll position (in case page loads scrolled)
     setTimeout(updateScrollDepth, 500);
   }
 
@@ -385,7 +302,6 @@
    * Capture video engagement
    */
   function setupVideoCapture() {
-    // Track video elements
     const trackVideo = (video) => {
       if (video.dataset.intentTracked) return;
       video.dataset.intentTracked = 'true';
@@ -395,22 +311,28 @@
         sendSignal('video_play', {
           duration: video.duration,
           src: video.currentSrc,
+          page: {
+            url: window.location.href,
+            path: window.location.pathname,
+          }
         });
       });
 
       video.addEventListener('ended', () => {
         console.log('[VitamixIntent] Video completed');
-        sendSignal('video_completion', {
+        sendSignal('video_complete', {
           duration: video.duration,
           src: video.currentSrc,
+          page: {
+            url: window.location.href,
+            path: window.location.pathname,
+          }
         });
       });
     };
 
-    // Track existing videos
     document.querySelectorAll('video').forEach(trackVideo);
 
-    // Track dynamically added videos
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
@@ -423,92 +345,38 @@
       });
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
-
-  /**
-   * Capture form interactions
-   */
-  function setupFormCapture() {
-    // Track compare tool usage
-    const compareLinks = document.querySelectorAll('a[href*="compare"]');
-    compareLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        console.log('[VitamixIntent] Compare link clicked');
-        sendSignal('compare_tool_used', { source: 'link_click' });
-      });
-    });
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
   }
 
   /**
    * Track time on page
    */
   function setupTimeOnPage() {
-    // Send time on page before leaving
-    window.addEventListener('beforeunload', () => {
-      const timeOnPage = Date.now() - pageLoadTime;
-
-      // Only send if meaningful (> 10 seconds)
-      if (timeOnPage > 10000) {
-        const minutes = Math.floor(timeOnPage / 60000);
-        const seconds = Math.floor((timeOnPage % 60000) / 1000);
-
-        // Use sendBeacon for reliability
-        const data = {
-          type: 'SIGNAL',
-          data: {
-            type: 'time_on_page',
-            data: {
-              duration: timeOnPage,
-              formatted: `${minutes}m ${seconds}s`,
-              url: window.location.href,
-            },
-          },
-        };
-
-        // Can't use chrome.runtime in beforeunload reliably, so just log
-        console.log('[VitamixIntent] Time on page:', data.data.data.formatted);
-      }
-    });
-
-    // Also track at intervals while on page
     let lastTimeUpdate = 0;
+    const thresholds = [30000, 60000, 120000, 300000]; // 30s, 1m, 2m, 5m
+
     setInterval(() => {
       const timeOnPage = Date.now() - pageLoadTime;
-      const thresholds = [30000, 60000, 120000, 300000]; // 30s, 1m, 2m, 5m
 
-      const threshold = thresholds.find(t =>
-        timeOnPage >= t && lastTimeUpdate < t
-      );
+      const threshold = thresholds.find(t => timeOnPage >= t && lastTimeUpdate < t);
 
       if (threshold) {
         lastTimeUpdate = threshold;
-        console.log('[VitamixIntent] Time milestone:', threshold / 1000, 'seconds');
+        const seconds = Math.floor(threshold / 1000);
+        console.log('[VitamixIntent] Time milestone:', seconds, 'seconds');
         sendSignal('time_on_page', {
           duration: timeOnPage,
           milestone: threshold,
+          seconds,
+          page: {
+            url: window.location.href,
+            path: window.location.pathname,
+          }
         });
       }
     }, 5000);
-  }
-
-  /**
-   * Get product name from current page
-   */
-  function getProductFromPage() {
-    // Try to extract from URL
-    const pathMatch = window.location.pathname.match(/\/shop\/(?:blenders|accessories)\/([^/?]+)/);
-    if (pathMatch) {
-      return pathMatch[1].replace(/-/g, ' ');
-    }
-
-    // Try to extract from page title
-    const title = document.title;
-    if (title.includes('|')) {
-      return title.split('|')[0].trim();
-    }
-
-    return null;
   }
 
   // Initialize when DOM is ready

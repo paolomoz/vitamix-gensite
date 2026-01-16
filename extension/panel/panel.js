@@ -168,11 +168,39 @@ function renderSignalFeed() {
 function getSignalDetail(signal) {
   if (!signal.data) return null;
 
+  // Product from classification
+  if (signal.product) return signal.product;
+
+  // Search query
   if (signal.data.query) return `"${signal.data.query}"`;
-  if (signal.data.product) return signal.data.product;
+
+  // Click text or href
+  if (signal.type === 'click') {
+    if (signal.data.text) return signal.data.text;
+    if (signal.data.href) return new URL(signal.data.href, 'https://vitamix.com').pathname;
+  }
+
+  // Page view - show h1 or path
+  if (signal.type === 'page_view') {
+    if (signal.data.h1) return signal.data.h1;
+    if (signal.data.path) return signal.data.path;
+  }
+
+  // Scroll depth
+  if (signal.data.depth) return `${signal.data.depth}%`;
+
+  // Referrer
+  if (signal.data.domain) return signal.data.domain;
+  if (signal.data.type === 'direct') return 'Direct visit';
+
+  // Time on page
+  if (signal.data.seconds) return `${signal.data.seconds}s`;
+
+  // Generic path fallback
   if (signal.data.path) return signal.data.path;
+
+  // Example signals
   if (signal.data.signal) return signal.data.signal;
-  if (signal.data.referrer) return signal.data.referrer;
 
   return null;
 }

@@ -43,6 +43,10 @@ const RECIPE_URLS = recipeUrlsData.recipes;
 // Use accessories from the product sitemap
 const ACCESSORY_URLS = productUrlsData.accessories;
 
+// Load article URLs from JSON file
+import articleUrlsData from './article-urls.json' with { type: 'json' };
+const ARTICLE_URLS = articleUrlsData.articles;
+
 // ============================================
 // Fetch and Extract with Claude
 // ============================================
@@ -386,6 +390,124 @@ async function extractAccessory(url) {
   }
 }
 
+// ============================================
+// Article Extraction
+// ============================================
+
+const ARTICLE_EXTRACTION_PROMPT = `Extract the following commercial article information as JSON:
+{
+  "title": "article title/headline",
+  "summary": "2-3 sentence summary of the article suitable for RAG retrieval snippets",
+  "keyPoints": ["main point 1", "main point 2", "main point 3"],
+  "keywords": ["searchable", "keywords", "for", "matching"],
+  "category": "commercial|tco|engineering|sustainability",
+  "targetAudience": ["restaurants", "cafes", "juice bars", "hotels", "food service"],
+  "relatedProducts": ["product names mentioned or relevant", "e.g. Vitamix Drink Machine"],
+  "businessContext": {
+    "industryFocus": ["quick service", "fine dining", "juice bars", "hotels"],
+    "decisionFactors": ["ROI", "durability", "warranty", "volume", "consistency"]
+  },
+  "mainContent": "the main body text of the article (first 500 words)",
+  "imageUrl": "main article image URL if present"
+}
+
+CATEGORY GUIDELINES:
+- "commercial": General commercial/B2B content about food service blending
+- "tco": Total Cost of Ownership, ROI, investment analysis content
+- "engineering": Technical specifications, performance data, engineering details
+- "sustainability": Environmental, waste reduction, green restaurant content
+
+Extract actual values from the page content. Be thorough with keywords - include industry terms, product types, and business concepts mentioned.`;
+
+async function extractArticle(url) {
+  // Extract ID from URL - handle both article paths and commercial pages
+  let id = url.split('/').pop();
+  // For commercial pages like /commercial/tco, make a more descriptive ID
+  if (url.includes('/commercial/')) {
+    const pathParts = url.split('/commercial/')[1].split('/');
+    id = 'commercial-' + pathParts.join('-');
+  }
+
+  try {
+    const html = await fetchPage(url);
+    const extracted = await extractWithClaude(html, ARTICLE_EXTRACTION_PROMPT);
+
+    if (!extracted || !extracted.title) {
+      throw new Error('Failed to extract article data');
+    }
+
+    // Determine category from URL hints and extracted content
+    let category = extracted.category || 'commercial';
+    const urlLower = url.toLowerCase();
+    if (urlLower.includes('/tco') || urlLower.includes('total-cost') || urlLower.includes('ownership')) {
+      category = 'tco';
+    } else if (urlLower.includes('/engineering') || urlLower.includes('/performance')) {
+      category = 'engineering';
+    } else if (urlLower.includes('sustainability') || urlLower.includes('waste-reduction') || urlLower.includes('green-restaurant') || urlLower.includes('slow-food')) {
+      category = 'sustainability';
+    }
+
+    return {
+      id,
+      title: extracted.title,
+      url,
+      category,
+      summary: extracted.summary || '',
+      keyPoints: extracted.keyPoints || [],
+      keywords: extracted.keywords || [],
+      relatedProducts: extracted.relatedProducts || [],
+      targetAudience: extracted.targetAudience || ['food service professionals'],
+      businessContext: extracted.businessContext || {},
+      mainContent: extracted.mainContent || '',
+      images: {
+        primary: extracted.imageUrl || '',
+      },
+      crawledAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    console.log(`  Error extracting ${url}: ${error.message}`);
+    return null;
+  }
+}
+
+async function crawlArticles() {
+  console.log('\n📰 Crawling Commercial Articles with AI Extraction...\n');
+
+  const articles = [];
+
+  for (let i = 0; i < ARTICLE_URLS.length; i++) {
+    const url = ARTICLE_URLS[i];
+    const displayName = url.split('/').slice(-2).join('/');
+    console.log(`[${i + 1}/${ARTICLE_URLS.length}] ${displayName}`);
+
+    const article = await extractArticle(url);
+    if (article) {
+      articles.push(article);
+      console.log(`  ✓ ${article.title} (${article.category})`);
+    }
+
+    await sleep(DELAY_MS);
+  }
+
+  // Save articles
+  const articlesFile = {
+    generatedAt: new Date().toISOString(),
+    source: 'https://www.vitamix.com/vr/en_us/articles',
+    count: articles.length,
+    categories: [...new Set(articles.map((a) => a.category))],
+    articles,
+  };
+
+  await fs.mkdir(path.join(CONTENT_DIR, 'articles'), { recursive: true });
+  await fs.writeFile(
+    path.join(CONTENT_DIR, 'articles/articles.json'),
+    JSON.stringify(articlesFile, null, 2)
+  );
+
+  console.log(`\n✅ Saved ${articles.length} articles\n`);
+  return articles;
+}
+
 async function crawlAccessories() {
   console.log('\n🔧 Crawling Accessories with AI Extraction...\n');
 
@@ -513,7 +635,8 @@ async function main() {
   }
   console.log(`Recipe URLs: ${RECIPE_URLS.length}`);
   console.log(`Accessory URLs: ${ACCESSORY_URLS.length}`);
-  console.log(`Product URLs: ${PRODUCT_URLS.length}\n`);
+  console.log(`Product URLs: ${PRODUCT_URLS.length}`);
+  console.log(`Article URLs: ${ARTICLE_URLS.length}\n`);
 
   const args = process.argv.slice(2);
 
@@ -523,11 +646,14 @@ async function main() {
     await crawlRecipes();
   } else if (args.includes('--accessories-only')) {
     await crawlAccessories();
+  } else if (args.includes('--articles-only')) {
+    await crawlArticles();
   } else if (args.includes('--all')) {
     // Crawl everything
     await crawlProducts();
     await crawlRecipes();
     await crawlAccessories();
+    await crawlArticles();
   } else {
     // Default: products and recipes
     await crawlProducts();

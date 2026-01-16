@@ -288,6 +288,48 @@ const ANALYZED_IMAGES: Record<string, ImageAnalysis> = {
     hero_suitable: true,
     hero_notes: 'Good composition showing product in use',
   },
+
+  // Commercial Product Images
+  'https://www.vitamix.com/vr/en_us/media_18fbdf0060d121273469bde5e1717c19e7024b7ea.avif?width=2000&format=webply&optimize=medium': {
+    primary_category: 'commercial',
+    secondary_tags: ['professional', 'quick-quiet', 'high-volume', 'juice-bar'],
+    dominant_colors: ['black', 'silver'],
+    mood: 'professional',
+    content_description: 'Vitamix Quick & Quiet commercial blender for high-volume operations',
+    quality_score: 9,
+    hero_suitable: true,
+    hero_notes: 'Excellent hero for commercial/B2B queries - Quick & Quiet product line',
+  },
+  'https://www.vitamix.com/vr/en_us/media_10e23c3177a71c88f42d49908b8e97e7b0ba4f96b.avif?width=2000&format=webply&optimize=medium': {
+    primary_category: 'commercial',
+    secondary_tags: ['professional', 'vita-prep', 'kitchen', 'restaurant'],
+    dominant_colors: ['black', 'silver'],
+    mood: 'professional',
+    content_description: 'Vitamix Vita-Prep commercial blender for professional kitchens',
+    quality_score: 9,
+    hero_suitable: true,
+    hero_notes: 'Excellent hero for commercial/B2B queries - Vita-Prep product line',
+  },
+  'https://www.vitamix.com/vr/en_us/media_1ade32ab77d597fe18650da3242beecef488955b7.avif?width=2000&format=webply&optimize=medium': {
+    primary_category: 'commercial',
+    secondary_tags: ['professional', 'xl', 'high-capacity', 'batch'],
+    dominant_colors: ['black', 'silver'],
+    mood: 'professional',
+    content_description: 'Vitamix XL commercial blender for large batch preparation',
+    quality_score: 9,
+    hero_suitable: true,
+    hero_notes: 'Excellent hero for commercial/B2B queries - XL product line',
+  },
+  'https://www.vitamix.com/vr/en_us/media_1a218a4d1ddefd76a4988312570922a56401af0c9.avif?width=2000&format=webply&optimize=medium': {
+    primary_category: 'commercial',
+    secondary_tags: ['professional', 'quiet-one', 'front-of-house', 'cafe'],
+    dominant_colors: ['black', 'silver'],
+    mood: 'professional',
+    content_description: 'Vitamix The Quiet One commercial blender for front-of-house operations',
+    quality_score: 9,
+    hero_suitable: true,
+    hero_notes: 'Excellent hero for commercial/B2B queries - The Quiet One product line',
+  },
 };
 
 // ============================================
@@ -359,6 +401,22 @@ const USE_CASE_TO_CATEGORY: Record<string, string> = {
   // Lifestyle
   'lifestyle': 'lifestyle',
   'kitchen': 'lifestyle',
+  // Commercial
+  'commercial': 'commercial',
+  'restaurant': 'commercial',
+  'cafe': 'commercial',
+  'juice bar': 'commercial',
+  'smoothie bar': 'commercial',
+  'food service': 'commercial',
+  'foodservice': 'commercial',
+  'professional': 'commercial',
+  'high volume': 'commercial',
+  'high-volume': 'commercial',
+  'b2b': 'commercial',
+  'business': 'commercial',
+  'hotel': 'commercial',
+  'chain': 'commercial',
+  'franchise': 'commercial',
 };
 
 /**
@@ -377,7 +435,7 @@ const INTENT_TO_CATEGORIES: Record<string, string[]> = {
   'gift': ['dessert', 'drink', 'lifestyle'],
   'medical': ['soup', 'healthy', 'smoothie'],
   'accessibility': ['soup', 'product', 'lifestyle'],
-  'partnership': ['lifestyle', 'product'],
+  'partnership': ['commercial', 'product', 'lifestyle'],
 };
 
 // ============================================
@@ -441,6 +499,13 @@ function scoreImageMatch(
  * @param query - The original user query (for keyword matching)
  * @returns Full URL to a hero image
  */
+// Commercial keywords that should take priority for hero selection
+const COMMERCIAL_QUERY_KEYWORDS = [
+  'commercial', 'restaurant', 'cafe', 'coffee shop', 'juice bar', 'smoothie bar',
+  'food service', 'foodservice', 'professional', 'high volume', 'high-volume',
+  'b2b', 'business', 'hotel', 'chain', 'franchise', 'catering',
+];
+
 export function selectHeroImage(
   intentType?: string,
   useCases?: string[],
@@ -456,8 +521,19 @@ export function selectHeroImage(
 
   let targetCategory: string | null = null;
 
-  // Try to determine target category from use cases (most specific)
-  if (useCases && useCases.length > 0) {
+  // PRIORITY 1: Check for commercial keywords in query (highest priority for B2B)
+  if (query) {
+    const queryLower = query.toLowerCase();
+    for (const keyword of COMMERCIAL_QUERY_KEYWORDS) {
+      if (queryLower.includes(keyword)) {
+        targetCategory = 'commercial';
+        break;
+      }
+    }
+  }
+
+  // PRIORITY 2: Try to determine target category from use cases
+  if (!targetCategory && useCases && useCases.length > 0) {
     for (const useCase of useCases) {
       const normalizedUseCase = useCase.toLowerCase().trim();
       if (USE_CASE_TO_CATEGORY[normalizedUseCase]) {
@@ -475,7 +551,7 @@ export function selectHeroImage(
     }
   }
 
-  // Try to match from query keywords
+  // PRIORITY 3: Try to match from query keywords (non-commercial)
   if (!targetCategory && query) {
     const queryLower = query.toLowerCase();
     for (const [keyword, category] of Object.entries(USE_CASE_TO_CATEGORY)) {

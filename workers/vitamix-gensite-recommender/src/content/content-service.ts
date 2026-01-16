@@ -17,12 +17,14 @@ import type {
   UserPersona,
   ProductProfile,
   Accessory,
+  Article,
 } from '../types';
 
 // Import content at build time
 import productsData from '../../../../content/products/products.json';
 import recipesData from '../../../../content/recipes/recipes.json';
 import accessoriesData from '../../../../content/accessories/accessories.json';
+import articlesData from '../../../../content/articles/articles.json';
 import useCasesData from '../../../../content/metadata/use-cases.json';
 import featuresData from '../../../../content/metadata/features.json';
 import reviewsData from '../../../../content/metadata/reviews.json';
@@ -64,6 +66,11 @@ interface ProductProfilesFile {
 
 interface AccessoriesFile {
   accessories: Accessory[];
+}
+
+interface ArticlesFile {
+  articles: Article[];
+  categories: string[];
 }
 
 interface RecipeCategory {
@@ -157,6 +164,8 @@ const products = (productsData as ProductsFile).products;
 const recipes = (recipesData as RecipesFile).recipes;
 const recipeCategories = (recipesData as RecipesFile).categories;
 const accessories = (accessoriesData as AccessoriesFile).accessories;
+const articles = (articlesData as ArticlesFile).articles;
+const articleCategories = (articlesData as ArticlesFile).categories;
 const useCases = (useCasesData as UseCasesFile).useCases;
 const features = (featuresData as FeaturesFile).features;
 const reviews = (reviewsData as ReviewsFile).reviews;
@@ -381,6 +390,151 @@ export function searchAccessories(query: string): Accessory[] {
       a.description?.toLowerCase().includes(lowerQuery) ||
       a.type.toLowerCase().includes(lowerQuery)
   );
+}
+
+// ============================================
+// Article Queries (Commercial B2B Content)
+// ============================================
+
+export function getAllArticles(): Article[] {
+  return articles;
+}
+
+export function getArticleById(id: string): Article | undefined {
+  return articles.find((a) => a.id === id);
+}
+
+export function getArticlesByCategory(category: string): Article[] {
+  return articles.filter((a) => a.category === category);
+}
+
+export function getArticleCategories(): string[] {
+  return articleCategories;
+}
+
+/**
+ * Search articles using score-based ranking.
+ * Matches against title, summary, keywords, and key points.
+ */
+export function searchArticles(query: string, maxResults = 5): Article[] {
+  const lowerQuery = query.toLowerCase();
+  const queryWords = lowerQuery.split(/\s+/).filter(w => w.length > 2);
+
+  if (queryWords.length === 0) return [];
+
+  const scored = articles.map(article => {
+    let score = 0;
+
+    // Title matching (highest weight)
+    const lowerTitle = article.title.toLowerCase();
+    if (lowerTitle.includes(lowerQuery)) {
+      score += 10; // Exact phrase match in title
+    } else {
+      for (const word of queryWords) {
+        if (lowerTitle.includes(word)) score += 3;
+      }
+    }
+
+    // Summary matching
+    if (article.summary) {
+      const lowerSummary = article.summary.toLowerCase();
+      if (lowerSummary.includes(lowerQuery)) {
+        score += 5;
+      } else {
+        for (const word of queryWords) {
+          if (lowerSummary.includes(word)) score += 1;
+        }
+      }
+    }
+
+    // Keywords matching (high weight - these are curated for search)
+    if (article.keywords?.length) {
+      for (const keyword of article.keywords) {
+        const lowerKeyword = keyword.toLowerCase();
+        if (lowerQuery.includes(lowerKeyword) || lowerKeyword.includes(lowerQuery)) {
+          score += 6;
+        } else {
+          for (const word of queryWords) {
+            if (lowerKeyword.includes(word)) score += 2;
+          }
+        }
+      }
+    }
+
+    // Key points matching
+    if (article.keyPoints?.length) {
+      for (const point of article.keyPoints) {
+        const lowerPoint = point.toLowerCase();
+        for (const word of queryWords) {
+          if (lowerPoint.includes(word)) score += 1;
+        }
+      }
+    }
+
+    // Target audience matching
+    if (article.targetAudience?.length) {
+      for (const audience of article.targetAudience) {
+        if (lowerQuery.includes(audience.toLowerCase())) {
+          score += 4;
+        }
+      }
+    }
+
+    // Business context matching
+    if (article.businessContext) {
+      const industryFocus = article.businessContext.industryFocus || [];
+      const decisionFactors = article.businessContext.decisionFactors || [];
+
+      for (const industry of industryFocus) {
+        if (lowerQuery.includes(industry.toLowerCase())) {
+          score += 3;
+        }
+      }
+
+      for (const factor of decisionFactors) {
+        if (lowerQuery.includes(factor.toLowerCase())) {
+          score += 2;
+        }
+      }
+    }
+
+    return { article, score };
+  });
+
+  return scored
+    .filter(s => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxResults)
+    .map(s => s.article);
+}
+
+// Keywords that indicate a commercial/B2B query
+const COMMERCIAL_KEYWORDS = [
+  'commercial', 'business', 'restaurant', 'cafe', 'cafes', 'b2b',
+  'professional', 'volume', 'tco', 'roi', 'foodservice', 'food service',
+  'hotel', 'hotels', 'juice bar', 'juice bars', 'smoothie bar', 'chain',
+  'franchise', 'quick service', 'qsr', 'fine dining', 'catering',
+  'wholesale', 'bulk', 'industrial', 'enterprise', 'corporate',
+  'durability', 'warranty', 'cost of ownership', 'investment',
+];
+
+/**
+ * Check if a query appears to be commercial/B2B focused.
+ */
+export function isCommercialQuery(query: string): boolean {
+  const lowerQuery = query.toLowerCase();
+  return COMMERCIAL_KEYWORDS.some(kw => lowerQuery.includes(kw));
+}
+
+/**
+ * Get articles relevant to a commercial query.
+ * Returns empty array for non-commercial queries.
+ */
+export function getArticlesForCommercialQuery(query: string, maxResults = 3): Article[] {
+  if (!isCommercialQuery(query)) {
+    return [];
+  }
+  return searchArticles(query, maxResults);
 }
 
 // ============================================
@@ -644,6 +798,7 @@ export function getFAQsForQuery(query: string): FAQ[] {
 export interface RAGContext {
   relevantProducts: Product[];
   relevantRecipes: Recipe[];
+  relevantArticles: Article[];
   relevantUseCases: UseCase[];
   detectedPersona: UserPersona | null;
   contentSummary: ContentSummary;
@@ -1029,9 +1184,13 @@ export function buildRAGContext(
 
   relevantRecipes = relevantRecipes.slice(0, maxRecipes);
 
+  // Get relevant articles for commercial/B2B queries
+  const relevantArticles = getArticlesForCommercialQuery(query, 3);
+
   return {
     relevantProducts,
     relevantRecipes,
+    relevantArticles,
     relevantUseCases,
     detectedPersona,
     contentSummary: getContentSummary(),
@@ -1072,6 +1231,15 @@ export default {
   getAccessoriesForSeries,
   getContainersForProduct,
   searchAccessories,
+
+  // Articles (Commercial B2B Content)
+  getAllArticles,
+  getArticleById,
+  getArticlesByCategory,
+  getArticleCategories,
+  searchArticles,
+  isCommercialQuery,
+  getArticlesForCommercialQuery,
 
   // Reviews
   getAllReviews,

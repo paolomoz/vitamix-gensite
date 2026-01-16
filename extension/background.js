@@ -122,9 +122,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  * Handle signal from content script
  */
 async function handleSignalMessage(signalData) {
+  console.log('[Background] handleSignalMessage received:', signalData);
+
+  if (!signalData || !signalData.type) {
+    console.error('[Background] Invalid signal data:', signalData);
+    return;
+  }
+
   const signal = createSignal(signalData.type, signalData.data);
+  console.log('[Background] createSignal result:', signal);
+
   if (signal) {
     await addSignal(signal);
+  } else {
+    console.error('[Background] Failed to create signal for type:', signalData.type);
   }
 }
 

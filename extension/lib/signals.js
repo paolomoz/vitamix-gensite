@@ -238,13 +238,27 @@ export const RECIPE_CATEGORIES = {
  * Create a signal event object
  */
 export function createSignal(type, data = {}) {
+  console.log('[Signals] createSignal called with type:', type);
+
   const signalDef = typeof type === 'string'
     ? Object.values(SIGNAL_TYPES).find(s => s.id === type)
     : type;
 
   if (!signalDef) {
     console.warn('[Signals] Unknown signal type:', type);
-    return null;
+    console.log('[Signals] Available types:', Object.values(SIGNAL_TYPES).map(s => s.id));
+    // Create a generic signal for unknown types
+    return {
+      id: `unknown_${Date.now()}`,
+      type: type,
+      label: String(type).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      weight: SIGNAL_WEIGHTS.LOW,
+      weightLabel: 'Low',
+      icon: '📍',
+      tier: 3,
+      timestamp: Date.now(),
+      data,
+    };
   }
 
   return {

@@ -208,88 +208,120 @@
    * Capture clicks on important elements
    */
   function setupClickCapture() {
-    document.addEventListener('click', (e) => {
-      const target = e.target.closest('a, button, [role="button"], [onclick], [data-action]');
-      if (!target) return;
+    // Use capture phase to catch clicks before they're stopped
+    document.addEventListener('click', handleClick, true);
+    // Also listen on body as backup
+    document.body?.addEventListener('click', handleClick, true);
 
-      const text = (target.textContent || '').toLowerCase().trim();
-      const href = target.href || '';
-      const className = (target.className || '').toString().toLowerCase();
-      const ariaLabel = (target.getAttribute('aria-label') || '').toLowerCase();
-      const dataAction = (target.dataset.action || '').toLowerCase();
+    console.log('[VitamixIntent] Click capture set up');
+  }
 
-      // Combine all text sources for matching
-      const allText = `${text} ${ariaLabel} ${dataAction}`;
+  function handleClick(e) {
+    // Find the nearest interactive element
+    const target = e.target.closest('a, button, [role="button"], [onclick], [data-action], input[type="submit"], [tabindex]');
 
-      // Reviews interactions
-      if (
-        allText.match(/load\s*more|show\s*more|see\s*(all|more)|read\s*more/i) &&
-        (allText.includes('review') || className.includes('review') || target.closest('[class*="review"], [id*="review"], [data-component*="review"]'))
-      ) {
-        console.log('[VitamixIntent] Reviews load more clicked');
+    // Also check the direct target
+    const directTarget = e.target;
+
+    // Get info from target or direct click target
+    const element = target || directTarget;
+    if (!element) return;
+
+    const text = (element.textContent || '').toLowerCase().replace(/\s+/g, ' ').trim().slice(0, 100);
+    const href = element.href || element.closest('a')?.href || '';
+    const className = (element.className || '').toString().toLowerCase();
+    const ariaLabel = (element.getAttribute('aria-label') || '').toLowerCase();
+    const dataAction = (element.dataset?.action || '').toLowerCase();
+    const id = (element.id || '').toLowerCase();
+
+    // Debug: log all clicks on interactive elements
+    console.log('[VitamixIntent] Click detected:', {
+      tag: element.tagName,
+      text: text.slice(0, 50),
+      className: className.slice(0, 50),
+      href: href.slice(0, 50),
+    });
+
+    // Combine all text sources for matching
+    const allText = `${text} ${ariaLabel} ${dataAction} ${id}`;
+    const allContext = `${allText} ${className}`;
+
+    // Reviews interactions - be very broad
+    if (allContext.match(/review/i)) {
+      if (allText.match(/load|more|show|see|all|read|next|prev|\d+/i)) {
+        console.log('[VitamixIntent] Reviews interaction detected');
         sendSignal('reviews_load_more', { buttonText: text.slice(0, 50) });
         return;
       }
-
-      // Review filter/sort
-      if (
-        target.closest('[class*="filter"], [class*="sort"], [id*="filter"], [id*="sort"]') ||
-        allText.match(/filter|sort|rating|stars/i)
-      ) {
-        if (target.closest('[class*="review"], [id*="review"]') || allText.includes('review')) {
-          console.log('[VitamixIntent] Review filter applied');
-          sendSignal('review_filter_applied', { filter: text.slice(0, 50) });
-          return;
-        }
-      }
-
-      // Add to cart (multiple patterns)
-      if (
-        allText.match(/add\s*to\s*(cart|bag|basket)|buy\s*now|purchase/i) ||
-        className.match(/add.*cart|cart.*add|buy.*btn/i) ||
-        dataAction.includes('cart')
-      ) {
-        console.log('[VitamixIntent] Add to cart clicked');
-        sendSignal('add_to_cart', { product: getProductFromPage() });
+      if (allContext.match(/filter|sort|star|rating/i)) {
+        console.log('[VitamixIntent] Review filter detected');
+        sendSignal('review_filter_applied', { filter: text.slice(0, 50) });
         return;
       }
+    }
 
-      // Spec/Details tabs (look for tab-like behavior)
-      if (
-        allText.match(/specification|tech\s*spec|features|details|overview/i) ||
-        (target.getAttribute('role') === 'tab' && allText.match(/spec|detail|feature/i))
-      ) {
-        console.log('[VitamixIntent] Spec tab opened');
-        sendSignal('spec_tab_opened', { tab: text.slice(0, 50) });
-        return;
-      }
+    // Add to cart - broad matching
+    if (
+      allText.match(/add.*(cart|bag|basket)|cart|buy\s*now|purchase|shop\s*now/i) ||
+      className.match(/cart|buy|purchase|add-to/i) ||
+      dataAction.match(/cart|add|buy/i)
+    ) {
+      console.log('[VitamixIntent] Add to cart detected');
+      sendSignal('add_to_cart', { product: getProductFromPage() });
+      return;
+    }
 
-      // What's in the box / Package contents
-      if (allText.match(/what.*in.*box|package\s*content|included|in\s*the\s*box/i)) {
-        console.log('[VitamixIntent] What\'s in box expanded');
-        sendSignal('whats_in_box_expanded', {});
-        return;
-      }
+    // Tabs and accordions - specs, details, features
+    if (
+      allText.match(/spec|feature|detail|overview|description|about/i) ||
+      (element.getAttribute('role') === 'tab')
+    ) {
+      console.log('[VitamixIntent] Tab/accordion detected:', text.slice(0, 30));
+      sendSignal('spec_tab_opened', { tab: text.slice(0, 50) });
+      return;
+    }
 
-      // Image gallery/carousel interactions
-      const galleryContainer = target.closest('[class*="gallery"], [class*="carousel"], [class*="slider"], [class*="lightbox"], [class*="media"], [class*="image"]');
-      if (galleryContainer) {
-        const isNavButton = target.closest('button, [role="button"]') || allText.match(/next|prev|arrow|thumb/i);
-        const isImage = target.tagName === 'IMG' || target.closest('picture');
-        if (isNavButton || isImage) {
-          console.log('[VitamixIntent] Image gallery interaction');
-          sendSignal('image_gallery_interaction', {});
-          return;
-        }
-      }
+    // What's in the box
+    if (allText.match(/what.*box|package|included|contents|comes\s*with/i)) {
+      console.log('[VitamixIntent] What\'s in box detected');
+      sendSignal('whats_in_box_expanded', {});
+      return;
+    }
 
-      // Compare product links
-      if (href.includes('compare') || allText.match(/compare|vs\b/i)) {
-        console.log('[VitamixIntent] Compare clicked');
-        sendSignal('compare_tool_used', { source: 'click' });
-        return;
+    // Image/media interactions
+    if (
+      element.tagName === 'IMG' ||
+      element.closest('picture') ||
+      allContext.match(/gallery|carousel|slider|lightbox|zoom|enlarge|thumbnail|media/i) ||
+      (element.tagName === 'BUTTON' && element.closest('[class*="image"], [class*="photo"], [class*="media"]'))
+    ) {
+      console.log('[VitamixIntent] Image interaction detected');
+      sendSignal('image_gallery_interaction', {});
+      return;
+    }
+
+    // Compare
+    if (href.includes('compare') || allText.match(/compare|vs\b|versus/i)) {
+      console.log('[VitamixIntent] Compare detected');
+      sendSignal('compare_tool_used', { source: 'click' });
+      return;
+    }
+
+    // Product links - track clicks to product pages
+    if (href.match(/\/shop\/(blenders|accessories)\/[^/?]+/)) {
+      const productMatch = href.match(/\/shop\/(?:blenders|accessories)\/([^/?]+)/);
+      if (productMatch) {
+        const product = productMatch[1].replace(/-/g, ' ');
+        console.log('[VitamixIntent] Product link clicked:', product);
+        // Don't send signal here - will be captured on page load
       }
-    }, true);
+    }
+
+    // Recipe links
+    if (href.match(/\/recipes\/[^/?]+/)) {
+      console.log('[VitamixIntent] Recipe link clicked');
+      // Don't send signal here - will be captured on page load
+    }
   }
 
   /**

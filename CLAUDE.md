@@ -279,3 +279,106 @@ Match reference site standards (WCAG AA baseline). Ensure:
 - Visible focus states on all interactive elements
 - Keyboard navigability
 - Semantic HTML structure
+
+---
+
+## Extension Design Context
+
+The `/extension/` directory contains a Chrome extension for intent inference demos. This UI uses **Adobe Spectrum** design system, distinct from the Vitamix brand used elsewhere.
+
+### Users
+Internal team and developers testing intent inference on vitamix.com. Context: debugging, demoing, and validating AI-generated content recommendations. Job to be done: quickly understand what signals are being captured and how the system interprets user intent.
+
+### Brand Personality
+**Technical, Precise, Professional.** This is a developer tool, not consumer-facing. The voice is informative and utilitarian. Every element should serve a clear purpose—no decoration for its own sake.
+
+### Aesthetic Direction
+**Reference**: Adobe Spectrum Design System (spectrum.adobe.com)
+**Visual Tone**: Dark theme, dense information display, clear hierarchy
+**Anti-references**: Consumer-facing chrome, playful interfaces, high-contrast gaming aesthetics
+
+### Design System (Adobe Spectrum Dark Theme)
+
+#### Colors
+```css
+/* Backgrounds (Dark Theme) */
+--spectrum-gray-25: rgb(17, 17, 17);       /* Deepest background */
+--spectrum-gray-50: rgb(27, 27, 27);       /* Background */
+--spectrum-gray-75: rgb(34, 34, 34);       /* Surface */
+--spectrum-gray-100: rgb(44, 44, 44);      /* Surface hover */
+--spectrum-gray-200: rgb(50, 50, 50);      /* Surface selected */
+--spectrum-gray-300: rgb(57, 57, 57);      /* Border */
+--spectrum-gray-400: rgb(68, 68, 68);      /* Border light */
+--spectrum-gray-500: rgb(109, 109, 109);   /* Muted text */
+--spectrum-gray-700: rgb(175, 175, 175);   /* Secondary text */
+--spectrum-gray-900: rgb(227, 227, 227);   /* Primary text */
+--spectrum-gray-1000: rgb(255, 255, 255);  /* High contrast text */
+
+/* Accent */
+--spectrum-blue-900: rgb(86, 129, 255);    /* Primary accent */
+--spectrum-blue-1000: rgb(105, 149, 254);  /* Accent hover */
+
+/* Semantic */
+--spectrum-green-900: rgb(45, 157, 120);   /* Success */
+--spectrum-orange-900: rgb(230, 134, 25);  /* Warning */
+--spectrum-red-900: rgb(215, 50, 32);      /* Error */
+```
+
+#### Typography
+```css
+font-family: adobe-clean, "Adobe Clean", "Source Sans Pro",
+             -apple-system, BlinkMacSystemFont, "Segoe UI",
+             Roboto, Ubuntu, sans-serif;
+font-family-mono: "Source Code Pro", Monaco, monospace;
+```
+- Base size: 13px
+- Line height: 1.5 for body, 1.2 for headings
+- Weight: 400 normal, 500 medium, 600 semibold
+
+#### Spacing
+```css
+--spectrum-spacing-50: 2px;
+--spectrum-spacing-75: 4px;
+--spectrum-spacing-100: 8px;
+--spectrum-spacing-200: 12px;
+--spectrum-spacing-300: 16px;
+--spectrum-spacing-400: 24px;
+--spectrum-spacing-500: 32px;
+--spectrum-spacing-600: 40px;
+```
+
+#### Border Radius
+```css
+--spectrum-corner-radius-75: 4px;   /* Small elements, tags */
+--spectrum-corner-radius-100: 8px;  /* Cards, buttons */
+--spectrum-corner-radius-200: 10px; /* Large containers */
+```
+
+#### Animation
+```css
+--spectrum-animation-duration-100: 130ms;
+--spectrum-animation-duration-200: 160ms;
+--spectrum-animation-ease-in-out: cubic-bezier(0.45, 0, 0.4, 1);
+```
+
+### Design Principles (Extension)
+
+1. **Spectrum tokens over hardcodes** — Use `var(--spectrum-*)` tokens exclusively. No raw hex colors or pixel values.
+
+2. **Information density is acceptable** — Unlike consumer UI, developer tools can be denser. Prioritize utility over whitespace.
+
+3. **Dark theme consistency** — All panel and overlay components use Spectrum dark theme. Light theme reserved for injected hints on vitamix.com.
+
+4. **Functional animation** — Animations should be fast (130-160ms) and purposeful. No decorative motion.
+
+5. **Clear visual hierarchy** — Use typography weight and color (not size alone) to establish hierarchy in dense layouts.
+
+### Dual-Design Boundary
+
+| Component | Design System | Theme |
+|-----------|---------------|-------|
+| `panel/panel.css` | Adobe Spectrum | Dark |
+| `overlay-panel.css` | Adobe Spectrum | Dark |
+| `hint-styles.css` | Vitamix | Light (matches vitamix.com) |
+
+The hint section uses Vitamix branding because it's injected directly into vitamix.com pages and should blend with the site's aesthetic.

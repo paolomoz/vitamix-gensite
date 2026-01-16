@@ -99,7 +99,7 @@ async function handleGenerate() {
 
   // Disable button while processing
   btn.disabled = true;
-  btn.innerHTML = '<span class="icon">⏳</span><span>Generating...</span>';
+  btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg><span>Generating...</span>';
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -119,7 +119,7 @@ async function handleGenerate() {
     alert('Failed to generate page: ' + error.message);
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span class="icon">▶</span><span>Generate Page</span>';
+    btn.innerHTML = '<svg class="icon"><use href="#icon-play"/></svg><span>Generate Page</span>';
   }
 }
 
@@ -132,7 +132,7 @@ async function handleAddHint() {
 
   // Disable button while processing
   btn.disabled = true;
-  btn.innerHTML = '<span class="icon">⏳</span><span>Generating...</span>';
+  btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg><span>Generating...</span>';
   statusEl.textContent = 'Generating hint...';
   statusEl.className = 'hint-status hint-status-loading';
 
@@ -157,7 +157,7 @@ async function handleAddHint() {
     statusEl.className = 'hint-status hint-status-error';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span class="icon">✨</span><span>Add AI Hint</span>';
+    btn.innerHTML = '<svg class="icon"><use href="#icon-sparkle"/></svg><span>Add AI Hint</span>';
     updateHintButton();
   }
 }
@@ -205,9 +205,9 @@ function renderSignalFeed() {
   if (currentSignals.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="icon">📡</div>
+        <svg class="icon icon-lg"><use href="#icon-broadcast"/></svg>
         <p>No signals captured yet</p>
-        <p class="hint">Browse vitamix.com to capture signals</p>
+        <p class="hint">Browse the site to capture signals</p>
       </div>
     `;
     return;
@@ -222,10 +222,11 @@ function renderSignalFeed() {
     const time = formatTime(signal.timestamp);
     const weightClass = getWeightClassFromLabel(signal.weightLabel);
     const detail = getSignalDetail(signal);
+    const iconId = getSignalIconId(signal.type);
 
     return `
       <div class="signal-item">
-        <span class="signal-icon">${signal.icon || '📍'}</span>
+        <svg class="icon signal-icon"><use href="#icon-${iconId}"/></svg>
         <div class="signal-content">
           <div class="signal-label">${signal.label}</div>
           ${detail ? `<div class="signal-detail">${detail}</div>` : ''}
@@ -237,6 +238,39 @@ function renderSignalFeed() {
       </div>
     `;
   }).join('');
+}
+
+/**
+ * Map signal type to SVG icon ID
+ */
+function getSignalIconId(type) {
+  const iconMap = {
+    page_view: 'pin',
+    click: 'target',
+    scroll: 'chevron-down',
+    search: 'edit',
+    time_on_page: 'loading',
+    referrer: 'broadcast',
+    example: 'sparkle',
+  };
+  return iconMap[type] || 'pin';
+}
+
+/**
+ * Map example emoji to SVG icon ID
+ */
+function getExampleIconId(emoji) {
+  const iconMap = {
+    '👶': 'user',
+    '🎁': 'box',
+    '🏥': 'user',
+    '💪': 'user',
+    '🌱': 'sparkle',
+    '👨‍🍳': 'edit',
+    '🔄': 'loading',
+    '❓': 'chat',
+  };
+  return iconMap[emoji] || 'sparkle';
 }
 
 /**
@@ -291,7 +325,7 @@ function renderProfile() {
   if (!currentProfile || currentProfile.signals_count === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="icon">👤</div>
+        <svg class="icon icon-lg"><use href="#icon-user"/></svg>
         <p>Profile will appear as signals are captured</p>
       </div>
     `;
@@ -355,7 +389,7 @@ function renderProductsSection() {
       <div class="products-list">
         ${products.map(p => `
           <div class="product-item">
-            <span class="product-icon">📦</span>
+            <svg class="icon product-icon"><use href="#icon-box"/></svg>
             <span class="product-name">${p}</span>
           </div>
         `).join('')}
@@ -420,7 +454,7 @@ function renderHistory() {
   if (previousQueries.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="icon">💬</div>
+        <svg class="icon icon-lg"><use href="#icon-chat"/></svg>
         <p>No previous queries</p>
         <p class="hint">Generate pages to build conversation history</p>
       </div>
@@ -465,7 +499,7 @@ function renderContextSummary() {
   }
 
   if (parts.length === 0) {
-    container.textContent = 'No context available - browse vitamix.com or enter a query';
+    container.textContent = 'No context available - browse the site or enter a query';
     btn.disabled = true;
   } else {
     container.textContent = `Context: ${parts.join(' • ')}`;
@@ -482,11 +516,12 @@ function renderExamples() {
   container.innerHTML = examples.map(example => {
     const confidence = getConfidenceLevel(example.inferredProfile.confidence_score);
     const confidencePercent = Math.round(example.inferredProfile.confidence_score * 100);
+    const iconId = getExampleIconId(example.icon);
 
     return `
       <div class="example-card" data-id="${example.id}">
         <div class="example-header">
-          <span class="example-icon">${example.icon}</span>
+          <svg class="icon example-icon"><use href="#icon-${iconId}"/></svg>
           <span class="example-name">${example.name}</span>
           <span class="example-version">${example.version}</span>
         </div>

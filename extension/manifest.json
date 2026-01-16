@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Vitamix Intent Inference Demo",
-  "description": "Real-time intent inference demo tool for vitamix.com - captures user behavior and generates personalized page queries",
-  "version": "1.1.0",
+  "description": "Real-time intent inference demo tool for vitamix.com and AEM Edge Delivery - captures user behavior and generates personalized page queries",
+  "version": "1.2.1",
   "icons": {
-    "16": "icons/icon-16.png",
-    "48": "icons/icon-48.png",
-    "128": "icons/icon-128.png"
+    "16": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
   },
   "permissions": [
     "storage",
@@ -16,7 +16,9 @@
   ],
   "host_permissions": [
     "*://www.vitamix.com/*",
-    "*://vitamix.com/*"
+    "*://vitamix.com/*",
+    "*://main--vitamix-gensite--paolomoz.aem.live/*",
+    "*://*.aem.live/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -24,7 +26,11 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://www.vitamix.com/*", "*://vitamix.com/*"],
+      "matches": [
+        "*://www.vitamix.com/*",
+        "*://vitamix.com/*",
+        "*://main--vitamix-gensite--paolomoz.aem.live/*"
+      ],
       "js": ["content-script.js"],
       "css": ["hint-styles.css"],
       "run_at": "document_idle"
@@ -39,14 +45,18 @@
         "lib/*.js",
         "overlay-panel.css"
       ],
-      "matches": ["*://www.vitamix.com/*", "*://vitamix.com/*"]
+      "matches": [
+        "*://www.vitamix.com/*",
+        "*://vitamix.com/*",
+        "*://main--vitamix-gensite--paolomoz.aem.live/*"
+      ]
     }
   ],
   "action": {
     "default_title": "Toggle Intent Inference Panel",
     "default_icon": {
-      "16": "icons/icon-16.png",
-      "48": "icons/icon-48.png"
+      "16": "icons/icon.svg",
+      "48": "icons/icon.svg"
     }
   }
 }

@@ -12,6 +12,21 @@ const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
 // Worker API URL for context storage
 const WORKER_API_URL = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev';
 
+// Supported domains for the extension
+const SUPPORTED_DOMAINS = [
+  'vitamix.com',
+  'www.vitamix.com',
+  'main--vitamix-gensite--paolomoz.aem.live',
+];
+
+/**
+ * Check if a URL is on a supported domain
+ */
+function isSupportedDomain(url) {
+  if (!url) return false;
+  return SUPPORTED_DOMAINS.some(domain => url.includes(domain));
+}
+
 // Profile engine instance
 let profileEngine = new ProfileEngine();
 
@@ -35,8 +50,8 @@ chrome.runtime.onInstalled.addListener(async () => {
  * Handle extension icon click - toggle overlay panel on/off
  */
 chrome.action.onClicked.addListener(async (tab) => {
-  // Only toggle on vitamix.com pages
-  if (tab.url && tab.url.includes('vitamix.com')) {
+  // Only toggle on supported domains
+  if (isSupportedDomain(tab.url)) {
     try {
       // Check current panel state on the page
       const response = await chrome.tabs.sendMessage(tab.id, { type: 'GET_PANEL_STATE' });
@@ -60,15 +75,15 @@ chrome.action.onClicked.addListener(async (tab) => {
 });
 
 /**
- * Listen for navigation to vitamix.com pages
+ * Listen for navigation to supported pages
  * - Check for return visits (signals)
  * - Restore panel state if enabled
  */
 chrome.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId !== 0) return;
-  if (!details.url.includes('vitamix.com')) return;
+  if (!isSupportedDomain(details.url)) return;
 
-  console.log('[Background] Navigation to vitamix.com:', details.url);
+  console.log('[Background] Navigation to supported domain:', details.url);
 
   // Check for return visit (signals)
   await checkReturnVisit();
@@ -90,7 +105,7 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
       }, 500);
     }
   }
-}, { url: [{ hostContains: 'vitamix.com' }] });
+}, { url: [{ hostContains: 'vitamix.com' }, { hostContains: 'aem.live' }] });
 
 /**
  * Listen for messages from content script and panel
@@ -218,7 +233,7 @@ async function handleGeneratePage(query, preset = 'all-cerebras') {
     const hasContext = context.signals.length > 0 || context.query || context.previousQueries.length > 0;
 
     if (!hasContext) {
-      return { success: false, error: 'No context available. Browse vitamix.com or enter a query.' };
+      return { success: false, error: 'No context available. Browse the site or enter a query.' };
     }
 
     // Store context on worker and get short ID
@@ -283,14 +298,18 @@ async function handleLoadExample(example) {
  */
 async function handleGenerateHint() {
   try {
-    // Get active vitamix.com tab
+    // Get active tab on supported domain
     const tabs = await chrome.tabs.query({
       active: true,
-      url: ['*://www.vitamix.com/*', '*://vitamix.com/*'],
+      url: [
+        '*://www.vitamix.com/*',
+        '*://vitamix.com/*',
+        '*://main--vitamix-gensite--paolomoz.aem.live/*',
+      ],
     });
 
     if (tabs.length === 0) {
-      return { success: false, error: 'Open a vitamix.com page first' };
+      return { success: false, error: 'Open a supported page first (vitamix.com or aem.live)' };
     }
 
     const tab = tabs[0];
@@ -301,7 +320,7 @@ async function handleGenerateHint() {
       pageData = await chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_SECTIONS' });
     } catch (e) {
       console.error('[Background] Failed to get page sections:', e);
-      return { success: false, error: 'Could not read page content. Try refreshing the vitamix.com page.' };
+      return { success: false, error: 'Could not read page content. Try refreshing the page.' };
     }
 
     if (!pageData || !pageData.pageContext) {

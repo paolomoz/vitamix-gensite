@@ -1,7 +1,20 @@
 /**
- * Overlay Panel Styles
+ * Overlay Panel Styles - Adobe Spectrum Dark Theme
  * Injected into vitamix.com pages for the intent inference panel
+ * Normalized to Spectrum design system tokens
  */
+
+/* Spectrum tokens (duplicated for injection context isolation) */
+.vitamix-intent-overlay-container {
+  --spectrum-gray-25: rgb(17, 17, 17);
+  --spectrum-gray-300: rgb(57, 57, 57);
+  --spectrum-gray-400: rgb(68, 68, 68);
+  --spectrum-gray-500: rgb(109, 109, 109);
+  --spectrum-blue-900: rgb(86, 129, 255);
+  --spectrum-animation-duration-300: 200ms;
+  --spectrum-animation-ease-in-out: cubic-bezier(0.45, 0, 0.4, 1);
+  --spectrum-font-sans: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+}
 
 /* Container for the overlay panel system */
 .vitamix-intent-overlay-container {
@@ -11,7 +24,7 @@
   bottom: 0;
   z-index: 2147483647; /* Maximum z-index */
   pointer-events: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--spectrum-font-sans);
 }
 
 /* The panel iframe container */
@@ -21,11 +34,11 @@
   right: 0;
   width: 380px;
   height: 100%;
-  background: #1e1e1e;
+  background: var(--spectrum-gray-25);
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--spectrum-animation-duration-300) var(--spectrum-animation-ease-in-out);
   pointer-events: auto;
-  border-left: 1px solid #404040;
+  border-left: 1px solid var(--spectrum-gray-300);
 }
 
 /* Panel iframe */
@@ -49,8 +62,8 @@
   transform: translateY(-50%);
   width: 36px;
   height: 80px;
-  background: linear-gradient(180deg, #2d2d2d 0%, #1e1e1e 100%);
-  border: 1px solid #404040;
+  background: linear-gradient(180deg, rgb(34, 34, 34) 0%, rgb(17, 17, 17) 100%);
+  border: 1px solid var(--spectrum-gray-400);
   border-right: none;
   border-radius: 8px 0 0 8px;
   cursor: pointer;
@@ -61,14 +74,14 @@
   gap: 6px;
   pointer-events: auto;
   z-index: 2147483647; /* Same max z-index as container */
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              background 0.15s ease,
-              box-shadow 0.15s ease;
+  transition: right var(--spectrum-animation-duration-300) var(--spectrum-animation-ease-in-out),
+              background 130ms var(--spectrum-animation-ease-in-out),
+              box-shadow 130ms var(--spectrum-animation-ease-in-out);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .vitamix-intent-toggle:hover {
-  background: linear-gradient(180deg, #363636 0%, #2d2d2d 100%);
+  background: linear-gradient(180deg, rgb(44, 44, 44) 0%, rgb(34, 34, 34) 100%);
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -86,8 +99,8 @@
 /* Toggle chevron indicator */
 .vitamix-intent-toggle-chevron {
   font-size: 10px;
-  color: #808080;
-  transition: transform 0.3s ease;
+  color: var(--spectrum-gray-500);
+  transition: transform var(--spectrum-animation-duration-300) var(--spectrum-animation-ease-in-out);
 }
 
 .vitamix-intent-overlay-container.collapsed .vitamix-intent-toggle-chevron {
@@ -96,7 +109,7 @@
 
 /* Keyboard focus styles */
 .vitamix-intent-toggle:focus {
-  outline: 2px solid #0265dc;
+  outline: 2px solid var(--spectrum-blue-900);
   outline-offset: 2px;
 }
 

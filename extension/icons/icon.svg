@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Adobe Spectrum-style AI/Inference icon -->
+  <!-- Main sparkle -->
+  <path d="M64 8L76 44L112 56L76 68L64 104L52 68L16 56L52 44L64 8Z"
+        fill="none"
+        stroke="#5681FF"
+        stroke-width="6"
+        stroke-linejoin="round"/>
+  <!-- Small accent sparkles -->
+  <circle cx="100" cy="24" r="6" fill="#5681FF"/>
+  <circle cx="28" cy="100" r="8" fill="#5681FF"/>
+  <circle cx="108" cy="96" r="5" fill="#5681FF" fill-opacity="0.6"/>
+</svg>

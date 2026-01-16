@@ -33,11 +33,25 @@ export type { SignalInterpretation } from '../types';
  * Instead of mapping signals to predefined categories via rules,
  * we let the LLM interpret the full signal stream holistically.
  */
-const SIGNAL_INTERPRETATION_PROMPT = `You are analyzing a user's browsing behavior on Vitamix.com to understand their intent.
+const SIGNAL_INTERPRETATION_PROMPT = `You are analyzing a user's context on Vitamix.com to understand their intent.
+
+## CRITICAL: Priority Hierarchy
+
+Your interpretation MUST follow this priority order (highest to lowest):
+
+1. **currentQuery** (HIGHEST) - If present, this is the user's EXPLICIT request. It represents direct intent with high confidence. Your interpretation MUST be driven primarily by this query.
+
+2. **previousQueries** - Conversation context that informs the currentQuery.
+
+3. **Browsing signals (journey, products, scrolls)** - Inferred intent from behavior. Use these to ADD CONTEXT to the query, never to override it.
+
+**Example**: If currentQuery is "show me smoothie recipes" but signals show they browsed commercial bar equipment:
+- CORRECT: Primary intent = smoothie recipes (from query), context = they may want commercial-grade equipment
+- WRONG: Primary intent = commercial bar equipment (ignoring query)
 
 ## Your Task
-Interpret the browsing signals to understand:
-1. What is this person trying to accomplish?
+Interpret the user's context to understand:
+1. What is this person trying to accomplish? (Start with currentQuery if present)
 2. What specific needs or concerns do they have?
 3. Where are they in their decision journey?
 4. What would be most helpful to show them?
@@ -78,8 +92,8 @@ Action types: page, click, video, video_done
 ## Output Format (JSON only)
 {
   "interpretation": {
-    "primaryIntent": "What they're trying to do (be specific)",
-    "specificNeeds": ["Specific needs/concerns from signals"],
+    "primaryIntent": "What they're trying to do - MUST reflect currentQuery if present",
+    "specificNeeds": ["Specific needs/concerns"],
     "emotionalContext": "What they might be feeling",
     "journeyStage": "exploring | comparing | deciding",
     "keyInsights": ["Important observations"]
@@ -97,11 +111,19 @@ Action types: page, click, video, video_done
   },
   "contentRecommendation": {
     "heroTone": "How should the hero speak to them?",
-    "prioritizeBlocks": ["Block types most helpful"],
+    "prioritizeBlocks": ["Block types - MUST match currentQuery intent first, then add context from signals"],
     "avoidBlocks": ["Irrelevant blocks"],
-    "specialGuidance": "Content guidance based on signals"
+    "specialGuidance": "Content guidance - query intent is primary, signals provide context"
   }
-}`;
+}
+
+## Block Selection Based on Query Intent
+- Recipe queries (recipe, recipes, what can I make) → prioritize recipe-cards
+- Product queries (best blender, which model) → prioritize product-cards, comparison-table
+- Support queries (troubleshoot, warranty, help) → prioritize support blocks
+- Comparison queries (vs, compare, difference) → prioritize comparison-table
+
+Signals should REFINE these choices (e.g., add commercial context), not REPLACE them.`;
 
 // ============================================
 // Helper Functions

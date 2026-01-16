@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent Inference Demo</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <div class="panel">
+    <!-- Header -->
+    <header class="panel-header">
+      <div class="panel-header-title">
+        <span class="icon">🎯</span>
+        <span>Intent Inference</span>
+      </div>
+      <div class="panel-header-actions">
+        <button class="icon-btn" id="clear-btn" title="Clear Profile">
+          <span>🗑️</span>
+        </button>
+        <button class="icon-btn" id="settings-btn" title="Settings">
+          <span>⚙️</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="panel-content">
+      <!-- Live Signal Feed -->
+      <section class="panel-section" data-section="signals">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="icon">📡</span>
+            <span>Live Signal Feed</span>
+            <span class="badge" id="signal-count">0</span>
+          </div>
+          <button class="section-toggle">▼</button>
+        </div>
+        <div class="section-content">
+          <div class="signal-feed" id="signal-feed">
+            <div class="empty-state">
+              <div class="icon">📡</div>
+              <p>No signals captured yet</p>
+              <p class="hint">Browse vitamix.com to capture signals</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inferred Profile -->
+      <section class="panel-section" data-section="profile">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="icon">👤</span>
+            <span>Inferred Profile</span>
+          </div>
+          <button class="section-toggle">▼</button>
+        </div>
+        <div class="section-content">
+          <div id="profile-content">
+            <div class="empty-state">
+              <div class="icon">👤</div>
+              <p>Profile will appear as signals are captured</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Synthetic Query -->
+      <section class="panel-section" data-section="query">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="icon">💬</span>
+            <span>Synthetic Query</span>
+          </div>
+          <button class="section-toggle">▼</button>
+        </div>
+        <div class="section-content">
+          <div id="query-content">
+            <div class="empty-state">
+              <div class="icon">💬</div>
+              <p>Not enough signals</p>
+              <p class="hint">Build confidence to 45%+ for query generation</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Custom Query -->
+      <section class="panel-section collapsed" data-section="custom">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="icon">✏️</span>
+            <span>Custom Query</span>
+          </div>
+          <button class="section-toggle">▼</button>
+        </div>
+        <div class="section-content">
+          <div class="custom-query">
+            <textarea
+              class="query-input"
+              id="custom-input"
+              placeholder="Enter a custom query to generate a page..."
+            ></textarea>
+            <div class="preset-selector">
+              <label>
+                <input type="radio" name="preset" value="production" checked>
+                <span>Quality (Claude)</span>
+              </label>
+              <label>
+                <input type="radio" name="preset" value="all-cerebras">
+                <span>Speed (Cerebras)</span>
+              </label>
+            </div>
+            <button class="btn btn-secondary" id="custom-execute-btn">
+              <span class="icon">⚡</span>
+              <span>Execute Query</span>
+            </button>
+            <p class="hint">Cmd/Ctrl + Enter to execute</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Example Scenarios -->
+      <section class="panel-section collapsed" data-section="examples">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="icon">📚</span>
+            <span>Example Scenarios</span>
+          </div>
+          <button class="section-toggle">▼</button>
+        </div>
+        <div class="section-content">
+          <div class="examples-grid" id="examples-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

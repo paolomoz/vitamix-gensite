@@ -75,8 +75,8 @@ function createSSEStream(): {
 
 async function handleGenerate(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  // Only use 'q' parameter - 'query' is deprecated
-  const query = url.searchParams.get('q');
+  // Prefer 'q' parameter, fall back to 'query' for backward compatibility
+  const query = url.searchParams.get('q') || url.searchParams.get('query');
   const slug = url.searchParams.get('slug');
   const ctxParam = url.searchParams.get('ctx');
   const preset = url.searchParams.get('preset') || undefined;

@@ -54,7 +54,7 @@ export default async function decorate(block) {
     if (sections[0]) {
       const picture = sections[0].querySelector('picture');
       const link = document.createElement('a');
-      link.href = '/';
+      link.href = 'https://www.vitamix.com/';
       link.setAttribute('aria-label', 'Vitamix Home');
       if (picture) {
         link.appendChild(picture.cloneNode(true));

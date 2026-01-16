@@ -15,7 +15,7 @@
         <span>Intent Inference</span>
       </div>
       <div class="panel-header-actions">
-        <button class="icon-btn" id="clear-btn" title="Clear Profile">
+        <button class="icon-btn" id="clear-btn" title="Clear Session">
           <span>🗑️</span>
         </button>
         <button class="icon-btn" id="settings-btn" title="Settings">
@@ -66,49 +66,56 @@
         </div>
       </section>
 
-      <!-- Synthetic Query -->
-      <section class="panel-section" data-section="query">
+      <!-- Conversation History -->
+      <section class="panel-section" data-section="history">
         <div class="section-header">
           <div class="section-title">
             <span class="icon">💬</span>
-            <span>Synthetic Query</span>
+            <span>Conversation History</span>
+            <span class="badge" id="history-count">0</span>
           </div>
           <button class="section-toggle">▼</button>
         </div>
         <div class="section-content">
-          <div id="query-content">
+          <div id="history-content">
             <div class="empty-state">
               <div class="icon">💬</div>
-              <p>Not enough signals</p>
-              <p class="hint">Build confidence to 45%+ for query generation</p>
+              <p>No previous queries</p>
+              <p class="hint">Generate pages to build conversation history</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Custom Query -->
-      <section class="panel-section collapsed" data-section="custom">
+      <!-- Query Input -->
+      <section class="panel-section" data-section="query">
         <div class="section-header">
           <div class="section-title">
             <span class="icon">✏️</span>
-            <span>Custom Query</span>
+            <span>Query (optional)</span>
           </div>
           <button class="section-toggle">▼</button>
         </div>
         <div class="section-content">
-          <div class="custom-query">
+          <div class="query-input-section">
             <textarea
               class="query-input"
-              id="custom-input"
-              placeholder="Enter a custom query to generate a page..."
+              id="query-input"
+              placeholder="Enter a query or leave empty to generate from signals..."
             ></textarea>
-            <button class="btn btn-secondary" id="custom-execute-btn">
-              <span class="icon">⚡</span>
-              <span>Execute Query</span>
-            </button>
-            <p class="hint">Cmd/Ctrl + Enter to execute</p>
           </div>
         </div>
+      </section>
+
+      <!-- Generate Button & Context Summary -->
+      <section class="panel-section generate-section" data-section="generate">
+        <button class="btn btn-primary btn-large" id="generate-btn">
+          <span class="icon">▶</span>
+          <span>Generate Page</span>
+        </button>
+        <p class="context-summary" id="context-summary">
+          No context available
+        </p>
       </section>
 
       <!-- Example Scenarios -->

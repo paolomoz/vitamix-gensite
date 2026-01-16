@@ -9,10 +9,15 @@
  * - GET /health - Health check
  */
 
-import type { Env, SessionContext, SSEEvent, IntentClassification } from './types';
-import { orchestrate } from './lib/orchestrator';
+import type { Env, SessionContext, SSEEvent, IntentClassification, ExtensionContext } from './types';
+import { orchestrate, orchestrateFromContext } from './lib/orchestrator';
 import { persistAndPublish, buildPageHtml, unescapeHtml } from './lib/da-client';
 import { classifyCategory, generateSemanticSlug, buildCategorizedPath } from './lib/category-classifier';
+
+// Context storage key prefix
+const CONTEXT_PREFIX = 'ctx_';
+// Context TTL: 1 hour
+const CONTEXT_TTL = 60 * 60;
 
 // ============================================
 // CORS Headers
@@ -64,11 +69,17 @@ function createSSEStream(): {
 
 async function handleGenerate(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  const query = url.searchParams.get('query');
+  const query = url.searchParams.get('query') || url.searchParams.get('q');
   const slug = url.searchParams.get('slug');
   const ctxParam = url.searchParams.get('ctx');
-  const preset = url.searchParams.get('preset') || undefined; // Optional preset override (e.g., 'all-cerebras')
+  const preset = url.searchParams.get('preset') || undefined;
 
+  // Check if ctx is a stored context ID (full context mode)
+  if (ctxParam && ctxParam.startsWith(CONTEXT_PREFIX)) {
+    return handleGenerateFromContext(ctxParam, slug, preset, env);
+  }
+
+  // Original query-based flow
   if (!query) {
     return new Response(JSON.stringify({ error: 'Missing query parameter' }), {
       status: 400,
@@ -76,7 +87,7 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  // Parse session context if provided
+  // Parse session context if provided (legacy inline JSON format)
   let sessionContext: SessionContext | undefined;
   if (ctxParam) {
     try {
@@ -118,6 +129,124 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
       ...CORS_HEADERS,
     },
   });
+}
+
+/**
+ * Handle generation from stored full context (extension flow)
+ */
+async function handleGenerateFromContext(
+  contextId: string,
+  slug: string | null,
+  preset: string | undefined,
+  env: Env
+): Promise<Response> {
+  // Fetch context from KV
+  if (!env.SESSIONS) {
+    return new Response(JSON.stringify({ error: 'KV storage not configured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  const contextData = await env.SESSIONS.get(contextId);
+  if (!contextData) {
+    return new Response(JSON.stringify({ error: 'Context not found or expired' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  let context: ExtensionContext;
+  try {
+    context = JSON.parse(contextData);
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'Invalid context data' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  // Create SSE stream
+  const { readable, write, close } = createSSEStream();
+
+  // Determine slug - use query if available, otherwise generate from context
+  const effectiveSlug = slug || generateSlugFromContext(context);
+
+  // Start orchestration from full context
+  const orchestrationPromise = orchestrateFromContext(
+    context,
+    effectiveSlug,
+    env,
+    write,
+    preset
+  )
+    .catch((error) => {
+      console.error('Context orchestration error:', error);
+      write({
+        event: 'error',
+        data: { message: error.message || 'Generation failed' },
+      });
+    })
+    .finally(() => {
+      close();
+    });
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      ...CORS_HEADERS,
+    },
+  });
+}
+
+/**
+ * Store context from extension and return short ID
+ */
+async function handleStoreContext(request: Request, env: Env): Promise<Response> {
+  if (!env.SESSIONS) {
+    return new Response(JSON.stringify({ error: 'KV storage not configured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  try {
+    const context: ExtensionContext = await request.json();
+
+    // Validate context has some data
+    const hasSignals = context.signals && context.signals.length > 0;
+    const hasQuery = context.query && context.query.trim().length > 0;
+    const hasPreviousQueries = context.previousQueries && context.previousQueries.length > 0;
+
+    if (!hasSignals && !hasQuery && !hasPreviousQueries) {
+      return new Response(JSON.stringify({ error: 'Context must have signals, query, or previous queries' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      });
+    }
+
+    // Generate unique ID
+    const id = `${CONTEXT_PREFIX}${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
+
+    // Store in KV with TTL
+    await env.SESSIONS.put(id, JSON.stringify(context), {
+      expirationTtl: CONTEXT_TTL,
+    });
+
+    console.log(`[StoreContext] Stored context ${id} with ${context.signals?.length || 0} signals`);
+
+    return new Response(JSON.stringify({ id }), {
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  } catch (error) {
+    console.error('[StoreContext] Error:', error);
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
 }
 
 function handleHealth(): Response {
@@ -253,6 +382,42 @@ function generateSlug(query: string): string {
   return `${slug}-${hash}`;
 }
 
+/**
+ * Generate slug from extension context
+ */
+function generateSlugFromContext(context: ExtensionContext): string {
+  // Priority: query > first segment + use case > generic
+  if (context.query) {
+    return generateSlug(context.query);
+  }
+
+  const parts: string[] = [];
+
+  // Add primary segment
+  if (context.profile.segments.length > 0) {
+    parts.push(context.profile.segments[0]);
+  }
+
+  // Add primary use case
+  if (context.profile.use_cases.length > 0) {
+    parts.push(context.profile.use_cases[0]);
+  }
+
+  // Add first product considered
+  if (context.profile.products_considered.length > 0) {
+    parts.push(context.profile.products_considered[0]);
+  }
+
+  if (parts.length === 0) {
+    parts.push('personalized-recommendation');
+  }
+
+  const base = parts.join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').substring(0, 60);
+  const hash = context.timestamp.toString(36).slice(-6);
+
+  return `${base}-${hash}`;
+}
+
 // ============================================
 // Main Handler
 // ============================================
@@ -271,6 +436,11 @@ export default {
     switch (path) {
       case '/generate':
         return handleGenerate(request, env);
+      case '/store-context':
+        if (request.method === 'POST') {
+          return handleStoreContext(request, env);
+        }
+        return new Response('Method not allowed', { status: 405 });
       case '/api/persist':
         if (request.method === 'POST') {
           return handlePersist(request, env);

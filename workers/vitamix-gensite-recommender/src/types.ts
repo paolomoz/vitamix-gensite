@@ -139,6 +139,33 @@ export interface AccessoryCompatibility {
 }
 
 // ============================================
+// Article Types (Commercial B2B Content)
+// ============================================
+
+export interface Article {
+  id: string;
+  title: string;
+  url: string;
+  category: 'commercial' | 'tco' | 'engineering' | 'sustainability';
+  summary: string;
+  keyPoints: string[];
+  keywords: string[];
+  relatedProducts?: string[];
+  targetAudience: string[];
+  businessContext?: ArticleBusinessContext;
+  mainContent?: string;
+  images?: {
+    primary: string;
+  };
+  crawledAt?: string;
+}
+
+export interface ArticleBusinessContext {
+  industryFocus?: string[];
+  decisionFactors?: string[];
+}
+
+// ============================================
 // Use Case Types
 // ============================================
 
@@ -352,6 +379,60 @@ export interface UserJourneyPlan {
 export interface SessionContext {
   previousQueries: QueryHistoryItem[];
   profile?: UserProfile;
+}
+
+// ============================================
+// Extension Context Types (Full Context Mode)
+// ============================================
+
+/**
+ * Full context from the browser extension
+ * Contains signals, query, conversation history, and inferred profile
+ */
+export interface ExtensionContext {
+  /** Captured browsing signals from vitamix.com */
+  signals: ExtensionSignal[];
+  /** Current user query (optional) */
+  query: string | null;
+  /** Previous queries in the session for conversation continuity */
+  previousQueries: string[];
+  /** Inferred user profile from signals */
+  profile: ExtensionProfile;
+  /** Timestamp when context was created */
+  timestamp: number;
+}
+
+export interface ExtensionSignal {
+  id: string;
+  type: string;
+  category: string;
+  label: string;
+  weight: number;
+  weightLabel: string;
+  icon: string;
+  timestamp: number;
+  data: Record<string, unknown>;
+  product?: string;
+}
+
+export interface ExtensionProfile {
+  segments: string[];
+  life_stage: string | null;
+  use_cases: string[];
+  products_considered: string[];
+  price_sensitivity: string | null;
+  decision_style: string | null;
+  purchase_readiness: string | null;
+  shopping_for: string | null;
+  occasion: string | null;
+  brand_relationship: string | null;
+  content_engagement: string | null;
+  time_sensitive: boolean | null;
+  confidence_score: number;
+  signals_count: number;
+  session_count: number;
+  first_visit: number | null;
+  last_visit: number | null;
 }
 
 export interface QueryHistoryItem {

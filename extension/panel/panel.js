@@ -8,7 +8,7 @@ import { examples, getConfidenceLevel, getWeightColor } from '../lib/examples.js
 // State
 let currentProfile = null;
 let currentSignals = [];
-let currentQuery = null;
+let previousQueries = [];
 let selectedExample = null;
 
 /**
@@ -31,7 +31,7 @@ async function init() {
     if (message.type === 'PROFILE_UPDATED') {
       currentProfile = message.profile;
       currentSignals = message.signals;
-      currentQuery = message.syntheticQuery;
+      previousQueries = message.previousQueries || [];
       render();
     }
   });
@@ -51,10 +51,10 @@ function setupEventListeners() {
     });
   });
 
-  // Clear button
+  // Clear session button
   document.getElementById('clear-btn').addEventListener('click', async () => {
-    if (confirm('Clear all captured signals and profile?')) {
-      await chrome.runtime.sendMessage({ type: 'CLEAR_PROFILE' });
+    if (confirm('Clear all signals, profile, and conversation history?')) {
+      await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });
       selectedExample = null;
       await refreshState();
     }
@@ -65,33 +65,51 @@ function setupEventListeners() {
     alert('Settings coming soon!');
   });
 
-  // Custom query execution
-  const customInput = document.getElementById('custom-input');
-  const customExecuteBtn = document.getElementById('custom-execute-btn');
-
-  customExecuteBtn.addEventListener('click', () => {
-    executeCustomQuery();
+  // Generate page button
+  document.getElementById('generate-btn').addEventListener('click', () => {
+    handleGenerate();
   });
 
-  customInput.addEventListener('keydown', (e) => {
+  // Query input keyboard shortcut
+  const queryInput = document.getElementById('query-input');
+  queryInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      executeCustomQuery();
+      handleGenerate();
     }
   });
 }
 
 /**
- * Execute custom query
+ * Handle generate page
  */
-function executeCustomQuery() {
-  const query = document.getElementById('custom-input').value.trim();
-  if (!query) return;
+async function handleGenerate() {
+  const query = document.getElementById('query-input').value.trim();
+  const btn = document.getElementById('generate-btn');
 
-  chrome.runtime.sendMessage({
-    type: 'EXECUTE_QUERY',
-    query,
-    preset: 'all-cerebras',
-  });
+  // Disable button while processing
+  btn.disabled = true;
+  btn.innerHTML = '<span class="icon">⏳</span><span>Generating...</span>';
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: 'GENERATE_PAGE',
+      query: query || null,
+      preset: 'all-cerebras',
+    });
+
+    if (!response.success) {
+      alert(response.error || 'Failed to generate page');
+    } else {
+      // Clear the query input after successful generation
+      document.getElementById('query-input').value = '';
+    }
+  } catch (error) {
+    console.error('[Panel] Generate error:', error);
+    alert('Failed to generate page: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="icon">▶</span><span>Generate Page</span>';
+  }
 }
 
 /**
@@ -101,7 +119,7 @@ async function refreshState() {
   const response = await chrome.runtime.sendMessage({ type: 'GET_PROFILE' });
   currentProfile = response.profile;
   currentSignals = response.signals;
-  currentQuery = response.syntheticQuery;
+  previousQueries = response.previousQueries || [];
   render();
 }
 
@@ -111,7 +129,8 @@ async function refreshState() {
 function render() {
   renderSignalFeed();
   renderProfile();
-  renderQuery();
+  renderHistory();
+  renderContextSummary();
 }
 
 /**
@@ -330,45 +349,68 @@ function renderJsonSection() {
 }
 
 /**
- * Render synthetic query section
+ * Render conversation history
  */
-function renderQuery() {
-  const container = document.getElementById('query-content');
+function renderHistory() {
+  const container = document.getElementById('history-content');
+  const countBadge = document.getElementById('history-count');
 
-  if (!currentQuery || !currentQuery.query) {
-    const reason = currentQuery?.reason || 'Not enough signals to generate a query';
-    const current = currentQuery?.currentConfidence || currentProfile?.confidence_score || 0;
+  countBadge.textContent = previousQueries.length;
 
+  if (previousQueries.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
         <div class="icon">💬</div>
-        <p>${reason}</p>
-        <p class="hint">Current: ${Math.round(current * 100)}% / Required: 45%</p>
+        <p>No previous queries</p>
+        <p class="hint">Generate pages to build conversation history</p>
       </div>
     `;
     return;
   }
 
   container.innerHTML = `
-    <div class="query-text">"${currentQuery.query}"</div>
-    <div class="query-meta">
-      <span>Template: ${currentQuery.template}</span>
-      <span>•</span>
-      <span>Confidence: ${Math.round(currentQuery.confidence * 100)}%</span>
+    <div class="history-list">
+      ${previousQueries.map((query, i) => `
+        <div class="history-item">
+          <span class="icon">${i + 1}.</span>
+          <span class="text">${escapeHtml(query)}</span>
+        </div>
+      `).join('')}
     </div>
-    <button class="btn btn-primary" id="execute-query-btn">
-      <span class="icon">▶</span>
-      <span>Generate Page</span>
-    </button>
   `;
+}
 
-  document.getElementById('execute-query-btn').addEventListener('click', () => {
-    chrome.runtime.sendMessage({
-      type: 'EXECUTE_QUERY',
-      query: currentQuery.query,
-      preset: 'all-cerebras',
-    });
-  });
+/**
+ * Render context summary
+ */
+function renderContextSummary() {
+  const container = document.getElementById('context-summary');
+  const btn = document.getElementById('generate-btn');
+  const queryInput = document.getElementById('query-input');
+
+  const parts = [];
+
+  if (currentSignals.length > 0) {
+    parts.push(`${currentSignals.length} signal${currentSignals.length !== 1 ? 's' : ''}`);
+  }
+
+  if (previousQueries.length > 0) {
+    parts.push(`${previousQueries.length} previous quer${previousQueries.length !== 1 ? 'ies' : 'y'}`);
+  }
+
+  // Check if query input has text
+  const hasQuery = queryInput.value.trim().length > 0;
+  if (hasQuery) {
+    parts.push('1 new query');
+  }
+
+  if (parts.length === 0) {
+    container.textContent = 'No context available - browse vitamix.com or enter a query';
+    btn.disabled = true;
+  } else {
+    container.textContent = `Context: ${parts.join(' • ')}`;
+    btn.disabled = false;
+  }
 }
 
 /**
@@ -415,9 +457,8 @@ function renderExamples() {
           example,
         });
 
-        // Expand profile and query sections
+        // Expand profile section
         document.querySelector('[data-section="profile"]').classList.remove('collapsed');
-        document.querySelector('[data-section="query"]').classList.remove('collapsed');
 
         await refreshState();
       }
@@ -468,12 +509,32 @@ function getWeightClassFromLabel(label) {
 function formatJSON(obj) {
   const json = JSON.stringify(obj, null, 2);
   return json
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
     .replace(/: "([^"]+)"/g, ': <span class="json-string">"$1"</span>')
     .replace(/: (\d+\.?\d*)/g, ': <span class="json-number">$1</span>')
     .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>')
     .replace(/[{}[\]]/g, '<span class="json-bracket">$&</span>');
 }
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Update context summary when query input changes
+document.addEventListener('DOMContentLoaded', () => {
+  const queryInput = document.getElementById('query-input');
+  if (queryInput) {
+    queryInput.addEventListener('input', renderContextSummary);
+  }
+});
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {

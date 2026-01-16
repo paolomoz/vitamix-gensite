@@ -19,6 +19,10 @@ import type {
   Product,
   Recipe,
   Review,
+  Article,
+  ExtensionContext,
+  ExtensionSignal,
+  QueryHistoryItem,
 } from '../types';
 import { createModelFactory, type Message } from '../ai-clients/model-factory';
 import { analyzeAndSelectBlocks, formatReasoningForDisplay } from '../ai-clients/reasoning-engine';
@@ -222,6 +226,18 @@ function buildFAQContext(faqs: FAQ[]): string {
 - Q: ${faq.question}
   A: ${faq.answer}
   Category: ${faq.category}`).join('\n');
+}
+
+function buildArticleContext(articles: Article[]): string {
+  if (!articles.length) return '';
+  return articles.map(a => `
+## ${a.title}
+Category: ${a.category}
+Summary: ${a.summary}
+Key Points: ${a.keyPoints?.join('; ') || 'N/A'}
+Target Audience: ${a.targetAudience?.join(', ') || 'Food service professionals'}
+URL: ${a.url}
+`).join('\n\n');
 }
 
 function getBlockTemplate(blockType: string): string {
@@ -1025,6 +1041,14 @@ ${containers.map(c => `- ${c.size}: ${c.bestFor}`).join('\n')}
     dataContext = `\n\n## Products for Accessibility Comparison (USE THESE EXACT URLs):\n${buildProductContext(ragContext.relevantProducts.slice(0, 4))}`;
   }
 
+  // Add article context for commercial/B2B queries (if articles are available)
+  if (ragContext.relevantArticles?.length > 0) {
+    const articleContext = buildArticleContext(ragContext.relevantArticles);
+    if (articleContext) {
+      dataContext += `\n\n## Commercial/B2B Reference Articles:\n${articleContext}`;
+    }
+  }
+
   // Get HTML template for the block type
   const htmlTemplate = getBlockTemplate(block.type);
 
@@ -1536,4 +1560,392 @@ export async function orchestrate(
     });
     throw error;
   }
+}
+
+// ============================================
+// Full Context Mode (Extension Flow)
+// ============================================
+
+/**
+ * Build a natural language query from extension signals and profile
+ */
+function buildQueryFromContext(context: ExtensionContext): string {
+  const parts: string[] = [];
+
+  // If there's an explicit query, use it as the base
+  if (context.query) {
+    parts.push(context.query);
+  }
+
+  // Build context from profile segments and use cases
+  const profile = context.profile;
+
+  if (profile.segments.includes('new_parent') || profile.use_cases.includes('baby_food')) {
+    if (!context.query) parts.push('I want to make baby food');
+    parts.push('for my baby');
+  } else if (profile.segments.includes('gift_buyer')) {
+    if (!context.query) parts.push("I'm looking for a blender as a gift");
+  } else if (profile.segments.includes('existing_owner') || profile.segments.includes('upgrade_intent')) {
+    if (!context.query) parts.push('I want to upgrade my Vitamix');
+    parts.push('I already have a Vitamix');
+  }
+
+  // Add use cases if not already implied
+  const useCaseMap: Record<string, string> = {
+    smoothies: 'make smoothies',
+    soups: 'make hot soups',
+    nut_butters: 'make nut butters',
+    baby_food: 'make baby food',
+    frozen_desserts: 'make frozen desserts',
+  };
+
+  for (const useCase of profile.use_cases) {
+    if (useCaseMap[useCase] && !parts.join(' ').includes(useCaseMap[useCase])) {
+      if (parts.length === 0) {
+        parts.push(`I want to ${useCaseMap[useCase]}`);
+      }
+    }
+  }
+
+  // Add products being considered
+  if (profile.products_considered.length > 0) {
+    if (profile.products_considered.length === 1) {
+      parts.push(`I've been looking at the ${profile.products_considered[0]}`);
+    } else if (profile.products_considered.length === 2) {
+      parts.push(`I'm comparing the ${profile.products_considered[0]} and ${profile.products_considered[1]}`);
+    } else {
+      parts.push(`I'm considering the ${profile.products_considered.slice(0, 3).join(', ')}`);
+    }
+  }
+
+  // Add price sensitivity context
+  if (profile.price_sensitivity === 'high') {
+    parts.push("I'm on a budget");
+  } else if (profile.price_sensitivity === 'low' && profile.segments.includes('premium_preference')) {
+    parts.push("budget isn't a concern");
+  }
+
+  // Fallback if we have nothing
+  if (parts.length === 0) {
+    // Extract search queries from signals
+    const searchSignals = context.signals.filter(s => s.type === 'search' && s.data?.query);
+    if (searchSignals.length > 0) {
+      const lastSearch = searchSignals[searchSignals.length - 1];
+      parts.push(`I'm looking for information about ${lastSearch.data.query}`);
+    } else {
+      parts.push('Help me find the right Vitamix blender');
+    }
+  }
+
+  return parts.join('. ') + '. What do you recommend?';
+}
+
+/**
+ * Format signals for context display in prompts
+ */
+function formatSignalsForPrompt(signals: ExtensionSignal[]): string {
+  // Sort by weight and recency
+  const sorted = [...signals]
+    .sort((a, b) => (b.weight - a.weight) || (b.timestamp - a.timestamp))
+    .slice(0, 20); // Limit to most important signals
+
+  return sorted.map(s => {
+    let detail = '';
+    if (s.product) detail = ` - Product: ${s.product}`;
+    else if (s.data?.query) detail = ` - "${s.data.query}"`;
+    else if (s.data?.h1) detail = ` - ${s.data.h1}`;
+    else if (s.data?.path) detail = ` - ${s.data.path}`;
+
+    return `- ${s.label}${detail} (${s.weightLabel})`;
+  }).join('\n');
+}
+
+/**
+ * Convert extension profile to session context for reasoning engine
+ */
+function buildSessionContextFromExtension(context: ExtensionContext): SessionContext {
+  // Convert previous queries to QueryHistoryItem format
+  const previousQueries: QueryHistoryItem[] = context.previousQueries.map((q, i) => ({
+    query: q,
+    intent: 'discovery', // Default intent for previous queries
+    entities: {
+      products: context.profile.products_considered,
+      ingredients: [],
+      goals: context.profile.use_cases,
+    },
+  }));
+
+  return {
+    previousQueries,
+    profile: {
+      useCases: context.profile.use_cases,
+      priceRange: context.profile.price_sensitivity as 'budget' | 'mid' | 'premium' | undefined,
+      productsViewed: context.profile.products_considered,
+      concerns: [],
+      journeyStage: context.profile.purchase_readiness === 'high' ? 'deciding' :
+                    context.profile.purchase_readiness === 'medium_high' ? 'comparing' : 'exploring',
+    },
+  };
+}
+
+/**
+ * Orchestrate page generation from full extension context
+ */
+export async function orchestrateFromContext(
+  context: ExtensionContext,
+  slug: string,
+  env: Env,
+  onEvent: SSECallback,
+  preset?: string
+): Promise<{
+  blocks: GeneratedBlock[];
+  reasoning: ReasoningResult;
+  duration: number;
+}> {
+  const startTime = Date.now();
+
+  // Build effective query from context
+  const effectiveQuery = context.query || buildQueryFromContext(context);
+
+  // Build session context from extension profile
+  const sessionContext = buildSessionContextFromExtension(context);
+
+  // Log context for debugging
+  console.log('[OrchestrateFromContext] Effective query:', effectiveQuery);
+  console.log('[OrchestrateFromContext] Signals count:', context.signals.length);
+  console.log('[OrchestrateFromContext] Profile segments:', context.profile.segments);
+  console.log('[OrchestrateFromContext] Products considered:', context.profile.products_considered);
+
+  // Emit start with context info
+  onEvent({
+    event: 'generation-start',
+    data: {
+      query: effectiveQuery,
+      estimatedBlocks: 5,
+    },
+  });
+
+  // Add context metadata as a reasoning step
+  if (context.signals.length > 0) {
+    onEvent({
+      event: 'reasoning-step',
+      data: {
+        stage: 'context',
+        title: 'Browsing Context',
+        content: `Analyzing ${context.signals.length} browsing signals:\n${formatSignalsForPrompt(context.signals)}`,
+      },
+    });
+  }
+
+  if (context.previousQueries.length > 0) {
+    onEvent({
+      event: 'reasoning-step',
+      data: {
+        stage: 'history',
+        title: 'Conversation History',
+        content: `Previous queries:\n${context.previousQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}`,
+      },
+    });
+  }
+
+  // Use the existing orchestrate function with the enriched context
+  const ctx: OrchestrationContext = { query: effectiveQuery, slug };
+
+  try {
+    // Stage 2: Fast intent classification (with full context)
+    ctx.intent = await classifyIntentFromContext(effectiveQuery, context, env, preset);
+
+    // Stage 3: Get RAG context
+    ctx.ragContext = await getRAGContext(effectiveQuery, ctx.intent, env);
+
+    // Stage 4: Deep reasoning
+    const effectivePreset = preset || env.MODEL_PRESET || 'production';
+    const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-gpt-oss-120b' : 'claude-opus-4-5';
+    onEvent({
+      event: 'reasoning-start',
+      data: { model: reasoningModel, preset: effectivePreset },
+    });
+
+    ctx.reasoningResult = await analyzeAndSelectBlocks(
+      effectiveQuery,
+      ctx.intent,
+      ctx.ragContext,
+      env,
+      sessionContext,
+      preset
+    );
+
+    // Stream reasoning steps
+    const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);
+    for (const step of reasoningDisplay.steps) {
+      onEvent({
+        event: 'reasoning-step',
+        data: step,
+      });
+    }
+
+    onEvent({
+      event: 'reasoning-complete',
+      data: {
+        confidence: ctx.reasoningResult.confidence,
+        duration: Date.now() - startTime,
+      },
+    });
+
+    // Stage 5: Generate blocks
+    const blocks: GeneratedBlock[] = [];
+
+    for (const blockSelection of ctx.reasoningResult.selectedBlocks) {
+      onEvent({
+        event: 'block-start',
+        data: { blockType: blockSelection.type, index: blocks.length },
+      });
+
+      let block: GeneratedBlock;
+
+      if (blockSelection.type === 'reasoning-user') {
+        block = generateReasoningUserBlock(ctx.reasoningResult);
+      } else if (blockSelection.type === 'follow-up') {
+        block = generateFollowUpBlock(ctx.reasoningResult.userJourney);
+      } else if (blockSelection.type === 'allergen-safety') {
+        block = generateAllergenSafetyBlock();
+      } else {
+        block = await generateBlockContent(blockSelection, ctx.ragContext, env, preset, ctx.intent, ctx.query);
+      }
+
+      blocks.push(block);
+
+      onEvent({
+        event: 'block-content',
+        data: { html: block.html, sectionStyle: block.sectionStyle },
+      });
+
+      onEvent({
+        event: 'block-rationale',
+        data: { blockType: blockSelection.type, rationale: blockSelection.rationale },
+      });
+    }
+
+    ctx.generatedBlocks = blocks;
+
+    // Stage 6: Complete
+    const duration = Date.now() - startTime;
+    const extractedProducts = extractProductNamesFromBlocks(blocks);
+    const extractedRecipes = extractRecipeNamesFromBlocks(blocks);
+
+    onEvent({
+      event: 'generation-complete',
+      data: {
+        totalBlocks: blocks.length,
+        duration,
+        intent: ctx.intent,
+        reasoning: {
+          journeyStage: ctx.reasoningResult.userJourney.currentStage,
+          confidence: ctx.reasoningResult.confidence,
+          nextBestAction: ctx.reasoningResult.userJourney.nextBestAction,
+          suggestedFollowUps: ctx.reasoningResult.userJourney.suggestedFollowUps,
+        },
+        recommendations: {
+          products: extractedProducts,
+          recipes: extractedRecipes,
+          blockTypes: blocks.map(b => b.type),
+        },
+      },
+    });
+
+    return {
+      blocks,
+      reasoning: ctx.reasoningResult,
+      duration,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    onEvent({
+      event: 'error',
+      data: { message: errorMessage, code: 'CONTEXT_ORCHESTRATION_ERROR' },
+    });
+    throw error;
+  }
+}
+
+/**
+ * Enhanced intent classification that considers full extension context
+ */
+async function classifyIntentFromContext(
+  query: string,
+  context: ExtensionContext,
+  env: Env,
+  preset?: string
+): Promise<IntentClassification> {
+  const modelFactory = createModelFactory(env, preset);
+
+  // Build rich context from signals and profile
+  const signalsSummary = formatSignalsForPrompt(context.signals);
+  const profileSummary = `
+Inferred Profile:
+- Segments: ${context.profile.segments.join(', ') || 'none'}
+- Use Cases: ${context.profile.use_cases.join(', ') || 'none'}
+- Products Considered: ${context.profile.products_considered.join(', ') || 'none'}
+- Price Sensitivity: ${context.profile.price_sensitivity || 'unknown'}
+- Purchase Readiness: ${context.profile.purchase_readiness || 'unknown'}
+- Decision Style: ${context.profile.decision_style || 'unknown'}
+- Confidence: ${Math.round(context.profile.confidence_score * 100)}%`;
+
+  const conversationHistory = context.previousQueries.length > 0
+    ? `\n\nConversation History:\n${context.previousQueries.map((q, i) => `${i + 1}. "${q}"`).join('\n')}`
+    : '';
+
+  const contextualPrompt = `${CLASSIFICATION_PROMPT}
+
+ADDITIONAL CONTEXT FROM BROWSING BEHAVIOR:
+
+## Browsing Signals (most important first):
+${signalsSummary}
+
+## ${profileSummary}
+${conversationHistory}`;
+
+  const messages: Message[] = [
+    { role: 'system', content: contextualPrompt },
+    { role: 'user', content: `Query: "${query}"` },
+  ];
+
+  try {
+    const response = await modelFactory.call('classification', messages, env);
+    const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+  } catch (error) {
+    console.error('Context classification error:', error);
+  }
+
+  // Fallback - use profile to inform intent
+  const profile = context.profile;
+  let intentType: IntentClassification['intentType'] = 'discovery';
+  let journeyStage: IntentClassification['journeyStage'] = 'exploring';
+
+  if (profile.segments.includes('gift_buyer')) {
+    intentType = 'gift';
+  } else if (profile.segments.includes('comparison_shopper') || profile.products_considered.length >= 2) {
+    intentType = 'comparison';
+    journeyStage = 'comparing';
+  } else if (profile.purchase_readiness === 'high') {
+    intentType = 'recommendation';
+    journeyStage = 'deciding';
+  } else if (profile.products_considered.length === 1) {
+    intentType = 'product-detail';
+    journeyStage = 'comparing';
+  }
+
+  return {
+    intentType,
+    confidence: 0.6,
+    entities: {
+      products: profile.products_considered,
+      useCases: profile.use_cases,
+      features: [],
+    },
+    journeyStage,
+  };
 }

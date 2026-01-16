@@ -164,12 +164,12 @@ function isCerebrasRequest() {
 }
 
 /**
- * Check if this is a Vitamix Recommender request (has ?q= or ?query= param)
+ * Check if this is a Vitamix Recommender request (has ?q= or ?query= or ?ctx= param)
  * Uses the new vitamix-recommender worker with Claude Opus reasoning
  */
 function isVitamixRecommenderRequest() {
   const params = new URLSearchParams(window.location.search);
-  return params.has('q') || params.has('query');
+  return params.has('q') || params.has('query') || params.has('ctx');
 }
 
 /**
@@ -739,7 +739,7 @@ async function renderFastGenerativePage() {
 }
 
 /**
- * Render a Vitamix Recommender page from ?q= or ?query= parameter
+ * Render a Vitamix Recommender page from ?q= or ?query= or ?ctx= parameter
  * Uses the vitamix-recommender worker with Claude Opus reasoning
  */
 async function renderVitamixRecommenderPage() {
@@ -751,13 +751,20 @@ async function renderVitamixRecommenderPage() {
 
   const params = new URLSearchParams(window.location.search);
   const query = params.get('q') || params.get('query');
+  const ctxId = params.get('ctx'); // Context ID from extension (ctx_xxxx)
   const preset = params.get('preset') || 'production'; // Default to production (Claude reasoning)
-  const slug = generateSlug(query);
+
+  // Determine if this is a full context mode (from extension with ctx_xxx ID)
+  const isFullContextMode = ctxId && ctxId.startsWith('ctx_');
+  const slug = query ? generateSlug(query) : `page-${Date.now().toString(36)}`;
 
   // Clear main and show loading state
+  const loadingMessage = isFullContextMode
+    ? 'Generating from your browsing context...'
+    : `"${query}"`;
   main.innerHTML = `
     <div class="section generating-container vitamix-recommender">
-      <span class="generating-query">"${query}"</span>
+      <span class="generating-query">${loadingMessage}</span>
     </div>
     <div id="generation-content"></div>
   `;
@@ -765,9 +772,16 @@ async function renderVitamixRecommenderPage() {
   const loadingState = main.querySelector('.generating-container');
   const content = main.querySelector('#generation-content');
 
-  // Connect to SSE stream with preset parameter and session context
-  const contextParam = SessionContextManager.buildEncodedContextParam();
-  const streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?query=${encodeURIComponent(query)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}&ctx=${contextParam}`;
+  // Build stream URL based on mode
+  let streamUrl;
+  if (isFullContextMode) {
+    // Full context mode: pass context ID to worker (it will fetch from KV)
+    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?ctx=${encodeURIComponent(ctxId)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}`;
+  } else {
+    // Query mode: pass query with optional session context
+    const contextParam = SessionContextManager.buildEncodedContextParam();
+    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?query=${encodeURIComponent(query)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}&ctx=${contextParam}`;
+  }
   const eventSource = new EventSource(streamUrl);
   let blockCount = 0;
   const generatedBlocks = [];
@@ -890,21 +904,26 @@ async function renderVitamixRecommenderPage() {
       document.title = `${h1.textContent} | Vitamix`;
     }
 
-    // Save query to session context with enriched data for conversational flow
-    SessionContextManager.addQuery({
-      query,
-      timestamp: Date.now(),
-      intent: data.intent?.intentType || 'general',
-      entities: data.intent?.entities || { products: [], ingredients: [], goals: [] },
-      generatedPath: `/discover/${slug}`,
-      // Enriched context from worker
-      recommendedProducts: data.recommendations?.products || [],
-      recommendedRecipes: data.recommendations?.recipes || [],
-      blockTypes: data.recommendations?.blockTypes || [],
-      journeyStage: data.reasoning?.journeyStage || 'exploring',
-      confidence: data.reasoning?.confidence || 0.5,
-      nextBestAction: data.reasoning?.nextBestAction || '',
-    });
+    // Use effective query for tracking/persistence (fallback to context description if full context mode)
+    const effectiveQuery = query || (isFullContextMode ? 'Personalized recommendation from browsing context' : 'Unknown query');
+
+    // Save query to session context with enriched data for conversational flow (skip for full context mode since extension tracks history)
+    if (!isFullContextMode) {
+      SessionContextManager.addQuery({
+        query: effectiveQuery,
+        timestamp: Date.now(),
+        intent: data.intent?.intentType || 'general',
+        entities: data.intent?.entities || { products: [], ingredients: [], goals: [] },
+        generatedPath: `/discover/${slug}`,
+        // Enriched context from worker
+        recommendedProducts: data.recommendations?.products || [],
+        recommendedRecipes: data.recommendations?.recipes || [],
+        blockTypes: data.recommendations?.blockTypes || [],
+        journeyStage: data.reasoning?.journeyStage || 'exploring',
+        confidence: data.reasoning?.confidence || 0.5,
+        nextBestAction: data.reasoning?.nextBestAction || '',
+      });
+    }
 
     // Track query in analytics
     try {
@@ -913,13 +932,14 @@ async function renderVitamixRecommenderPage() {
       });
       if (!tracker.initialized) tracker.init();
       tracker.trackQuery({
-        query,
+        query: effectiveQuery,
         intent: data.intent?.intentType || 'general',
         journeyStage: data.reasoning?.journeyStage || 'exploring',
+        source: isFullContextMode ? 'extension' : 'direct',
       });
-    } catch (e) {
+    } catch (err) {
       // Analytics tracking failure should not break the app
-      console.warn('[Recommender] Analytics tracking failed:', e);
+      console.warn('[Recommender] Analytics tracking failed:', err);
     }
 
     // eslint-disable-next-line no-console
@@ -931,7 +951,7 @@ async function renderVitamixRecommenderPage() {
 
     // Auto-persist to DA
     if (generatedBlocks.length > 0) {
-      persistToDA(query, generatedBlocks, data.intent);
+      persistToDA(effectiveQuery, generatedBlocks, data.intent);
     }
   });
 

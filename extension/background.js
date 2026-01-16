@@ -5,13 +5,18 @@
 
 import { ProfileEngine, DEFAULT_PROFILE } from './lib/profile-engine.js';
 import { createSignal } from './lib/signals.js';
-import { generateQuery } from './lib/query-generator.js';
 
 // POC site base URL
 const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
 
+// Worker API URL for context storage
+const WORKER_API_URL = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev';
+
 // Profile engine instance
 let profileEngine = new ProfileEngine();
+
+// Previous queries for conversation history
+let previousQueries = [];
 
 // Track session start
 let sessionStartTime = Date.now();
@@ -69,20 +74,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({
         profile: profileEngine.getProfile(),
         signals: profileEngine.getSignals(),
-        syntheticQuery: generateQuery(profileEngine.getProfile(), profileEngine.getSignals()),
+        previousQueries,
       });
       return false;
 
-    case 'CLEAR_PROFILE':
-      handleClearProfile().then(() => {
+    case 'CLEAR_SESSION':
+      handleClearSession().then(() => {
         sendResponse({ success: true });
       });
       return true;
 
-    case 'EXECUTE_QUERY':
-      handleExecuteQuery(message.query, message.preset, sender.tab?.id);
-      sendResponse({ success: true });
-      return false;
+    case 'GENERATE_PAGE':
+      handleGeneratePage(message.query, message.preset).then((result) => {
+        sendResponse(result);
+      });
+      return true;
 
     case 'LOAD_EXAMPLE':
       handleLoadExample(message.example).then(() => {
@@ -127,21 +133,72 @@ async function addSignal(signal) {
 }
 
 /**
- * Clear profile
+ * Clear entire session - signals, profile, and conversation history
  */
-async function handleClearProfile() {
+async function handleClearSession() {
   profileEngine.reset();
+  previousQueries = [];
   sessionStartTime = Date.now();
-  await chrome.storage.local.remove(['profile', 'signals']);
+  await chrome.storage.local.remove(['profile', 'signals', 'previousQueries']);
   await notifyPanel();
 }
 
 /**
- * Execute query - open POC site with query
+ * Generate page - store context on worker and navigate
  */
-function handleExecuteQuery(query, preset = 'all-cerebras', tabId) {
-  const url = `${POC_BASE_URL}/?q=${encodeURIComponent(query)}&preset=${preset}`;
-  chrome.tabs.create({ url });
+async function handleGeneratePage(query, preset = 'all-cerebras') {
+  try {
+    // Build full context package
+    const context = {
+      signals: profileEngine.getSignals(),
+      query: query || null,
+      previousQueries,
+      profile: profileEngine.getProfile(),
+      timestamp: Date.now(),
+    };
+
+    // If we have a query, add it to conversation history
+    if (query && query.trim()) {
+      previousQueries.push(query.trim());
+      // Keep only last 10 queries
+      if (previousQueries.length > 10) {
+        previousQueries = previousQueries.slice(-10);
+      }
+      await chrome.storage.local.set({ previousQueries });
+    }
+
+    // Check if we have any context to send
+    const hasContext = context.signals.length > 0 || context.query || context.previousQueries.length > 0;
+
+    if (!hasContext) {
+      return { success: false, error: 'No context available. Browse vitamix.com or enter a query.' };
+    }
+
+    // Store context on worker and get short ID
+    const response = await fetch(`${WORKER_API_URL}/store-context`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(context),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Worker returned ${response.status}`);
+    }
+
+    const { id } = await response.json();
+
+    // Navigate to POC site with context ID
+    const url = `${POC_BASE_URL}/?ctx=${id}&preset=${preset}`;
+    chrome.tabs.create({ url });
+
+    // Notify panel of updated state (new query added to history)
+    await notifyPanel();
+
+    return { success: true, contextId: id };
+  } catch (error) {
+    console.error('[Background] Error generating page:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 /**
@@ -200,14 +257,18 @@ async function checkReturnVisit() {
 }
 
 /**
- * Load profile from storage
+ * Load profile and session from storage
  */
 async function loadProfileFromStorage() {
   try {
-    const data = await chrome.storage.local.get(['profile', 'signals']);
+    const data = await chrome.storage.local.get(['profile', 'signals', 'previousQueries']);
     if (data.profile || data.signals) {
       profileEngine.loadFromStorage(data);
       console.log('[Background] Loaded profile from storage');
+    }
+    if (data.previousQueries) {
+      previousQueries = data.previousQueries;
+      console.log('[Background] Loaded', previousQueries.length, 'previous queries');
     }
   } catch (e) {
     console.error('[Background] Error loading profile:', e);
@@ -238,7 +299,7 @@ async function notifyPanel() {
       type: 'PROFILE_UPDATED',
       profile: profileEngine.getProfile(),
       signals: profileEngine.getSignals(),
-      syntheticQuery: generateQuery(profileEngine.getProfile(), profileEngine.getSignals()),
+      previousQueries,
     });
   } catch (e) {
     // Panel might not be open

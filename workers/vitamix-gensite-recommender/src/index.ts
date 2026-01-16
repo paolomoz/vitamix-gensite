@@ -326,70 +326,89 @@ async function handleGenerateHint(request: Request, env: Env): Promise<Response>
       .map((s) => `- ${s.label}${s.product ? ` (${s.product})` : ''}`)
       .join('\n');
 
-    const prompt = `You are a Vitamix brand copywriter creating a personalized content section for a user browsing vitamix.com.
+    // Build specificity requirements based on available data
+    const hasProducts = profile.products_considered?.length > 0;
+    const hasUseCases = profile.use_cases?.length > 0;
+    const hasSignals = signals.length > 0;
 
-Current page: ${pageContext.url}
-Page title: ${pageContext.title}
-Page H1: ${pageContext.h1 || 'N/A'}
+    const specificityRequirement = hasProducts
+      ? `You MUST mention at least one of these products by name: ${profile.products_considered.join(', ')}`
+      : hasUseCases
+      ? `You MUST reference their interest in: ${profile.use_cases.join(', ')}`
+      : hasSignals
+      ? `You MUST reference their browsing behavior from the signals above`
+      : `Reference the specific page content they're viewing`;
 
-Page sections:
-${sectionsText || 'No sections detected'}
+    const prompt = `You are creating a HIGHLY PERSONALIZED content section for a specific user on vitamix.com.
 
-User profile:
-- Products viewed: ${profile.products_considered?.join(', ') || 'none'}
-- Use cases: ${profile.use_cases?.join(', ') || 'none'}
-- Segments: ${profile.segments?.join(', ') || 'none'}
+CURRENT PAGE: ${pageContext.url}
+Page H1: ${pageContext.h1 || pageContext.title}
+
+USER'S BROWSING CONTEXT:
+- Products they've viewed: ${profile.products_considered?.join(', ') || 'none yet'}
+- Their interests: ${profile.use_cases?.join(', ') || 'exploring'}
+- User segments: ${profile.segments?.join(', ') || 'new visitor'}
 - Decision style: ${profile.decision_style || 'unknown'}
-- Profile confidence: ${Math.round((profile.confidence_score || 0) * 100)}%
 
-Recent browsing signals:
-${signalsText || 'No signals captured'}
+THEIR RECENT ACTIONS:
+${signalsText || 'Just arrived on this page'}
 
-Create a full content section that feels like premium editorial content from Vitamix. The section should:
-1. Feel personalized - reference their specific journey, interests, or the products they've viewed
-2. Be insightful - offer a perspective or comparison they haven't considered
-3. Drive action - make them want to click to learn more
-4. Match Vitamix's voice: confident, helpful, premium, never salesy
+PAGE SECTIONS (for injection targeting):
+${sectionsText || 'Standard page layout'}
 
-CONTENT STRUCTURE:
-- eyebrow: Short uppercase label (2-4 words) that categorizes the insight, e.g., "WORTH COMPARING", "MADE FOR YOU", "A CLOSER LOOK"
-- headline: Compelling serif headline (5-10 words) that speaks directly to their situation, e.g., "A Reason to Believe", "The Feature That Changes Everything"
-- body: One insightful sentence (15-25 words) explaining why this matters to them specifically
-- cta: Action-oriented button text (2-4 words), e.g., "See the Comparison", "Explore Recipes", "Find Your Match"
-- query: The full query to send to the AI page generator when they click
+═══════════════════════════════════════════════════════════════
+CRITICAL REQUIREMENT: ${specificityRequirement}
+═══════════════════════════════════════════════════════════════
 
-EXAMPLES OF GREAT CONTENT:
+Your content MUST be specific to THIS user's journey. Generic content is FORBIDDEN.
 
-For someone comparing A3500 and E310:
-- eyebrow: "WORTH THE DIFFERENCE"
-- headline: "What $200 Actually Gets You"
-- body: "The A3500's touchscreen and wireless connectivity might matter more than you think. Here's the real comparison."
-- cta: "See the Breakdown"
+BANNED GENERIC PHRASES (never use these):
+- "Find what fits your kitchen"
+- "Explore our blenders"
+- "Start here"
+- "Take the quiz"
+- "Find your match"
+- "Discover what's possible"
+- Any content that could apply to ANY visitor
 
-For someone interested in soups:
-- eyebrow: "BEYOND SMOOTHIES"
-- headline: "Restaurant-Quality Soups at Home"
-- body: "The hot soup program heats while it blends—no stovetop needed. Discover what's possible."
-- cta: "Explore Soup Recipes"
+REQUIRED: Your headline and body MUST include at least ONE of:
+- A specific product name (A3500, E310, Ascent, etc.)
+- A specific feature (self-detect, hot soup program, variable speed)
+- A specific use case (smoothies, soups, nut butter)
+- A reference to their comparison/research behavior
 
-For someone who viewed multiple products:
-- eyebrow: "PERSONALIZED FOR YOU"
-- headline: "Let's Find Your Perfect Match"
-- body: "Based on what you've been exploring, we can help narrow down the choice."
-- cta: "Get Recommendations"
+EXAMPLES OF GREAT SPECIFIC CONTENT:
 
-Return ONLY valid JSON (no markdown, no explanation):
+If they viewed A3500 and E310:
+- eyebrow: "A3500 VS E310"
+- headline: "The $200 Question, Answered"
+- body: "You've looked at both. The A3500's touchscreen and app connectivity are the key differences—here's whether they're worth it for you."
+- cta: "See Full Comparison"
+
+If they're interested in soups:
+- eyebrow: "FOR SOUP LOVERS"
+- headline: "The Hot Soup Program Changes Everything"
+- body: "Heat and blend in one step—no stovetop needed. See which models have it and the best soup recipes to try."
+- cta: "Explore Soup Blenders"
+
+If they viewed the A3500 product page:
+- eyebrow: "ABOUT THE A3500"
+- headline: "What Makes It the Flagship"
+- body: "The A3500 is Vitamix's most advanced home blender. Here's whether its premium features match what you need."
+- cta: "Deep Dive on A3500"
+
+Return ONLY valid JSON:
 {
   "injectionPoint": {
-    "selector": "CSS selector from the sections list",
+    "selector": "CSS selector from sections list",
     "position": "after"
   },
   "hint": {
-    "eyebrow": "SHORT UPPERCASE LABEL",
-    "headline": "Compelling Headline Here",
-    "body": "One insightful sentence about why this matters to them.",
-    "cta": "Action Text",
-    "query": "Full detailed query for AI page generator"
+    "eyebrow": "SPECIFIC CONTEXTUAL LABEL",
+    "headline": "Headline With Specific Product/Feature/Use Case",
+    "body": "Sentence referencing their specific journey and what they'll learn.",
+    "cta": "Specific Action",
+    "query": "Detailed query for AI page generator mentioning specific products/features"
   }
 }`;
 

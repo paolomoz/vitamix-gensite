@@ -938,13 +938,16 @@ export function buildRAGContext(
   maxRecipes = 6,
   sessionContext?: SessionContextForRAG
 ): RAGContext {
-  const lowerQuery = query.toLowerCase();
+  // Normalize Unicode hyphens (non-breaking hyphen, en-dash, etc.) to regular hyphen/space
+  // This fixes queries like "hot‑soup" (U+2011) not matching "hot soup" keywords
+  const normalizedQuery = query.replace(/[\u2010-\u2015\u2212]/g, ' ');
+  const lowerQuery = normalizedQuery.toLowerCase();
 
   // Detect user persona
   const detectedPersona = detectPersona(query);
 
-  // Extract use case keywords from query
-  const detectedKeywords = extractKeywords(query);
+  // Extract use case keywords from query (use normalized query for keyword matching)
+  const detectedKeywords = extractKeywords(normalizedQuery);
 
   // Extract keywords from session history (conversation context)
   // This enables "I have 4 kids" + "they love soups!" to find kid-friendly soup recipes
@@ -957,11 +960,11 @@ export function buildRAGContext(
     console.log('[RAG] Combined keywords:', combinedKeywords);
   }
 
-  // Extract ingredient terms from query (NEW)
-  const detectedIngredients = extractIngredients(query);
+  // Extract ingredient terms from query (NEW) - use normalized query
+  const detectedIngredients = extractIngredients(normalizedQuery);
 
   // Extract product model names from query
-  const productModels = extractProductModels(query);
+  const productModels = extractProductModels(normalizedQuery);
 
   // Find relevant products - first try exact model matches
   let relevantProducts: Product[] = [];
@@ -979,7 +982,7 @@ export function buildRAGContext(
 
   // Then try general search if no model matches
   if (relevantProducts.length === 0) {
-    relevantProducts = searchProducts(query);
+    relevantProducts = searchProducts(normalizedQuery);
   }
 
   // If still no products, try keyword-based search (using combined keywords for context)
@@ -1127,7 +1130,7 @@ export function buildRAGContext(
 
   // PRIORITY 2: Also search using the full query (searches name, description, AND ingredients)
   if (relevantRecipes.length < maxRecipes) {
-    const queryRecipes = searchRecipes(query, maxRecipes);
+    const queryRecipes = searchRecipes(normalizedQuery, maxRecipes);
     // Add unique recipes not already found
     for (const r of queryRecipes) {
       if (!relevantRecipes.some(existing => existing.name === r.name)) {
@@ -1229,15 +1232,32 @@ export function buildRAGContext(
     relevantRecipes = diverseRecipes;
   }
 
-  // Sort to prioritize recipes with real images
+  // Prioritize hot soups when query asks for "hot soup" specifically
+  // This ensures cold/chilled soups don't appear for hot soup queries
+  const wantsHotSoup = lowerQuery.includes('hot') && (lowerQuery.includes('soup') || combinedKeywords.includes('soups'));
+
+  // Sort recipes by relevance: hot soup match (if applicable) > real images > rest
   relevantRecipes.sort((a, b) => {
+    // Hot soup priority (only when user wants hot soups)
+    let hotSoupScore = 0;
+    if (wantsHotSoup) {
+      const aIsHotSoup = a.recommendedProgram?.toLowerCase() === 'hot soup' ? 10 : 0;
+      const bIsHotSoup = b.recommendedProgram?.toLowerCase() === 'hot soup' ? 10 : 0;
+      // Deprioritize explicitly cold/chilled soups
+      const aIsCold = a.subcategory?.toLowerCase().includes('chilled') || a.subcategory?.toLowerCase().includes('cold') ? -10 : 0;
+      const bIsCold = b.subcategory?.toLowerCase().includes('chilled') || b.subcategory?.toLowerCase().includes('cold') ? -10 : 0;
+      hotSoupScore = (bIsHotSoup + bIsCold) - (aIsHotSoup + aIsCold);
+    }
+    if (hotSoupScore !== 0) return hotSoupScore;
+
+    // Image quality as secondary sort
     const aHasImage = a.images?.primary &&
       !a.images.primary.includes('vitamix-logo') &&
       !a.images.primary.includes('noimageimage') ? 1 : 0;
     const bHasImage = b.images?.primary &&
       !b.images.primary.includes('vitamix-logo') &&
       !b.images.primary.includes('noimageimage') ? 1 : 0;
-    return bHasImage - aHasImage; // Real images first
+    return bHasImage - aHasImage;
   });
 
   relevantRecipes = relevantRecipes.slice(0, maxRecipes);

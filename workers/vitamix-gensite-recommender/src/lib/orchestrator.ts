@@ -197,9 +197,12 @@ function buildRecipeContext(recipes: Recipe[]): string {
   if (!recipes.length) return 'No recipes available.';
   return recipes.map(r => {
     const imageUrl = normalizeImageUrl(r.images?.primary || r.images?.remoteUrl);
+    // Include program and subcategory so AI can distinguish hot vs cold soups
+    const programInfo = r.recommendedProgram ? `\n  Program: ${r.recommendedProgram}` : '';
+    const typeInfo = r.subcategory ? `\n  Type: ${r.subcategory}` : '';
     return `
 - ${r.name}
-  Category: ${r.category}
+  Category: ${r.category}${programInfo}${typeInfo}
   Time: ${r.time || r.prepTime || '10 min'}
   Difficulty: ${r.difficulty || 'easy'}
   Image: ${imageUrl}

@@ -1,8 +1,376 @@
 {
-  "generatedAt": "2025-12-09T20:14:10.920Z",
+  "generatedAt": "2026-01-16T12:00:00.000Z",
   "source": "https://www.vitamix.com",
-  "count": 37,
+  "count": 45,
   "products": [
+    {
+      "id": "quick-and-quiet",
+      "sku": "071771",
+      "name": "Quick & Quiet™",
+      "series": "commercial",
+      "category": "beverage-blenders",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/quick-and-quiet",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "The latest blending innovation from Vitamix Commercial, designed to help world's biggest chains solve their toughest blending challenges faster than ever before. Features the Accelerate™ Container that reduces blend times by 30% or more.",
+      "tagline": "Faster blends, quieter operation, better results",
+      "features": [
+        "Accelerate™ Container reduces blend times by 30%+",
+        "Patented Noise Reduction with advanced vibration dampening",
+        "10 program buttons with 40 factory settings",
+        "Energy-efficient motor (30%+ more efficient)",
+        "Dishwasher-safe container and lid",
+        "Easy cleaning in 35 seconds",
+        "Dual Advance Blade laser-cut stainless-steel"
+      ],
+      "bestFor": [
+        "Smoothies",
+        "Frozen drinks",
+        "High-volume beverage programs",
+        "Quick service restaurants"
+      ],
+      "warranty": "700 hours or 4 years on motor base parts; 1-year labor",
+      "specs": {
+        "horsepower": "2.7 HP",
+        "capacity": "40 oz",
+        "programs": 10,
+        "dimensions": "18.0\" H × 8.7\" W × 11\" D (24.5\" with lid open)",
+        "weight": "18 lbs 12.5 oz",
+        "electrical": "120V, 50-60 Hz, 20.0A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/q/u/quickandquiet_front_620x620.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/quick-and-quiet",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "the-quiet-one",
+      "sku": "036019-ABAB",
+      "name": "The Quiet One®",
+      "series": "commercial",
+      "category": "beverage-blenders",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/the-quiet-one",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "Commercial beverage blender designed for high-volume smoothie, frappé, and frozen drink production with patented noise reduction technology. Air management and a powerful 3-peak output HP motor reduces noise, improves reliability, and minimizes downtime.",
+      "tagline": "Whisper-quiet performance for front-of-house blending",
+      "features": [
+        "Patented Noise Reduction technology",
+        "3-peak output HP motor",
+        "6 program buttons with 34 customizable settings",
+        "Twist-lock sound enclosure",
+        "Larger centering pad for simplified cleaning",
+        "Automatic shut-off"
+      ],
+      "bestFor": [
+        "Smoothies",
+        "Frappés",
+        "Frozen drinks",
+        "Coffee shops",
+        "Juice bars"
+      ],
+      "warranty": "3 years on motor base; 1-year labor and components",
+      "specs": {
+        "horsepower": "3 peak HP",
+        "capacity": "48 oz",
+        "programs": 6,
+        "dimensions": "45.7 × 21.6 × 27.2 cm (62.2 cm with lid open)",
+        "weight": "9.1 kg (12.7 kg boxed)",
+        "electrical": "220-240V, 50/60 Hz, 1300-1550W"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/t/h/thequietone_front_620x620.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/the-quiet-one",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "touch-go-advance",
+      "sku": "068255-ABAB",
+      "name": "Touch & Go™ Advance®",
+      "series": "commercial",
+      "category": "beverage-blenders",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/touch-go-advance",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "A commercial beverage blender designed for smaller-volume shops, featuring a powerful motor, convenient pre-set controls, and noise reduction. Perfect for cafes and smaller establishments.",
+      "tagline": "Powerful performance for smaller-volume shops",
+      "features": [
+        "2.3 HP motor for frozen drinks",
+        "Twist-and-lock sound enclosure (no tools required)",
+        "6 preset buttons with 20 recipe programs",
+        "32-ounce Advance® Container",
+        "Front or back-of-house operation"
+      ],
+      "bestFor": [
+        "Smoothies",
+        "Frozen drinks",
+        "Small cafes",
+        "Kiosks"
+      ],
+      "warranty": "3 years on motor base parts; 1-year labor, blade assembly, and container",
+      "specs": {
+        "horsepower": "2.3 peak HP",
+        "capacity": "32 oz (0.9L)",
+        "programs": 6,
+        "dimensions": "18.0 × 8.5 × 10.8 in (24.5\" with lid open)",
+        "weight": "18.96 lbs (23.1 lbs boxed)",
+        "electrical": "120V, 50-60 Hz, 12.0A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/t/o/touchandgo_front_620x620.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/touch-go-advance",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "drink-machine-advance",
+      "sku": "062824",
+      "name": "Drink Machine™ Advance®",
+      "series": "commercial",
+      "category": "beverage-blenders",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/drink-machine-advance",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "An essential tool for maximizing your beverage program, designed for smoothies, frozen cocktails, and blended beverage applications in bars, restaurants, and cafes.",
+      "tagline": "Essential for maximizing your beverage program",
+      "features": [
+        "Six optimized programs with automatic shut-off",
+        "1.4-litre Advance® container for faster pours",
+        "2.3 HP motor with enhanced heat resistance",
+        "Pulse feature for manual customization",
+        "Laser-cut stainless-steel blades (3-inch diameter)"
+      ],
+      "bestFor": [
+        "Smoothies",
+        "Frozen cocktails",
+        "Blended beverages",
+        "Bars",
+        "Restaurants"
+      ],
+      "warranty": "3 years on motor base parts; 1-year labor, blade assembly, and container",
+      "specs": {
+        "horsepower": "2.3 peak HP",
+        "capacity": "48 oz (1.4L)",
+        "programs": 6,
+        "dimensions": "17.76\" H x 7.52\" W x 8.74\" D",
+        "weight": "11.53 lbs (13.54 lbs boxed)",
+        "electrical": "120V, 50-60 Hz, 11.5A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/d/r/drinkmachine_front_620x620.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/drink-machine-advance",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "vita-prep-3",
+      "sku": "062826",
+      "name": "Vita-Prep® 3",
+      "series": "commercial",
+      "category": "food-prep-blenders",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/vita-prep-3",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "Professional food preparation blender designed for commercial kitchens. Trusted by chefs and culinary schools for exceptional power, versatility, and performance across chopping delicate ingredients and blending thick purées.",
+      "tagline": "The chef's choice for professional food preparation",
+      "features": [
+        "3 peak output HP motor with thermal protection",
+        "Variable Speed Control for precise textures",
+        "Start/Stop switch with auto-neutral return",
+        "Advanced cooling fan for peak reliability",
+        "Tamper included for thick mixtures",
+        "BPA-free 2.0-litre high-impact container"
+      ],
+      "bestFor": [
+        "Purees",
+        "Sauces",
+        "Soups",
+        "Dressings",
+        "Commercial kitchens",
+        "Culinary schools"
+      ],
+      "warranty": "3 years on motor base parts; 1-year labor, blade assembly, and container",
+      "specs": {
+        "horsepower": "3 peak HP",
+        "capacity": "2.0 litre (64 oz)",
+        "programs": 0,
+        "dimensions": "20.0 x 7.52 x 8.74 in",
+        "weight": "12.2 lbs (13.8 lbs boxed)",
+        "electrical": "120V, 50/60 Hz, 12.5A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/v/i/vitaprep3_front_620x620.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/vita-prep-3",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "vitamix-xl",
+      "sku": "005201",
+      "name": "Vitamix XL®",
+      "series": "commercial",
+      "category": "food-prep-blenders",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/vitamix-xl",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "Blend up to 24 (8 oz.) servings at once with this large-capacity countertop blender designed to reduce prep time and improve staff efficiency in commercial kitchens.",
+      "tagline": "Large-capacity blending for high-volume operations",
+      "features": [
+        "4.2 peak HP motor for heavy blending",
+        "Variable speed control with pulse",
+        "1.5-gallon low-profile container",
+        "2.0-litre secondary container included",
+        "Removable lid plugs for adding ingredients"
+      ],
+      "bestFor": [
+        "Large batch preparation",
+        "Sauces",
+        "Soups",
+        "Dressings",
+        "High-volume kitchens",
+        "Catering"
+      ],
+      "warranty": "3 years on motor base; 1-year container and blade assembly",
+      "specs": {
+        "horsepower": "4.2 peak HP",
+        "capacity": "1.5 gallons + 2.0 litres",
+        "programs": 0,
+        "dimensions": "18.1\" H x 8.5\" W x 19.0\" D",
+        "weight": "34.5 lbs (45.5 lbs boxed)",
+        "electrical": "120V, 50/60 Hz, 15A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/v/i/vitamixxl_int.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/vitamix-xl",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "mix-n-machine-advance",
+      "sku": "056393",
+      "name": "Mix'n Machine® Advance®",
+      "series": "commercial",
+      "category": "frozen-treat-mixers",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/mix-n-machine-advance",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "The industry's leading frozen treat mixer that can incorporate candies, cookies and other hard-to-mix ingredients into hard or soft serve ice cream or yogurt.",
+      "tagline": "The industry's leading frozen treat mixer",
+      "features": [
+        "Six pre-programmed settings",
+        "Cup-activated lever with smart delay (one-handed operation)",
+        "Quick disconnect fittings for water connection",
+        "Pulse feature for refreshing desserts",
+        "Multiple agitator options",
+        "Automatic shut-off with indicator light"
+      ],
+      "bestFor": [
+        "Ice cream mixing",
+        "Frozen yogurt",
+        "Candy mix-ins",
+        "Cookie mix-ins",
+        "Dessert shops",
+        "Ice cream parlors"
+      ],
+      "warranty": "3 years on motor base parts",
+      "specs": {
+        "horsepower": "500-3000 RPM motor",
+        "capacity": "22 oz",
+        "programs": 6,
+        "dimensions": "24.0 x 10.0 x 8.3 in",
+        "weight": "19.2 lbs (22.2 lbs boxed)",
+        "electrical": "120V, 50-60 Hz, 1.6A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/m/i/mixnmachineadvance_front_620x620.jpg",
+        "gallery": [],
+        "remoteUrls": []
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/mix-n-machine-advance",
+      "contentHash": "",
+      "isCommercial": true
+    },
+    {
+      "id": "mix-n-machine",
+      "sku": "000570",
+      "name": "Mix'n Machine®",
+      "series": "commercial",
+      "category": "frozen-treat-mixers",
+      "url": "https://www.vitamix.com/vr/en_us/commercial/products/mix-n-machine",
+      "price": null,
+      "originalPrice": null,
+      "availability": "contact-dealer",
+      "description": "The Mix'n Machine easily mixes candy, cookies, and fruit with ice cream or frozen yogurt for commercial frozen treat applications. Introduced in 1985, many original models remain operational, demonstrating exceptional durability.",
+      "tagline": "Legendary durability since 1985",
+      "features": [
+        "Durable motor maintains consistent speed",
+        "Multiple agitator options for varying densities",
+        "Removable splash guard for easy cleaning",
+        "Built for commercial reliability and longevity",
+        "3440 RPM bare motor speed"
+      ],
+      "bestFor": [
+        "Ice cream mixing",
+        "Frozen yogurt",
+        "Candy mix-ins",
+        "Fruit mix-ins",
+        "Ice cream parlors"
+      ],
+      "warranty": "3 years on motor base parts; 1-year blade assembly and container",
+      "specs": {
+        "horsepower": "3440 RPM motor",
+        "capacity": "22 oz",
+        "programs": 0,
+        "dimensions": "24.0\" H × 10.0\" W × 8.3\" D",
+        "weight": "21.9 lbs (25.0 lbs boxed)",
+        "electrical": "120V, 50-60 Hz, 2.6A"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/media/catalog/product/m/i/mixnmachine-front-dom_620x620_1_.jpg",
+        "gallery": [],
+        "remoteUrls": [
+          "https://www.vitamix.com/media/catalog/product/m/i/mixnmachine-front-dom_620x620_1_.jpg"
+        ]
+      },
+      "crawledAt": "2026-01-16T12:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/vr/en_us/commercial/products/mix-n-machine",
+      "contentHash": "",
+      "isCommercial": true
+    },
     {
       "id": "5200-legacy-bundle",
       "sku": "5200_LEGACY_BUNDLE",

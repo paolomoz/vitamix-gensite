@@ -297,21 +297,28 @@ async function renderGenerativePage() {
       section.classList.add(`${blockName}-container`);
 
       // Apply hero composition classes for text placement, background tone, and aspect ratio
-      if (blockName === 'hero' && data.heroComposition) {
-        const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
-        if (textPlacement) {
-          blockEl.classList.add(`text-${textPlacement}`);
-        }
-        if (backgroundTone) {
-          blockEl.classList.add(`bg-${backgroundTone}`);
-        }
-        if (aspectRatio) {
-          blockEl.classList.add(`aspect-${aspectRatio}`);
-          // For wide heroes, propagate class to wrapper/section for full-width styling
-          if (aspectRatio === 'wide') {
-            wrapper.classList.add('aspect-wide-wrapper');
-            section.classList.add('aspect-wide-section');
+      if (blockName === 'hero') {
+        if (data.heroComposition) {
+          const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
+          if (textPlacement) {
+            blockEl.classList.add(`text-${textPlacement}`);
           }
+          if (backgroundTone) {
+            blockEl.classList.add(`bg-${backgroundTone}`);
+          }
+          if (aspectRatio) {
+            blockEl.classList.add(`aspect-${aspectRatio}`);
+            // For wide heroes, propagate class to wrapper/section for full-width styling
+            if (aspectRatio === 'wide') {
+              wrapper.classList.add('aspect-wide-wrapper');
+              section.classList.add('aspect-wide-section');
+            }
+          }
+        }
+        // Fallback: check if aspect-wide is already in the HTML classes
+        if (blockEl.classList.contains('aspect-wide') && !wrapper.classList.contains('aspect-wide-wrapper')) {
+          wrapper.classList.add('aspect-wide-wrapper');
+          section.classList.add('aspect-wide-section');
         }
       }
     }
@@ -867,21 +874,28 @@ async function renderVitamixRecommenderPage() {
       section.classList.add(`${blockName}-container`);
 
       // Apply hero composition classes for text placement, background tone, and aspect ratio
-      if (blockName === 'hero' && data.heroComposition) {
-        const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
-        if (textPlacement) {
-          blockEl.classList.add(`text-${textPlacement}`);
-        }
-        if (backgroundTone) {
-          blockEl.classList.add(`bg-${backgroundTone}`);
-        }
-        if (aspectRatio) {
-          blockEl.classList.add(`aspect-${aspectRatio}`);
-          // For wide heroes, propagate class to wrapper/section for full-width styling
-          if (aspectRatio === 'wide') {
-            wrapper.classList.add('aspect-wide-wrapper');
-            section.classList.add('aspect-wide-section');
+      if (blockName === 'hero') {
+        if (data.heroComposition) {
+          const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
+          if (textPlacement) {
+            blockEl.classList.add(`text-${textPlacement}`);
           }
+          if (backgroundTone) {
+            blockEl.classList.add(`bg-${backgroundTone}`);
+          }
+          if (aspectRatio) {
+            blockEl.classList.add(`aspect-${aspectRatio}`);
+            // For wide heroes, propagate class to wrapper/section for full-width styling
+            if (aspectRatio === 'wide') {
+              wrapper.classList.add('aspect-wide-wrapper');
+              section.classList.add('aspect-wide-section');
+            }
+          }
+        }
+        // Fallback: check if aspect-wide is already in the HTML classes
+        if (blockEl.classList.contains('aspect-wide') && !wrapper.classList.contains('aspect-wide-wrapper')) {
+          wrapper.classList.add('aspect-wide-wrapper');
+          section.classList.add('aspect-wide-section');
         }
       }
     }

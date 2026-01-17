@@ -91,8 +91,8 @@ const ANALYZED_IMAGES: Record<string, ImageAnalysis> = {
     content_description: 'Black Vitamix blender with orange citrus drinks and warm terracotta wall',
     quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Excellent hero with warm sophisticated color palette, blender on left',
-    text_placement: 'right',
+    hero_notes: 'Excellent hero with warm sophisticated color palette, blender on right',
+    text_placement: 'left',
     background_tone: 'mixed',
     aspect_ratio: 'wide', // 2000x667 = 3.00
   },

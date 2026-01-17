@@ -4,9 +4,10 @@
   "description": "Real-time intent inference demo tool for vitamix.com and AEM Edge Delivery - captures user behavior and generates personalized page queries",
   "version": "1.2.1",
   "icons": {
-    "16": "icons/icon.svg",
-    "48": "icons/icon.svg",
-    "128": "icons/icon.svg"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
   "permissions": [
     "storage",
@@ -55,8 +56,9 @@
   "action": {
     "default_title": "Toggle Intent Inference Panel",
     "default_icon": {
-      "16": "icons/icon.svg",
-      "48": "icons/icon.svg"
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
     }
   }
 }

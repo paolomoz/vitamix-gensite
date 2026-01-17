@@ -333,13 +333,31 @@ suggestedFollowUps MUST:
 2. Offer BOTH directions when appropriate:
    - NARROWING: "Tell me more about [specific product shown]", "Compare the top 2 options"
    - BROADENING: "What other use cases work for me?", "Show me budget alternatives"
-3. Reference session context when available:
-   - "Back to comparing A3500 vs E310" (if they've seen these)
-   - "More recipes like [previous recipe shown]"
-4. Be phrased as natural questions or prompts users would actually ask
-5. NEVER include purchase-intent language:
+3. Be phrased as natural questions or prompts users would actually ask
+4. NEVER include purchase-intent language:
    - NO: "Buy now", "Add to cart", "Shop now", "Purchase", "Checkout"
    - YES: "View details", "Learn more", "Explore options", "See full specs"
+
+## CRITICAL: "Back to..." Session Reference Rules
+
+ONLY include a "Back to [previous topic]" suggestion when ALL these conditions are met:
+1. The previous topic is SEMANTICALLY RELATED to the current query
+2. The user might genuinely want to return to that context
+
+SEMANTIC RELEVANCE EXAMPLES:
+- Current: "soup recipes" + Previous: "hot soup capability" → YES, related
+- Current: "soup recipes" + Previous: "A3500 vs A2500" → NO, unrelated comparison
+- Current: "green smoothie recipe" + Previous: "best blender for smoothies" → YES, related
+- Current: "green smoothie recipe" + Previous: "my vitamix is leaking" → NEVER (support context)
+- Current: "accessories" + Previous: "X5 comparison" → MAYBE, only if accessories are X5-related
+
+NEVER reference session history when:
+- Previous query was a SUPPORT issue (leaking, broken, warranty problem, return)
+- Previous query topic has NO semantic connection to current query
+- It would create a jarring or confusing user experience
+- The previous topic was 3+ queries ago (stale context)
+
+When in doubt, OMIT the "Back to..." suggestion and use a forward-looking discovery suggestion instead.
 
 Example good follow-ups:
 - "What makes the A3500 worth the extra cost?"
@@ -350,7 +368,9 @@ Example good follow-ups:
 Example BAD follow-ups (never use):
 - "Buy the A3500 now"
 - "Add to cart"
-- "Shop now"`;
+- "Shop now"
+- "Back to your leaking blender issue" (never reference support in shopping)
+- "Back to comparing A3500 vs A2500" (when current query is about spinach recipes)`;
 
 // ============================================
 // Comparison Detection Helpers
@@ -487,22 +507,47 @@ function buildReasoningPrompt(
   - Concerns: ${ragContext.detectedPersona.keyBarriers.join(', ')}`
     : 'No specific persona detected';
 
-  const sessionHistory = sessionContext?.previousQueries
-    ?.slice(-3)
-    .map((q) => `  - "${q.query}" (${q.intent})`)
-    .join('\n') || 'New session';
+  // Helper to detect if a query is support-related
+  const isSupportQuery = (q: { query: string; intent?: string; journeyStage?: string }) => {
+    const supportKeywords = /\b(leak|broken|problem|issue|warranty|return|not working|repair|fix|help|support|frustrated|refund)\b/i;
+    return supportKeywords.test(q.query) ||
+           q.intent === 'support' ||
+           q.journeyStage === 'support';
+  };
 
-  // Get last query's enriched context for conversational flow
-  const lastQuery = sessionContext?.previousQueries?.slice(-1)[0];
-  const lastQueryContext = lastQuery ? `
+  // Determine if current query is support-related
+  const currentIsSupport = isSupportQuery({ query, intent: intent.intentType, journeyStage: intent.journeyStage });
+
+  // Segment session history by query type
+  const allPreviousQueries = sessionContext?.previousQueries || [];
+
+  // Filter queries to same context type (support vs shopping/recipe)
+  const relevantQueries = allPreviousQueries
+    .filter(q => currentIsSupport ? isSupportQuery(q) : !isSupportQuery(q))
+    .slice(-3);
+
+  const sessionHistory = relevantQueries.length > 0
+    ? relevantQueries.map((q) => `  - "${q.query}" (${q.intent})`).join('\n')
+    : 'New session (or no related queries in history)';
+
+  // Get last RELEVANT query's enriched context (same type as current)
+  const lastRelevantQuery = relevantQueries.slice(-1)[0];
+
+  // Also note if there were support queries that we're excluding (for transparency)
+  const excludedSupportQueries = currentIsSupport ? [] : allPreviousQueries.filter(isSupportQuery);
+  const supportExclusionNote = excludedSupportQueries.length > 0
+    ? `\n⚠️ Note: ${excludedSupportQueries.length} support-related queries excluded from session context (do NOT reference these in follow-ups)`
+    : '';
+
+  const lastQueryContext = lastRelevantQuery ? `
 ## Last Query Context (IMPORTANT for conversational flow)
-- Query: "${lastQuery.query}"
-- Journey Stage: ${lastQuery.journeyStage || 'exploring'}
-- Confidence: ${lastQuery.confidence || 0.5}
-- Products Shown: ${lastQuery.recommendedProducts?.join(', ') || 'None'}
-- Recipes Shown: ${lastQuery.recommendedRecipes?.join(', ') || 'None'}
-- Blocks Used: ${lastQuery.blockTypes?.join(', ') || 'None'}
-- Next Best Action Suggested: ${lastQuery.nextBestAction || 'None'}` : '';
+- Query: "${lastRelevantQuery.query}"
+- Journey Stage: ${lastRelevantQuery.journeyStage || 'exploring'}
+- Confidence: ${lastRelevantQuery.confidence || 0.5}
+- Products Shown: ${lastRelevantQuery.recommendedProducts?.join(', ') || 'None'}
+- Recipes Shown: ${lastRelevantQuery.recommendedRecipes?.join(', ') || 'None'}
+- Blocks Used: ${lastRelevantQuery.blockTypes?.join(', ') || 'None'}
+- Next Best Action Suggested: ${lastRelevantQuery.nextBestAction || 'None'}${supportExclusionNote}` : '';
 
   return `## User Query
 "${query}"

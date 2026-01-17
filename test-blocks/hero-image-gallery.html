@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Image Gallery</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 300;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .subtitle {
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+    h2 {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 40px 0 20px;
+      color: #c8102e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+    }
+    .card-info {
+      padding: 16px;
+    }
+    .card-info h3 {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .tag {
+      background: #333;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      color: #aaa;
+    }
+    .tag.quality {
+      background: #c8102e;
+      color: #fff;
+    }
+    .tag.mood {
+      background: #1a472a;
+      color: #7cb98b;
+    }
+    .colors {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #444;
+    }
+    .section-count {
+      color: #666;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hero Image Gallery</h1>
+  <p class="subtitle">37 hero-suitable images organized by category</p>
+
+  <h2>Product <span class="section-count">(11 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_1e3c9537df82d212a4b48020802855aee927b1c39.jpg?width=2880&format=webply&optimize=medium" alt="Blender lineup">
+      <div class="card-info">
+        <h3>Blender lineup with colorful fruits against white background</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">colorful</span>
+          <span class="tag">kitchen</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_1a7165d05e047cd6a2f5911a6b435911f6e6831c3.jpg?width=2000&format=webply&optimize=medium" alt="Digital display blender">
+      <div class="card-info">
+        <h3>Sleek black blender with digital display, dramatic dark background</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">sleek</span>
+          <span class="tag">professional</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_1cb9b388991002a446ef15505cee322d580ad7c70.png?width=2000&format=webply&optimize=medium" alt="Two blenders">
+      <div class="card-info">
+        <h3>Commercial + personal blender side-by-side, white textured wall</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">kitchen</span>
+          <span class="tag">professional</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/us/en_us/media_1f845f3ad5b1a676ae33657c7020c136058716dcb.jpg?width=2880&format=webply&optimize=medium" alt="Food system">
+      <div class="card-info">
+        <h3>Complete food processing system with multiple attachments</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">versatile</span>
+          <span class="tag">kitchen</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/home-page/AscentX4_Image_PopUpWindow.jpg" alt="Berries blender">
+      <div class="card-info">
+        <h3>Blender with mixed berries, corrugated metal background</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">colorful</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/GETTING%20STARTED.jpg" alt="Hand operating">
+      <div class="card-info">
+        <h3>Hand operating blender with green vegetables</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">kitchen</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/us/en_us/media_104aa11fe9cafe1d33a0e4e1103b5463a3e8ebf89.png?width=2000&format=webply&optimize=medium" alt="Overhead veggies">
+      <div class="card-info">
+        <h3>Overhead view of beets, greens, berries around blender (dark)</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">fresh</span>
+          <span class="tag">healthy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Smoothie <span class="section-count">(5 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_173b0af31e9a6005fb510fb98a5f8564e0c303743.png?width=2000&format=webply&optimize=medium" alt="Coral smoothies">
+      <div class="card-info">
+        <h3>Two coral-pink smoothies with fresh fruits on white</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">refreshing</span>
+          <span class="tag">fresh</span>
+          <span class="tag">colorful</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/us/en_us/media_1473ee7bbcdfc96b4f65f4e66e4a2f16e1fe9d9c8.png?width=2000&format=webply&optimize=medium" alt="Berry bowl">
+      <div class="card-info">
+        <h3>Pink smoothie bowl topped with fresh berries, dramatic lighting</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">healthy</span>
+          <span class="tag">colorful</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SMOOTHIES%20NON-DIARY%20MILKS%20%20BEVERAGES.jpg" alt="Purple smoothies">
+      <div class="card-info">
+        <h3>Multiple vibrant purple berry smoothies</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 8</span>
+          <span class="tag mood">healthy</span>
+          <span class="tag">colorful</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_BlueSpirulinaTropicalSmoothie_1.jpg" alt="Blue spirulina">
+      <div class="card-info">
+        <h3>Blue smoothie in clear glass mug with berries</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">creamy</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/global/Triple-Berry-Smoothie-square.jpg" alt="Triple berry">
+      <div class="card-info">
+        <h3>Two purple berry smoothies with fresh berries</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">healthy</span>
+          <span class="tag">fresh</span>
+          <span class="tag">colorful</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Drink <span class="section-count">(4 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_1d07ef5e65686be3cfb2316dfd4bb114dc8a23cfa.png?width=2000&format=webply&optimize=medium" alt="Citrus drinks">
+      <div class="card-info">
+        <h3>Black blender with orange drinks, terracotta wall</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">citrus</span>
+          <span class="tag">lifestyle</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_17286266c121381b60a6f884769cacb659f79857f.png?width=2000&format=webply&optimize=medium" alt="Iced coffee">
+      <div class="card-info">
+        <h3>Three iced coffees with caramel swirls</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">creamy</span>
+          <span class="tag">indulgent</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/us/en_us/media_1859c4336854855200d7f4e3fdb348d58c7c79ad3.png?width=2000&format=webply&optimize=medium" alt="Golden smoothies">
+      <div class="card-info">
+        <h3>Two golden smoothies with peach garnish next to blender</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">fresh</span>
+          <span class="tag">kitchen</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/AER%20DISC.jpg" alt="Green pouring">
+      <div class="card-info">
+        <h3>Hand pouring layered green smoothie from pitcher</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">green</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Soup <span class="section-count">(3 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/us/en_us/media_1f46d4f073301a5a107d943a2e0582c5a5730f75c.jpg?width=2000&format=webply&optimize=medium" alt="Orange soup">
+      <div class="card-info">
+        <h3>Orange creamy soup with blender on marble counter</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">warm</span>
+          <span class="tag">creamy</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SOUPS.jpg" alt="Green soup">
+      <div class="card-info">
+        <h3>Two bowls of creamy green soup with herbs</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">comforting</span>
+          <span class="tag">creamy</span>
+          <span class="tag">warm</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/IMMERSION%20BLENDER.jpg" alt="Red soup">
+      <div class="card-info">
+        <h3>Hand using immersion blender in red soup</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">warm</span>
+          <span class="tag">kitchen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Lifestyle <span class="section-count">(5 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/us/en_us/media_1b534edd91b082175239ebe6a0169bfde676dae77.png?width=2000&format=webply&optimize=medium" alt="Marble kitchen">
+      <div class="card-info">
+        <h3>Blender on marble counter with smoothies and strawberries</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">kitchen</span>
+          <span class="tag">creamy</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Adam.jpg" alt="Chef Adam">
+      <div class="card-info">
+        <h3>Professional chef in white coat, commercial kitchen</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">professional</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Derek.jpg" alt="Chef Derek">
+      <div class="card-info">
+        <h3>Chef in white coat with Vitamix branding</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">professional</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Mia.jpg" alt="Chef Mia">
+      <div class="card-info">
+        <h3>Chef in white coat, modern commercial kitchen</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">professional</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Steve.jpg" alt="Chef Steve">
+      <div class="card-info">
+        <h3>Chef with glasses and beard in modern kitchen</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">professional</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Dessert <span class="section-count">(4 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/ICE%20CREAM%20%20FROZEN%20TREATS.jpg" alt="Ice cream">
+      <div class="card-info">
+        <h3>Bowl of ice cream scoops with chocolate chips</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">indulgent</span>
+          <span class="tag">creamy</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/FOOD%20PROCESSOR%20ATTACHMENT.jpg" alt="Chocolate mixture">
+      <div class="card-info">
+        <h3>Vitamix with chocolate dessert, mint green surface</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">indulgent</span>
+          <span class="tag">premium</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/BREADS%20DOUGHS%20%20DRY%20GRINDs.jpg" alt="Chocolate cake">
+      <div class="card-info">
+        <h3>Chocolate cake being sliced and served</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">indulgent</span>
+          <span class="tag">warm</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/Sauces-Dressings-Marinades.jpg" alt="Creamy sauce">
+      <div class="card-info">
+        <h3>Creamy blended mixture with pastries</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">indulgent</span>
+          <span class="tag">creamy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Sauce / Dip <span class="section-count">(3 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/DIPS%20SPREADS%20%20NUT%20BUTTERS.jpg" alt="Green dip">
+      <div class="card-info">
+        <h3>Hand dipping carrot into vibrant green sauce</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">premium</span>
+          <span class="tag">green</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/baby-food-purees.jpg" alt="Golden sauces">
+      <div class="card-info">
+        <h3>Two bowls of golden creamy sauces on marble</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 8</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">creamy</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_RaspberryChiaSpread_3.jpg" alt="Raspberry chia">
+      <div class="card-info">
+        <h3>Pink jam in glass jars with orange slices</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 8</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">colorful</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Cocktail <span class="section-count">(1 image)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/COCKTAILS.jpg" alt="Cucumber cocktail">
+      <div class="card-info">
+        <h3>Hand garnishing green cocktail with cucumber</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 7</span>
+          <span class="tag mood">sophisticated</span>
+          <span class="tag">fresh</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Commercial / B2B <span class="section-count">(4 images)</span></h2>
+  <div class="gallery">
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_18fbdf0060d121273469bde5e1717c19e7024b7ea.avif?width=2000&format=webply&optimize=medium" alt="Quick & Quiet">
+      <div class="card-info">
+        <h3>Vitamix Quick & Quiet commercial blender</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">professional</span>
+          <span class="tag">high-volume</span>
+          <span class="tag">juice-bar</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_10e23c3177a71c88f42d49908b8e97e7b0ba4f96b.avif?width=2000&format=webply&optimize=medium" alt="Vita-Prep">
+      <div class="card-info">
+        <h3>Vitamix Vita-Prep commercial blender</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">professional</span>
+          <span class="tag">restaurant</span>
+          <span class="tag">kitchen</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_1ade32ab77d597fe18650da3242beecef488955b7.avif?width=2000&format=webply&optimize=medium" alt="XL">
+      <div class="card-info">
+        <h3>Vitamix XL commercial blender for large batches</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">professional</span>
+          <span class="tag">high-capacity</span>
+          <span class="tag">batch</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://www.vitamix.com/vr/en_us/media_1a218a4d1ddefd76a4988312570922a56401af0c9.avif?width=2000&format=webply&optimize=medium" alt="The Quiet One">
+      <div class="card-info">
+        <h3>Vitamix The Quiet One for front-of-house</h3>
+        <div class="meta">
+          <span class="tag quality">Quality: 9</span>
+          <span class="tag mood">professional</span>
+          <span class="tag">cafe</span>
+          <span class="tag">front-of-house</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

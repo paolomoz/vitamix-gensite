@@ -37,6 +37,12 @@ main .section.dark.hero-container {
   margin: 0;
 }
 
+/* Override global section > div max-width for aspect-wide heroes */
+main > .hero-container.section > .hero-wrapper:has(.hero.aspect-wide) {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
 /* ===== Base Hero Styles ===== */
 .hero {
   position: relative;

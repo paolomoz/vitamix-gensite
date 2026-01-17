@@ -1196,6 +1196,13 @@ function wrapBlockHTML(
   if (!html.startsWith(`<div class="${type}`)) {
     const variantClass = variant ? ` ${variant}` : '';
     html = `<div class="${type}${variantClass}">\n${html}\n</div>`;
+  } else if (type === 'hero' && variant) {
+    // For hero blocks, the LLM might have generated its own class attribute.
+    // We need to replace it with our computed variant based on image aspect ratio.
+    html = html.replace(
+      /^<div class="hero[^"]*"/,
+      `<div class="hero ${variant}"`
+    );
   }
 
   return html;

@@ -238,6 +238,7 @@
   justify-content: center;
   margin-right: var(--spacing-100);
   vertical-align: middle;
+  color: var(--color-white);
 }
 
 .recommendation-icon svg {

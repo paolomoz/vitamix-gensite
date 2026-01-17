@@ -592,13 +592,9 @@ main .section.hero-container.aspect-wide-section {
   position: absolute;
   inset: 0;
   display: block;
-  background: linear-gradient(
-    to right,
-    rgb(0 0 0 / 60%) 0%,
-    rgb(0 0 0 / 30%) 60%,
-    transparent 100%
-  );
+  background: rgb(0 0 0 / 50%);
   z-index: 0;
+  pointer-events: none;
 }
 
 .hero.aspect-wide > div,
@@ -657,16 +653,18 @@ main .section.hero-container.aspect-wide-section {
   font-family: var(--heading-font-family);
   font-size: var(--font-size-800);
   font-weight: var(--weight-light);
-  color: var(--color-white);
+  color: var(--color-white) !important;
   margin-bottom: var(--spacing-200);
   line-height: var(--line-height-s);
+  text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
 }
 
 .hero.aspect-wide p {
   font-size: var(--font-size-100);
   line-height: var(--line-height-xl);
-  color: var(--color-gray-200);
+  color: var(--color-white) !important;
   margin-bottom: var(--spacing-200);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
 }
 
 .hero.aspect-wide .hero-content > p:first-child,
@@ -675,8 +673,9 @@ main .section.hero-container.aspect-wide-section {
   font-weight: var(--weight-semibold);
   letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  color: var(--color-red);
+  color: var(--color-white) !important;
   margin-bottom: var(--spacing-100);
+  opacity: 0.9;
 }
 
 .hero.aspect-wide .button-wrapper {

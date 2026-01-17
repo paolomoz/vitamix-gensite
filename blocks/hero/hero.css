@@ -605,6 +605,7 @@ main .section.dark.hero-container {
   inset: 0 !important;
   z-index: -1 !important;
   width: 100% !important;
+  max-width: none !important;
   height: 100% !important;
   min-height: unset !important;
 }

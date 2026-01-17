@@ -1102,7 +1102,7 @@ Rationale: ${block.rationale}`,
 
   try {
     const response = await modelFactory.call('content', messages, env);
-    let html = wrapBlockHTML(block.type, response.content, block.variant);
+    let html = wrapBlockHTML(block.type, response.content, block.variant, heroComposition);
 
     // Safety check: detect apology/refusal text that shouldn't be rendered
     const apologyPatterns = [
@@ -1164,17 +1164,32 @@ Rationale: ${block.rationale}`,
   }
 }
 
-function wrapBlockHTML(type: string, content: string, variant?: string): string {
+function wrapBlockHTML(
+  type: string,
+  content: string,
+  variant?: string,
+  heroComposition?: GeneratedBlock['heroComposition']
+): string {
   // Extract just the inner content if wrapped in tags
   let html = content.trim();
 
   // Strip markdown code fences if LLM included them (handles ``` html, ```html, etc.)
   html = html.replace(/^```\s*html?\s*\n?/i, '').replace(/\n?```\s*$/g, '').trim();
 
-  // Force split quote variant for hero blocks (50/50 layout with charcoal content area)
-  // Override any variant set by reasoning engine to ensure consistent layout
+  // For hero blocks, determine variant based on image aspect ratio:
+  // - Wide images (ratio > 1.4): Full-width with text overlay (not split)
+  // - Square/portrait images: Split quote layout (50/50)
   if (type === 'hero') {
-    variant = 'split quote';
+    if (heroComposition?.aspectRatio === 'wide') {
+      // Wide images: use text placement and background tone for classes
+      // Don't use split layout - image should be full-width background
+      const textClass = heroComposition.textPlacement === 'left' ? 'text-left' : 'text-right';
+      const bgClass = `bg-${heroComposition.backgroundTone}`;
+      variant = `${textClass} ${bgClass} aspect-wide`;
+    } else {
+      // Square/portrait images: use split quote layout (50/50 with charcoal content)
+      variant = 'split quote aspect-square';
+    }
   }
 
   // If content doesn't start with the block div, wrap it

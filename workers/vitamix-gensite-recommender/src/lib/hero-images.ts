@@ -202,241 +202,96 @@ const ANALYZED_IMAGES: Record<string, ImageAnalysis> = {
     background_tone: 'dark',
     aspect_ratio: 'wide', // 1920x450 = 4.27
   },
-  'https://www.vitamix.com/content/dam/vitamix/home/home-page/AscentX4_Image_PopUpWindow.jpg': {
+  'https://www.vitamix.com/us/en_us/media_13a74a0b736f835e518d9fd38a172823796d1af25.png?width=2000&format=webply&optimize=medium': {
     primary_category: 'product',
-    secondary_tags: ['colorful', 'fresh', 'premium'],
-    dominant_colors: ['gray', 'red'],
-    mood: 'premium',
-    content_description: 'Vitamix blender with mixed berries against corrugated metal background',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero with clean product focus, product centered',
-    text_placement: 'bottom-center',
-    background_tone: 'dark',
-    aspect_ratio: 'square', // 3612x5418 = 0.67 (portrait)
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/GETTING%20STARTED.jpg': {
-    primary_category: 'product',
-    secondary_tags: ['kitchen', 'fresh', 'premium'],
+    secondary_tags: ['premium', 'kitchen', 'fresh'],
     dominant_colors: ['black', 'green'],
-    mood: 'premium',
-    content_description: 'Hand operating Vitamix blender with green vegetables',
+    mood: 'sophisticated',
+    content_description: 'Sleek black Vitamix blender on marble countertop in modern kitchen with fresh herbs and elegant lighting',
     quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Excellent hero showing product in use, action on right',
+    hero_notes: 'Excellent hero banner candidate with professional lighting, premium kitchen setting',
     text_placement: 'left',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 236x236 = 1.00
+    background_tone: 'dark',
+    aspect_ratio: 'wide',
   },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SMOOTHIES%20NON-DIARY%20MILKS%20%20BEVERAGES.jpg': {
-    primary_category: 'smoothie',
-    secondary_tags: ['healthy', 'colorful', 'fresh'],
-    dominant_colors: ['purple', 'pink'],
-    mood: 'healthy',
-    content_description: 'Multiple glasses of vibrant purple berry smoothies',
-    quality_score: 8,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero with clean composition, glasses spread across',
-    text_placement: 'bottom-center',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SOUPS.jpg': {
+  'https://www.vitamix.com/us/en_us/media_1636e7411e91e1e7bb2f92178c5f0af89236e2036.jpg?width=2000&format=webply&optimize=medium': {
     primary_category: 'soup',
-    secondary_tags: ['creamy', 'warm', 'premium'],
-    dominant_colors: ['green', 'brown'],
-    mood: 'comforting',
-    content_description: 'Two bowls of creamy green soup with herbs',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero with sophisticated food styling, bowls centered',
-    text_placement: 'bottom-center',
-    background_tone: 'mixed',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/ICE%20CREAM%20%20FROZEN%20TREATS.jpg': {
-    primary_category: 'dessert',
-    secondary_tags: ['indulgent', 'creamy', 'premium'],
-    dominant_colors: ['pink', 'brown'],
-    mood: 'indulgent',
-    content_description: 'Bowl of ice cream scoops with chocolate chips',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero showing frozen dessert, bowl centered',
-    text_placement: 'bottom-center',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/DIPS%20SPREADS%20%20NUT%20BUTTERS.jpg': {
-    primary_category: 'sauce',
-    secondary_tags: ['green', 'fresh', 'premium'],
-    dominant_colors: ['green', 'pink'],
-    mood: 'premium',
-    content_description: 'Hand dipping carrot into vibrant green sauce',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero showcasing blended sauce, action on left',
-    text_placement: 'right',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/AER%20DISC.jpg': {
-    primary_category: 'drink',
-    secondary_tags: ['green', 'fresh', 'premium'],
-    dominant_colors: ['green', 'terracotta'],
-    mood: 'sophisticated',
-    content_description: 'Hand pouring layered green smoothie from pitcher',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero showing product in action, pouring on left',
-    text_placement: 'right',
-    background_tone: 'mixed',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/FOOD%20PROCESSOR%20ATTACHMENT.jpg': {
-    primary_category: 'dessert',
-    secondary_tags: ['indulgent', 'premium', 'kitchen'],
-    dominant_colors: ['mint green', 'brown'],
-    mood: 'indulgent',
-    content_description: 'Overhead view of Vitamix with chocolate dessert mixture',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero with premium styling, overhead composition',
-    text_placement: 'center',
-    background_tone: 'mixed',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_BlueSpirulinaTropicalSmoothie_1.jpg': {
-    primary_category: 'smoothie',
-    secondary_tags: ['creamy', 'fresh', 'premium'],
-    dominant_colors: ['blue', 'white'],
-    mood: 'premium',
-    content_description: 'Blue smoothie in clear glass mug with fresh berries',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero with unusual blue color, drink on left',
-    text_placement: 'right',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 500x500 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/global/Triple-Berry-Smoothie-square.jpg': {
-    primary_category: 'smoothie',
-    secondary_tags: ['healthy', 'fresh', 'colorful'],
-    dominant_colors: ['purple', 'white'],
-    mood: 'healthy',
-    content_description: 'Two purple berry smoothies surrounded by fresh berries',
-    quality_score: 9,
-    hero_suitable: true,
-    hero_notes: 'Excellent hero with wide horizontal layout, drinks centered',
-    text_placement: 'bottom-center',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 470x449 = 1.05
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/COCKTAILS.jpg': {
-    primary_category: 'cocktail',
-    secondary_tags: ['fresh', 'premium', 'sophisticated'],
-    dominant_colors: ['golden yellow', 'pale green'],
-    mood: 'sophisticated',
-    content_description: 'Hand garnishing pale green cocktail with cucumber',
-    quality_score: 7,
-    hero_suitable: true,
-    hero_notes: 'Good composition, drink on left with blender',
-    text_placement: 'right',
-    background_tone: 'mixed',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/baby-food-purees.jpg': {
-    primary_category: 'sauce',
-    secondary_tags: ['creamy', 'premium', 'kitchen'],
-    dominant_colors: ['golden yellow', 'cream white'],
-    mood: 'sophisticated',
-    content_description: 'Two bowls of golden creamy sauces on marble surface',
-    quality_score: 8,
-    hero_suitable: true,
-    hero_notes: 'Excellent composition with sophisticated styling, bowls centered',
-    text_placement: 'bottom-center',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 236x236 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_RaspberryChiaSpread_3.jpg': {
-    primary_category: 'sauce',
-    secondary_tags: ['colorful', 'fresh', 'premium'],
-    dominant_colors: ['pink', 'orange'],
-    mood: 'sophisticated',
-    content_description: 'Artisanal pink jam in glass jars with orange slices',
-    quality_score: 8,
-    hero_suitable: true,
-    hero_notes: 'Excellent composition with premium aesthetic, jars spread',
-    text_placement: 'bottom-center',
-    background_tone: 'light',
-    aspect_ratio: 'square', // 500x500 = 1.00
-  },
-  'https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/IMMERSION%20BLENDER.jpg': {
-    primary_category: 'soup',
-    secondary_tags: ['warm', 'kitchen', 'premium'],
-    dominant_colors: ['red', 'white'],
+    secondary_tags: ['warm', 'creamy', 'premium'],
+    dominant_colors: ['coral pink', 'golden orange'],
     mood: 'warm',
-    content_description: 'Hand using immersion blender in red soup',
-    quality_score: 7,
+    content_description: 'Vitamix blender alongside a bowl of creamy orange soup with butternut squash, coconut, lime on coral pink surface',
+    quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Good composition showing product in use, action centered',
+    hero_notes: 'Excellent hero banner composition with beautiful food styling and warm lighting',
     text_placement: 'bottom-center',
     background_tone: 'light',
-    aspect_ratio: 'square', // 236x236 = 1.00
+    aspect_ratio: 'wide',
   },
-
-  // Commercial Product Images
-  'https://www.vitamix.com/vr/en_us/media_18fbdf0060d121273469bde5e1717c19e7024b7ea.avif?width=2000&format=webply&optimize=medium': {
-    primary_category: 'commercial',
-    secondary_tags: ['professional', 'quick-quiet', 'high-volume', 'juice-bar'],
-    dominant_colors: ['black', 'silver'],
-    mood: 'professional',
-    content_description: 'Vitamix Quick & Quiet commercial blender for high-volume operations',
+  'https://www.vitamix.com/us/en_us/media_1c29551e255c94966b94f25ad6c849a2ff5b0d939.jpg?width=2000&format=webply&optimize=medium': {
+    primary_category: 'product',
+    secondary_tags: ['kitchen', 'premium', 'warm'],
+    dominant_colors: ['navy blue', 'orange'],
+    mood: 'premium',
+    content_description: 'Person pouring golden liquid from pitcher into bowl next to Vitamix blender with fresh ingredients',
     quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Excellent hero for commercial/B2B, product centered',
-    text_placement: 'left',
+    hero_notes: 'Excellent hero banner with professional lighting and premium lifestyle aesthetic',
+    text_placement: 'bottom-center',
     background_tone: 'dark',
-    aspect_ratio: 'square', // 520x730 = 0.71 (portrait)
+    aspect_ratio: 'wide',
   },
-  'https://www.vitamix.com/vr/en_us/media_10e23c3177a71c88f42d49908b8e97e7b0ba4f96b.avif?width=2000&format=webply&optimize=medium': {
-    primary_category: 'commercial',
-    secondary_tags: ['professional', 'vita-prep', 'kitchen', 'restaurant'],
-    dominant_colors: ['black', 'silver'],
-    mood: 'professional',
-    content_description: 'Vitamix Vita-Prep commercial blender for professional kitchens',
+  'https://www.vitamix.com/us/en_us/media_15c9938cc0da7325e8f694aeac469af9af75ab4da.jpg?width=2000&format=webply&optimize=medium': {
+    primary_category: 'product',
+    secondary_tags: ['colorful', 'premium', 'kitchen'],
+    dominant_colors: ['black', 'white'],
+    mood: 'premium',
+    content_description: 'Professional product lineup showing multiple Vitamix blenders with colorful ingredients against white background',
     quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Excellent hero for commercial/B2B, product centered',
-    text_placement: 'left',
-    background_tone: 'dark',
-    aspect_ratio: 'square', // 520x730 = 0.71 (portrait)
+    hero_notes: 'Excellent hero banner with clean white background and professional product photography',
+    text_placement: 'bottom-center',
+    background_tone: 'light',
+    aspect_ratio: 'wide',
   },
-  'https://www.vitamix.com/vr/en_us/media_1ade32ab77d597fe18650da3242beecef488955b7.avif?width=2000&format=webply&optimize=medium': {
-    primary_category: 'commercial',
-    secondary_tags: ['professional', 'xl', 'high-capacity', 'batch'],
-    dominant_colors: ['black', 'silver'],
-    mood: 'professional',
-    content_description: 'Vitamix XL commercial blender for large batch preparation',
+  'https://www.vitamix.com/us/en_us/media_13242b35104493d92b269313bb04a92ec72c0fbb1.jpg?width=2000&format=webply&optimize=medium': {
+    primary_category: 'lifestyle',
+    secondary_tags: ['healthy', 'kitchen', 'fresh'],
+    dominant_colors: ['green', 'yellow'],
+    mood: 'healthy',
+    content_description: 'Green smoothie bowl with cucumber slices on cutting board, Vitamix blender in background on yellow surface',
     quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Excellent hero for commercial/B2B, dramatic angle',
+    hero_notes: 'Excellent hero banner with healthy lifestyle context and warm yellow tones',
     text_placement: 'left',
-    background_tone: 'dark',
-    aspect_ratio: 'square', // 520x730 = 0.71 (portrait)
+    background_tone: 'light',
+    aspect_ratio: 'wide',
   },
-  'https://www.vitamix.com/vr/en_us/media_1a218a4d1ddefd76a4988312570922a56401af0c9.avif?width=2000&format=webply&optimize=medium': {
-    primary_category: 'commercial',
-    secondary_tags: ['professional', 'quiet-one', 'front-of-house', 'cafe'],
-    dominant_colors: ['black', 'silver'],
-    mood: 'professional',
-    content_description: 'Vitamix The Quiet One commercial blender for front-of-house operations',
+  'https://www.vitamix.com/us/en_us/media_1923c2bf50e9608c88968e73b6576c72cc263150c.jpg?width=2000&format=webply&optimize=medium': {
+    primary_category: 'product',
+    secondary_tags: ['premium', 'kitchen', 'fresh'],
+    dominant_colors: ['light blue', 'white'],
+    mood: 'premium',
+    content_description: 'Modern white Vitamix blender with attachments on clean counter with fresh fruits against light blue wall',
     quality_score: 9,
     hero_suitable: true,
-    hero_notes: 'Excellent hero for commercial/B2B, product centered',
+    hero_notes: 'Excellent hero banner with clean premium aesthetic and ample space for text overlay',
     text_placement: 'left',
-    background_tone: 'dark',
-    aspect_ratio: 'square', // 520x730 = 0.71 (portrait)
+    background_tone: 'light',
+    aspect_ratio: 'wide',
+  },
+  'https://www.vitamix.com/us/en_us/media_13f3ada307f6cc6f098746a04ac511fd49c317362.png?width=2000&format=webply&optimize=medium': {
+    primary_category: 'product',
+    secondary_tags: ['professional', 'kitchen', 'premium'],
+    dominant_colors: ['black', 'gray'],
+    mood: 'premium',
+    content_description: 'Professional chef in Vitamix apron standing behind black Vitamix blender in modern kitchen',
+    quality_score: 9,
+    hero_suitable: true,
+    hero_notes: 'Excellent hero banner with professional lighting and strong brand presence',
+    text_placement: 'bottom-center',
+    background_tone: 'mixed',
+    aspect_ratio: 'wide',
   },
 };
 
@@ -859,4 +714,187 @@ export function getImageCounts(): Record<string, number> {
  */
 export function getHeroSuitableCount(): number {
   return getHeroSuitableImages(7).length;
+}
+
+// ============================================
+// Semantic Search (Vectorize)
+// ============================================
+
+/** Vectorize match result */
+interface VectorizeMatch {
+  id: string;
+  score: number;
+  metadata?: {
+    source_url?: string;
+    primary_category?: string;
+    mood?: string;
+    text_placement?: string;
+    background_tone?: string;
+    aspect_ratio?: string;
+    quality_score?: string;
+    [key: string]: string | undefined;
+  };
+}
+
+/** Environment with AI and Vectorize bindings */
+interface HeroImageEnv {
+  AI?: {
+    run: (model: string, input: { text: string[] }) => Promise<{ data: number[][] }>;
+  };
+  VECTORIZE?: {
+    query: (
+      vector: number[],
+      options: { topK: number; filter?: Record<string, string>; returnMetadata?: string }
+    ) => Promise<{ matches: VectorizeMatch[] }>;
+  };
+}
+
+/**
+ * Generate embedding for a query using Workers AI
+ */
+async function generateQueryEmbedding(query: string, env: HeroImageEnv): Promise<number[] | null> {
+  if (!env.AI) return null;
+
+  try {
+    const result = await env.AI.run('@cf/baai/bge-base-en-v1.5', {
+      text: [query],
+    });
+    return result.data[0];
+  } catch (error) {
+    console.error('[HeroImages] Failed to generate embedding:', error);
+    return null;
+  }
+}
+
+/**
+ * Query Vectorize for semantically similar hero images
+ */
+async function querySemanticImages(
+  embedding: number[],
+  env: HeroImageEnv,
+  topK = 10
+): Promise<VectorizeMatch[]> {
+  if (!env.VECTORIZE) return [];
+
+  try {
+    const results = await env.VECTORIZE.query(embedding, {
+      topK,
+      filter: { content_type: 'hero-image' },
+      returnMetadata: 'all',
+    });
+    return results.matches;
+  } catch (error) {
+    console.error('[HeroImages] Vectorize query failed:', error);
+    return [];
+  }
+}
+
+/**
+ * Selects a hero image using semantic search with fallback to keyword matching
+ *
+ * @param query - The user's query for semantic matching
+ * @param intentType - The classified intent type (fallback scoring)
+ * @param useCases - Array of extracted use cases (fallback scoring)
+ * @param env - Environment with AI and VECTORIZE bindings (optional)
+ * @returns HeroImageSelection with URL and composition metadata
+ */
+export async function selectHeroImageSemantic(
+  query: string,
+  intentType?: string,
+  useCases?: string[],
+  env?: HeroImageEnv
+): Promise<HeroImageSelection> {
+  // Try semantic search if env is available
+  if (env?.AI && env?.VECTORIZE && query) {
+    const embedding = await generateQueryEmbedding(query, env);
+
+    if (embedding) {
+      const semanticMatches = await querySemanticImages(embedding, env, 10);
+
+      if (semanticMatches.length > 0) {
+        // Filter to only hero images and get their analysis
+        const validMatches = semanticMatches
+          .filter((m) => m.id.startsWith('hero-') && m.metadata?.source_url)
+          .map((m) => {
+            const url = m.metadata!.source_url!;
+            const analysis = ANALYZED_IMAGES[url];
+            return {
+              url,
+              semanticScore: m.score,
+              analysis,
+              metadata: m.metadata,
+            };
+          })
+          .filter((m) => m.analysis); // Must have local analysis data
+
+        if (validMatches.length > 0) {
+          // Hybrid scoring: combine semantic similarity with intent matching
+          const scored = validMatches.map((m) => {
+            // Determine target category from intent/use cases
+            let targetCategory: string | null = null;
+            if (useCases?.length) {
+              for (const useCase of useCases) {
+                const normalized = useCase.toLowerCase().trim();
+                if (USE_CASE_TO_CATEGORY[normalized]) {
+                  targetCategory = USE_CASE_TO_CATEGORY[normalized];
+                  break;
+                }
+              }
+            }
+            if (!targetCategory && intentType) {
+              const categories = INTENT_TO_CATEGORIES[intentType];
+              if (categories?.length) {
+                targetCategory = categories[0];
+              }
+            }
+
+            // Calculate intent score (0-1 normalized)
+            const intentScore = scoreImageMatch(m.analysis, targetCategory, query) / 20;
+
+            // Combined score: 70% semantic, 30% intent
+            const combinedScore = m.semanticScore * 0.7 + intentScore * 0.3;
+
+            return { ...m, combinedScore };
+          });
+
+          // Sort by combined score
+          scored.sort((a, b) => b.combinedScore - a.combinedScore);
+
+          // Take top 3 and add some randomization
+          const topMatches = scored.slice(0, 3);
+          const totalScore = topMatches.reduce((sum, m) => sum + m.combinedScore, 0);
+          let random = Math.random() * totalScore;
+
+          for (const match of topMatches) {
+            random -= match.combinedScore;
+            if (random <= 0) {
+              console.log(
+                `[HeroImages] Semantic selection: ${match.url.split('media_')[1]?.split('?')[0]} ` +
+                  `(semantic: ${match.semanticScore.toFixed(3)}, combined: ${match.combinedScore.toFixed(3)})`
+              );
+              return {
+                url: match.url,
+                textPlacement: match.analysis.text_placement,
+                backgroundTone: match.analysis.background_tone,
+                aspectRatio: match.analysis.aspect_ratio,
+              };
+            }
+          }
+
+          // Fallback to top match
+          const best = topMatches[0];
+          return {
+            url: best.url,
+            textPlacement: best.analysis.text_placement,
+            backgroundTone: best.analysis.background_tone,
+            aspectRatio: best.analysis.aspect_ratio,
+          };
+        }
+      }
+    }
+  }
+
+  // Fallback to keyword-based selection
+  console.log('[HeroImages] Falling back to keyword-based selection');
+  return selectHeroImageWithMetadata(intentType, useCases, query);
 }

@@ -44,7 +44,7 @@ import {
   type FAQ,
   type SafetyGuidelines,
 } from '../content/content-service';
-import { selectHeroImageWithMetadata, type HeroImageSelection } from './hero-images';
+import { selectHeroImageWithMetadata, selectHeroImageSemantic, type HeroImageSelection } from './hero-images';
 
 // ============================================
 // Types
@@ -976,11 +976,12 @@ async function generateBlockContent(
   } else if (['recipe-cards'].includes(block.type)) {
     dataContext = `\n\n## Available Recipes (USE THESE EXACT IMAGE URLs):\n${buildRecipeContext(ragContext.relevantRecipes)}`;
   } else if (['hero', 'product-hero'].includes(block.type)) {
-    // Select hero image based on intent, use cases, and query keywords for variety
-    const heroSelection = selectHeroImageWithMetadata(
+    // Select hero image using semantic search (falls back to keyword matching)
+    const heroSelection = await selectHeroImageSemantic(
+      query || '',
       intent?.intentType,
       intent?.entities?.useCases,
-      query
+      env
     );
     dataContext = `\n\n## Hero Image (USE THIS EXACT URL): ${heroSelection.url}`;
     // Store composition metadata for the frontend to apply CSS classes

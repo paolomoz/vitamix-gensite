@@ -1,11 +1,12 @@
 /**
- * Vitamix Recipe Embedding Worker
+ * Vitamix Content Embedding Worker
  *
- * Generates embeddings for crawled recipes and uploads to Vectorize.
+ * Generates embeddings for recipes and hero images, uploads to Vectorize.
  *
  * Usage:
  *   POST /embed - Process recipes from JSON body
- *   POST /embed-batch - Process a batch with offset/limit
+ *   POST /embed-images - Process hero images from JSON body
+ *   POST /query - Query Vectorize (testing)
  *   GET /status - Check index status
  */
 
@@ -45,6 +46,84 @@ interface Recipe {
 interface RecipesFile {
   recipes: Recipe[];
   count: number;
+}
+
+// ============================================
+// Hero Image Types
+// ============================================
+
+interface HeroImage {
+  url: string;
+  primary_category: string;
+  secondary_tags: string[];
+  dominant_colors: string[];
+  mood: string;
+  content_description: string;
+  quality_score: number;
+  text_placement: string;
+  background_tone: string;
+  aspect_ratio: string;
+}
+
+interface HeroImagesFile {
+  images: HeroImage[];
+}
+
+/**
+ * Create searchable text for hero image embedding
+ * Combines description, category, tags, mood, colors for rich semantic matching
+ */
+function createHeroImageSearchableText(image: HeroImage): string {
+  const parts: string[] = [];
+
+  // Description is most important for semantic matching
+  parts.push(image.content_description);
+
+  // Category and mood
+  parts.push(`Category: ${image.primary_category}`);
+  parts.push(`Mood: ${image.mood}`);
+
+  // Tags for additional context
+  if (image.secondary_tags?.length) {
+    parts.push(`Style: ${image.secondary_tags.join(', ')}`);
+  }
+
+  // Colors can help match visual queries
+  if (image.dominant_colors?.length) {
+    parts.push(`Colors: ${image.dominant_colors.join(', ')}`);
+  }
+
+  // Composition info
+  parts.push(`Layout: ${image.aspect_ratio}, text placement ${image.text_placement}, ${image.background_tone} background`);
+
+  return parts.join('. ');
+}
+
+/**
+ * Create Vectorize vector from hero image
+ */
+function createHeroImageVector(image: HeroImage, embedding: number[]): VectorizeVector {
+  // Create a stable ID from URL hash
+  const urlHash = image.url.split('media_')[1]?.split('.')[0] || image.url.slice(-32);
+
+  return {
+    id: `hero-${urlHash}`,
+    values: embedding,
+    metadata: {
+      content_type: 'hero-image',
+      source_url: image.url,
+      chunk_text: createHeroImageSearchableText(image).slice(0, 2000),
+      primary_category: image.primary_category,
+      secondary_tags: image.secondary_tags.join(','),
+      mood: image.mood,
+      dominant_colors: image.dominant_colors.join(','),
+      text_placement: image.text_placement,
+      background_tone: image.background_tone,
+      aspect_ratio: image.aspect_ratio,
+      quality_score: image.quality_score.toString(),
+      indexed_at: new Date().toISOString(),
+    },
+  };
 }
 
 /**
@@ -216,6 +295,53 @@ export default {
         }, { headers: corsHeaders });
       }
 
+      // Embed hero images endpoint
+      if (url.pathname === '/embed-images' && request.method === 'POST') {
+        const data = await request.json() as HeroImagesFile;
+        const images = data.images;
+
+        if (!images?.length) {
+          return Response.json({ error: 'No images provided' }, {
+            status: 400,
+            headers: corsHeaders
+          });
+        }
+
+        const results: { processed: number; errors: string[] } = {
+          processed: 0,
+          errors: [],
+        };
+
+        try {
+          // Generate searchable texts
+          const texts = images.map(img => createHeroImageSearchableText(img));
+
+          // Generate embeddings in one batch (small dataset)
+          const embeddings = await generateEmbeddings(texts, env.AI);
+
+          // Create vectors
+          const vectors = images.map((image, idx) =>
+            createHeroImageVector(image, embeddings[idx])
+          );
+
+          // Upsert to Vectorize
+          await env.VECTORIZE.upsert(vectors);
+
+          results.processed = images.length;
+          console.log(`Embedded ${images.length} hero images`);
+        } catch (error) {
+          const errMsg = error instanceof Error ? error.message : 'Unknown error';
+          results.errors.push(errMsg);
+          console.error('Hero image embedding failed:', error);
+        }
+
+        return Response.json({
+          success: results.errors.length === 0,
+          ...results,
+          totalImages: images.length,
+        }, { headers: corsHeaders });
+      }
+
       // Embed single recipe (for testing)
       if (url.pathname === '/embed-single' && request.method === 'POST') {
         const recipe = await request.json() as Recipe;
@@ -235,21 +361,34 @@ export default {
 
       // Query endpoint (for testing retrieval)
       if (url.pathname === '/query' && request.method === 'POST') {
-        const { query, topK = 5 } = await request.json() as { query: string; topK?: number };
+        const { query, topK = 5, contentType } = await request.json() as {
+          query: string;
+          topK?: number;
+          contentType?: 'recipe' | 'hero-image';
+        };
 
         const embeddings = await generateEmbeddings([query], env.AI);
-        const results = await env.VECTORIZE.query(embeddings[0], {
+
+        // Build query options with optional filter
+        const queryOptions: { topK: number; returnMetadata: 'all'; filter?: Record<string, string> } = {
           topK,
           returnMetadata: 'all',
-        });
+        };
+        if (contentType) {
+          queryOptions.filter = { content_type: contentType };
+        }
+
+        const results = await env.VECTORIZE.query(embeddings[0], queryOptions);
 
         return Response.json({
           query,
+          contentType: contentType || 'all',
           results: results.matches.map(m => ({
             id: m.id,
             score: m.score,
             title: (m.metadata as any)?.page_title,
-            category: (m.metadata as any)?.recipe_category,
+            category: (m.metadata as any)?.recipe_category || (m.metadata as any)?.primary_category,
+            mood: (m.metadata as any)?.mood,
             url: (m.metadata as any)?.source_url,
           })),
         }, { headers: corsHeaders });
@@ -259,11 +398,12 @@ export default {
       return Response.json({
         endpoints: {
           'POST /embed': 'Process recipes JSON and upload to Vectorize',
+          'POST /embed-images': 'Process hero images JSON and upload to Vectorize',
           'POST /embed-single': 'Process single recipe (testing)',
           'POST /query': 'Query Vectorize (testing)',
           'GET /status': 'Check Vectorize index status',
         },
-        usage: 'POST recipes.json content to /embed endpoint',
+        usage: 'POST recipes.json to /embed or hero images to /embed-images',
       }, { headers: corsHeaders });
 
     } catch (error) {

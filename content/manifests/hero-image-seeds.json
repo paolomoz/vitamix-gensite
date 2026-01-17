@@ -1,5 +1,5 @@
 {
-  "description": "Seed images for hero banner curation - high-quality marketing images from vitamix.com",
+  "description": "Seed images for hero banner curation - high-quality wide marketing images from vitamix.com (ratio >= 1.5)",
   "seeds": [
     "https://www.vitamix.com/vr/en_us/media_1e3c9537df82d212a4b48020802855aee927b1c39.jpg?width=2880&format=webply&optimize=medium",
     "https://www.vitamix.com/vr/en_us/media_1a7165d05e047cd6a2f5911a6b435911f6e6831c3.jpg?width=2000&format=webply&optimize=medium",
@@ -11,7 +11,15 @@
     "https://www.vitamix.com/us/en_us/media_1f46d4f073301a5a107d943a2e0582c5a5730f75c.jpg?width=2000&format=webply&optimize=medium",
     "https://www.vitamix.com/us/en_us/media_1859c4336854855200d7f4e3fdb348d58c7c79ad3.png?width=2000&format=webply&optimize=medium",
     "https://www.vitamix.com/us/en_us/media_1b534edd91b082175239ebe6a0169bfde676dae77.png?width=2000&format=webply&optimize=medium",
-    "https://www.vitamix.com/us/en_us/media_1473ee7bbcdfc96b4f65f4e66e4a2f16e1fe9d9c8.png?width=2000&format=webply&optimize=medium"
+    "https://www.vitamix.com/us/en_us/media_1473ee7bbcdfc96b4f65f4e66e4a2f16e1fe9d9c8.png?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_13a74a0b736f835e518d9fd38a172823796d1af25.png?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_1636e7411e91e1e7bb2f92178c5f0af89236e2036.jpg?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_1c29551e255c94966b94f25ad6c849a2ff5b0d939.jpg?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_15c9938cc0da7325e8f694aeac469af9af75ab4da.jpg?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_13242b35104493d92b269313bb04a92ec72c0fbb1.jpg?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_1923c2bf50e9608c88968e73b6576c72cc263150c.jpg?width=2000&format=webply&optimize=medium",
+    "https://www.vitamix.com/us/en_us/media_13f3ada307f6cc6f098746a04ac511fd49c317362.png?width=2000&format=webply&optimize=medium"
   ],
-  "created_at": "2025-01-15"
+  "created_at": "2025-01-15",
+  "updated_at": "2026-01-17"
 }

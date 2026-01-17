@@ -1,24 +1,20 @@
 {
-  "generated_at": "2026-01-15T14:32:15.125Z",
-  "total_analyzed": 45,
-  "hero_suitable_count": 37,
+  "generated_at": "2026-01-17T10:41:24.911Z",
+  "total_analyzed": 19,
+  "hero_suitable_count": 18,
   "categories": {
-    "product": 11,
-    "drink": 4,
-    "smoothie": 5,
-    "soup": 3,
-    "lifestyle": 5,
-    "healthy": 1,
-    "dessert": 4,
-    "sauce": 3,
-    "cocktail": 1
+    "product": 10,
+    "drink": 3,
+    "smoothie": 2,
+    "soup": 2,
+    "lifestyle": 1
   },
   "images": {
     "https://www.vitamix.com/vr/en_us/media_1e3c9537df82d212a4b48020802855aee927b1c39.jpg?width=2880&format=webply&optimize=medium": {
       "primary_category": "product",
       "secondary_tags": [
-        "premium",
         "colorful",
+        "premium",
         "kitchen"
       ],
       "dominant_colors": [
@@ -26,27 +22,27 @@
         "white"
       ],
       "mood": "premium",
-      "content_description": "A lineup of various Vitamix blenders with different colored fruits and ingredients in their containers, showcasing product range against a clean white background",
+      "content_description": "Row of Vitamix blenders with various fruits and vegetables in containers, showcasing different models against white background",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with clean white background, professional product photography, wide aspect ratio friendly layout, vibrant colorful ingredients that showcase blender capabilities, no text overlays, and strong premium brand aesthetic that highlights product variety"
+      "hero_notes": "Excellent hero banner composition with clean white background, professional product photography, wide aspect ratio that works well for banner format, vibrant colorful ingredients that showcase versatility, premium aesthetic aligned with Vitamix brand, and no text overlays that would conflict with hero content"
     },
     "https://www.vitamix.com/vr/en_us/media_1a7165d05e047cd6a2f5911a6b435911f6e6831c3.jpg?width=2000&format=webply&optimize=medium": {
       "primary_category": "product",
       "secondary_tags": [
         "premium",
-        "sleek",
-        "professional"
+        "kitchen",
+        "sophisticated"
       ],
       "dominant_colors": [
         "black",
-        "gray"
+        "silver"
       ],
-      "mood": "sophisticated",
-      "content_description": "A sleek black Vitamix blender with digital display positioned on the right side against a dramatic dark gradient background with atmospheric lighting effects",
+      "mood": "premium",
+      "content_description": "A sleek black Vitamix blender with clear container positioned on the right side against a dramatic dark blue-gray background with atmospheric lighting and smoke effects",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with product positioned on right allowing space for text overlay on left. Premium lighting, clean background, wide aspect ratio friendly, and strong brand presence with sophisticated aesthetic that aligns perfectly with Vitamix's premium positioning."
+      "hero_notes": "Excellent hero banner composition with the product positioned on the right leaving ample space for text overlay on the left. High-quality professional lighting, dramatic atmospheric background, and premium aesthetic perfectly aligned with Vitamix branding. Wide aspect ratio works well and no conflicting text elements."
     },
     "https://www.vitamix.com/vr/en_us/media_1cb9b388991002a446ef15505cee322d580ad7c70.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "product",
@@ -60,27 +56,27 @@
         "black"
       ],
       "mood": "premium",
-      "content_description": "Two Vitamix blenders side by side - one commercial model with digital display and one personal blender with orange/yellow smoothie ingredients in the container, against a white textured wall",
+      "content_description": "Two Vitamix blenders side by side - one commercial model with digital display and one personal blender with fruit, against a textured white wall",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with wide aspect ratio, clean professional styling, premium aesthetic, and minimal text overlays. The side-by-side product showcase effectively demonstrates the range while maintaining sophisticated branding. High-quality lighting and composition with ample space for overlay text."
+      "hero_notes": "Excellent hero banner composition with clean, premium aesthetic. Wide aspect ratio works perfectly, professional lighting, minimal text that won't conflict with overlay text, and showcases product range effectively. The textured background provides visual interest while keeping focus on the products."
     },
     "https://www.vitamix.com/vr/en_us/media_1d07ef5e65686be3cfb2316dfd4bb114dc8a23cfa.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "drink",
       "secondary_tags": [
-        "citrus",
-        "premium",
-        "lifestyle"
+        "tropical",
+        "warm",
+        "sophisticated"
       ],
       "dominant_colors": [
         "terracotta orange",
         "black"
       ],
       "mood": "sophisticated",
-      "content_description": "Black Vitamix blender on white counter with orange citrus drinks, fresh oranges, and warm terracotta wall background with natural lighting creating leaf shadows",
+      "content_description": "Vitamix blender with orange citrus drinks and fresh oranges on marble counter against warm terracotta wall with dramatic plant shadows",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with wide aspect ratio, premium aesthetic, beautiful natural lighting with leaf shadows, clean product placement, warm sophisticated color palette, and ample negative space for text overlay without visual conflicts"
+      "hero_notes": "Excellent hero banner composition with premium aesthetic - wide aspect ratio works perfectly, dramatic lighting creates visual interest, warm color palette is inviting, product prominently featured with lifestyle context, no text overlays to conflict with hero text, and sophisticated styling aligns with Vitamix brand positioning"
     },
     "https://www.vitamix.com/vr/en_us/media_173b0af31e9a6005fb510fb98a5f8564e0c303743.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "smoothie",
@@ -94,10 +90,10 @@
         "white"
       ],
       "mood": "refreshing",
-      "content_description": "Two coral-pink smoothies in tall glasses with glass straws, alongside a white basket containing fresh fruits including oranges, limes, apples, and ginger, with fresh strawberries scattered on a white surface",
+      "content_description": "Two coral-pink smoothies in tall glasses with glass straws alongside a white basket containing fresh fruits including apples, oranges, limes, and ginger, with strawberries scattered on a white marble surface",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with clean white background, professional lighting, and plenty of negative space for text overlays. The wide horizontal layout showcases both the finished smoothie product and fresh ingredients, perfectly aligning with Vitamix's premium aesthetic. High-quality styling and photography with no conflicting text elements."
+      "hero_notes": "Excellent hero banner candidate with professional lighting, clean composition, premium aesthetic that aligns with Vitamix brand. Wide horizontal layout works well for banner format. Beautiful contrast between the vibrant smoothies and fresh ingredients showcases blender capabilities. No text overlays and plenty of white space for overlay text."
     },
     "https://www.vitamix.com/vr/en_us/media_17286266c121381b60a6f884769cacb659f79857f.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "drink",
@@ -108,19 +104,19 @@
       ],
       "dominant_colors": [
         "beige",
-        "white"
+        "brown"
       ],
       "mood": "sophisticated",
-      "content_description": "Three iced coffee drinks with caramel swirls alongside coffee beans in a glass jar, arranged on a white surface against a textured white wall",
+      "content_description": "Two glasses of creamy iced coffee drinks with caramel swirls, accompanied by coffee beans in a jar and what appears to be caramel sauce in a bowl on a wooden serving board",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with clean, minimalist composition and professional lighting. The wide horizontal layout works perfectly for hero placement, with ample negative space for text overlays. Premium aesthetic aligns well with Vitamix brand positioning, showcasing smooth, blended beverages that demonstrate product capabilities."
+      "hero_notes": "Excellent hero banner material with professional styling, clean composition, premium aesthetic that aligns with Vitamix branding. Wide horizontal layout works perfectly for banner use, beautiful lighting creates depth, and the creamy beverages showcase blending capabilities. No text overlays to interfere with hero messaging."
     },
     "https://www.vitamix.com/us/en_us/media_1f845f3ad5b1a676ae33657c7020c136058716dcb.jpg?width=2880&format=webply&optimize=medium": {
       "primary_category": "product",
       "secondary_tags": [
-        "kitchen",
         "premium",
+        "kitchen",
         "versatile"
       ],
       "dominant_colors": [
@@ -128,10 +124,10 @@
         "beige"
       ],
       "mood": "premium",
-      "content_description": "Complete Vitamix food processing system with blender base, multiple attachments including food processor bowl with shredded carrots, blender jar with mixed fruits, slicing discs, and tamper tools arranged on white counter",
+      "content_description": "Complete Vitamix blender system with food processor attachment, showing blender with colorful fruit blend, food processor with shredded carrots, various slicing discs, and tamper tools against neutral background",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with clean, professional product showcase. High-quality lighting emphasizes premium aesthetic. Wide horizontal layout perfect for hero format. Multiple colorful ingredients demonstrate versatility. Clean background provides space for text overlay. Professional styling aligns perfectly with Vitamix premium brand positioning."
+      "hero_notes": "Excellent hero banner candidate with clean composition, premium product showcase, good lighting, wide format compatibility, and ample negative space for text overlays. Shows product versatility with both blending and food processing capabilities."
     },
     "https://www.vitamix.com/us/en_us/media_1f46d4f073301a5a107d943a2e0582c5a5730f75c.jpg?width=2000&format=webply&optimize=medium": {
       "primary_category": "soup",
@@ -145,16 +141,16 @@
         "black"
       ],
       "mood": "sophisticated",
-      "content_description": "Orange creamy soup in white bowl with garnish, positioned next to black Vitamix blender control panel on marble countertop",
+      "content_description": "A bowl of smooth orange soup with garnish next to a black Vitamix blender control panel on a marble countertop",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with wide aspect ratio, premium aesthetic, high-quality lighting, and clean layout. The Vitamix product is prominently featured alongside beautiful food styling. No distracting text overlays, allowing space for hero text overlay."
+      "hero_notes": "Excellent hero banner image with premium lifestyle composition, high-quality lighting, and clean product integration. The wide aspect ratio works well, marble surface adds luxury appeal, and the finished soup demonstrates blender capability without distracting overlays."
     },
     "https://www.vitamix.com/us/en_us/media_1859c4336854855200d7f4e3fdb348d58c7c79ad3.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "drink",
       "secondary_tags": [
-        "fresh",
         "premium",
+        "fresh",
         "kitchen"
       ],
       "dominant_colors": [
@@ -165,30 +161,30 @@
       "content_description": "Two golden smoothies garnished with peach slices and mint on a wooden board next to a black Vitamix blender in a modern kitchen setting",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with clean kitchen backdrop, professional lighting, and strong product placement. The horizontal layout works well for wide aspect ratios, and the elegant styling with finished drinks showcases the blender's capabilities. No text overlays to conflict with hero messaging."
+      "hero_notes": "Excellent hero banner composition with the product prominently featured alongside beautifully styled drinks. Clean modern kitchen backdrop, professional lighting, and wide aspect ratio works well. No text overlays to conflict with hero text. The styling is premium and aspirational, perfect for brand positioning."
     },
     "https://www.vitamix.com/us/en_us/media_1b534edd91b082175239ebe6a0169bfde676dae77.png?width=2000&format=webply&optimize=medium": {
-      "primary_category": "lifestyle",
+      "primary_category": "product",
       "secondary_tags": [
-        "premium",
+        "lifestyle",
         "kitchen",
-        "creamy"
+        "premium"
       ],
       "dominant_colors": [
         "beige",
         "black"
       ],
-      "mood": "premium",
-      "content_description": "Vitamix blender on marble counter with smoothie glasses, fresh strawberries, and kitchen accessories in natural lighting",
+      "mood": "sophisticated",
+      "content_description": "Vitamix blender on kitchen counter with smoothie glasses, fresh strawberries, and kitchen styling elements against white tile backsplash",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner image with premium aesthetic, clean composition, and wide aspect ratio. The Vitamix product is prominently featured with lifestyle context. Natural lighting and neutral colors provide perfect backdrop for text overlays. Professional styling with fresh ingredients and finished smoothies showcases product capabilities."
+      "hero_notes": "Excellent hero banner potential with professional styling, premium kitchen aesthetic, prominent product placement, and clean composition. The wide counter space allows for text overlay placement, and the neutral color palette provides good contrast opportunities for typography."
     },
     "https://www.vitamix.com/us/en_us/media_1473ee7bbcdfc96b4f65f4e66e4a2f16e1fe9d9c8.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "smoothie",
       "secondary_tags": [
         "colorful",
-        "fresh",
+        "healthy",
         "premium"
       ],
       "dominant_colors": [
@@ -196,588 +192,146 @@
         "beige"
       ],
       "mood": "healthy",
-      "content_description": "A pink smoothie bowl topped with fresh berries including raspberries, blackberries, and blueberries, served in a cream-colored bowl on white tiles with dramatic lighting",
+      "content_description": "A pink smoothie bowl topped with mixed berries including raspberries, blackberries, and blueberries, served in a cream-colored bowl on white tile with dramatic lighting",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner candidate with dramatic lighting, premium aesthetic, clean composition, and ample negative space for text overlay. The warm lighting and tile surface create sophisticated styling that aligns perfectly with Vitamix's premium brand positioning."
+      "hero_notes": "Excellent hero banner potential with professional styling, dramatic lighting, and premium aesthetic. The composition has good negative space for text overlay, wide aspect ratio compatibility, and showcases blended smoothie content perfect for Vitamix brand messaging."
     },
-    "https://www.vitamix.com/us/en_us/media_104aa11fe9cafe1d33a0e4e1103b5463a3e8ebf89.png?width=2000&format=webply&optimize=medium": {
-      "primary_category": "healthy",
-      "secondary_tags": [
-        "fresh",
-        "premium",
-        "kitchen"
-      ],
-      "dominant_colors": [
-        "dark gray",
-        "deep red"
-      ],
-      "mood": "sophisticated",
-      "content_description": "Overhead view of fresh vegetables including beets, leafy greens, and berries arranged around a Vitamix blender on a dark stone surface with smoothies",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with wide aspect ratio, premium dark aesthetic, high-quality lighting, and prominent Vitamix product placement. The overhead layout creates visual depth while the rich colors and fresh ingredients align perfectly with the brand's health-focused positioning. No text overlays present."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/global/favicon/apple-touch-icon.png": {
+    "https://www.vitamix.com/us/en_us/media_13a74a0b736f835e518d9fd38a172823796d1af25.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "product",
       "secondary_tags": [
         "premium",
-        "branding",
-        "minimalist"
-      ],
-      "dominant_colors": [
-        "red",
-        "white"
-      ],
-      "mood": "premium",
-      "content_description": "A red app icon or logo featuring a white spiral or swirl design element",
-      "quality_score": 3,
-      "hero_suitable": false,
-      "hero_notes": "This appears to be a small app icon or logo with a square aspect ratio that would not work well as a hero banner. It lacks the wide composition, detailed imagery, and visual richness needed for an effective hero banner on a blender website. The image would need to be stretched awkwardly or heavily cropped to fit hero banner dimensions."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/ascent-x/Ascent_X5_Nav_Image.png": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "colorful",
         "kitchen",
         "fresh"
       ],
       "dominant_colors": [
         "black",
-        "orange"
+        "green"
       ],
-      "mood": "premium",
-      "content_description": "Black Vitamix blender with clear container filled with colorful orange and red ingredients, likely fruits or vegetables",
-      "quality_score": 7,
+      "mood": "sophisticated",
+      "content_description": "Sleek black Vitamix blender on marble countertop in modern kitchen with fresh herbs and elegant lighting",
+      "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Clean product shot with good contrast between black base and colorful ingredients. Simple composition would work well for hero banner with text overlay space. Professional lighting and clear focus on the product align with premium brand aesthetic."
+      "hero_notes": "Excellent hero banner candidate with professional lighting, premium kitchen setting, wide composition suitable for text overlay, clean product focus, and sophisticated aesthetic that aligns with Vitamix brand positioning"
     },
-    "https://www.vitamix.com/content/dam/vitamix/home/home-page/Propel_144x159_Nav.png": {
+    "https://www.vitamix.com/us/en_us/media_18838c424d602fadcdf84d8c558387bb45ac32bb9.png?width=2000&format=webply&optimize=medium": {
       "primary_category": "product",
       "secondary_tags": [
-        "premium",
         "kitchen",
-        "green"
+        "premium",
+        "sleek"
       ],
       "dominant_colors": [
         "black",
-        "green"
-      ],
-      "mood": "premium",
-      "content_description": "Black Vitamix blender with green smoothie ingredients in the clear container against white background",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Clean product shot with excellent brand representation. White background provides space for text overlays. Centered composition may need adjustment for wide hero formats, but the clean aesthetic and premium look align well with Vitamix brand positioning. The green contents suggest healthy lifestyle while showcasing the product in use."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/migration/media/other/images/n/nav-blenders-legacy-3x.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "colorful",
-        "kitchen",
-        "fresh"
-      ],
-      "dominant_colors": [
-        "black",
-        "red"
-      ],
-      "mood": "premium",
-      "content_description": "Black Vitamix blender with clear container filled with colorful fruits and vegetables including berries and leafy greens",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Clean product shot with good contrast between black blender and colorful ingredients. Centered composition works well for hero banners, though could benefit from higher resolution and more dynamic lighting. No text overlays present, leaving space for hero messaging."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/migration/media/other/images/n/nav-blenders-immersion-3x__1.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "kitchen",
-        "premium",
-        "creamy"
-      ],
-      "dominant_colors": [
-        "white",
-        "beige"
-      ],
-      "mood": "premium",
-      "content_description": "Immersion blender in white bowl with creamy mixture and nuts on white background",
-      "quality_score": 6,
-      "hero_suitable": false,
-      "hero_notes": "While the image shows quality product photography with clean composition, it's not ideal for hero use due to square/portrait aspect ratio that won't scale well to wide banner format. The centered composition would be awkward when cropped for hero dimensions, and lacks the visual impact needed for a main banner."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/home-page/FPA_Nav_144x159.png": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "kitchen",
-        "fresh",
-        "colorful"
-      ],
-      "dominant_colors": [
-        "silver",
-        "white"
-      ],
-      "mood": "premium",
-      "content_description": "Vitamix food processor with fresh ingredients including vegetables and fruits in the bowl, showcasing product functionality",
-      "quality_score": 6,
-      "hero_suitable": false,
-      "hero_notes": "While the product showcase is relevant, the image appears to be a food processor rather than a blender, has a square/portrait orientation that wouldn't work well in hero banner format, and the lighting/composition lacks the premium polish expected for hero placement"
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/products/nav-accessories-explorian-3x.png": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "colorful",
-        "fresh",
-        "kitchen"
-      ],
-      "dominant_colors": [
-        "black",
-        "green"
-      ],
-      "mood": "premium",
-      "content_description": "Vitamix blender with colorful fruits and vegetables including leafy greens, yellow peppers, and other fresh produce visible in the pitcher",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Clean product shot with good lighting and colorful ingredients that showcase the blender's capabilities. The composition focuses well on the product with appealing fresh ingredients. Could work as hero banner with proper cropping, though the aspect ratio may need adjustment for wide banner format."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/migration/media/other/images/n/nav-accessories-legacy-3x.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "kitchen",
-        "fresh",
-        "colorful"
-      ],
-      "dominant_colors": [
-        "clear/transparent",
-        "red"
-      ],
-      "mood": "premium",
-      "content_description": "Vitamix blender with clear container filled with red berries (strawberries/raspberries) on kitchen counter with blurred kitchen background",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Good product showcase with clean composition and kitchen setting. The blender is prominently featured with appealing fresh ingredients. Background is nicely blurred creating depth. Would work well as hero banner with text overlay space available. Lighting is natural and appealing, though could be slightly more dramatic for premium feel."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/products/nav-accessories-3x.jpg": {
-      "primary_category": "drink",
-      "secondary_tags": [
-        "sleek",
-        "minimalist",
-        "premium"
-      ],
-      "dominant_colors": [
-        "gray",
-        "white"
-      ],
-      "mood": "sophisticated",
-      "content_description": "A tall gray tumbler cup with black straw against white background",
-      "quality_score": 6,
-      "hero_suitable": false,
-      "hero_notes": "While the image has clean composition and premium aesthetic, it lacks visual interest and energy for a hero banner. The single product shot against plain white background is too minimal and doesn't showcase the vibrant, healthy lifestyle that Vitamix represents. Hero banners typically benefit from more dynamic content showing ingredients, finished blends, or lifestyle context."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/home-page/AscentX4_Image_PopUpWindow.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "colorful",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "gray",
-        "red"
-      ],
-      "mood": "premium",
-      "content_description": "Vitamix blender with mixed berries (strawberries, blueberries, blackberries) in clear container against corrugated metal background",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with clean product focus, professional lighting, premium aesthetic, and ample negative space for text overlays. The vertical orientation may need cropping for wide hero formats, but the central product placement allows flexibility."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center/RecipeCenter_Header_Popovers.jpg": {
-      "primary_category": "breakfast",
-      "secondary_tags": [
-        "warm",
-        "artisanal",
-        "premium"
-      ],
-      "dominant_colors": [
-        "golden brown",
-        "cream"
-      ],
-      "mood": "warm",
-      "content_description": "Freshly baked artisanal bread rolls in a wicker basket with spreads and butter on ceramic plates, photographed with natural lighting and shadows",
-      "quality_score": 6,
-      "hero_suitable": false,
-      "hero_notes": "While beautifully composed with excellent lighting, this image doesn't showcase blended foods or ingredients that would demonstrate Vitamix capabilities. The focus on whole bread items doesn't align with the brand's core blending functionality for smoothies, soups, or sauces."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/GETTING%20STARTED.jpg": {
-      "primary_category": "product",
-      "secondary_tags": [
-        "kitchen",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "black",
-        "green"
-      ],
-      "mood": "premium",
-      "content_description": "Hand operating a black Vitamix blender with green peas or vegetables in the container, showing the product in use",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner composition with clean background, premium product showcase, human interaction demonstrating ease of use, professional lighting, and ample negative space for text overlays. The hand position and blender angle create dynamic visual interest while maintaining focus on the product."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SMOOTHIES%20NON-DIARY%20MILKS%20%20BEVERAGES.jpg": {
-      "primary_category": "smoothie",
-      "secondary_tags": [
-        "healthy",
-        "colorful",
-        "fresh"
-      ],
-      "dominant_colors": [
-        "purple",
-        "pink"
-      ],
-      "mood": "healthy",
-      "content_description": "Multiple glasses of vibrant purple berry smoothies arranged on a light surface with fresh berries and garnishes",
-      "quality_score": 8,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with clean composition, soft lighting, and premium aesthetic. The multiple smoothie glasses create visual interest while the neutral background provides good space for text overlays. The vibrant purple color is eye-catching and the styling feels sophisticated and brand-appropriate for Vitamix."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SOUPS.jpg": {
-      "primary_category": "soup",
-      "secondary_tags": [
-        "creamy",
-        "warm",
-        "premium"
-      ],
-      "dominant_colors": [
-        "green",
-        "brown"
-      ],
-      "mood": "comforting",
-      "content_description": "Two bowls of creamy green soup garnished with herbs and spices, artfully arranged on a wooden surface with garlic and herbs as styling props",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner candidate with sophisticated food styling, warm lighting, and clean composition. The overhead angle and wooden backdrop create premium appeal. Ample negative space allows for text overlay placement. High-quality image that aligns perfectly with Vitamix's premium kitchen appliance aesthetic and showcases blended soup results."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/ICE%20CREAM%20%20FROZEN%20TREATS.jpg": {
-      "primary_category": "dessert",
-      "secondary_tags": [
-        "indulgent",
-        "creamy",
-        "premium"
-      ],
-      "dominant_colors": [
-        "pink",
-        "brown"
-      ],
-      "mood": "indulgent",
-      "content_description": "Bowl of ice cream scoops in vanilla and chocolate flavors with chocolate chips, presented on pink surface with golden spoons and elegant styling",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with sophisticated styling, premium aesthetic matching Vitamix brand, beautiful lighting and composition. Wide aspect ratio would work well, no text overlays, and demonstrates frozen dessert capabilities that align with Vitamix's frozen treat features."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/DIPS%20SPREADS%20%20NUT%20BUTTERS.jpg": {
-      "primary_category": "sauce",
-      "secondary_tags": [
-        "green",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "green",
-        "pink"
-      ],
-      "mood": "premium",
-      "content_description": "Hand dipping carrot into vibrant green sauce/dip in bowl, surrounded by fresh vegetables on pink surface",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with beautiful natural lighting, premium aesthetic, wide composition that works well for text overlay, and showcases blended green sauce perfectly aligned with Vitamix capabilities. Clean, professional styling with appealing food presentation."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/BREADS%20DOUGHS%20%20DRY%20GRINDs.jpg": {
-      "primary_category": "dessert",
-      "secondary_tags": [
-        "indulgent",
-        "kitchen",
-        "warm"
-      ],
-      "dominant_colors": [
-        "brown",
-        "cream"
-      ],
-      "mood": "indulgent",
-      "content_description": "Overhead view of chocolate cake or bread being sliced and served on a plate, with hands visible and kitchen setting",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Good overhead composition with natural lighting and premium feel. The scene has nice depth and storytelling elements with hands in action. Would work well cropped to wide aspect ratio focusing on the cake and serving action. Clean aesthetic aligns with Vitamix brand positioning."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/Sauces-Dressings-Marinades.jpg": {
-      "primary_category": "dessert",
-      "secondary_tags": [
-        "creamy",
-        "indulgent",
-        "warm"
-      ],
-      "dominant_colors": [
-        "beige",
-        "brown"
-      ],
-      "mood": "indulgent",
-      "content_description": "A bowl of smooth, creamy beige-colored blended mixture with a spoon, accompanied by chocolate-drizzled pastries and baked goods on a pink surface",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Good composition with appealing food styling and soft lighting. The creamy texture showcases blending capabilities well. Layout has space for text overlay and would work at wide aspect ratios. Minor points deducted for slightly muted lighting that could be more vibrant for premium brand positioning."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/COCKTAILS.jpg": {
-      "primary_category": "cocktail",
-      "secondary_tags": [
-        "fresh",
-        "premium",
-        "sophisticated"
-      ],
-      "dominant_colors": [
-        "golden yellow",
-        "pale green"
-      ],
-      "mood": "sophisticated",
-      "content_description": "Hand garnishing a pale green cocktail with cucumber, next to a black Vitamix blender on a golden background",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Strong composition with clear product placement and premium aesthetic. Golden background provides excellent contrast for text overlays. The garnishing action adds dynamic movement suitable for hero banners. Could work well cropped to wide aspect ratios."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/baby-food-purees.jpg": {
-      "primary_category": "sauce",
-      "secondary_tags": [
-        "creamy",
-        "premium",
-        "kitchen"
-      ],
-      "dominant_colors": [
-        "golden yellow",
-        "cream white"
-      ],
-      "mood": "sophisticated",
-      "content_description": "Two bowls of golden creamy sauces or dressings with spoons, alongside a glass of milk and woven basket on a marble surface",
-      "quality_score": 8,
-      "hero_suitable": true,
-      "hero_notes": "Excellent composition with sophisticated styling and premium aesthetic. The horizontal layout works well for hero banners, beautiful lighting creates appealing golden tones, and the marble surface adds luxury appeal. Clean composition with no text overlays allows for hero text placement. The creamy textures showcase blending capabilities effectively."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/AER%20DISC.jpg": {
-      "primary_category": "drink",
-      "secondary_tags": [
-        "green",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "green",
-        "terracotta"
-      ],
-      "mood": "sophisticated",
-      "content_description": "Hand pouring a layered green smoothie or juice from a glass pitcher into a glass, with lime garnish against a warm terracotta background",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with strong composition showing product in action, beautiful lighting, premium aesthetic, and clean background that would accommodate text overlays well. The pouring motion demonstrates blender results effectively."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/FOOD%20PROCESSOR%20ATTACHMENT.jpg": {
-      "primary_category": "dessert",
-      "secondary_tags": [
-        "indulgent",
-        "premium",
-        "kitchen"
-      ],
-      "dominant_colors": [
-        "mint green",
-        "brown"
-      ],
-      "mood": "indulgent",
-      "content_description": "Overhead view of a Vitamix blender with chocolate dessert mixture, accompanied by cookies, nuts, and plated dessert portions on a mint green surface",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with clean overhead composition, premium styling, and prominent Vitamix product placement. The mint green background provides good contrast for text overlay, wide aspect ratio works well, and the styling aligns perfectly with premium kitchen appliance branding."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/IMMERSION%20BLENDER.jpg": {
-      "primary_category": "soup",
-      "secondary_tags": [
-        "warm",
-        "kitchen",
-        "premium"
-      ],
-      "dominant_colors": [
-        "red",
-        "white"
-      ],
-      "mood": "warm",
-      "content_description": "Hand using immersion blender to blend red soup or sauce in white bowl on marble surface with ingredients visible",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Good composition showing product in use with premium kitchen aesthetic. Clean marble background provides space for text overlay. Lighting is natural and appealing. Image demonstrates blending capability well, though the immersion blender shown may not be Vitamix's core countertop blender product."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_Main_SpinachRicottaRaviolli.jpg": {
-      "primary_category": "entree",
-      "secondary_tags": [
-        "creamy",
-        "warm",
-        "premium"
-      ],
-      "dominant_colors": [
-        "coral orange",
-        "cream white"
-      ],
-      "mood": "comforting",
-      "content_description": "Overhead view of creamy mashed potatoes or similar pureed dish in coral bowls, with a hand holding a fork, accompanied by a glass and napkin on a neutral surface",
-      "quality_score": 7,
-      "hero_suitable": false,
-      "hero_notes": "While the image has good lighting and composition, it lacks clear connection to blending/Vitamix functionality. The mashed potatoes appear traditionally prepared rather than showcasing blender capabilities. The square format may not work well for wide hero banners, and the food styling, while appetizing, doesn't align with Vitamix's typical fresh, vibrant ingredient focus."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_BlueSpirulinaTropicalSmoothie_1.jpg": {
-      "primary_category": "smoothie",
-      "secondary_tags": [
-        "creamy",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "blue",
-        "white"
-      ],
-      "mood": "premium",
-      "content_description": "A blue smoothie in a clear double-wall glass mug with fresh berries (raspberries and blueberries) arranged beside it on a white marble surface",
-      "quality_score": 9,
-      "hero_suitable": true,
-      "hero_notes": "Excellent hero banner image with clean, minimalist composition, professional lighting, and premium aesthetic. The white marble background provides ample space for text overlays, and the styling perfectly aligns with Vitamix's upscale brand positioning. The unusual blue smoothie color creates visual interest while the fresh berries reinforce the healthy, natural ingredient story."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_PretzelBites_2.jpg": {
-      "primary_category": "sauce",
-      "secondary_tags": [
-        "warm",
-        "indulgent",
-        "premium"
-      ],
-      "dominant_colors": [
-        "golden brown",
-        "orange red"
-      ],
-      "mood": "warm",
-      "content_description": "Golden roasted potatoes with coarse salt arranged on parchment paper with a small bowl of chunky dipping sauce, garnished with a decorative toothpick",
-      "quality_score": 7,
-      "hero_suitable": false,
-      "hero_notes": "While the image has good lighting and composition, it shows prepared food rather than highlighting blender capabilities. The circular plate format and overhead angle don't translate well to wide hero banner dimensions, and the content doesn't clearly demonstrate Vitamix functionality for sauces or food preparation."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_RaspberryChiaSpread_3.jpg": {
-      "primary_category": "sauce",
-      "secondary_tags": [
-        "colorful",
-        "fresh",
-        "premium"
-      ],
-      "dominant_colors": [
-        "pink",
-        "orange"
-      ],
-      "mood": "sophisticated",
-      "content_description": "Artisanal pink jam or sauce in glass jars with orange slices on a white plate, featuring elegant styling and natural lighting",
-      "quality_score": 8,
-      "hero_suitable": true,
-      "hero_notes": "Excellent composition with premium aesthetic and clean styling that aligns with Vitamix brand. Good lighting and depth of field create visual appeal. Wide aspect ratio would work well for hero banner with space for text overlay on neutral background areas."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Adam.jpg": {
-      "primary_category": "lifestyle",
-      "secondary_tags": [
-        "professional",
-        "kitchen",
-        "premium"
-      ],
-      "dominant_colors": [
-        "white",
         "gray"
       ],
       "mood": "sophisticated",
-      "content_description": "Professional chef in white coat standing in commercial kitchen with arms crossed, smiling at camera",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Good composition with professional chef representing culinary expertise. Clean, bright lighting and premium kitchen setting aligns with Vitamix brand. However, the portrait orientation and centered subject may require careful cropping for wide hero banner formats. The professional kitchen context reinforces quality and culinary credibility."
+      "content_description": "Close-up view of a black Vitamix blender base on a dark surface with dramatic lighting and visible surface scratches/wear",
+      "quality_score": 4,
+      "hero_suitable": false,
+      "hero_notes": "Poor hero suitability due to visible surface scratches and wear marks, dim lighting creating muddy shadows, tight cropping limiting composition flexibility, and overall image appearing aged/used rather than premium. Hero banners need pristine product presentation with clean surfaces and professional lighting."
     },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Derek.jpg": {
-      "primary_category": "lifestyle",
+    "https://www.vitamix.com/us/en_us/media_1636e7411e91e1e7bb2f92178c5f0af89236e2036.jpg?width=2000&format=webply&optimize=medium": {
+      "primary_category": "soup",
       "secondary_tags": [
-        "professional",
+        "warm",
+        "creamy",
+        "premium"
+      ],
+      "dominant_colors": [
+        "coral pink",
+        "golden orange"
+      ],
+      "mood": "warm",
+      "content_description": "A Vitamix blender alongside a bowl of creamy orange soup garnished with coconut flakes and herbs, with fresh ingredients including butternut squash, coconut, lime, and garlic arranged on a coral pink surface",
+      "quality_score": 9,
+      "hero_suitable": true,
+      "hero_notes": "Excellent hero banner composition with the Vitamix product prominently featured alongside beautiful food styling. The wide horizontal layout works perfectly for hero use, with warm lighting and premium aesthetic that aligns with Vitamix branding. Clean composition with no text overlays and plenty of space for hero text placement."
+    },
+    "https://www.vitamix.com/us/en_us/media_1c29551e255c94966b94f25ad6c849a2ff5b0d939.jpg?width=2000&format=webply&optimize=medium": {
+      "primary_category": "product",
+      "secondary_tags": [
+        "kitchen",
+        "premium",
+        "warm"
+      ],
+      "dominant_colors": [
+        "navy blue",
+        "orange"
+      ],
+      "mood": "premium",
+      "content_description": "Person in orange sweater pouring golden liquid from glass pitcher into bowl next to Vitamix blender, with fresh ingredients like ginger and garlic on cutting board",
+      "quality_score": 9,
+      "hero_suitable": true,
+      "hero_notes": "Excellent hero banner composition with professional lighting, premium aesthetic, wide aspect ratio that works well for web banners, prominent product placement, and no text overlays. The lifestyle context shows the blender in use while maintaining focus on the product."
+    },
+    "https://www.vitamix.com/us/en_us/media_15c9938cc0da7325e8f694aeac469af9af75ab4da.jpg?width=2000&format=webply&optimize=medium": {
+      "primary_category": "product",
+      "secondary_tags": [
+        "colorful",
         "premium",
         "kitchen"
       ],
       "dominant_colors": [
-        "white",
-        "green"
+        "black",
+        "white"
       ],
       "mood": "premium",
-      "content_description": "Professional chef in white chef's coat with Vitamix branding, smiling in a modern kitchen setting",
-      "quality_score": 7,
+      "content_description": "Professional product lineup showing multiple Vitamix blenders with various colorful ingredients like berries, fruits, and vegetables in their containers, displayed against a clean white background",
+      "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Good professional quality image with clean composition and premium brand alignment. Chef's friendly demeanor and Vitamix branding reinforce brand credibility. Clean background allows for text overlay. However, portrait orientation may need cropping for wide hero banners."
+      "hero_notes": "Excellent hero banner composition with clean white background, professional product photography, wide aspect ratio that works well for banner use, no text overlays, and showcases product variety with appealing colorful ingredients that demonstrate versatility"
     },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Mia.jpg": {
+    "https://www.vitamix.com/us/en_us/media_13242b35104493d92b269313bb04a92ec72c0fbb1.jpg?width=2000&format=webply&optimize=medium": {
       "primary_category": "lifestyle",
+      "secondary_tags": [
+        "healthy",
+        "kitchen",
+        "fresh"
+      ],
+      "dominant_colors": [
+        "green",
+        "yellow"
+      ],
+      "mood": "healthy",
+      "content_description": "A green smoothie bowl with cucumber slices and bread on a cutting board, featuring a black Vitamix blender in the background on a yellow surface",
+      "quality_score": 9,
+      "hero_suitable": true,
+      "hero_notes": "Excellent hero banner composition with the Vitamix blender prominently featured alongside healthy food styling. The wide horizontal layout works perfectly for hero banners, with beautiful natural lighting and warm yellow tones. No text overlays present, leaving clean space for hero text placement. The lifestyle kitchen setting aligns perfectly with premium Vitamix brand positioning."
+    },
+    "https://www.vitamix.com/us/en_us/media_1923c2bf50e9608c88968e73b6576c72cc263150c.jpg?width=2000&format=webply&optimize=medium": {
+      "primary_category": "product",
+      "secondary_tags": [
+        "premium",
+        "kitchen",
+        "fresh"
+      ],
+      "dominant_colors": [
+        "light blue",
+        "white"
+      ],
+      "mood": "premium",
+      "content_description": "A modern white Vitamix blender with attachments on a clean counter with fresh fruits including banana, orange, and blueberries against a light blue wall",
+      "quality_score": 9,
+      "hero_suitable": true,
+      "hero_notes": "Excellent hero banner composition with clean, premium aesthetic. Wide aspect ratio works well, plenty of negative space for text overlay on the left side of the blue wall. High-quality lighting and styling that aligns perfectly with Vitamix's premium brand positioning. The fresh fruits suggest versatility while the minimal setup feels sophisticated."
+    },
+    "https://www.vitamix.com/us/en_us/media_13f3ada307f6cc6f098746a04ac511fd49c317362.png?width=2000&format=webply&optimize=medium": {
+      "primary_category": "product",
       "secondary_tags": [
         "professional",
         "kitchen",
         "premium"
       ],
       "dominant_colors": [
-        "white",
-        "neutral"
-      ],
-      "mood": "premium",
-      "content_description": "Professional chef in white chef's coat smiling in a modern commercial kitchen setting",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "High-quality professional portrait with clean composition and premium aesthetic that aligns well with Vitamix brand values. The chef's uniform and modern kitchen setting reinforce culinary expertise and quality. Good lighting and sharp focus make it suitable for hero use, though the aspect ratio may need cropping considerations for wide banner formats."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/ChefPhoto_Steve.jpg": {
-      "primary_category": "lifestyle",
-      "secondary_tags": [
-        "professional",
-        "kitchen",
-        "premium"
-      ],
-      "dominant_colors": [
-        "white",
+        "black",
         "gray"
       ],
       "mood": "premium",
-      "content_description": "Professional chef in white coat with glasses and beard standing in modern kitchen setting",
-      "quality_score": 7,
-      "hero_suitable": true,
-      "hero_notes": "Good composition and professional appearance that aligns with premium brand positioning. Clean background and lighting work well for hero use. The chef's professional attire and modern kitchen setting reinforce quality and expertise, though the portrait orientation would need cropping for wide hero banner formats."
-    },
-    "https://www.vitamix.com/content/dam/vitamix/home/recipe-center-redesign/DigitalCookbooks_Q4_RecipeBooklet.jpg": {
-      "primary_category": "lifestyle",
-      "secondary_tags": [
-        "premium",
-        "cookbook",
-        "healthy"
-      ],
-      "dominant_colors": [
-        "beige",
-        "green"
-      ],
-      "mood": "sophisticated",
-      "content_description": "Vitamix recipe collection cookbook cover featuring three prepared dishes in cooking vessels on a neutral background",
-      "quality_score": 6,
-      "hero_suitable": false,
-      "hero_notes": "While the image has good lighting and premium aesthetic, it's not suitable as a hero banner due to prominent text overlays throughout the cookbook cover, portrait orientation rather than wide aspect ratio, and focus on printed material rather than dynamic food or product imagery that would work better for web hero sections"
-    },
-    "https://www.vitamix.com/content/dam/vitamix/global/Triple-Berry-Smoothie-square.jpg": {
-      "primary_category": "smoothie",
-      "secondary_tags": [
-        "healthy",
-        "fresh",
-        "colorful"
-      ],
-      "dominant_colors": [
-        "purple",
-        "white"
-      ],
-      "mood": "healthy",
-      "content_description": "Two purple berry smoothies in clear glasses with straws, surrounded by fresh strawberries, blueberries, and raspberries on a light marble surface",
+      "content_description": "Professional chef in Vitamix apron standing behind a black Vitamix blender with clear container in a modern kitchen setting",
       "quality_score": 9,
       "hero_suitable": true,
-      "hero_notes": "Excellent hero banner potential with clean composition, professional lighting, premium aesthetic that aligns with Vitamix brand. Wide horizontal layout would work well, ingredients showcase blender capabilities, no text overlays to conflict with hero text, and high visual appeal with appetizing berry smoothies."
+      "hero_notes": "Excellent hero banner composition with professional lighting, clean modern kitchen background, and prominent product placement. The wide aspect ratio works well, minimal text overlays, and strong brand presence through the apron and product. High-end aesthetic aligns perfectly with Vitamix's premium positioning."
     }
   }
 }

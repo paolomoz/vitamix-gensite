@@ -55,9 +55,9 @@ export default function decorate(block) {
     // Handle click - navigate to new query
     chip.addEventListener('click', () => {
       const currentUrl = new URL(window.location.href);
-      // Use same parameter that was used to get here
-      const param = currentUrl.searchParams.has('q') ? 'q' : 'query';
-      currentUrl.searchParams.set(param, suggestion);
+      // Always use 'q' parameter - canonical for recommender
+      currentUrl.searchParams.delete('query'); // Remove deprecated param if present
+      currentUrl.searchParams.set('q', suggestion);
       window.location.href = currentUrl.toString();
     });
 

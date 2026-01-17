@@ -752,7 +752,7 @@ async function renderVitamixRecommenderPage() {
   if (!main) return;
 
   const params = new URLSearchParams(window.location.search);
-  const query = params.get('q'); // Only use 'q' parameter - 'query' is deprecated
+  const query = params.get('q') || params.get('query'); // Support both, prefer 'q'
   const ctxId = params.get('ctx'); // Context ID from extension (ctx_xxxx)
   const preset = params.get('preset') || 'production'; // Default to production (Claude reasoning)
 

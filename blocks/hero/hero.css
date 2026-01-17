@@ -44,6 +44,13 @@ main > .hero-container.section > .hero-wrapper:has(.hero.aspect-wide),
   padding: 0 !important;
 }
 
+/* Remove section padding for aspect-wide heroes */
+main .section.dark.hero-container:has(.aspect-wide),
+main .section.dark.hero-container:has(.aspect-wide-wrapper),
+main .section.hero-container.aspect-wide-section {
+  padding: 0 !important;
+}
+
 /* ===== Base Hero Styles ===== */
 .hero {
   position: relative;

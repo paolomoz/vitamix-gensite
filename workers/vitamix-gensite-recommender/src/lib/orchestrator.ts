@@ -44,7 +44,7 @@ import {
   type FAQ,
   type SafetyGuidelines,
 } from '../content/content-service';
-import { selectHeroImage } from './hero-images';
+import { selectHeroImageWithMetadata, type HeroImageSelection } from './hero-images';
 
 // ============================================
 // Types
@@ -63,6 +63,11 @@ interface GeneratedBlock {
   type: string;
   html: string;
   sectionStyle?: string;
+  heroComposition?: {
+    textPlacement: HeroImageSelection['textPlacement'];
+    backgroundTone: HeroImageSelection['backgroundTone'];
+    aspectRatio: HeroImageSelection['aspectRatio'];
+  };
 }
 
 type SSECallback = (event: SSEEvent) => void;
@@ -946,6 +951,7 @@ async function generateBlockContent(
   // Build context based on block type
   let dataContext = '';
   let specsTableProductName: string | undefined;
+  let heroComposition: GeneratedBlock['heroComposition'] | undefined;
 
   if (['product-cards', 'product-recommendation', 'comparison-table', 'best-pick'].includes(block.type)) {
     dataContext = `\n\n## Available Products (USE THESE EXACT IMAGE URLs):\n${buildProductContext(ragContext.relevantProducts)}`;
@@ -971,12 +977,18 @@ async function generateBlockContent(
     dataContext = `\n\n## Available Recipes (USE THESE EXACT IMAGE URLs):\n${buildRecipeContext(ragContext.relevantRecipes)}`;
   } else if (['hero', 'product-hero'].includes(block.type)) {
     // Select hero image based on intent, use cases, and query keywords for variety
-    const heroImageUrl = selectHeroImage(
+    const heroSelection = selectHeroImageWithMetadata(
       intent?.intentType,
       intent?.entities?.useCases,
       query
     );
-    dataContext = `\n\n## Hero Image (USE THIS EXACT URL): ${heroImageUrl}`;
+    dataContext = `\n\n## Hero Image (USE THIS EXACT URL): ${heroSelection.url}`;
+    // Store composition metadata for the frontend to apply CSS classes
+    heroComposition = {
+      textPlacement: heroSelection.textPlacement,
+      backgroundTone: heroSelection.backgroundTone,
+      aspectRatio: heroSelection.aspectRatio,
+    };
   } else if (['use-case-cards'].includes(block.type)) {
     dataContext = `\n\n## Use Cases to Highlight:\n${buildUseCaseContext(ragContext.relevantUseCases)}`;
     // Also include products for context
@@ -1141,6 +1153,7 @@ Rationale: ${block.rationale}`,
       type: block.type,
       html,
       sectionStyle: getSectionStyle(block.type),
+      ...(heroComposition && { heroComposition }),
     };
   } catch (error) {
     console.error(`[ContentGen] Error generating ${block.type}:`, error instanceof Error ? error.message : error);
@@ -1531,7 +1544,11 @@ export async function orchestrate(
 
       onEvent({
         event: 'block-content',
-        data: { html: block.html, sectionStyle: block.sectionStyle },
+        data: {
+          html: block.html,
+          sectionStyle: block.sectionStyle,
+          ...(block.heroComposition && { heroComposition: block.heroComposition }),
+        },
       });
 
       // Emit rationale for transparency
@@ -1933,7 +1950,11 @@ export async function orchestrateFromContext(
 
       onEvent({
         event: 'block-content',
-        data: { html: block.html, sectionStyle: block.sectionStyle },
+        data: {
+          html: block.html,
+          sectionStyle: block.sectionStyle,
+          ...(block.heroComposition && { heroComposition: block.heroComposition }),
+        },
       });
 
       onEvent({

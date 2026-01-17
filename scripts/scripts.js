@@ -295,6 +295,20 @@ async function renderGenerativePage() {
 
       // Add container class to section
       section.classList.add(`${blockName}-container`);
+
+      // Apply hero composition classes for text placement, background tone, and aspect ratio
+      if (blockName === 'hero' && data.heroComposition) {
+        const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
+        if (textPlacement) {
+          blockEl.classList.add(`text-${textPlacement}`);
+        }
+        if (backgroundTone) {
+          blockEl.classList.add(`bg-${backgroundTone}`);
+        }
+        if (aspectRatio) {
+          blockEl.classList.add(`aspect-${aspectRatio}`);
+        }
+      }
     }
 
     // Decorate buttons and icons
@@ -578,6 +592,20 @@ async function renderFastGenerativePage() {
       wrapper.appendChild(blockEl);
       decorateBlock(blockEl);
       section.classList.add(`${blockName}-container`);
+
+      // Apply hero composition classes for text placement, background tone, and aspect ratio
+      if (blockName === 'hero' && data.heroComposition) {
+        const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
+        if (textPlacement) {
+          blockEl.classList.add(`text-${textPlacement}`);
+        }
+        if (backgroundTone) {
+          blockEl.classList.add(`bg-${backgroundTone}`);
+        }
+        if (aspectRatio) {
+          blockEl.classList.add(`aspect-${aspectRatio}`);
+        }
+      }
     }
 
     // Decorate buttons and icons
@@ -827,6 +855,20 @@ async function renderVitamixRecommenderPage() {
       wrapper.appendChild(blockEl);
       decorateBlock(blockEl);
       section.classList.add(`${blockName}-container`);
+
+      // Apply hero composition classes for text placement, background tone, and aspect ratio
+      if (blockName === 'hero' && data.heroComposition) {
+        const { textPlacement, backgroundTone, aspectRatio } = data.heroComposition;
+        if (textPlacement) {
+          blockEl.classList.add(`text-${textPlacement}`);
+        }
+        if (backgroundTone) {
+          blockEl.classList.add(`bg-${backgroundTone}`);
+        }
+        if (aspectRatio) {
+          blockEl.classList.add(`aspect-${aspectRatio}`);
+        }
+      }
     }
 
     decorateButtons(section);
@@ -974,7 +1016,11 @@ async function renderVitamixRecommenderPage() {
   eventSource.onerror = () => {
     if (eventSource.readyState === EventSource.CLOSED) {
       if (blockCount === 0) {
-        statusEl.textContent = 'Connection failed. Please try again.';
+        loadingState.innerHTML = `
+          <h1>Connection Failed</h1>
+          <p>Please try again.</p>
+          <p><a href="/">Return to homepage</a></p>
+        `;
       }
     }
   };

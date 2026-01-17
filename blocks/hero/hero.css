@@ -556,3 +556,751 @@ main .section.dark.hero-container {
   font-size: 0;
   line-height: 0;
 }
+
+/* ===== Aspect Ratio Variants ===== */
+/* Wide images use full-width layout, square/portrait use split layout */
+
+/* Wide aspect ratio - Full-width hero with image background */
+/* High specificity to override .split.quote when both classes present */
+.hero.aspect-wide,
+.hero.split.quote.aspect-wide {
+  display: flex;
+  align-items: center;
+  min-height: 500px;
+  padding: 0;
+  text-align: left;
+}
+
+.hero.aspect-wide::after,
+.hero.split.quote.aspect-wide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 60%) 0%,
+    rgb(0 0 0 / 30%) 60%,
+    transparent 100%
+  );
+  z-index: 0;
+}
+
+.hero.aspect-wide > div,
+.hero.split.quote.aspect-wide > div {
+  display: flex !important;
+  align-items: center;
+  width: 100%;
+  min-height: inherit;
+  background-color: transparent !important;
+  grid-template-columns: unset !important;
+}
+
+.hero.aspect-wide .hero-image,
+.hero.aspect-wide > div > div:first-child:has(picture),
+.hero.split.quote.aspect-wide .hero-image,
+.hero.split.quote.aspect-wide > div > div:first-child:has(picture),
+.hero.split.quote.aspect-wide > div > div:first-child {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: unset !important;
+}
+
+.hero.aspect-wide .hero-image picture,
+.hero.aspect-wide .hero-image img,
+.hero.aspect-wide > div > div:first-child picture,
+.hero.aspect-wide > div > div:first-child img,
+.hero.split.quote.aspect-wide .hero-image picture,
+.hero.split.quote.aspect-wide .hero-image img,
+.hero.split.quote.aspect-wide > div > div:first-child picture,
+.hero.split.quote.aspect-wide > div > div:first-child img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.hero.aspect-wide .hero-content,
+.hero.aspect-wide > div > div:last-child,
+.hero.split.quote.aspect-wide .hero-content,
+.hero.split.quote.aspect-wide > div > div:last-child {
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: 550px !important;
+  padding: var(--spacing-700) 5% !important;
+  color: var(--color-white) !important;
+  background: transparent !important;
+}
+
+.hero.aspect-wide h1,
+.hero.aspect-wide h2 {
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-800);
+  font-weight: var(--weight-light);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-200);
+  line-height: var(--line-height-s);
+}
+
+.hero.aspect-wide p {
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-gray-200);
+  margin-bottom: var(--spacing-200);
+}
+
+.hero.aspect-wide .hero-content > p:first-child,
+.hero.aspect-wide > div > div:last-child > p:first-child {
+  font-size: var(--font-size-40);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-red);
+  margin-bottom: var(--spacing-100);
+}
+
+.hero.aspect-wide .button-wrapper {
+  justify-content: flex-start;
+  margin-top: var(--spacing-400);
+}
+
+.hero.aspect-wide .button {
+  background-color: var(--color-white);
+  border-color: var(--color-white);
+  color: var(--color-charcoal);
+}
+
+.hero.aspect-wide .button:hover {
+  background-color: transparent;
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
+
+/* Square aspect ratio - Split layout with charcoal content area */
+.hero.aspect-square {
+  display: block;
+  min-height: 500px;
+}
+
+.hero.aspect-square::after {
+  display: none;
+}
+
+.hero.aspect-square > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 500px;
+  background-color: var(--color-charcoal);
+}
+
+.hero.aspect-square > div > div:first-child,
+.hero.aspect-square .hero-image {
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+  z-index: auto;
+  inset: unset;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+}
+
+.hero.aspect-square > div > div:first-child picture,
+.hero.aspect-square > div > div:first-child img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hero.aspect-square > div > div:last-child,
+.hero.aspect-square .hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--spacing-900) var(--spacing-600);
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.hero.aspect-square h1,
+.hero.aspect-square h2 {
+  font-family: var(--heading-font-family);
+  font-size: var(--font-size-700);
+  font-weight: var(--weight-light);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-200);
+  line-height: var(--line-height-s);
+}
+
+.hero.aspect-square p {
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
+  color: var(--color-white);
+  margin-bottom: var(--spacing-100);
+}
+
+.hero.aspect-square > div > div:last-child > p:first-child {
+  font-size: var(--font-size-100);
+  font-weight: var(--weight-normal);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-white);
+}
+
+.hero.aspect-square .button-wrapper {
+  justify-content: flex-start;
+  margin-top: var(--spacing-400);
+}
+
+.hero.aspect-square .button {
+  background-color: var(--color-white);
+  border-color: var(--color-white);
+  color: var(--color-charcoal);
+}
+
+.hero.aspect-square .button:hover {
+  background-color: transparent;
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
+
+/* Desktop aspect-wide */
+@media (width >= 900px) {
+  .hero.aspect-wide {
+    min-height: 550px;
+  }
+
+  .hero.aspect-wide h1,
+  .hero.aspect-wide h2 {
+    font-size: 50px;
+  }
+
+  .hero.aspect-wide .hero-content,
+  .hero.aspect-wide > div > div:last-child {
+    padding: var(--spacing-800) 5%;
+  }
+
+  .hero.aspect-square h1,
+  .hero.aspect-square h2 {
+    font-size: 45px;
+  }
+
+  .hero.aspect-square > div > div:last-child,
+  .hero.aspect-square .hero-content {
+    padding: 160px 64px;
+  }
+}
+
+/* Tablet aspect variants */
+@media (width < 900px) {
+  .hero.aspect-square > div {
+    grid-template-columns: 1fr;
+  }
+
+  .hero.aspect-square > div > div:first-child {
+    min-height: 350px;
+  }
+
+  .hero.aspect-square > div > div:last-child {
+    padding: var(--spacing-600) var(--spacing-300);
+  }
+
+  .hero.aspect-wide {
+    min-height: 400px;
+  }
+
+  .hero.aspect-wide h1,
+  .hero.aspect-wide h2 {
+    font-size: var(--font-size-600);
+  }
+}
+
+/* Mobile aspect variants */
+@media (width < 600px) {
+  .hero.aspect-square h1,
+  .hero.aspect-square h2 {
+    font-size: var(--font-size-500);
+  }
+
+  .hero.aspect-square > div > div:last-child {
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .hero.aspect-wide {
+    min-height: 350px;
+  }
+
+  .hero.aspect-wide h1,
+  .hero.aspect-wide h2 {
+    font-size: var(--font-size-500);
+  }
+
+  .hero.aspect-wide .hero-content,
+  .hero.aspect-wide > div > div:last-child {
+    max-width: 100%;
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .hero.aspect-wide::after {
+    background: rgb(0 0 0 / 50%);
+  }
+}
+
+/* ===== Aspect-Wide Text Placement Modifiers ===== */
+/* Position text within full-width hero based on image composition */
+
+.hero.aspect-wide.text-left .hero-content,
+.hero.aspect-wide.text-left > div > div:last-child {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.hero.aspect-wide.text-left::after {
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 40%) 50%,
+    transparent 100%
+  );
+}
+
+.hero.aspect-wide.text-right .hero-content,
+.hero.aspect-wide.text-right > div > div:last-child {
+  margin-left: auto;
+  margin-right: 0;
+  text-align: right;
+}
+
+.hero.aspect-wide.text-right::after {
+  background: linear-gradient(
+    to left,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 40%) 50%,
+    transparent 100%
+  );
+}
+
+.hero.aspect-wide.text-right .button-wrapper {
+  justify-content: flex-end;
+}
+
+.hero.aspect-wide.text-center .hero-content,
+.hero.aspect-wide.text-center > div > div:last-child {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  max-width: 700px;
+}
+
+.hero.aspect-wide.text-center::after {
+  background: rgb(0 0 0 / 40%);
+}
+
+.hero.aspect-wide.text-center .button-wrapper {
+  justify-content: center;
+}
+
+.hero.aspect-wide.text-bottom-left {
+  align-items: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-left > div {
+  align-items: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-left .hero-content,
+.hero.aspect-wide.text-bottom-left > div > div:last-child {
+  margin-left: 0;
+  margin-right: auto;
+  padding-bottom: var(--spacing-700);
+}
+
+.hero.aspect-wide.text-bottom-left::after {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 40%) 40%,
+    transparent 80%
+  );
+}
+
+.hero.aspect-wide.text-bottom-right {
+  align-items: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-right > div {
+  align-items: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-right .hero-content,
+.hero.aspect-wide.text-bottom-right > div > div:last-child {
+  margin-left: auto;
+  margin-right: 0;
+  text-align: right;
+  padding-bottom: var(--spacing-700);
+}
+
+.hero.aspect-wide.text-bottom-right::after {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 40%) 40%,
+    transparent 80%
+  );
+}
+
+.hero.aspect-wide.text-bottom-right .button-wrapper {
+  justify-content: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-center {
+  align-items: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-center > div {
+  align-items: flex-end;
+}
+
+.hero.aspect-wide.text-bottom-center .hero-content,
+.hero.aspect-wide.text-bottom-center > div > div:last-child {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  max-width: 700px;
+  padding-bottom: var(--spacing-700);
+}
+
+.hero.aspect-wide.text-bottom-center::after {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 50%) 50%,
+    transparent 100%
+  );
+}
+
+.hero.aspect-wide.text-bottom-center .button-wrapper {
+  justify-content: center;
+}
+
+/* ===== Aspect-Wide Background Tone Modifiers ===== */
+
+.hero.aspect-wide.bg-light::after {
+  opacity: 0.3;
+  background: linear-gradient(
+    to right,
+    rgb(255 255 255 / 80%) 0%,
+    rgb(255 255 255 / 40%) 50%,
+    transparent 100%
+  );
+}
+
+.hero.aspect-wide.bg-light h1,
+.hero.aspect-wide.bg-light h2 {
+  color: var(--color-dark-charcoal);
+}
+
+.hero.aspect-wide.bg-light p {
+  color: var(--color-charcoal);
+}
+
+.hero.aspect-wide.bg-light .button {
+  background-color: var(--color-charcoal);
+  border-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.hero.aspect-wide.bg-light .button:hover {
+  background-color: var(--color-dark-charcoal);
+  border-color: var(--color-dark-charcoal);
+}
+
+/* Mobile responsive for aspect-wide text placement */
+@media (width < 600px) {
+  .hero.aspect-wide.text-left .hero-content,
+  .hero.aspect-wide.text-left > div > div:last-child,
+  .hero.aspect-wide.text-right .hero-content,
+  .hero.aspect-wide.text-right > div > div:last-child,
+  .hero.aspect-wide.text-bottom-left .hero-content,
+  .hero.aspect-wide.text-bottom-left > div > div:last-child,
+  .hero.aspect-wide.text-bottom-right .hero-content,
+  .hero.aspect-wide.text-bottom-right > div > div:last-child {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .hero.aspect-wide.text-left .button-wrapper,
+  .hero.aspect-wide.text-right .button-wrapper,
+  .hero.aspect-wide.text-bottom-left .button-wrapper,
+  .hero.aspect-wide.text-bottom-right .button-wrapper {
+    justify-content: center;
+  }
+
+  .hero.aspect-wide.text-left::after,
+  .hero.aspect-wide.text-right::after,
+  .hero.aspect-wide.text-bottom-left::after,
+  .hero.aspect-wide.text-bottom-right::after,
+  .hero.aspect-wide.text-bottom-center::after,
+  .hero.aspect-wide.text-center::after {
+    background: rgb(0 0 0 / 50%);
+  }
+
+  .hero.aspect-wide.text-bottom-left,
+  .hero.aspect-wide.text-bottom-right,
+  .hero.aspect-wide.text-bottom-center {
+    align-items: center;
+  }
+
+  .hero.aspect-wide.text-bottom-left > div,
+  .hero.aspect-wide.text-bottom-right > div,
+  .hero.aspect-wide.text-bottom-center > div {
+    align-items: center;
+  }
+
+  .hero.aspect-wide.text-bottom-left .hero-content,
+  .hero.aspect-wide.text-bottom-left > div > div:last-child,
+  .hero.aspect-wide.text-bottom-right .hero-content,
+  .hero.aspect-wide.text-bottom-right > div > div:last-child,
+  .hero.aspect-wide.text-bottom-center .hero-content,
+  .hero.aspect-wide.text-bottom-center > div > div:last-child {
+    padding-bottom: var(--spacing-300);
+  }
+
+  .hero.aspect-wide.bg-light::after {
+    background: rgb(255 255 255 / 60%);
+  }
+}
+
+/* ===== Adaptive Text Placement Variants ===== */
+/* These classes position text based on image composition */
+
+/* Text Left - for images with subject on the right */
+.hero.text-left > div > div:last-child,
+.hero.text-left .hero-content {
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+  padding-left: 5%;
+  padding-right: 20%;
+}
+
+/* Text Right - for images with subject on the left */
+.hero.text-right > div > div:last-child,
+.hero.text-right .hero-content {
+  margin-left: auto;
+  margin-right: 0;
+  text-align: left;
+  padding-left: 20%;
+  padding-right: 5%;
+}
+
+/* Text Center - for images with centered or distributed subjects */
+.hero.text-center > div > div:last-child,
+.hero.text-center .hero-content {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* Text Bottom Left */
+.hero.text-bottom-left {
+  align-items: flex-end;
+}
+
+.hero.text-bottom-left > div {
+  align-items: flex-end;
+}
+
+.hero.text-bottom-left > div > div:last-child,
+.hero.text-bottom-left .hero-content {
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+  padding-left: 5%;
+  padding-right: 20%;
+  padding-bottom: var(--spacing-600);
+}
+
+/* Text Bottom Right */
+.hero.text-bottom-right {
+  align-items: flex-end;
+}
+
+.hero.text-bottom-right > div {
+  align-items: flex-end;
+}
+
+.hero.text-bottom-right > div > div:last-child,
+.hero.text-bottom-right .hero-content {
+  margin-left: auto;
+  margin-right: 0;
+  text-align: left;
+  padding-left: 20%;
+  padding-right: 5%;
+  padding-bottom: var(--spacing-600);
+}
+
+/* Text Bottom Center */
+.hero.text-bottom-center {
+  align-items: flex-end;
+}
+
+.hero.text-bottom-center > div {
+  align-items: flex-end;
+}
+
+.hero.text-bottom-center > div > div:last-child,
+.hero.text-bottom-center .hero-content {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  padding-bottom: var(--spacing-600);
+}
+
+/* ===== Background Tone Variants ===== */
+/* Adjust text colors and overlays based on image brightness */
+
+/* Light background - reduce overlay, use dark text */
+.hero.bg-light::after {
+  opacity: 0.3;
+}
+
+.hero.bg-light h1 {
+  color: var(--color-dark-charcoal);
+  text-shadow: 0 1px 2px rgb(255 255 255 / 50%);
+}
+
+.hero.bg-light p {
+  color: var(--color-charcoal);
+  text-shadow: 0 1px 2px rgb(255 255 255 / 50%);
+}
+
+.hero.bg-light .hero-content > p:first-child {
+  color: var(--color-red);
+}
+
+.hero.bg-light .button {
+  background-color: var(--color-charcoal);
+  border-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.hero.bg-light .button:hover {
+  background-color: var(--color-dark-charcoal);
+  border-color: var(--color-dark-charcoal);
+}
+
+/* Dark background - keep strong overlay, light text (default behavior) */
+.hero.bg-dark::after {
+  opacity: 0.6;
+}
+
+/* Mixed background - use gradient overlay for better contrast */
+.hero.bg-mixed::after {
+  opacity: 0.5;
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 40%) 50%,
+    rgb(0 0 0 / 70%) 100%
+  );
+}
+
+/* Adjust mixed overlay for left-aligned text */
+.hero.bg-mixed.text-left::after {
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 80%) 0%,
+    rgb(0 0 0 / 60%) 40%,
+    rgb(0 0 0 / 20%) 100%
+  );
+}
+
+/* Adjust mixed overlay for right-aligned text */
+.hero.bg-mixed.text-right::after {
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 20%) 0%,
+    rgb(0 0 0 / 60%) 60%,
+    rgb(0 0 0 / 80%) 100%
+  );
+}
+
+/* ===== Responsive Adjustments for Text Placement ===== */
+@media (width < 900px) {
+  /* On tablet, reduce horizontal padding for left/right placements */
+  .hero.text-left > div > div:last-child,
+  .hero.text-left .hero-content,
+  .hero.text-right > div > div:last-child,
+  .hero.text-right .hero-content,
+  .hero.text-bottom-left > div > div:last-child,
+  .hero.text-bottom-left .hero-content,
+  .hero.text-bottom-right > div > div:last-child,
+  .hero.text-bottom-right .hero-content {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+}
+
+@media (width < 600px) {
+  /* On mobile, center all text regardless of placement class */
+  .hero.text-left > div > div:last-child,
+  .hero.text-left .hero-content,
+  .hero.text-right > div > div:last-child,
+  .hero.text-right .hero-content,
+  .hero.text-bottom-left > div > div:last-child,
+  .hero.text-bottom-left .hero-content,
+  .hero.text-bottom-right > div > div:last-child,
+  .hero.text-bottom-right .hero-content {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding-left: var(--spacing-100);
+    padding-right: var(--spacing-100);
+  }
+
+  /* Reset bottom alignment on mobile for better visibility */
+  .hero.text-bottom-left,
+  .hero.text-bottom-right,
+  .hero.text-bottom-center {
+    align-items: center;
+  }
+
+  .hero.text-bottom-left > div,
+  .hero.text-bottom-right > div,
+  .hero.text-bottom-center > div {
+    align-items: center;
+  }
+
+  .hero.text-bottom-left > div > div:last-child,
+  .hero.text-bottom-left .hero-content,
+  .hero.text-bottom-right > div > div:last-child,
+  .hero.text-bottom-right .hero-content,
+  .hero.text-bottom-center > div > div:last-child,
+  .hero.text-bottom-center .hero-content {
+    padding-bottom: var(--spacing-300);
+  }
+
+  /* On mobile, use consistent overlay for all background types */
+  .hero.bg-light::after,
+  .hero.bg-mixed::after,
+  .hero.bg-mixed.text-left::after,
+  .hero.bg-mixed.text-right::after {
+    background: black;
+    opacity: 0.5;
+  }
+
+  .hero.bg-light h1,
+  .hero.bg-light p {
+    color: var(--color-white);
+    text-shadow: none;
+  }
+}

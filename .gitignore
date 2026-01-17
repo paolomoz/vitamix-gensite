@@ -19,3 +19,4 @@ workers/vitamix-gensite-analytics/node_modules/*
 .dev.vars
 .wrangler/
 .env.swp
+generated-images/

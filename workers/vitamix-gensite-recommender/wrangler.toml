@@ -49,6 +49,11 @@ index_name = "vitamix-gensite-content"
 binding = "SESSIONS"
 id = "333c5fc6f56b4266a272d10aaa6c71aa"
 
+# R2 for generated hero images (create with: wrangler r2 bucket create vitamix-hero-images)
+[[r2_buckets]]
+binding = "HERO_IMAGES"
+bucket_name = "vitamix-hero-images"
+
 # Development settings
 [dev]
 port = 8787

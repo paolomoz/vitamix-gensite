@@ -103,8 +103,21 @@ function createHeroImageSearchableText(image: HeroImage): string {
  * Create Vectorize vector from hero image
  */
 function createHeroImageVector(image: HeroImage, embedding: number[]): VectorizeVector {
-  // Create a stable ID from URL hash
-  const urlHash = image.url.split('media_')[1]?.split('.')[0] || image.url.slice(-32);
+  // Create a stable ID from URL
+  // For Vitamix URLs: extract media ID (e.g., media_1e3c9537...)
+  // For generated URLs: extract filename (e.g., hero-nice-cream-bowl)
+  let urlHash: string;
+  if (image.url.includes('media_')) {
+    urlHash = image.url.split('media_')[1]?.split('.')[0] || '';
+  } else if (image.url.includes('/hero-images/')) {
+    // Generated images: /hero-images/hero-nice-cream-bowl.png -> nice-cream-bowl
+    const filename = image.url.split('/hero-images/')[1]?.split('.')[0] || '';
+    urlHash = filename.replace('hero-', 'gen-'); // gen-nice-cream-bowl
+  } else {
+    // Fallback: use last part of URL path without extension
+    const parts = image.url.split('/');
+    urlHash = parts[parts.length - 1]?.split('.')[0] || image.url.slice(-20);
+  }
 
   return {
     id: `hero-${urlHash}`,

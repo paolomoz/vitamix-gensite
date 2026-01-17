@@ -681,6 +681,19 @@ export default {
       case '/health':
         return handleHealth();
       default:
+        // Serve hero images from R2: /hero-images/{filename}
+        if (path.startsWith('/hero-images/') && env.HERO_IMAGES) {
+          const filename = path.replace('/hero-images/', '');
+          const object = await env.HERO_IMAGES.get(filename);
+          if (object) {
+            const headers = new Headers();
+            headers.set('Content-Type', object.httpMetadata?.contentType || 'image/png');
+            headers.set('Cache-Control', 'public, max-age=31536000');
+            headers.set('Access-Control-Allow-Origin', '*');
+            return new Response(object.body, { headers });
+          }
+          return new Response('Image not found', { status: 404, headers: CORS_HEADERS });
+        }
         return new Response('Not Found', { status: 404 });
     }
   },

@@ -608,6 +608,7 @@ export interface Env {
   AI: Ai;
   VECTORIZE?: VectorizeIndex;
   SESSIONS?: KVNamespace;
+  HERO_IMAGES?: R2Bucket;
 
   // DA (Document Authoring) Configuration
   DA_ORG: string;

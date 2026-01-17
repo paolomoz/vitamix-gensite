@@ -1,6 +1,6 @@
 {
-  "description": "Seed images for hero banner curation - high-quality wide marketing images from vitamix.com (ratio >= 1.5)",
-  "seeds": [
+  "description": "Hero image seeds including Vitamix marketing images and AI-generated food images",
+  "vitamix_seeds": [
     "https://www.vitamix.com/vr/en_us/media_1e3c9537df82d212a4b48020802855aee927b1c39.jpg?width=2880&format=webply&optimize=medium",
     "https://www.vitamix.com/vr/en_us/media_1a7165d05e047cd6a2f5911a6b435911f6e6831c3.jpg?width=2000&format=webply&optimize=medium",
     "https://www.vitamix.com/vr/en_us/media_1cb9b388991002a446ef15505cee322d580ad7c70.png?width=2000&format=webply&optimize=medium",
@@ -19,6 +19,190 @@
     "https://www.vitamix.com/us/en_us/media_13242b35104493d92b269313bb04a92ec72c0fbb1.jpg?width=2000&format=webply&optimize=medium",
     "https://www.vitamix.com/us/en_us/media_1923c2bf50e9608c88968e73b6576c72cc263150c.jpg?width=2000&format=webply&optimize=medium",
     "https://www.vitamix.com/us/en_us/media_13f3ada307f6cc6f098746a04ac511fd49c317362.png?width=2000&format=webply&optimize=medium"
+  ],
+  "generated_images": {
+    "description": "AI-generated food/drink images (no Vitamix products). Generated with Imagen 3 + 2x upscale (2816x1536).",
+    "r2_bucket": "vitamix-hero-images",
+    "images": [
+      {
+        "id": "generated-nice-cream-bowl",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-nice-cream-bowl.png",
+        "category": "dessert",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-frozen-fruit-sorbet",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-frozen-fruit-sorbet.png",
+        "category": "dessert",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-chocolate-ice-cream",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-chocolate-ice-cream.png",
+        "category": "dessert",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-frozen-margarita",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-frozen-margarita.png",
+        "category": "cocktail",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-tropical-frozen-cocktail",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-tropical-frozen-cocktail.png",
+        "category": "cocktail",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-hummus-platter",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-hummus-platter.png",
+        "category": "sauce",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-fresh-pesto",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-fresh-pesto.png",
+        "category": "sauce",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-vibrant-green-smoothie",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-vibrant-green-smoothie.png",
+        "category": "smoothie",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-detox-green-juice",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-detox-green-juice.png",
+        "category": "drink",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-acai-bowl",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-acai-bowl.png",
+        "category": "smoothie",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-overnight-oats",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-overnight-oats.png",
+        "category": "healthy",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-baby-purees",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-baby-purees.png",
+        "category": "healthy",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-juice-bar-drinks",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-juice-bar-drinks.png",
+        "category": "commercial",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-restaurant-soup",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-restaurant-soup.png",
+        "category": "soup",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-tropical-smoothie",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-tropical-smoothie.png",
+        "category": "smoothie",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      },
+      {
+        "id": "generated-pumpkin-soup",
+        "url": "https://pub-vitamix-hero-images.r2.dev/hero-pumpkin-soup.png",
+        "category": "soup",
+        "generated_at": "2026-01-17T12:42:31.013Z"
+      }
+    ]
+  },
+  "generation_prompts": [
+    {
+      "id": "nice-cream-bowl",
+      "category": "dessert",
+      "prompt": "Professional food photography of a creamy frozen banana nice cream bowl topped with sliced strawberries, blueberries, and coconut flakes. Served in a white ceramic bowl on white marble surface. Soft natural lighting, shallow depth of field. Premium editorial food styling. Wide 16:9 aspect ratio with negative space on left for text. No blender or kitchen appliances visible."
+    },
+    {
+      "id": "frozen-fruit-sorbet",
+      "category": "dessert",
+      "prompt": "Professional food photography of vibrant mango and raspberry sorbet scoops in a clear glass dessert bowl. Fresh mint garnish, scattered berries on white marble countertop. Bright, clean studio lighting with warm highlights. Editorial food magazine style. Wide 16:9 composition, ample negative space. No appliances or products visible."
+    },
+    {
+      "id": "chocolate-ice-cream",
+      "category": "dessert",
+      "prompt": "Professional food photography of rich dark chocolate frozen dessert in elegant white bowl, topped with chocolate shavings and fresh raspberries. Minimalist white background, dramatic studio lighting. Premium dessert styling, wide horizontal composition. No kitchen appliances visible."
+    },
+    {
+      "id": "frozen-margarita",
+      "category": "cocktail",
+      "prompt": "Professional beverage photography of a frozen margarita in a salt-rimmed glass with lime wheel garnish. Fresh limes and sea salt scattered on light wooden surface. Bright, refreshing mood with clean white background. Condensation on glass showing freshness. Wide 16:9 format, editorial style. No blender visible."
+    },
+    {
+      "id": "tropical-frozen-cocktail",
+      "category": "cocktail",
+      "prompt": "Professional beverage photography of colorful layered frozen tropical drink in tall hurricane glass. Pineapple wedge and cherry garnish, tropical flowers as props. Bright, vibrant summer mood. Clean white marble surface, soft shadows. Wide composition with space for text overlay. No appliances visible."
+    },
+    {
+      "id": "hummus-platter",
+      "category": "sauce",
+      "prompt": "Professional food photography of creamy golden hummus in ceramic bowl with olive oil drizzle and paprika, surrounded by fresh vegetables - cucumber, carrots, bell peppers, cherry tomatoes. Warm terracotta surface, Mediterranean styling. Soft natural lighting. Wide 16:9 aspect ratio. No kitchen appliances."
+    },
+    {
+      "id": "fresh-pesto",
+      "category": "sauce",
+      "prompt": "Professional food photography of vibrant green basil pesto in white marble mortar, surrounded by fresh basil leaves, pine nuts, parmesan, and garlic. Rustic wooden board, warm natural lighting. Italian culinary styling. Wide horizontal composition with negative space. No blender or products visible."
+    },
+    {
+      "id": "vibrant-green-smoothie",
+      "category": "smoothie",
+      "prompt": "Professional beverage photography of bright green spinach kale smoothie in tall clear glass with glass straw. Fresh spinach leaves, kale, green apple slices, and ginger arranged nearby on white marble. Clean, healthy aesthetic with bright natural lighting. Wide 16:9 composition. No blender visible."
+    },
+    {
+      "id": "detox-green-juice",
+      "category": "drink",
+      "prompt": "Professional food photography of vibrant green juice in mason jar, surrounded by fresh celery, cucumber, green apple, lemon, and leafy greens. Bright white background, clean healthy mood. Morning light feel, editorial wellness styling. Wide format with text space. No appliances visible."
+    },
+    {
+      "id": "acai-bowl",
+      "category": "smoothie",
+      "prompt": "Professional food photography of purple acai smoothie bowl topped with sliced banana, fresh berries, granola, coconut flakes, and chia seeds. White ceramic bowl on light wooden board. Bright, healthy morning mood. Clean composition, wide 16:9 format. No kitchen appliances visible."
+    },
+    {
+      "id": "overnight-oats",
+      "category": "healthy",
+      "prompt": "Professional food photography of creamy overnight oats in glass jar layered with fresh berries, sliced almonds, and honey drizzle. Scattered oats and berries on white marble surface. Soft morning light, cozy breakfast aesthetic. Wide horizontal composition. No blender visible."
+    },
+    {
+      "id": "baby-purees",
+      "category": "healthy",
+      "prompt": "Professional food photography of three small glass jars containing colorful baby food purees - orange carrot, green pea, purple beet. Fresh vegetables arranged nearby. Soft, nurturing aesthetic with pastel tones. Clean white background, gentle lighting. Wide 16:9 composition. No appliances visible."
+    },
+    {
+      "id": "juice-bar-drinks",
+      "category": "commercial",
+      "prompt": "Professional food photography of colorful fresh juice lineup - green, orange, red, purple juices in clear bottles. Fresh fruits and vegetables artfully arranged. Bright, energetic mood. Clean white counter surface, commercial presentation style. Wide 16:9 format. No blenders or equipment visible."
+    },
+    {
+      "id": "restaurant-soup",
+      "category": "soup",
+      "prompt": "Professional food photography of elegant butternut squash soup in white fine dining bowl with cream swirl and microgreen garnish. Sophisticated restaurant plating on dark slate. Dramatic lighting, premium dining aesthetic. Wide composition with negative space. No kitchen equipment visible."
+    },
+    {
+      "id": "tropical-smoothie",
+      "category": "smoothie",
+      "prompt": "Professional beverage photography of bright yellow-orange tropical smoothie in coconut shell bowl, topped with passion fruit, mango cubes, and edible flowers. Palm leaf props, bright summer mood. Clean white background, vacation aesthetic. Wide 16:9 format. No blender visible."
+    },
+    {
+      "id": "pumpkin-soup",
+      "category": "soup",
+      "prompt": "Professional food photography of creamy pumpkin soup in rustic ceramic bowl with pepita seeds and sage garnish. Small decorative pumpkins, autumn leaves as props. Warm, cozy fall aesthetic with golden lighting. Wide horizontal composition. No appliances visible."
+    }
   ],
   "created_at": "2025-01-15",
   "updated_at": "2026-01-17"

@@ -185,6 +185,10 @@ function buildProductContext(products: Product[]): string {
   if (!products.length) return 'No products available.';
   return products.map(p => {
     const imageUrl = normalizeImageUrl(p.images?.primary);
+    // Include match metadata if available (from LLM product selection)
+    const matchInfo = p.matchRationale
+      ? `\n  Match Rationale: ${p.matchRationale}${p.isPrimaryMatch ? ' (PRIMARY RECOMMENDATION)' : ''}`
+      : '';
     return `
 - ${p.name} (${p.series})
   Price: $${p.price}
@@ -193,7 +197,7 @@ function buildProductContext(products: Product[]): string {
   URL: ${p.url}
   Tagline: ${p.tagline || p.description?.slice(0, 100) || 'Premium blender'}
   Features: ${p.features?.slice(0, 3).join(', ') || 'High performance blending'}
-  Best for: ${p.bestFor?.join(', ') || 'All blending tasks'}
+  Best for: ${p.bestFor?.join(', ') || 'All blending tasks'}${matchInfo}
 `;
   }).join('\n');
 }
@@ -334,6 +338,8 @@ CRITICAL RULES:
 - Do NOT include star ratings - we don't have rating data
 - Do NOT invent product names - use exact names from context
 - CTA TEXT MUST BE VALUE-DRIVEN based on product's "Best for" data (NOT generic "View Details")
+- If a product has "Match Rationale" in context, add data-match-rationale attribute to the card
+- If a product is marked as "PRIMARY RECOMMENDATION", add data-is-primary="true" attribute
 
 CTA TEXT GUIDELINES (pick the most relevant):
 - If product is best for smoothies: "Perfect for Your Smoothies"
@@ -344,7 +350,7 @@ CTA TEXT GUIDELINES (pick the most relevant):
 NEVER use generic CTAs like "View Details", "Learn More", or "Shop Now"
 
 THEN output 3-4 product cards (each card is a ROW with two CELLS - image cell and content cell):
-<div class="product-card">
+<div class="product-card" data-match-rationale="MATCH_RATIONALE_FROM_CONTEXT" data-is-primary="true_or_false">
   <div>
     <picture><img src="EXACT_IMAGE_URL_FROM_CONTEXT" alt="Product Name" loading="lazy"></picture>
   </div>
@@ -355,6 +361,9 @@ THEN output 3-4 product cards (each card is a ROW with two CELLS - image cell an
     <p><a href="EXACT_PRODUCT_URL_FROM_CONTEXT" class="button" target="_blank">[VALUE-DRIVEN CTA TEXT]</a></p>
   </div>
 </div>
+
+NOTE: Only add data-match-rationale and data-is-primary attributes if the product has Match Rationale in context.
+If no Match Rationale is provided, omit these attributes entirely.
 
 CRITICAL: The header element MUST be the first thing in your output. Each product-card must have a div>div>picture>img structure for images.`,
 
@@ -509,6 +518,7 @@ IMPORTANT:
 - Product names in the header row MUST be links to their vitamix.com product pages.
 - ONLY compare Vitamix products to each other - we do not have competitor data.
 - If user mentions a competitor brand (Blendtec, Ninja, etc.), compare 2-3 Vitamix models instead and note that competitor specs are not available.
+- IF productSelectionRationale is provided in context, START with a comparison-rationale div (see below).
 
 SPECIAL GUIDANCE FOR FAMILY/KIDS QUERIES:
 If the user mentions kids, family, picky eaters, or hiding vegetables:
@@ -527,6 +537,13 @@ After the header, include a "Value Proposition" row that summarizes what each pr
 - For premium: "Top Features - Maximum versatility"
 This helps users quickly understand which product matches their priorities.
 
+START WITH COMPARISON RATIONALE (if productSelectionRationale is in context):
+<div class="comparison-rationale">
+  <h3>Why We're Comparing These</h3>
+  <p>PRODUCT_SELECTION_RATIONALE_FROM_CONTEXT</p>
+</div>
+
+THEN THE COMPARISON TABLE:
 <div>
   <div></div>
   <div><strong><a href="EXACT_PRODUCT_A_URL" target="_blank">Product A Name</a></strong></div>
@@ -944,7 +961,8 @@ async function generateBlockContent(
   env: Env,
   preset?: string,
   intent?: IntentClassification,
-  query?: string
+  query?: string,
+  productSelectionRationale?: string
 ): Promise<GeneratedBlock> {
   const modelFactory = createModelFactory(env, preset);
 
@@ -955,6 +973,10 @@ async function generateBlockContent(
 
   if (['product-cards', 'product-recommendation', 'comparison-table', 'best-pick'].includes(block.type)) {
     dataContext = `\n\n## Available Products (USE THESE EXACT IMAGE URLs):\n${buildProductContext(ragContext.relevantProducts)}`;
+    // For comparison-table, include product selection rationale if available
+    if (block.type === 'comparison-table' && productSelectionRationale) {
+      dataContext += `\n\n## Product Selection Rationale (INCLUDE as comparison-rationale div):\n${productSelectionRationale}`;
+    }
   } else if (['specs-table'].includes(block.type)) {
     // For specs-table, provide the first/main product's specifications
     const mainProduct = ragContext.relevantProducts[0];
@@ -1525,18 +1547,30 @@ export async function orchestrate(
 
     // Stage 4.5: Resolve LLM-selected products
     // If the reasoning engine selected specific products, override RAG context
+    // and attach match metadata (rationale, isPrimary) to each product
     if (ctx.reasoningResult.selectedProducts && ctx.reasoningResult.selectedProducts.length > 0 && ctx.ragContext) {
-      const selectedIds = ctx.reasoningResult.selectedProducts.map(p => p.id);
-      const fullProducts = selectedIds
-        .map(id => getProductById(id))
+      const selectedProducts = ctx.reasoningResult.selectedProducts;
+      const fullProducts = selectedProducts
+        .map(selection => {
+          const product = getProductById(selection.id);
+          if (product) {
+            // Attach match metadata from LLM selection
+            return {
+              ...product,
+              matchRationale: selection.rationale,
+              isPrimaryMatch: selection.isPrimary,
+            };
+          }
+          return undefined;
+        })
         .filter((p): p is Product => p !== undefined);
 
       if (fullProducts.length > 0) {
-        console.log('[Orchestrator] LLM selected products:', fullProducts.map(p => p.name).join(', '));
+        console.log('[Orchestrator] LLM selected products:', fullProducts.map(p => `${p.name}${p.isPrimaryMatch ? ' (PRIMARY)' : ''}`).join(', '));
         console.log('[Orchestrator] Overriding RAG context products (was:', ctx.ragContext.relevantProducts.map(p => p.name).join(', '), ')');
         ctx.ragContext.relevantProducts = fullProducts;
       } else {
-        console.warn('[Orchestrator] LLM selected product IDs not found in catalog:', selectedIds);
+        console.warn('[Orchestrator] LLM selected product IDs not found in catalog:', selectedProducts.map(p => p.id));
       }
     }
 
@@ -1560,7 +1594,15 @@ export async function orchestrate(
         // SAFETY: Allergen-safety uses only vetted content, no LLM generation
         block = generateAllergenSafetyBlock();
       } else {
-        block = await generateBlockContent(blockSelection, ctx.ragContext, env, preset, ctx.intent, ctx.query);
+        block = await generateBlockContent(
+          blockSelection,
+          ctx.ragContext,
+          env,
+          preset,
+          ctx.intent,
+          ctx.query,
+          ctx.reasoningResult.productSelectionRationale
+        );
       }
 
       blocks.push(block);
@@ -1931,18 +1973,30 @@ export async function orchestrateFromContext(
 
     // Stage 4.5: Resolve LLM-selected products
     // If the reasoning engine selected specific products, override RAG context
+    // and attach match metadata (rationale, isPrimary) to each product
     if (ctx.reasoningResult.selectedProducts && ctx.reasoningResult.selectedProducts.length > 0 && ctx.ragContext) {
-      const selectedIds = ctx.reasoningResult.selectedProducts.map(p => p.id);
-      const fullProducts = selectedIds
-        .map(id => getProductById(id))
+      const selectedProducts = ctx.reasoningResult.selectedProducts;
+      const fullProducts = selectedProducts
+        .map(selection => {
+          const product = getProductById(selection.id);
+          if (product) {
+            // Attach match metadata from LLM selection
+            return {
+              ...product,
+              matchRationale: selection.rationale,
+              isPrimaryMatch: selection.isPrimary,
+            };
+          }
+          return undefined;
+        })
         .filter((p): p is Product => p !== undefined);
 
       if (fullProducts.length > 0) {
-        console.log('[OrchestrateFromContext] LLM selected products:', fullProducts.map(p => p.name).join(', '));
+        console.log('[OrchestrateFromContext] LLM selected products:', fullProducts.map(p => `${p.name}${p.isPrimaryMatch ? ' (PRIMARY)' : ''}`).join(', '));
         console.log('[OrchestrateFromContext] Overriding RAG context products (was:', ctx.ragContext.relevantProducts.map(p => p.name).join(', '), ')');
         ctx.ragContext.relevantProducts = fullProducts;
       } else {
-        console.warn('[OrchestrateFromContext] LLM selected product IDs not found in catalog:', selectedIds);
+        console.warn('[OrchestrateFromContext] LLM selected product IDs not found in catalog:', selectedProducts.map(p => p.id));
       }
     }
 
@@ -1966,7 +2020,15 @@ export async function orchestrateFromContext(
       } else if (blockSelection.type === 'allergen-safety') {
         block = generateAllergenSafetyBlock();
       } else {
-        block = await generateBlockContent(blockSelection, ctx.ragContext, env, preset, intent, ctx.query);
+        block = await generateBlockContent(
+          blockSelection,
+          ctx.ragContext,
+          env,
+          preset,
+          intent,
+          ctx.query,
+          ctx.reasoningResult.productSelectionRationale
+        );
       }
 
       blocks.push(block);

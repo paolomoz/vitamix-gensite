@@ -137,6 +137,15 @@ export default function decorate(block) {
         const li = document.createElement('li');
         li.className = card.className;
         li.innerHTML = card.innerHTML;
+
+        // Transfer data attributes for match metadata
+        if (card.dataset.matchRationale) {
+          li.dataset.matchRationale = card.dataset.matchRationale;
+        }
+        if (card.dataset.isPrimary) {
+          li.dataset.isPrimary = card.dataset.isPrimary;
+        }
+
         ul.appendChild(li);
       });
       block.textContent = '';
@@ -148,6 +157,37 @@ export default function decorate(block) {
       const ul = block.querySelector('ul');
       ul.dataset.cardCount = existingCards.length;
     }
+
+    // Add match badges and rationale for AI-selected products
+    block.querySelectorAll('.product-card, li.product-card').forEach((card) => {
+      const { matchRationale, isPrimary: isPrimaryAttr } = card.dataset;
+      const isPrimary = isPrimaryAttr === 'true';
+
+      // Add "Best Match" badge for primary recommendations
+      if (isPrimary) {
+        const imageDiv = card.querySelector('.product-card-image');
+        if (imageDiv && !imageDiv.querySelector('.match-badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'badge match-badge';
+          // eslint-disable-next-line max-len
+          badge.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Best Match';
+          imageDiv.appendChild(badge);
+        }
+      }
+
+      // Add match rationale text below the product name
+      if (matchRationale) {
+        const bodyDiv = card.querySelector('.product-card-body');
+        const productName = bodyDiv?.querySelector('h3, .product-name');
+        if (bodyDiv && productName && !bodyDiv.querySelector('.match-rationale')) {
+          const rationaleEl = document.createElement('p');
+          rationaleEl.className = 'match-rationale';
+          rationaleEl.textContent = matchRationale;
+          productName.insertAdjacentElement('afterend', rationaleEl);
+        }
+      }
+    });
+
     // Ensure links have proper styling and icons
     block.querySelectorAll('a.button, a.product-cta').forEach((link) => {
       if (!link.classList.contains('product-cta')) {

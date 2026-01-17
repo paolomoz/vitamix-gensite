@@ -27,6 +27,15 @@ export interface Product {
   sourceUrl?: string;
   contentHash?: string;
   isCommercial?: boolean;
+  /**
+   * Match metadata from LLM product selection (attached at runtime).
+   * Explains why this product was selected for the user's query.
+   */
+  matchRationale?: string;
+  /**
+   * Whether this is the primary/top recommendation from LLM selection.
+   */
+  isPrimaryMatch?: boolean;
 }
 
 export interface ProductSpecs {

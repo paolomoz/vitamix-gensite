@@ -37,6 +37,15 @@ function generateProductUrl(productName) {
 }
 
 export default function decorate(block) {
+  // Check for comparison rationale section (AI-generated "Why Compare" content)
+  const rationaleEl = block.querySelector('.comparison-rationale');
+  let rationaleHtml = null;
+  if (rationaleEl) {
+    // Preserve the rationale element - it will be prepended before the table
+    rationaleHtml = rationaleEl.outerHTML;
+    rationaleEl.remove();
+  }
+
   const rows = [...block.children];
   if (rows.length === 0) return;
 
@@ -329,5 +338,11 @@ export default function decorate(block) {
   block.dataset.products = productCount - 1;
 
   block.textContent = '';
+
+  // Prepend comparison rationale if present
+  if (rationaleHtml) {
+    block.insertAdjacentHTML('beforeend', rationaleHtml);
+  }
+
   block.appendChild(table);
 }

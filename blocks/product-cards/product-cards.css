@@ -138,6 +138,37 @@
   color: var(--color-white);
 }
 
+/* Match Badge (Best Match indicator from AI selection) */
+.product-card-image .badge.match-badge {
+  background: var(--color-asparagus, #799a3c);
+  color: var(--color-white);
+  top: var(--spacing-100);
+  right: var(--spacing-100);
+  left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-40);
+}
+
+.product-card-image .badge.match-badge svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+/* Match rationale tooltip */
+.product-card .match-rationale {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-xs);
+  font-style: italic;
+  color: var(--color-asparagus, #799a3c);
+  margin: var(--spacing-60) 0 var(--spacing-100);
+  padding: var(--spacing-60) var(--spacing-100);
+  background: rgba(121, 154, 60, 0.08);
+  border-left: 2px solid var(--color-asparagus, #799a3c);
+  line-height: var(--line-height-m);
+}
+
 /* ===== Card Body ===== */
 .product-card-body {
   display: flex;

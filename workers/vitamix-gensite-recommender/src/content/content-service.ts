@@ -388,6 +388,18 @@ export function getFeaturesForProduct(productId: string): Feature[] {
   return features.filter((f) => f.availableIn?.includes(productId));
 }
 
+/**
+ * Get all product IDs that have a specific feature.
+ * This replaces hardcoded feature-to-product mappings with dynamic lookups from features.json.
+ *
+ * @param featureId - The feature ID to look up (e.g., 'hot-soup-program')
+ * @returns Array of product IDs that have this feature
+ */
+export function getProductsByFeature(featureId: string): string[] {
+  const feature = features.find((f) => f.id === featureId);
+  return feature?.availableIn || [];
+}
+
 // ============================================
 // Accessory Queries
 // ============================================
@@ -1100,8 +1112,8 @@ export function buildRAGContext(
     'nut-butter': ['tamper'],
   };
 
-  // Products known to have Hot Soup Program
-  const hotSoupProducts = ['ascent-x5', 'ascent-x4', 'ascent-x3', 'a3500', 'a2500', 'propel-750'];
+  // Products with Hot Soup Program - dynamically loaded from features.json
+  const hotSoupProducts = getProductsByFeature('hot-soup-program');
 
   // Check if any combined keyword matches a feature requirement (includes history)
   const primaryUseCase = combinedKeywords.find((kw) => featureRequirements[kw]);
@@ -1334,6 +1346,7 @@ export default {
   getAllFeatures,
   getFeatureById,
   getFeaturesForProduct,
+  getProductsByFeature,
 
   // Accessories
   getAllAccessories,

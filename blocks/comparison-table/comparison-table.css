@@ -14,6 +14,46 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* ===== Comparison Rationale (Why Compare) ===== */
+.comparison-rationale {
+  background: var(--color-gray-100);
+  border-left: 4px solid var(--color-red);
+  padding: var(--spacing-300) var(--spacing-400);
+  margin-bottom: var(--spacing-400);
+}
+
+.comparison-rationale h3 {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-m);
+  color: var(--color-red);
+  margin: 0 0 var(--spacing-100);
+}
+
+.comparison-rationale p {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  line-height: var(--line-height-l);
+  color: var(--color-charcoal);
+  margin: 0;
+}
+
+/* Dark section variant */
+.section.dark .comparison-rationale {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--color-red);
+}
+
+.section.dark .comparison-rationale h3 {
+  color: var(--color-red);
+}
+
+.section.dark .comparison-rationale p {
+  color: var(--color-white);
+}
+
 /* ===== Table Grid ===== */
 .comparison-table-grid {
   width: 100%;

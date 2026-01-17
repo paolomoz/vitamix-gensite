@@ -307,6 +307,11 @@ async function renderGenerativePage() {
         }
         if (aspectRatio) {
           blockEl.classList.add(`aspect-${aspectRatio}`);
+          // For wide heroes, propagate class to wrapper/section for full-width styling
+          if (aspectRatio === 'wide') {
+            wrapper.classList.add('aspect-wide-wrapper');
+            section.classList.add('aspect-wide-section');
+          }
         }
       }
     }
@@ -604,6 +609,11 @@ async function renderFastGenerativePage() {
         }
         if (aspectRatio) {
           blockEl.classList.add(`aspect-${aspectRatio}`);
+          // For wide heroes, propagate class to wrapper/section for full-width styling
+          if (aspectRatio === 'wide') {
+            wrapper.classList.add('aspect-wide-wrapper');
+            section.classList.add('aspect-wide-section');
+          }
         }
       }
     }
@@ -867,6 +877,11 @@ async function renderVitamixRecommenderPage() {
         }
         if (aspectRatio) {
           blockEl.classList.add(`aspect-${aspectRatio}`);
+          // For wide heroes, propagate class to wrapper/section for full-width styling
+          if (aspectRatio === 'wide') {
+            wrapper.classList.add('aspect-wide-wrapper');
+            section.classList.add('aspect-wide-section');
+          }
         }
       }
     }

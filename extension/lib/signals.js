@@ -41,8 +41,6 @@ export const BASE_SIGNAL_TYPES = {
   search: { icon: '🔍', baseWeight: SIGNAL_WEIGHTS.VERY_HIGH },
   scroll: { icon: '📜', baseWeight: SIGNAL_WEIGHTS.LOW },
   referrer: { icon: '🌐', baseWeight: SIGNAL_WEIGHTS.MEDIUM },
-  time_on_page: { icon: '⏱️', baseWeight: SIGNAL_WEIGHTS.MEDIUM },
-  video_play: { icon: '▶️', baseWeight: SIGNAL_WEIGHTS.HIGH },
   video_complete: { icon: '🎬', baseWeight: SIGNAL_WEIGHTS.VERY_HIGH },
 };
 

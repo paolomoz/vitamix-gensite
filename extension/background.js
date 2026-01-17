@@ -4,7 +4,7 @@
  */
 
 import { ProfileEngine, DEFAULT_PROFILE } from './lib/profile-engine.js';
-import { createSignal } from './lib/signals.js';
+import { createSignal, getWeightLabel } from './lib/signals.js';
 
 // POC site base URL
 const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
@@ -164,6 +164,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Add follow-up query from POC site URL to conversation history
       // This captures explicit user choices (clicking follow-up suggestions)
       handleQueryFromUrl(message.query).then(() => {
+        sendResponse({ success: true });
+      });
+      return true;
+
+    case 'PAGE_TIME_UPDATE':
+      // Update page_view signal weight based on time on page
+      handlePageTimeUpdate(message.data).then(() => {
         sendResponse({ success: true });
       });
       return true;
@@ -400,6 +407,56 @@ async function handleGenerateHint() {
  */
 async function handleHintClicked(query) {
   return handleGeneratePageInternal(query, 'all-cerebras', false);
+}
+
+/**
+ * Handle time update for a page - updates the corresponding page_view signal
+ * Time on page increases the weight of the page_view signal (engagement indicator)
+ */
+async function handlePageTimeUpdate(data) {
+  const { url, timeOnPage, seconds } = data;
+  if (!url) return;
+
+  // Find the most recent page_view signal for this URL
+  const signals = profileEngine.getSignals();
+  const pageViewSignal = [...signals].reverse().find(
+    s => s.type === 'page_view' && s.data?.url === url
+  );
+
+  if (!pageViewSignal) {
+    console.log('[Background] No page_view signal found for URL:', url);
+    return;
+  }
+
+  // Calculate total weight boost based on time spent (not incremental)
+  // These are absolute boosts from base weight, not additive
+  const timeBoosts = {
+    30: 0.02,   // +0.02 from base
+    60: 0.04,   // +0.04 from base
+    120: 0.06,  // +0.06 from base
+    300: 0.08,  // +0.08 from base
+  };
+  const totalBoost = timeBoosts[seconds] || 0;
+
+  // Store original base weight if not already stored
+  if (pageViewSignal.data.baseWeight === undefined) {
+    pageViewSignal.data.baseWeight = pageViewSignal.weight;
+  }
+
+  // Update the signal - use base weight + total boost (not additive)
+  pageViewSignal.data.timeOnPage = timeOnPage;
+  pageViewSignal.data.timeSeconds = seconds;
+  pageViewSignal.weight = Math.min(0.20, pageViewSignal.data.baseWeight + totalBoost); // Cap at VERY_HIGH
+  pageViewSignal.weightLabel = getWeightLabel(pageViewSignal.weight);
+
+  // Update label (remove previous time suffix if present, then add new one)
+  const baseLabel = pageViewSignal.label.replace(/\s*\(\d+s\)$/, '');
+  pageViewSignal.label = `${baseLabel} (${seconds}s)`;
+
+  console.log('[Background] Updated page_view weight:', pageViewSignal.weight, 'for', url);
+
+  await saveProfileToStorage();
+  await notifyPanel();
 }
 
 /**

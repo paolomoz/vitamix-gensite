@@ -310,18 +310,7 @@
       if (video.dataset.intentTracked) return;
       video.dataset.intentTracked = 'true';
 
-      video.addEventListener('play', () => {
-        console.log('[VitamixIntent] Video play');
-        sendSignal('video_play', {
-          duration: video.duration,
-          src: video.currentSrc,
-          page: {
-            url: window.location.href,
-            path: window.location.pathname,
-          }
-        });
-      });
-
+      // Only track video completion (not play - too noisy on Vitamix site)
       video.addEventListener('ended', () => {
         console.log('[VitamixIntent] Video completed');
         sendSignal('video_complete', {
@@ -355,7 +344,7 @@
   }
 
   /**
-   * Track time on page
+   * Track time on page - updates weight of corresponding page_view signal
    */
   function setupTimeOnPage() {
     let lastTimeUpdate = 0;
@@ -369,15 +358,19 @@
       if (threshold) {
         lastTimeUpdate = threshold;
         const seconds = Math.floor(threshold / 1000);
-        console.log('[VitamixIntent] Time milestone:', seconds, 'seconds');
-        sendSignal('time_on_page', {
-          duration: timeOnPage,
-          milestone: threshold,
-          seconds,
-          page: {
+        console.log('[VitamixIntent] Time milestone:', seconds, 'seconds - updating page view weight');
+        // Send time update to background (updates page_view signal weight, not a new signal)
+        chrome.runtime.sendMessage({
+          type: 'PAGE_TIME_UPDATE',
+          data: {
             url: window.location.href,
             path: window.location.pathname,
-          }
+            timeOnPage,
+            milestone: threshold,
+            seconds,
+          },
+        }).catch(e => {
+          console.log('[VitamixIntent] Could not send time update:', e.message);
         });
       }
     }, 5000);

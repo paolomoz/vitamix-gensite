@@ -60,17 +60,6 @@ function setupEventListeners() {
     }
   });
 
-  // Settings button (placeholder)
-  document.getElementById('settings-btn').addEventListener('click', () => {
-    alert('Settings coming soon!');
-  });
-
-  // Copy signals button
-  document.getElementById('copy-signals-btn').addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent section toggle
-    copySignalsToClipboard();
-  });
-
   // Generate page button
   document.getElementById('generate-btn').addEventListener('click', () => {
     handleGenerate();
@@ -621,31 +610,6 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
-}
-
-/**
- * Copy raw signals to clipboard
- */
-async function copySignalsToClipboard() {
-  const btn = document.getElementById('copy-signals-btn');
-
-  if (currentSignals.length === 0) {
-    btn.textContent = '❌';
-    setTimeout(() => { btn.textContent = '📋'; }, 1000);
-    return;
-  }
-
-  try {
-    const rawSignals = JSON.stringify(currentSignals, null, 2);
-    await navigator.clipboard.writeText(rawSignals);
-    btn.textContent = '✅';
-    setTimeout(() => { btn.textContent = '📋'; }, 1000);
-    console.log('[Panel] Copied', currentSignals.length, 'signals to clipboard');
-  } catch (err) {
-    console.error('[Panel] Failed to copy:', err);
-    btn.textContent = '❌';
-    setTimeout(() => { btn.textContent = '📋'; }, 1000);
-  }
 }
 
 // Update context summary when query input changes

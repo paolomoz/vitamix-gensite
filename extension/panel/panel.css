@@ -267,25 +267,6 @@ svg.icon-loading {
   text-align: center;
 }
 
-/* Copy Button (inline) */
-.copy-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: var(--spectrum-spacing-50) var(--spectrum-spacing-75);
-  font-size: 12px;
-  line-height: 1;
-  border-radius: var(--radius-sm);
-  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
-  margin-left: var(--spectrum-spacing-75);
-}
-
-.copy-btn:hover {
-  background: var(--surface-hover);
-  color: var(--text);
-}
-
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -622,25 +603,20 @@ svg.icon-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spectrum-spacing-100);
+  gap: var(--spectrum-spacing-75);
   width: 100%;
-  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+  padding: var(--spectrum-spacing-100) var(--spectrum-spacing-200);
   border: none;
-  border-radius: var(--radius);
-  font-size: 13px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
   margin-top: 0;
 }
 
-.btn-large {
-  padding: 14px var(--spectrum-spacing-400);
-  font-size: 14px;
-}
-
 .btn .icon {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .btn-primary {
@@ -666,7 +642,7 @@ svg.icon-loading {
 .btn-hint {
   background: var(--spectrum-blue-900);
   color: var(--spectrum-gray-1000);
-  margin-bottom: var(--spectrum-spacing-100);
+  margin-bottom: var(--spectrum-spacing-75);
 }
 
 .btn-hint:hover {

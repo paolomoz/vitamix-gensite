@@ -53,4 +53,13 @@ export default function decorate(block) {
   if (ctaButton) {
     ctaButton.remove();
   }
+
+  // For aspect-wide heroes, propagate class to wrapper for full-width styling
+  // This ensures the wrapper max-width is overridden without relying on :has()
+  if (block.classList.contains('aspect-wide')) {
+    const wrapper = block.closest('.hero-wrapper');
+    if (wrapper) {
+      wrapper.classList.add('aspect-wide-wrapper');
+    }
+  }
 }

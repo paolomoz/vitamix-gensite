@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Aspect Ratio Gallery | Vitamix</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/blocks/hero/hero.css">
+  <style>
+    /* Fallback CSS variables in case styles.css doesn't load */
+    :root {
+      --color-white: white;
+      --color-gray-100: #fafafa;
+      --color-gray-200: #f3f1eb;
+      --color-gray-300: #e9e9e9;
+      --color-gray-900: #666;
+      --color-charcoal: #333f48;
+      --color-red: #c8102e;
+      --heading-font-family: Sentinel, Georgia, serif;
+      --body-font-family: "Gotham Narrow", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --spacing-100: 16px;
+      --spacing-200: 20px;
+      --spacing-400: 32px;
+      --spacing-600: 40px;
+      --spacing-700: 48px;
+    }
+    body {
+      margin: 0;
+      font-family: var(--body-font-family);
+      background: var(--color-gray-100);
+    }
+    .test-section {
+      margin: 0 0 60px;
+    }
+    .test-section-header {
+      background: var(--color-charcoal);
+      color: white;
+      padding: 20px 40px;
+      margin: 0;
+    }
+    .test-section-header h2 {
+      margin: 0 0 8px;
+      font-family: var(--heading-font-family);
+      font-weight: 300;
+      font-size: 28px;
+    }
+    .test-section-header p {
+      margin: 0;
+      opacity: 0.8;
+      font-size: 14px;
+    }
+    .test-section-header code {
+      background: rgba(255,255,255,0.15);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    .hero-wrapper {
+      position: relative;
+    }
+    .hero-meta {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      z-index: 100;
+      max-width: 300px;
+    }
+    .hero-meta strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .hero-meta .tag {
+      display: inline-block;
+      background: var(--color-red);
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin: 2px 2px 2px 0;
+      font-size: 10px;
+    }
+    .hero-meta .tag.wide { background: #2563eb; }
+    .hero-meta .tag.square { background: #7c3aed; }
+    .hero-meta .tag.light { background: #f59e0b; color: #000; }
+    .hero-meta .tag.dark { background: #374151; }
+    .hero-meta .tag.mixed { background: #6b7280; }
+
+    /* Ensure hero displays correctly in test context */
+    .hero {
+      margin: 0;
+    }
+  </style>
+</head>
+<body class="appear">
+  <header style="background: white; padding: 20px 40px; border-bottom: 1px solid var(--color-gray-300);">
+    <h1 style="margin: 0; font-family: var(--heading-font-family); font-weight: 300; color: var(--color-charcoal);">
+      Hero Aspect Ratio Gallery
+    </h1>
+    <p style="margin: 8px 0 0; color: var(--color-gray-900);">
+      Testing aspect-based hero layouts: <strong>Wide</strong> (full-width with text overlay) vs <strong>Square</strong> (split 50/50 layout)
+    </p>
+  </header>
+
+  <!-- WIDE IMAGES SECTION -->
+  <section class="test-section">
+    <div class="test-section-header">
+      <h2>Wide Images (aspect-wide)</h2>
+      <p>Ratio &gt; 1.4 → Full-width hero with image as background, text overlay positioned by <code>text_placement</code></p>
+    </div>
+
+    <!-- Wide: Product Lineup - text-bottom-center, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Product Lineup</strong>
+        <span class="tag wide">wide</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-bottom-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">2880×960 = 3.00</div>
+      </div>
+      <div class="hero split quote block text-bottom-center bg-light aspect-wide">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/vr/en_us/media_1e3c9537df82d212a4b48020802855aee927b1c39.jpg?width=2880&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Discover the Full Vitamix Lineup</h1>
+            <p>From power-packed blenders for smoothies to versatile models for soups, sauces, and more, explore the range that fits every kitchen and lifestyle.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wide: Dark Product - text-left, bg-dark -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Sleek Dark Product</strong>
+        <span class="tag wide">wide</span>
+        <span class="tag dark">bg-dark</span>
+        <span class="tag">text-left</span>
+        <div style="margin-top: 4px; opacity: 0.7;">2000×667 = 3.00</div>
+      </div>
+      <div class="hero split quote block text-left bg-dark aspect-wide">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/vr/en_us/media_1a7165d05e047cd6a2f5911a6b435911f6e6831c3.jpg?width=2000&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Professional-Grade Performance</h1>
+            <p>Experience the power and precision of Vitamix with intuitive digital controls designed for the modern kitchen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wide: Citrus Orange - text-right, bg-mixed -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Citrus Lifestyle</strong>
+        <span class="tag wide">wide</span>
+        <span class="tag mixed">bg-mixed</span>
+        <span class="tag">text-right</span>
+        <div style="margin-top: 4px; opacity: 0.7;">2000×667 = 3.00</div>
+      </div>
+      <div class="hero split quote block text-right bg-mixed aspect-wide">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/vr/en_us/media_1d07ef5e65686be3cfb2316dfd4bb114dc8a23cfa.png?width=2000&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Fresh Citrus Creations</h1>
+            <p>Transform fresh oranges, lemons, and limes into vibrant drinks, dressings, and desserts with effortless blending power.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wide: Soup - text-bottom-center, bg-dark -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Hot Soup</strong>
+        <span class="tag wide">wide</span>
+        <span class="tag dark">bg-dark</span>
+        <span class="tag">text-bottom-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">2000×465 = 4.30</div>
+      </div>
+      <div class="hero split quote block text-bottom-center bg-dark aspect-wide">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/us/en_us/media_1f46d4f073301a5a107d943a2e0582c5a5730f75c.jpg?width=2000&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Hot Soups from Scratch</h1>
+            <p>Create restaurant-quality hot soups in minutes using friction heat. No stovetop required.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wide: Coffee Drinks - text-left, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Coffee Drinks</strong>
+        <span class="tag wide">wide</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-left</span>
+        <div style="margin-top: 4px; opacity: 0.7;">2000×1316 = 1.52</div>
+      </div>
+      <div class="hero split quote block text-left bg-light aspect-wide">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/vr/en_us/media_17286266c121381b60a6f884769cacb659f79857f.png?width=2000&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Café-Quality at Home</h1>
+            <p>Blend iced coffees, frappes, and creamy lattes that rival your favorite coffee shop.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wide: Overhead Vegetables - text-center, bg-dark -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Overhead Vegetables</strong>
+        <span class="tag wide">wide</span>
+        <span class="tag dark">bg-dark</span>
+        <span class="tag">text-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">1920×450 = 4.27</div>
+      </div>
+      <div class="hero split quote block text-center bg-dark aspect-wide">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/us/en_us/media_104aa11fe9cafe1d33a0e4e1103b5463a3e8ebf89.png?width=2000&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Whole Food Nutrition</h1>
+            <p>Turn fresh vegetables into soups, sauces, and smoothies that retain maximum nutrients.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SQUARE IMAGES SECTION -->
+  <section class="test-section">
+    <div class="test-section-header">
+      <h2>Square Images (aspect-square)</h2>
+      <p>Ratio ≤ 1.4 → Split 50/50 layout with charcoal sidebar containing text</p>
+    </div>
+
+    <!-- Square: Berry Smoothies - text-bottom-center, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Berry Smoothies</strong>
+        <span class="tag square">square</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-bottom-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">236×236 = 1.00</div>
+      </div>
+      <div class="hero split quote block text-bottom-center bg-light aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SMOOTHIES%20NON-DIARY%20MILKS%20%20BEVERAGES.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Berry Smoothie Bliss</h1>
+            <p>Blend vibrant purple smoothies packed with antioxidants from fresh berries.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Green Soups - text-bottom-center, bg-mixed -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Green Soups</strong>
+        <span class="tag square">square</span>
+        <span class="tag mixed">bg-mixed</span>
+        <span class="tag">text-bottom-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">236×236 = 1.00</div>
+      </div>
+      <div class="hero split quote block text-bottom-center bg-mixed aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/SOUPS.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Creamy Green Soups</h1>
+            <p>Transform leafy greens into velvety soups with herbs and savory seasonings.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Ice Cream - text-bottom-center, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Frozen Desserts</strong>
+        <span class="tag square">square</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-bottom-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">236×236 = 1.00</div>
+      </div>
+      <div class="hero split quote block text-bottom-center bg-light aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/ICE%20CREAM%20%20FROZEN%20TREATS.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Frozen Treats at Home</h1>
+            <p>Make creamy ice cream, sorbet, and nice cream with just frozen fruit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Dips & Spreads - text-right, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Dips & Spreads</strong>
+        <span class="tag square">square</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-right</span>
+        <div style="margin-top: 4px; opacity: 0.7;">236×236 = 1.00</div>
+      </div>
+      <div class="hero split quote block text-right bg-light aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/DIPS%20SPREADS%20%20NUT%20BUTTERS.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Fresh Dips & Spreads</h1>
+            <p>Blend hummus, guacamole, and nut butters with perfect texture every time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Blue Smoothie - text-right, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Blue Spirulina Smoothie</strong>
+        <span class="tag square">square</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-right</span>
+        <div style="margin-top: 4px; opacity: 0.7;">500×500 = 1.00</div>
+      </div>
+      <div class="hero split quote block text-right bg-light aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/home/recipe-center/TrendingRecipes_BlueSpirulinaTropicalSmoothie_1.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Tropical Blue Smoothie</h1>
+            <p>Create stunning blue spirulina smoothies bursting with tropical flavor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Commercial Blender - text-left, bg-dark -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Commercial Blender</strong>
+        <span class="tag square">square</span>
+        <span class="tag dark">bg-dark</span>
+        <span class="tag">text-left</span>
+        <div style="margin-top: 4px; opacity: 0.7;">520×730 = 0.71 (portrait)</div>
+      </div>
+      <div class="hero split quote block text-left bg-dark aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/vr/en_us/media_18fbdf0060d121273469bde5e1717c19e7024b7ea.avif?width=2000&format=webply&optimize=medium" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Commercial Grade Power</h1>
+            <p>High-volume blending for restaurants, cafés, and juice bars that demand reliability.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Cocktails - text-right, bg-mixed -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Cocktails</strong>
+        <span class="tag square">square</span>
+        <span class="tag mixed">bg-mixed</span>
+        <span class="tag">text-right</span>
+        <div style="margin-top: 4px; opacity: 0.7;">236×236 = 1.00</div>
+      </div>
+      <div class="hero split quote block text-right bg-mixed aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/home/recipes/recipe-center-icons/COCKTAILS.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Craft Cocktails</h1>
+            <p>Blend frozen margaritas, daiquiris, and creative cocktails with bar-quality results.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Square: Triple Berry - text-bottom-center, bg-light -->
+    <div class="hero-wrapper">
+      <div class="hero-meta">
+        <strong>Triple Berry</strong>
+        <span class="tag square">square</span>
+        <span class="tag light">bg-light</span>
+        <span class="tag">text-bottom-center</span>
+        <div style="margin-top: 4px; opacity: 0.7;">470×449 = 1.05</div>
+      </div>
+      <div class="hero split quote block text-bottom-center bg-light aspect-square">
+        <div>
+          <div>
+            <picture>
+              <img src="https://www.vitamix.com/content/dam/vitamix/global/Triple-Berry-Smoothie-square.jpg" alt="Hero image">
+            </picture>
+          </div>
+          <div>
+            <h1>Triple Berry Smoothie</h1>
+            <p>Combine strawberries, blueberries, and raspberries for the ultimate berry blend.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background: var(--color-charcoal); color: white; padding: 40px; text-align: center;">
+    <p style="margin: 0; opacity: 0.7;">Hero Aspect Ratio Test Gallery</p>
+    <p style="margin: 8px 0 0; font-size: 12px; opacity: 0.5;">
+      Wide images (ratio &gt; 1.4) use full-width layout • Square images (ratio ≤ 1.4) use split layout
+    </p>
+  </footer>
+
+  <script type="module">
+    // Load hero CSS dynamically for testing
+    import { loadCSS } from '/scripts/aem.js';
+    loadCSS('/blocks/hero/hero.css');
+  </script>
+</body>
+</html>

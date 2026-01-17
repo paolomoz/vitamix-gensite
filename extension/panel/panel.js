@@ -78,10 +78,10 @@ function setupEventListeners() {
     }
   });
 
-  // Global keyboard shortcut for hint generation (Cmd/Ctrl + H)
+  // Global keyboard shortcut for hint generation (Cmd/Ctrl + .)
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'h' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault(); // Prevent browser's history shortcut
+    if (e.key === '.' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
       // Only trigger if we have signals (button would be enabled)
       if (currentSignals.length >= 1) {
         handleAddHint();

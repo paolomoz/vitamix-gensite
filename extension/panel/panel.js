@@ -77,6 +77,17 @@ function setupEventListeners() {
       handleGenerate();
     }
   });
+
+  // Global keyboard shortcut for hint generation (Cmd/Ctrl + H)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'h' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault(); // Prevent browser's history shortcut
+      // Only trigger if we have signals (button would be enabled)
+      if (currentSignals.length >= 1) {
+        handleAddHint();
+      }
+    }
+  });
 }
 
 /**

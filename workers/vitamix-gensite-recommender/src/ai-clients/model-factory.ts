@@ -53,7 +53,7 @@ const MODEL_PRESETS: Record<string, ModelPreset> = {
     },
     content: {
       provider: 'cerebras',
-      model: 'llama-3.3-70b',  // Fast content generation
+      model: 'llama-3.3-70b',  // Fast generation, no thinking artifacts
       maxTokens: 1024,
       temperature: 0.8,
     },

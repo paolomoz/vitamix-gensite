@@ -543,11 +543,11 @@ export interface ContentChunk {
 
 export type SSEEvent =
   | { event: 'generation-start'; data: { query: string; estimatedBlocks: number } }
-  | { event: 'reasoning-start'; data: { model: string; preset?: string } }
+  | { event: 'reasoning-start'; data: { model: string; preset?: string; heroFastPath?: boolean } }
   | { event: 'reasoning-step'; data: { stage: string; title: string; content: string } }
   | { event: 'reasoning-complete'; data: { confidence: { intent: number; productMatch: number }; duration: number } }
-  | { event: 'block-start'; data: { blockType: BlockType; index: number } }
-  | { event: 'block-content'; data: { html: string; sectionStyle?: string } }
+  | { event: 'block-start'; data: { blockType: BlockType; index: number; fastPath?: boolean } }
+  | { event: 'block-content'; data: { html: string; sectionStyle?: string; heroComposition?: { textPlacement: string; backgroundTone: string; aspectRatio: string } } }
   | { event: 'block-rationale'; data: { blockType: BlockType; rationale: string } }
   | { event: 'image-ready'; data: { imageId: string; url: string } }
   | { event: 'generation-complete'; data: GenerationCompleteData }

@@ -70,30 +70,31 @@ const MODEL_PRESETS: Record<string, ModelPreset> = {
     },
   },
 
-  // All-Cerebras preset for cost optimization
+  // All-Cerebras preset - speed optimized
+  // Uses smaller 70B model and reduced token limits for faster response
   'all-cerebras': {
     reasoning: {
       provider: 'cerebras',
-      model: 'gpt-oss-120b',
-      maxTokens: 4096,
+      model: 'llama-3.3-70b',  // Faster than 120B
+      maxTokens: 2048,         // Reduced from 4096
       temperature: 0.7,
     },
     content: {
       provider: 'cerebras',
-      model: 'gpt-oss-120b',
-      maxTokens: 4096,
+      model: 'llama-3.3-70b',  // Faster than 120B
+      maxTokens: 1024,         // Hero needs ~300-500 tokens
       temperature: 0.8,
     },
     classification: {
       provider: 'cerebras',
-      model: 'gpt-oss-120b',
-      maxTokens: 500,
+      model: 'llama-3.3-70b',
+      maxTokens: 200,          // Reduced from 500
       temperature: 0.3,
     },
     validation: {
       provider: 'cerebras',
-      model: 'gpt-oss-120b',
-      maxTokens: 300,
+      model: 'llama-3.3-70b',
+      maxTokens: 150,          // Reduced from 300
       temperature: 0.2,
     },
   },

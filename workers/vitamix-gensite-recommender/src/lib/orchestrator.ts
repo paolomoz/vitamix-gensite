@@ -1480,6 +1480,52 @@ function generateAllergenSafetyBlock(): GeneratedBlock {
 }
 
 // ============================================
+// Hero-First Fast Path
+// ============================================
+
+/**
+ * Generates the hero block immediately without waiting for full reasoning.
+ * This enables streaming the hero to the client ~2-3s faster.
+ */
+async function generateHeroFast(
+  query: string,
+  intent: IntentClassification,
+  ragContext: RAGContext,
+  env: Env,
+  preset?: string,
+  onEvent?: SSECallback
+): Promise<GeneratedBlock> {
+  // Emit block-start for hero
+  if (onEvent) {
+    onEvent({
+      event: 'block-start',
+      data: { blockType: 'hero', index: 0, fastPath: true },
+    });
+  }
+
+  // Create minimal BlockSelection for hero
+  const heroBlockSelection: BlockSelection = {
+    type: 'hero',
+    variant: 'default',
+    rationale: 'Hero generated via fast path for optimal time-to-first-content',
+    contentGuidance: `Create an engaging hero for: ${query}`,
+    priority: 1,
+  };
+
+  // Generate hero content
+  const heroBlock = await generateBlockContent(
+    heroBlockSelection,
+    ragContext,
+    env,
+    preset,
+    intent,
+    query
+  );
+
+  return heroBlock;
+}
+
+// ============================================
 // Main Orchestrator
 // ============================================
 
@@ -1505,21 +1551,41 @@ export async function orchestrate(
       data: { query, estimatedBlocks: 5 },
     });
 
-    // Stage 2: Fast intent classification
-    ctx.intent = await classifyIntent(query, env, sessionContext, preset);
+    // Stage 2: Classification + RAG context IN PARALLEL (saves ~200-300ms)
+    const [intentResult, ragResult] = await Promise.all([
+      classifyIntent(query, env, sessionContext, preset),
+      // RAG context can start with just the query - we'll refine if needed
+      getRAGContext(query, { intentType: 'discovery', confidence: 0.5, entities: {} } as IntentClassification, env, sessionContext),
+    ]);
+    ctx.intent = intentResult;
+    ctx.ragContext = ragResult;
 
-    // Stage 3: Get RAG context
-    ctx.ragContext = await getRAGContext(query, ctx.intent, env, sessionContext);
-
-    // Stage 4: Deep reasoning (model depends on preset)
+    // Stage 3: HERO-FIRST FAST PATH
+    // Start hero generation immediately while reasoning runs in parallel
+    // This reduces time-to-first-content by ~2-3 seconds
     const effectivePreset = preset || env.MODEL_PRESET || 'production';
     const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-gpt-oss-120b' : 'claude-opus-4-5';
+
+    console.log(`[Orchestrator] Starting hero-first fast path with preset: ${effectivePreset}`);
+    const heroStartTime = Date.now();
+
+    // Start hero generation and reasoning IN PARALLEL
+    const heroPromise = generateHeroFast(
+      query,
+      ctx.intent,
+      ctx.ragContext,
+      env,
+      preset,
+      onEvent
+    );
+
+    // Emit reasoning-start event
     onEvent({
       event: 'reasoning-start',
-      data: { model: reasoningModel, preset: effectivePreset },
+      data: { model: reasoningModel, preset: effectivePreset, heroFastPath: true },
     });
 
-    ctx.reasoningResult = await analyzeAndSelectBlocks(
+    const reasoningPromise = analyzeAndSelectBlocks(
       query,
       ctx.intent,
       ctx.ragContext,
@@ -1527,6 +1593,28 @@ export async function orchestrate(
       sessionContext,
       preset
     );
+
+    // Wait for hero first - stream it immediately when ready
+    const heroBlock = await heroPromise;
+    console.log(`[Orchestrator] Hero generated in ${Date.now() - heroStartTime}ms (fast path)`);
+
+    // Stream hero immediately - this is the key optimization!
+    onEvent({
+      event: 'block-content',
+      data: {
+        html: heroBlock.html,
+        sectionStyle: heroBlock.sectionStyle,
+        ...(heroBlock.heroComposition && { heroComposition: heroBlock.heroComposition }),
+      },
+    });
+
+    onEvent({
+      event: 'block-rationale',
+      data: { blockType: 'hero', rationale: 'Generated via fast path for optimal time-to-first-content' },
+    });
+
+    // Now wait for reasoning to complete
+    ctx.reasoningResult = await reasoningPromise;
 
     // Stream reasoning steps
     const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);
@@ -1545,7 +1633,7 @@ export async function orchestrate(
       },
     });
 
-    // Stage 4.5: Resolve LLM-selected products
+    // Stage 4: Resolve LLM-selected products
     // If the reasoning engine selected specific products, override RAG context
     // and attach match metadata (rationale, isPrimary) to each product
     if (ctx.reasoningResult.selectedProducts && ctx.reasoningResult.selectedProducts.length > 0 && ctx.ragContext) {
@@ -1574,10 +1662,13 @@ export async function orchestrate(
       }
     }
 
-    // Stage 5: Generate blocks in parallel
-    const blocks: GeneratedBlock[] = [];
+    // Stage 5: Generate remaining blocks (skip hero - already generated)
+    const blocks: GeneratedBlock[] = [heroBlock]; // Hero is first
 
-    for (const blockSelection of ctx.reasoningResult.selectedBlocks) {
+    // Filter out hero from reasoning-selected blocks since we already generated it
+    const remainingBlocks = ctx.reasoningResult.selectedBlocks.filter(b => b.type !== 'hero');
+
+    for (const blockSelection of remainingBlocks) {
       onEvent({
         event: 'block-start',
         data: { blockType: blockSelection.type, index: blocks.length },
@@ -1931,19 +2022,33 @@ export async function orchestrateFromContext(
     ctx.ragContext = await getRAGContext(effectiveQuery, intent, env, sessionContext);
 
     // ============================================
-    // Stage 4: Deep Reasoning (with signal interpretation)
+    // Stage 4: HERO-FIRST FAST PATH (with signal interpretation)
+    // Start hero generation immediately while reasoning runs in parallel
     // ============================================
     const effectivePreset = preset || env.MODEL_PRESET || 'production';
     const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-gpt-oss-120b' : 'claude-opus-4-5';
 
+    console.log(`[OrchestrateFromContext] Starting hero-first fast path with preset: ${effectivePreset}`);
+    const heroStartTime = Date.now();
+
+    // Start hero generation and reasoning IN PARALLEL
+    const heroPromise = generateHeroFast(
+      effectiveQuery,
+      intent,
+      ctx.ragContext,
+      env,
+      preset,
+      onEvent
+    );
+
     onEvent({
       event: 'reasoning-start',
-      data: { model: reasoningModel, preset: effectivePreset },
+      data: { model: reasoningModel, preset: effectivePreset, heroFastPath: true },
     });
 
     // Pass signal interpretation to reasoning engine for content guidance
     // Also pass profile confidence from rule-based engine to prevent overconfident LLM
-    ctx.reasoningResult = await analyzeAndSelectBlocks(
+    const reasoningPromise = analyzeAndSelectBlocks(
       effectiveQuery,
       intent,
       ctx.ragContext,
@@ -1953,6 +2058,28 @@ export async function orchestrateFromContext(
       signalInterpretation,
       context.profile.confidence_score // Profile confidence from rule-based engine
     );
+
+    // Wait for hero first - stream it immediately when ready
+    const heroBlock = await heroPromise;
+    console.log(`[OrchestrateFromContext] Hero generated in ${Date.now() - heroStartTime}ms (fast path)`);
+
+    // Stream hero immediately - this is the key optimization!
+    onEvent({
+      event: 'block-content',
+      data: {
+        html: heroBlock.html,
+        sectionStyle: heroBlock.sectionStyle,
+        ...(heroBlock.heroComposition && { heroComposition: heroBlock.heroComposition }),
+      },
+    });
+
+    onEvent({
+      event: 'block-rationale',
+      data: { blockType: 'hero', rationale: 'Generated via fast path for optimal time-to-first-content' },
+    });
+
+    // Now wait for reasoning to complete
+    ctx.reasoningResult = await reasoningPromise;
 
     // Stream reasoning steps
     const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);
@@ -2001,11 +2128,14 @@ export async function orchestrateFromContext(
     }
 
     // ============================================
-    // Stage 5: Generate Blocks
+    // Stage 5: Generate Remaining Blocks (skip hero - already generated)
     // ============================================
-    const blocks: GeneratedBlock[] = [];
+    const blocks: GeneratedBlock[] = [heroBlock]; // Hero is first
 
-    for (const blockSelection of ctx.reasoningResult.selectedBlocks) {
+    // Filter out hero from reasoning-selected blocks since we already generated it
+    const remainingBlocks = ctx.reasoningResult.selectedBlocks.filter(b => b.type !== 'hero');
+
+    for (const blockSelection of remainingBlocks) {
       onEvent({
         event: 'block-start',
         data: { blockType: blockSelection.type, index: blocks.length },

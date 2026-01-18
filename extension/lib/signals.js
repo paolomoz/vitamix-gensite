@@ -178,6 +178,125 @@ export function extractProductName(data) {
 }
 
 /**
+ * Normalize a product slug to its canonical name
+ */
+export function normalizeProductName(slug) {
+  if (!slug) return null;
+  const normalized = slug.toLowerCase().trim();
+
+  // Direct mapping lookup
+  if (PRODUCT_MAPPINGS[normalized]) {
+    return PRODUCT_MAPPINGS[normalized];
+  }
+
+  // Try with hyphens replaced
+  const withHyphens = normalized.replace(/\s+/g, '-');
+  if (PRODUCT_MAPPINGS[withHyphens]) {
+    return PRODUCT_MAPPINGS[withHyphens];
+  }
+
+  // Try partial match for known products
+  for (const [key, name] of Object.entries(PRODUCT_MAPPINGS)) {
+    if (normalized.includes(key) || key.includes(normalized)) {
+      return name;
+    }
+  }
+
+  // Return title-cased version if no mapping found
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/**
+ * Extract compared products from a compare URL or href
+ * Handles patterns like:
+ *   - /compare?products=X5,A3500
+ *   - /compare?p=X5&p=A3500
+ *   - /compare/X5-vs-A3500
+ *   - /compare/X5/A3500
+ */
+export function extractComparedProducts(urlOrHref) {
+  if (!urlOrHref) return null;
+
+  try {
+    // Normalize to full URL for parsing
+    const url = new URL(urlOrHref, 'https://vitamix.com');
+    const path = url.pathname;
+    const params = url.searchParams;
+
+    const products = [];
+
+    // Pattern 1: Query param with comma-separated list (?products=X5,A3500)
+    const productsParam = params.get('products') || params.get('product') || params.get('compare');
+    if (productsParam) {
+      productsParam.split(',').forEach((p) => {
+        const name = normalizeProductName(p);
+        if (name && !products.includes(name)) {
+          products.push(name);
+        }
+      });
+    }
+
+    // Pattern 2: Multiple query params (?p=X5&p=A3500)
+    const multiParams = params.getAll('p') || params.getAll('item') || params.getAll('model');
+    if (multiParams.length > 0) {
+      multiParams.forEach((p) => {
+        const name = normalizeProductName(p);
+        if (name && !products.includes(name)) {
+          products.push(name);
+        }
+      });
+    }
+
+    // Pattern 3: Path-based comparison (/compare/X5-vs-A3500 or /compare/X5/A3500)
+    if (path.includes('/compare')) {
+      // Extract segment after /compare
+      const compareMatch = path.match(/\/compare\/(.+)/i);
+      if (compareMatch) {
+        const segment = compareMatch[1];
+
+        // Try "vs" pattern first (X5-vs-A3500, X5_vs_A3500, X5 vs A3500)
+        const vsMatch = segment.match(/([^-_\s/]+)[-_\s]+vs[-_\s]+([^-_\s/]+)/i);
+        if (vsMatch) {
+          [vsMatch[1], vsMatch[2]].forEach((p) => {
+            const name = normalizeProductName(p);
+            if (name && !products.includes(name)) {
+              products.push(name);
+            }
+          });
+        } else {
+          // Try slash-separated (/compare/X5/A3500)
+          segment.split('/').forEach((p) => {
+            if (p && p !== 'compare') {
+              const name = normalizeProductName(p);
+              if (name && !products.includes(name)) {
+                products.push(name);
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // Return null if no products found, array otherwise
+    return products.length > 0 ? products : null;
+  } catch (e) {
+    // URL parsing failed, try simple pattern matching
+    const vsMatch = urlOrHref.match(/([a-z0-9-]+)[-_\s]+vs[-_\s]+([a-z0-9-]+)/i);
+    if (vsMatch) {
+      const products = [];
+      [vsMatch[1], vsMatch[2]].forEach((p) => {
+        const name = normalizeProductName(p);
+        if (name && !products.includes(name)) {
+          products.push(name);
+        }
+      });
+      return products.length > 0 ? products : null;
+    }
+    return null;
+  }
+}
+
+/**
  * Create a signal event object with classification
  */
 export function createSignal(type, data = {}) {
@@ -185,20 +304,47 @@ export function createSignal(type, data = {}) {
   let classification = { category: type, weight: baseType.baseWeight };
   let label = type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   let product = null;
+  let comparedProducts = null;
 
   // Classify based on type
   if (type === 'page_view') {
     classification = classifyPageView(data);
     label = `${classification.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} Page View`;
     product = extractProductName(data);
+
+    // For compare page views, prefer DOM-extracted products, fall back to URL parsing
+    if (classification.category === 'compare') {
+      // Priority 1: DOM-extracted products from content-script
+      if (data.comparedProducts && data.comparedProducts.length > 0) {
+        comparedProducts = data.comparedProducts.map((p) => normalizeProductName(p) || p);
+      } else {
+        // Priority 2: URL-based extraction
+        comparedProducts = extractComparedProducts(data.url || data.path);
+      }
+    }
   } else if (type === 'click') {
     classification = classifyClick(data);
     label = `Click: ${classification.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+
+    // For compare clicks, extract compared products from href
+    if (classification.category === 'compare') {
+      comparedProducts = extractComparedProducts(data.href);
+    }
   } else if (type === 'search') {
     label = 'Search Query';
     classification.weight = SIGNAL_WEIGHTS.VERY_HIGH;
   } else if (type === 'scroll') {
     label = `Scroll ${data.depth || 0}%`;
+  }
+
+  // Update label to include compared products if available
+  if (comparedProducts && comparedProducts.length > 0) {
+    const productList = comparedProducts.join(' vs ');
+    if (type === 'page_view') {
+      label = `Compare: ${productList}`;
+    } else {
+      label = `Click: Compare ${productList}`;
+    }
   }
 
   return {
@@ -212,6 +358,7 @@ export function createSignal(type, data = {}) {
     timestamp: Date.now(),
     data: stripNulls(data) || {},
     product,
+    comparedProducts,
   };
 }
 

@@ -25,6 +25,101 @@
   }
 
   /**
+   * Extract compared products from DOM on compare pages
+   * Looks for product names in various locations typical of compare page layouts
+   */
+  function extractComparedProductsFromDOM() {
+    const products = [];
+    const seen = new Set();
+
+    // Helper to add product if valid and not duplicate
+    const addProduct = (name) => {
+      if (!name) return;
+      const cleaned = name.replace(/®|™/g, '').trim();
+      if (cleaned && cleaned.length > 1 && cleaned.length < 100 && !seen.has(cleaned.toLowerCase())) {
+        seen.add(cleaned.toLowerCase());
+        products.push(cleaned);
+      }
+    };
+
+    // Strategy 1: Look for product name elements in compare table/grid
+    // Common patterns: .product-name, .product-title, [data-product-name], etc.
+    const productNameSelectors = [
+      '.product-item-name',
+      '.product-name',
+      '.product-title',
+      '[data-product-name]',
+      '.compare-product-name',
+      '.product-item-link',
+      '.product-info-main .page-title span',
+      // Vitamix-specific selectors based on their compare page structure
+      '.cell.product .product-item-name',
+      '.product-item-details .product-item-name',
+      'td.cell.product a',
+      '.comparison-product-name',
+    ];
+
+    for (const selector of productNameSelectors) {
+      document.querySelectorAll(selector).forEach(el => {
+        const text = el.textContent?.trim() || el.getAttribute('data-product-name');
+        addProduct(text);
+      });
+    }
+
+    // Strategy 2: Look for product images with alt text containing model names
+    document.querySelectorAll('.product-image-photo, .compare img, [class*="compare"] img, [class*="product"] img').forEach(img => {
+      const alt = img.alt || img.getAttribute('data-alt');
+      if (alt) {
+        addProduct(alt);
+      }
+    });
+
+    // Strategy 3: Look for links to product pages within compare context
+    document.querySelectorAll('a[href*="/shop/"][href*="blenders"], a[href*="/product/"]').forEach(link => {
+      // Only consider links that look like they're in a compare context
+      const parent = link.closest('[class*="compare"], table, .product-item, .product-info');
+      if (parent) {
+        const text = link.textContent?.trim();
+        // Filter out generic text like "View Details", "Add to Cart", etc.
+        if (text && !/(view|add|buy|cart|details|compare|remove)/i.test(text)) {
+          addProduct(text);
+        }
+      }
+    });
+
+    // Strategy 4: Parse product names from the page heading if it mentions "vs" or "compare"
+    const h1 = document.querySelector('h1')?.textContent || '';
+    if (/compare|vs\b/i.test(h1)) {
+      // Try to extract product names from patterns like "A3500 vs V1200" or "Compare A3500, V1200"
+      const vsMatch = h1.match(/([A-Z][A-Za-z0-9\-]+)\s*(?:vs\.?|versus)\s*([A-Z][A-Za-z0-9\-]+)/i);
+      if (vsMatch) {
+        addProduct(vsMatch[1]);
+        addProduct(vsMatch[2]);
+      }
+    }
+
+    // Strategy 5: Look for data attributes that might contain product info
+    document.querySelectorAll('[data-product-id], [data-sku], [data-name]').forEach(el => {
+      const name = el.getAttribute('data-name') || el.getAttribute('data-product-name');
+      if (name) {
+        addProduct(name);
+      }
+    });
+
+    console.log('[VitamixIntent] Extracted compared products from DOM:', products);
+    return products.length > 0 ? products : null;
+  }
+
+  /**
+   * Check if current page is a compare page
+   */
+  function isComparePage() {
+    const path = window.location.pathname;
+    const url = window.location.href;
+    return /compare|product_compare/i.test(path) || /compare/i.test(url);
+  }
+
+  /**
    * Extract page context - URL, title, headings, meta
    */
   function getPageContext() {
@@ -45,6 +140,9 @@
       .map(a => a.textContent?.trim())
       .filter(Boolean);
 
+    // Extract compared products from DOM if on a compare page
+    const comparedProducts = isComparePage() ? extractComparedProductsFromDOM() : null;
+
     return {
       url,
       path,
@@ -55,6 +153,7 @@
       canonical,
       price,
       breadcrumbs,
+      comparedProducts,
     };
   }
 

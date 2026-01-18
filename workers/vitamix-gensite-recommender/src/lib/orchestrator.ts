@@ -1564,7 +1564,7 @@ export async function orchestrate(
     // Start hero generation immediately while reasoning runs in parallel
     // This reduces time-to-first-content by ~2-3 seconds
     const effectivePreset = preset || env.MODEL_PRESET || 'production';
-    const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-gpt-oss-120b' : 'claude-opus-4-5';
+    const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-qwen-3-32b' : 'claude-opus-4-5';
 
     console.log(`[Orchestrator] Starting hero-first fast path with preset: ${effectivePreset}`);
     const heroStartTime = Date.now();
@@ -2026,7 +2026,7 @@ export async function orchestrateFromContext(
     // Start hero generation immediately while reasoning runs in parallel
     // ============================================
     const effectivePreset = preset || env.MODEL_PRESET || 'production';
-    const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-gpt-oss-120b' : 'claude-opus-4-5';
+    const reasoningModel = effectivePreset === 'all-cerebras' ? 'cerebras-qwen-3-32b' : 'claude-opus-4-5';
 
     console.log(`[OrchestrateFromContext] Starting hero-first fast path with preset: ${effectivePreset}`);
     const heroStartTime = Date.now();

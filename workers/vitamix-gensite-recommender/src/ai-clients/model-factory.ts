@@ -47,13 +47,13 @@ const MODEL_PRESETS: Record<string, ModelPreset> = {
   'all-cerebras': {
     reasoning: {
       provider: 'cerebras',
-      model: 'qwen-3-32b',     // Better reasoning capabilities
-      maxTokens: 2048,
-      temperature: 0.7,
+      model: 'qwen-3-32b',  // Best consistency for instruction following
+      maxTokens: 4096,         // Detailed reasoning output
+      temperature: 0.5,        // Focused, consistent responses
     },
     content: {
       provider: 'cerebras',
-      model: 'llama-3.3-70b',  // Fast generation, no thinking artifacts
+      model: 'llama-3.3-70b',  // Clean output, no thinking artifacts
       maxTokens: 1024,
       temperature: 0.8,
     },

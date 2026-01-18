@@ -365,6 +365,10 @@ footer .footer[data-block-status="loaded"] {
   visibility: visible;
 }
 
+main {
+  margin-top: var(--header-height);
+}
+
 h1,
 h2,
 h3,

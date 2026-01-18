@@ -4,6 +4,36 @@
  * Card-based tier layout with color-coded accents.
  */
 
+/**
+ * Creates a product card element from text
+ * @param {string} text - Product text to parse
+ * @returns {HTMLElement|null} Product card element or null
+ */
+function createProductCard(text) {
+  if (!text || !text.trim()) return null;
+
+  const card = document.createElement('div');
+  card.className = 'product-item';
+
+  // Try to parse "Product Name: $XXX" or "Product Name $XXX" format
+  const priceMatch = text.match(/(.+?)[:–-]?\s*\$(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+
+  if (priceMatch) {
+    const name = priceMatch[1].trim().replace(/^[•-]\s*/, '');
+    const price = priceMatch[2];
+
+    card.innerHTML = `
+      <span class="product-name">${name}</span>
+      <span class="product-price">$${price}</span>
+    `;
+  } else {
+    // Just show the text as-is
+    card.innerHTML = `<span class="product-name">${text.trim().replace(/^[•-]\s*/, '')}</span>`;
+  }
+
+  return card;
+}
+
 export default function decorate(block) {
   // Expected structure from AI:
   // Row 1: Title
@@ -11,7 +41,6 @@ export default function decorate(block) {
 
   const rows = [...block.children];
   if (rows.length < 2) {
-    console.warn('budget-breakdown: Expected at least 2 rows');
     return;
   }
 
@@ -40,12 +69,14 @@ export default function decorate(block) {
   const tiersGrid = document.createElement('div');
   tiersGrid.className = 'budget-tiers-grid';
 
-  // Process each tier row
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
+  // Process each tier row (skip first row which is the title)
+  const tierRows = rows.slice(1);
+  tierRows.forEach((row) => {
     const cells = [...row.children];
 
-    if (cells.length < 2) continue;
+    if (cells.length < 2) {
+      return;
+    }
 
     const tierName = cells[0]?.textContent?.trim() || 'Price Tier';
     const tierContentEl = cells[1];
@@ -93,7 +124,7 @@ export default function decorate(block) {
 
     tier.appendChild(tierBody);
     tiersGrid.appendChild(tier);
-  }
+  });
 
   block.appendChild(tiersGrid);
 
@@ -121,29 +152,4 @@ export default function decorate(block) {
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
   `;
   block.appendChild(refurbCta);
-}
-
-function createProductCard(text) {
-  if (!text || !text.trim()) return null;
-
-  const card = document.createElement('div');
-  card.className = 'product-item';
-
-  // Try to parse "Product Name: $XXX" or "Product Name $XXX" format
-  const priceMatch = text.match(/(.+?)[:–-]?\s*\$(\d+(?:,\d{3})*(?:\.\d{2})?)/);
-
-  if (priceMatch) {
-    const name = priceMatch[1].trim().replace(/^[•\-]\s*/, '');
-    const price = priceMatch[2];
-
-    card.innerHTML = `
-      <span class="product-name">${name}</span>
-      <span class="product-price">$${price}</span>
-    `;
-  } else {
-    // Just show the text as-is
-    card.innerHTML = `<span class="product-name">${text.trim().replace(/^[•\-]\s*/, '')}</span>`;
-  }
-
-  return card;
 }

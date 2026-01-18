@@ -34,7 +34,8 @@
         "id": "generated-frozen-fruit-sorbet",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-frozen-fruit-sorbet.png",
         "category": "dessert",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "right",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-chocolate-ice-cream",
@@ -58,31 +59,36 @@
         "id": "generated-hummus-platter",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-hummus-platter.png",
         "category": "sauce",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "right",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-fresh-pesto",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-fresh-pesto.png",
         "category": "sauce",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "right",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-vibrant-green-smoothie",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-vibrant-green-smoothie.png",
         "category": "smoothie",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "left",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-detox-green-juice",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-detox-green-juice.png",
         "category": "drink",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "right",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-acai-bowl",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-acai-bowl.png",
         "category": "smoothie",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "left",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-overnight-oats",
@@ -94,19 +100,22 @@
         "id": "generated-baby-purees",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-baby-purees.png",
         "category": "healthy",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "left",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-juice-bar-drinks",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-juice-bar-drinks.png",
         "category": "commercial",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "right",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-restaurant-soup",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-restaurant-soup.png",
         "category": "soup",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "left",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       },
       {
         "id": "generated-tropical-smoothie",
@@ -118,7 +127,8 @@
         "id": "generated-pumpkin-soup",
         "url": "https://pub-vitamix-hero-images.r2.dev/hero-pumpkin-soup.png",
         "category": "soup",
-        "generated_at": "2026-01-17T12:42:31.013Z"
+        "text_placement": "right",
+        "generated_at": "2026-01-18T00:00:00.000Z"
       }
     ]
   },
@@ -205,5 +215,21 @@
     }
   ],
   "created_at": "2025-01-15",
-  "updated_at": "2026-01-17"
+  "updated_at": "2026-01-18",
+  "composition_update": {
+    "date": "2026-01-18",
+    "description": "Regenerated 10 images with centered subjects to position main subject on left or right for better text placement",
+    "regenerated_images": [
+      "hero-hummus-platter.png",
+      "hero-baby-purees.png",
+      "hero-juice-bar-drinks.png",
+      "hero-frozen-fruit-sorbet.png",
+      "hero-acai-bowl.png",
+      "hero-fresh-pesto.png",
+      "hero-vibrant-green-smoothie.png",
+      "hero-detox-green-juice.png",
+      "hero-restaurant-soup.png",
+      "hero-pumpkin-soup.png"
+    ]
+  }
 }

@@ -790,6 +790,7 @@ async function renderFastGenerativePage() {
  */
 async function renderVitamixRecommenderPage() {
   // Load skeleton/vitamix styles
+  await loadCSS(`${window.hlx.codeBasePath}/styles/skeleton.css`);
   await loadCSS(`${window.hlx.codeBasePath}/styles/vitamix.css`);
 
   const main = document.querySelector('main');
@@ -804,18 +805,56 @@ async function renderVitamixRecommenderPage() {
   const isFullContextMode = ctxId && ctxId.startsWith('ctx_');
   const slug = query ? generateSlug(query) : `page-${Date.now().toString(36)}`;
 
-  // Clear main and show loading state
-  const loadingMessage = isFullContextMode
-    ? 'Generating from your browsing context...'
-    : `"${query}"`;
+  // Clear main and show loading state with hero skeleton
   main.innerHTML = `
-    <div class="section generating-container vitamix-recommender">
-      <span class="generating-query">${loadingMessage}</span>
+    <div id="hero-skeleton">
+      <div class="section hero-container skeleton-section">
+        <div class="hero-wrapper">
+          <div class="hero skeleton-hero">
+            <div class="skeleton-hero-content">
+              <div class="skeleton-line skeleton-title skeleton"></div>
+              <div class="skeleton-line skeleton-title-2 skeleton"></div>
+              <div class="skeleton-line skeleton-title-3 skeleton"></div>
+              <div class="skeleton-line skeleton-subtitle skeleton"></div>
+              <div class="skeleton-line skeleton-subtitle line-2 skeleton"></div>
+              <div class="skeleton-line skeleton-subtitle line-3 skeleton"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section skeleton-features-section">
+        <div class="skeleton-features-header">
+          <div class="skeleton-line skeleton-section-title skeleton"></div>
+          <div class="skeleton-line skeleton-section-subtitle skeleton"></div>
+        </div>
+        <div class="skeleton-features-grid">
+          <div class="skeleton-feature-card">
+            <div class="skeleton-line skeleton-card-title skeleton"></div>
+            <div class="skeleton-line skeleton-card-text skeleton"></div>
+            <div class="skeleton-line skeleton-card-text short skeleton"></div>
+          </div>
+          <div class="skeleton-feature-card">
+            <div class="skeleton-line skeleton-card-title skeleton"></div>
+            <div class="skeleton-line skeleton-card-text skeleton"></div>
+            <div class="skeleton-line skeleton-card-text short skeleton"></div>
+          </div>
+          <div class="skeleton-feature-card">
+            <div class="skeleton-line skeleton-card-title skeleton"></div>
+            <div class="skeleton-line skeleton-card-text skeleton"></div>
+            <div class="skeleton-line skeleton-card-text short skeleton"></div>
+          </div>
+          <div class="skeleton-feature-card">
+            <div class="skeleton-line skeleton-card-title skeleton"></div>
+            <div class="skeleton-line skeleton-card-text skeleton"></div>
+            <div class="skeleton-line skeleton-card-text short skeleton"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="generation-content"></div>
   `;
 
-  const loadingState = main.querySelector('.generating-container');
+  const heroSkeleton = document.getElementById('hero-skeleton');
   const content = main.querySelector('#generation-content');
 
   // Build stream URL based on mode
@@ -837,11 +876,7 @@ async function renderVitamixRecommenderPage() {
 
   eventSource.addEventListener('block-content', async (e) => {
     const data = JSON.parse(e.data);
-
-    // Show done state after first content block
-    if (blockCount === 0) {
-      loadingState.classList.add('done');
-    }
+    const isFirstBlock = blockCount === 0;
     blockCount += 1;
 
     // Store for persistence
@@ -850,6 +885,11 @@ async function renderVitamixRecommenderPage() {
     // Create section and add content
     const section = document.createElement('div');
     section.className = 'section';
+
+    // Hide first block initially to avoid flash during skeleton removal
+    if (isFirstBlock) {
+      section.style.opacity = '0';
+    }
     if (data.sectionStyle && data.sectionStyle !== 'default') {
       section.classList.add(data.sectionStyle);
     }
@@ -911,6 +951,16 @@ async function renderVitamixRecommenderPage() {
 
     section.dataset.sectionStatus = 'loaded';
     section.style.display = null;
+
+    // For first block: remove skeleton instantly, then reveal content
+    if (isFirstBlock && heroSkeleton) {
+      heroSkeleton.remove();
+      // Trigger reflow then reveal content smoothly
+      // eslint-disable-next-line no-void
+      void section.offsetHeight;
+      section.style.transition = 'opacity 0.2s ease-out';
+      section.style.opacity = '1';
+    }
   });
 
   eventSource.addEventListener('block-rationale', (e) => {
@@ -1031,22 +1081,28 @@ async function renderVitamixRecommenderPage() {
   eventSource.addEventListener('error', (e) => {
     if (e.data) {
       const data = JSON.parse(e.data);
-      loadingState.innerHTML = `
-        <h1>Something went wrong</h1>
-        <p style="color: #c00;">${data.message}</p>
-        <p><a href="/">Return to homepage</a></p>
-      `;
+      if (heroSkeleton) {
+        heroSkeleton.innerHTML = `
+          <div class="generation-error">
+            <h1>Something went wrong</h1>
+            <p style="color: #c00;">${data.message}</p>
+            <p><a href="/">Return to homepage</a></p>
+          </div>
+        `;
+      }
     }
     eventSource.close();
   });
 
   eventSource.onerror = () => {
     if (eventSource.readyState === EventSource.CLOSED) {
-      if (blockCount === 0) {
-        loadingState.innerHTML = `
-          <h1>Connection Failed</h1>
-          <p>Please try again.</p>
-          <p><a href="/">Return to homepage</a></p>
+      if (blockCount === 0 && heroSkeleton) {
+        heroSkeleton.innerHTML = `
+          <div class="generation-error">
+            <h1>Connection Failed</h1>
+            <p>Please try again.</p>
+            <p><a href="/">Return to homepage</a></p>
+          </div>
         `;
       }
     }

@@ -50,65 +50,54 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 /**
- * Handle extension icon click - toggle overlay panel on/off
+ * Handle extension icon click - open side panel
+ * Must be synchronous to preserve user gesture
  */
-chrome.action.onClicked.addListener(async (tab) => {
-  // Only toggle on supported domains
+chrome.action.onClicked.addListener((tab) => {
   if (isSupportedDomain(tab.url)) {
-    try {
-      // Check current panel state on the page
-      const response = await chrome.tabs.sendMessage(tab.id, { type: 'GET_PANEL_STATE' });
-      const isEnabled = response?.enabled;
-
-      if (isEnabled) {
-        // Disable panel
-        await chrome.tabs.sendMessage(tab.id, { type: 'DISABLE_PANEL' });
-        await chrome.storage.local.set({ panelEnabled: false });
-        console.log('[Background] Panel disabled');
-      } else {
-        // Enable panel
-        await chrome.tabs.sendMessage(tab.id, { type: 'ENABLE_PANEL' });
-        await chrome.storage.local.set({ panelEnabled: true });
-        console.log('[Background] Panel enabled');
-      }
-    } catch (e) {
-      console.log('[Background] Could not toggle panel:', e.message);
-    }
+    // Direct call without await to preserve user gesture
+    chrome.sidePanel.open({ windowId: tab.windowId });
   }
 });
 
 /**
  * Listen for navigation to supported pages
+ * - Enable/disable side panel based on domain
  * - Check for return visits (signals)
- * - Restore panel state if enabled
  */
 chrome.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId !== 0) return;
-  if (!isSupportedDomain(details.url)) return;
+
+  const isSupported = isSupportedDomain(details.url);
+
+  // Enable or disable side panel based on domain
+  await chrome.sidePanel.setOptions({
+    tabId: details.tabId,
+    enabled: isSupported,
+  });
+
+  if (!isSupported) return;
 
   console.log('[Background] Navigation to supported domain:', details.url);
 
   // Check for return visit (signals)
   await checkReturnVisit();
-
-  // Check if panel should be enabled (restore state)
-  const data = await chrome.storage.local.get(['panelEnabled']);
-  if (data.panelEnabled) {
-    try {
-      await chrome.tabs.sendMessage(details.tabId, { type: 'ENABLE_PANEL' });
-      console.log('[Background] Panel restored on navigation');
-    } catch (e) {
-      // Content script may not be ready yet, retry after a delay
-      setTimeout(async () => {
-        try {
-          await chrome.tabs.sendMessage(details.tabId, { type: 'ENABLE_PANEL' });
-        } catch (e2) {
-          console.log('[Background] Could not restore panel:', e2.message);
-        }
-      }, 500);
-    }
-  }
 }, { url: [{ hostContains: 'vitamix.com' }, { hostContains: 'aem.live' }] });
+
+/**
+ * Disable side panel on unsupported domains
+ */
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+  if (details.frameId !== 0) return;
+
+  // If not a supported domain, disable the side panel
+  if (!isSupportedDomain(details.url)) {
+    await chrome.sidePanel.setOptions({
+      tabId: details.tabId,
+      enabled: false,
+    });
+  }
+});
 
 /**
  * Listen for messages from content script and panel

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Vitamix Intent Inference Demo",
+  "name": "AEM Generative Websites",
   "description": "Real-time intent inference demo tool for vitamix.com and AEM Edge Delivery - captures user behavior and generates personalized page queries",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
@@ -13,8 +13,12 @@
     "storage",
     "webNavigation",
     "tabs",
-    "activeTab"
+    "activeTab",
+    "sidePanel"
   ],
+  "side_panel": {
+    "default_path": "panel/panel.html"
+  },
   "host_permissions": [
     "*://www.vitamix.com/*",
     "*://vitamix.com/*",
@@ -43,8 +47,7 @@
         "panel/panel.html",
         "panel/panel.css",
         "panel/panel.js",
-        "lib/*.js",
-        "overlay-panel.css"
+        "lib/*.js"
       ],
       "matches": [
         "*://www.vitamix.com/*",

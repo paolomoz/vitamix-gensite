@@ -148,7 +148,9 @@ async function getRAGContext(
   // Build RAG context from local content, passing session context for conversation history
   // This enables conversational context like "I have 4 kids" + "they love soups!"
   // to find kid-friendly soup recipes
-  const context = buildRAGContext(query, intent.intentType, 5, 6, sessionContext ? {
+  // Fetch more recipes (20) to give content filtering better selection
+  // The filterRecipesByGuidance() function will narrow down to ~4 relevant ones
+  const context = buildRAGContext(query, intent.intentType, 5, 20, sessionContext ? {
     previousQueries: sessionContext.previousQueries?.map(pq => ({
       query: pq.query,
       intent: pq.intent,
@@ -218,6 +220,150 @@ function buildRecipeContext(recipes: Recipe[]): string {
   URL: ${r.url || '#'}
 `;
   }).join('\n');
+}
+
+/**
+ * Filter and re-score recipes based on contentGuidance from block selection.
+ * This ensures recipes match the specific context (e.g., "green soups that hide veggies"
+ * or "kid-friendly smoothies") rather than generic keyword matches.
+ */
+function filterRecipesByGuidance(
+  recipes: Recipe[],
+  contentGuidance: string,
+  query: string,
+  maxRecipes = 4
+): Recipe[] {
+  if (!recipes.length) return [];
+
+  const guidanceLower = (contentGuidance || '').toLowerCase();
+  const queryLower = query.toLowerCase();
+  const combinedContext = `${guidanceLower} ${queryLower}`;
+
+  // Extract recipe-relevant signals from guidance and query
+  const wantsSoups = /\b(soup|soups|hot soup|hide veg|hidden veg|picky eater|sneak)\b/i.test(combinedContext);
+  const wantsSmoothies = /\b(smoothie|smoothies|shake|fruit blend)\b/i.test(combinedContext);
+  const wantsKidFriendly = /\b(kid|kids|child|children|family|son|daughter|picky|toddler)\b/i.test(combinedContext);
+  const wantsGreen = /\b(green|spinach|kale|vegetable|veggie)\b/i.test(combinedContext);
+  const wantsHealthy = /\b(health|nutriti|vitamin|protein)\b/i.test(combinedContext);
+
+  // Penalize categories that don't match the context
+  const penalizedCategories: string[] = [];
+  if (wantsKidFriendly) {
+    // Baby food is NOT kid-friendly (it's for infants) - penalize for kid queries
+    penalizedCategories.push('baby-food');
+  }
+  if (wantsSoups && !wantsSmoothies) {
+    // If specifically asking for soups, penalize smoothies
+    penalizedCategories.push('smoothies', 'drinks', 'cocktails');
+  }
+  if (wantsSmoothies && !wantsSoups) {
+    // If specifically asking for smoothies, penalize soups
+    penalizedCategories.push('soups');
+  }
+
+  // Score each recipe
+  const scored = recipes.map(recipe => {
+    let score = 0;
+    const nameLower = recipe.name.toLowerCase();
+    const descLower = (recipe.description || '').toLowerCase();
+    const categoryLower = (recipe.category || '').toLowerCase();
+    const ingredientText = recipe.ingredients?.map(i => i.item).join(' ').toLowerCase() || '';
+
+    // Base category matching
+    if (wantsSoups && categoryLower.includes('soup')) score += 15;
+    if (wantsSmoothies && (categoryLower.includes('smoothie') || categoryLower === 'drinks')) score += 15;
+
+    // Penalize non-matching categories
+    if (penalizedCategories.some(cat => categoryLower.includes(cat))) {
+      score -= 20;
+    }
+
+    // Boost for green/veggie hiding (key for picky eaters)
+    if (wantsGreen || wantsKidFriendly) {
+      if (/\b(green|spinach|kale|broccoli|zucchini)\b/i.test(nameLower + descLower + ingredientText)) {
+        score += 10;
+      }
+      // Boost soups that "hide" vegetables
+      if (/\b(hide|hidden|sneak|creamy|smooth|puree|silky)\b/i.test(descLower)) {
+        score += 8;
+      }
+    }
+
+    // Boost for kid-friendly signals
+    if (wantsKidFriendly) {
+      if (/\b(kid|child|family|fun|easy|simple|sweet|fruit|berry|banana|mango|strawberry)\b/i.test(nameLower + descLower)) {
+        score += 5;
+      }
+      // Easy/quick recipes are better for families
+      if (recipe.difficulty === 'easy') score += 3;
+    }
+
+    // Boost for healthy signals
+    if (wantsHealthy) {
+      if (/\b(health|nutriti|protein|vitamin|superfood|boost)\b/i.test(nameLower + descLower)) {
+        score += 5;
+      }
+    }
+
+    // Prefer recipes with real images over placeholders
+    const hasRealImage = recipe.images?.primary &&
+      !recipe.images.primary.includes('noimageimage') &&
+      !recipe.images.primary.includes('vitamix-logo');
+    if (hasRealImage) score += 5;
+
+    // Boost Hot Soup Program recipes for soup queries
+    if (wantsSoups && recipe.recommendedProgram?.toLowerCase().includes('hot soup')) {
+      score += 10;
+    }
+
+    return { recipe, score };
+  });
+
+  // Sort by score and take top results
+  const filtered = scored
+    .filter(s => s.score > -10) // Filter out heavily penalized recipes
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxRecipes)
+    .map(s => s.recipe);
+
+  // Ensure diversity: if we have both soup and smoothie context, include both
+  if (wantsSoups && wantsSmoothies && filtered.length >= 2) {
+    const hasSoup = filtered.some(r => r.category?.toLowerCase().includes('soup'));
+    const hasSmoothie = filtered.some(r =>
+      r.category?.toLowerCase().includes('smoothie') || r.category?.toLowerCase() === 'drinks'
+    );
+
+    // If missing one category, try to find and swap in a recipe
+    if (!hasSoup) {
+      const soupRecipe = scored.find(s =>
+        s.recipe.category?.toLowerCase().includes('soup') && s.score > 0
+      );
+      if (soupRecipe) {
+        filtered.pop();
+        filtered.push(soupRecipe.recipe);
+      }
+    }
+    if (!hasSmoothie) {
+      const smoothieRecipe = scored.find(s =>
+        (s.recipe.category?.toLowerCase().includes('smoothie') ||
+         s.recipe.category?.toLowerCase() === 'drinks') && s.score > 0
+      );
+      if (smoothieRecipe && !filtered.includes(smoothieRecipe.recipe)) {
+        filtered.pop();
+        filtered.push(smoothieRecipe.recipe);
+      }
+    }
+  }
+
+  console.log('[Orchestrator] Recipe filtering:', {
+    guidance: contentGuidance?.slice(0, 100),
+    signals: { wantsSoups, wantsSmoothies, wantsKidFriendly, wantsGreen },
+    penalized: penalizedCategories,
+    topScores: scored.slice(0, 5).map(s => ({ name: s.recipe.name, score: s.score })),
+    selected: filtered.map(r => r.name),
+  });
+
+  return filtered;
 }
 
 function buildUseCaseContext(useCases: Array<{ id: string; name: string; description: string; icon: string }>): string {
@@ -996,7 +1142,15 @@ async function generateBlockContent(
       dataContext = `\n\n## Context:\n- User's question: ${block.contentGuidance}\n- Related products: ${ragContext.relevantProducts.slice(0, 2).map(p => p.name).join(', ')}\n\nGenerate FAQs about Vitamix blender warranty, cleaning, and usage.`;
     }
   } else if (['recipe-cards'].includes(block.type)) {
-    dataContext = `\n\n## Available Recipes (USE THESE EXACT IMAGE URLs):\n${buildRecipeContext(ragContext.relevantRecipes)}`;
+    // Filter recipes based on contentGuidance to ensure relevance
+    // This addresses cases like "green soups that hide veggies" getting generic "baby food" results
+    const filteredRecipes = filterRecipesByGuidance(
+      ragContext.relevantRecipes,
+      block.contentGuidance || '',
+      query || '',
+      4
+    );
+    dataContext = `\n\n## Available Recipes (USE THESE EXACT IMAGE URLs):\n${buildRecipeContext(filteredRecipes)}`;
   } else if (['hero', 'product-hero'].includes(block.type)) {
     // Select hero image using semantic search (falls back to keyword matching)
     const heroSelection = await selectHeroImageSemantic(

@@ -1097,6 +1097,8 @@ async function renderVitamixRecommenderPage() {
     }
 
     // Expose generation data for extension panel (Generation Reasoning feature)
+    // eslint-disable-next-line no-console
+    console.log('[Recommender] Setting generation data for extension panel');
     // eslint-disable-next-line no-underscore-dangle
     window.__vitamixGenerationData = {
       query: effectiveQuery,
@@ -1115,6 +1117,8 @@ async function renderVitamixRecommenderPage() {
       // eslint-disable-next-line no-underscore-dangle
       data: window.__vitamixGenerationData,
     }, '*');
+    // eslint-disable-next-line no-console
+    console.log('[Recommender] Generation data posted to extension');
   });
 
   eventSource.addEventListener('error', (e) => {

@@ -53,11 +53,9 @@ function setupEventListeners() {
 
   // Clear session button
   document.getElementById('clear-btn').addEventListener('click', async () => {
-    if (confirm('Clear all signals, profile, and conversation history?')) {
-      await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });
-      selectedExample = null;
-      await refreshState();
-    }
+    await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });
+    selectedExample = null;
+    await refreshState();
   });
 
   // Generate page button

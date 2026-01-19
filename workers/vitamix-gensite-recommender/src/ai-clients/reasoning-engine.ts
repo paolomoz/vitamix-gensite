@@ -23,6 +23,12 @@ import type {
 import type { RAGContext } from '../content/content-service';
 import { buildCompactProductCatalog } from '../content/content-service';
 import { ModelFactory, type Message } from './model-factory';
+import {
+  evaluateRules,
+  buildBlockList,
+  formatContentGuidance,
+  type MergedBlockRequirements,
+} from './block-rules';
 
 // ============================================
 // Confidence Thresholds
@@ -479,7 +485,8 @@ function buildReasoningPrompt(
   intent: IntentClassification,
   ragContext: RAGContext,
   sessionContext?: SessionContext,
-  signalInterpretation?: SignalInterpretation
+  signalInterpretation?: SignalInterpretation,
+  blockRequirements?: MergedBlockRequirements
 ): string {
   // Build compact product catalog for LLM product selection
   const compactCatalog = buildCompactProductCatalog();
@@ -608,7 +615,25 @@ CRITICAL PRIORITY ORDER:
 4. If query asks for comparisons → include comparison-table, even if context suggests recipes
 5. Use browsing context to ENRICH the response (e.g., add commercial context), not to REPLACE query intent
 ` : ''}
-${detectComparisonQuery(query) ? `
+${blockRequirements ? `
+## PRE-COMPUTED BLOCK REQUIREMENTS (CRITICAL - Follow These!)
+
+The following block requirements were computed by analyzing the query against all context rules.
+You MUST include all REQUIRED blocks. You SHOULD include ENHANCED blocks if they add value.
+
+**Triggered Rules**: ${blockRequirements.triggeredRules.join(', ')}
+
+**REQUIRED Blocks** (MUST include all of these):
+${blockRequirements.required.map(b => `- ${b}`).join('\n')}
+
+**ENHANCED Blocks** (SHOULD include if relevant):
+${blockRequirements.enhanced.map(b => `- ${b}`).join('\n') || '- None'}
+
+**EXCLUDED Blocks** (MUST NOT include):
+${blockRequirements.excluded.map(b => `- ${b}`).join('\n') || '- None'}
+
+${formatContentGuidance(blockRequirements)}
+` : `${detectComparisonQuery(query) ? `
 ## COMPARISON QUERY DETECTED (MANDATORY BLOCKS)
 This query is asking for a Vitamix model comparison. You MUST include:
 1. best-pick block - Highlight the recommended model BEFORE the comparison
@@ -616,7 +641,7 @@ This query is asking for a Vitamix model comparison. You MUST include:
 Block sequence: hero, best-pick, comparison-table, product-cards, follow-up
 
 Detected comparison elements: ${getComparisonDetails(query)}
-` : ''}
+` : ''}`}
 
 ## Your Task
 Analyze this query deeply and select the optimal blocks to render.
@@ -780,16 +805,85 @@ function separateHeroAndProductRecommendation(blocks: BlockSelection[]): BlockSe
 }
 
 /**
- * Ensure required blocks are present
+ * Ensure required blocks are present based on rule requirements
  */
-function ensureRequiredBlocks(blocks: BlockSelection[]): BlockSelection[] {
+function ensureRequiredBlocks(
+  blocks: BlockSelection[],
+  blockRequirements?: MergedBlockRequirements
+): BlockSelection[] {
   // Normalize block type names first
   blocks = blocks.map(block => ({
     ...block,
     type: normalizeBlockType(block.type) as BlockSelection['type'],
   }));
+
   // Filter out any reasoning blocks - they should never be included
   blocks = blocks.filter((b) => b.type !== 'reasoning' && b.type !== 'reasoning-user');
+
+  // Remove excluded blocks if requirements provided
+  if (blockRequirements?.excluded?.length) {
+    const excludedSet = new Set(blockRequirements.excluded);
+    blocks = blocks.filter((b) => !excludedSet.has(b.type));
+  }
+
+  // Ensure rule-required blocks are present
+  if (blockRequirements?.required?.length) {
+    const existingTypes = new Set(blocks.map(b => b.type));
+    const missingRequired: BlockType[] = [];
+
+    for (const requiredBlock of blockRequirements.required) {
+      if (!existingTypes.has(requiredBlock)) {
+        missingRequired.push(requiredBlock);
+      }
+    }
+
+    if (missingRequired.length > 0) {
+      console.log('[ReasoningEngine] Adding missing required blocks:', missingRequired);
+
+      // Add missing blocks with appropriate positioning based on sequence hints
+      for (const blockType of missingRequired) {
+        const hint = blockRequirements.sequenceHints.find(h => h.block === blockType);
+
+        let insertIndex = blocks.length; // Default to end
+
+        if (hint) {
+          if (hint.position === 'early') {
+            // Find position after hero if present, otherwise at start
+            const heroIndex = blocks.findIndex(b => b.type === 'hero' || b.type === 'empathy-hero');
+            insertIndex = heroIndex >= 0 ? heroIndex + 1 : 0;
+          } else if (hint.position === 'late') {
+            // Before follow-up if present
+            const followUpIndex = blocks.findIndex(b => b.type === 'follow-up');
+            insertIndex = followUpIndex >= 0 ? followUpIndex : blocks.length;
+          } else if (hint.after) {
+            // After specific block
+            const afterIndex = blocks.findIndex(b => b.type === hint.after);
+            insertIndex = afterIndex >= 0 ? afterIndex + 1 : blocks.length;
+          } else {
+            // Middle position - after early blocks, before late blocks
+            const heroIndex = blocks.findIndex(b => b.type === 'hero' || b.type === 'empathy-hero');
+            const followUpIndex = blocks.findIndex(b => b.type === 'follow-up');
+            if (followUpIndex >= 0) {
+              insertIndex = followUpIndex;
+            } else if (heroIndex >= 0) {
+              insertIndex = heroIndex + 1;
+            }
+          }
+        }
+
+        // Find content guidance for this block from requirements
+        const guidanceForBlock = blockRequirements.contentGuidance
+          .find(g => g.toLowerCase().includes(blockType.toLowerCase()));
+
+        blocks.splice(insertIndex, 0, {
+          type: blockType,
+          priority: insertIndex + 1,
+          rationale: `Required by triggered rules: ${blockRequirements.triggeredRules.join(', ')}`,
+          contentGuidance: guidanceForBlock || `Generate appropriate ${blockType} content`,
+        });
+      }
+    }
+  }
 
   // Prevent hero and product-recommendation from being consecutive
   blocks = separateHeroAndProductRecommendation(blocks);
@@ -1010,7 +1104,20 @@ export async function analyzeAndSelectBlocks(
     });
   }
 
-  const reasoningPrompt = buildReasoningPrompt(query, intent, ragContext, sessionContext, signalInterpretation);
+  // Evaluate constraint-based block rules
+  const blockRequirements = evaluateRules(query, {
+    intentType: intent.intentType,
+    entities: intent.entities,
+  });
+
+  console.log('[ReasoningEngine] Block rules evaluation:', {
+    triggeredRules: blockRequirements.triggeredRules,
+    required: blockRequirements.required,
+    enhanced: blockRequirements.enhanced,
+    excluded: blockRequirements.excluded,
+  });
+
+  const reasoningPrompt = buildReasoningPrompt(query, intent, ragContext, sessionContext, signalInterpretation, blockRequirements);
   // Log if lastQueryContext is present
   console.log('[ReasoningEngine] Has lastQueryContext:', reasoningPrompt.includes('Last Query Context'));
   console.log('[ReasoningEngine] Has signalInterpretation:', reasoningPrompt.includes('DIRECT SIGNAL INTERPRETATION'));
@@ -1104,8 +1211,10 @@ export async function analyzeAndSelectBlocks(
     // This uses productMatchConfidence to gate product recommendations
     result = enforceConfidenceThresholds(result, intent);
 
-    // Ensure required blocks are present
-    result.selectedBlocks = ensureRequiredBlocks(result.selectedBlocks);
+    // Ensure required blocks are present (pass block requirements for rule enforcement)
+    result.selectedBlocks = ensureRequiredBlocks(result.selectedBlocks, blockRequirements);
+
+    console.log('[ReasoningEngine] Final block list after rule enforcement:', result.selectedBlocks.map(b => b.type));
 
     return result;
   } catch (error) {

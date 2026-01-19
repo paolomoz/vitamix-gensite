@@ -80,50 +80,6 @@ function parseAdvisorData(block) {
 // ============================================
 
 /**
- * Create the journey indicator dots
- * @param {string} stage - 'exploring' | 'comparing' | 'deciding'
- * @returns {HTMLElement}
- */
-function createJourneyIndicator(stage) {
-  const stages = ['exploring', 'comparing', 'deciding'];
-  const stageLabels = {
-    exploring: 'Exploring',
-    comparing: 'Comparing',
-    deciding: 'Deciding',
-  };
-
-  const currentIndex = stages.indexOf(stage);
-
-  const indicator = document.createElement('div');
-  indicator.className = 'journey-indicator';
-
-  const dotsContainer = document.createElement('div');
-  dotsContainer.className = 'journey-dots';
-
-  stages.forEach((s, i) => {
-    if (i > 0) {
-      const line = document.createElement('span');
-      line.className = `journey-line${i <= currentIndex ? ' active' : ''}`;
-      dotsContainer.appendChild(line);
-    }
-
-    const dot = document.createElement('span');
-    dot.className = `journey-dot${i <= currentIndex ? ' active' : ''}${i === currentIndex ? ' current' : ''}`;
-    dot.setAttribute('aria-label', stageLabels[s]);
-    dotsContainer.appendChild(dot);
-  });
-
-  indicator.appendChild(dotsContainer);
-
-  const label = document.createElement('span');
-  label.className = 'journey-label';
-  label.textContent = stageLabels[stage] || 'Exploring';
-  indicator.appendChild(label);
-
-  return indicator;
-}
-
-/**
  * Create a primary advisor card with clickable headline
  * @param {Object} suggestion
  * @returns {HTMLElement}
@@ -221,10 +177,6 @@ export default function decorate(block) {
   title.className = 'advisor-title';
   title.textContent = 'What would help you next?';
   headerSection.appendChild(title);
-
-  if (advisorData.journeyStage) {
-    headerSection.appendChild(createJourneyIndicator(advisorData.journeyStage));
-  }
 
   block.appendChild(headerSection);
 

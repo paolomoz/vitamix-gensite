@@ -53,55 +53,6 @@
   margin: 0;
 }
 
-/* ===== Journey Indicator ===== */
-.journey-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-150);
-}
-
-.journey-dots {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-
-.journey-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-gray-600);
-  transition: all 0.2s ease;
-}
-
-.journey-dot.active {
-  background: var(--color-gray-400);
-}
-
-.journey-dot.current {
-  background: var(--color-red);
-}
-
-.journey-line {
-  width: 16px;
-  height: 2px;
-  background: var(--color-gray-600);
-  transition: background 0.2s ease;
-}
-
-.journey-line.active {
-  background: var(--color-gray-400);
-}
-
-.journey-label {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-xs);
-  font-weight: var(--weight-medium);
-  color: var(--color-gray-400);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
 /* ===== Advisor Card (shared styles) ===== */
 .advisor-card {
   background: var(--color-white);

@@ -94,6 +94,24 @@
 
     <!-- Content -->
     <main class="panel-content">
+      <!-- Generation Reasoning (shown only on generated pages) -->
+      <section class="panel-section generation-reasoning collapsed hidden" data-section="generation">
+        <div class="section-header">
+          <div class="section-title">
+            <svg class="icon"><use href="#icon-sparkle"/></svg>
+            <span>Generation Reasoning</span>
+          </div>
+          <button class="section-toggle">
+            <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
+          </button>
+        </div>
+        <div class="section-content">
+          <div id="generation-content">
+            <!-- Populated by JS when generation data is available -->
+          </div>
+        </div>
+      </section>
+
       <!-- Live Signal Feed -->
       <section class="panel-section" data-section="signals">
         <div class="section-header">

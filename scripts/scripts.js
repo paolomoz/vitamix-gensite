@@ -874,6 +874,24 @@ async function renderVitamixRecommenderPage() {
   const generatedBlocks = [];
   const startTime = Date.now();
 
+  // Collect reasoning data for extension panel
+  const reasoningSteps = [];
+  const blockRationales = [];
+  let reasoningCompleteData = null;
+
+  eventSource.addEventListener('reasoning-step', (e) => {
+    const data = JSON.parse(e.data);
+    reasoningSteps.push(data);
+    // eslint-disable-next-line no-console
+    console.log(`[Recommender] Reasoning step: ${data.stage} - ${data.title || ''}`);
+  });
+
+  eventSource.addEventListener('reasoning-complete', (e) => {
+    reasoningCompleteData = JSON.parse(e.data);
+    // eslint-disable-next-line no-console
+    console.log('[Recommender] Reasoning complete:', reasoningCompleteData);
+  });
+
   eventSource.addEventListener('block-content', async (e) => {
     const data = JSON.parse(e.data);
     const isFirstBlock = blockCount === 0;
@@ -965,6 +983,7 @@ async function renderVitamixRecommenderPage() {
 
   eventSource.addEventListener('block-rationale', (e) => {
     const data = JSON.parse(e.data);
+    blockRationales.push(data);
     // eslint-disable-next-line no-console
     console.log(`[Recommender] Block rationale for ${data.blockType}:`, data.rationale);
   });
@@ -1076,6 +1095,26 @@ async function renderVitamixRecommenderPage() {
     if (generatedBlocks.length > 0) {
       persistToDA(effectiveQuery, generatedBlocks, data.intent);
     }
+
+    // Expose generation data for extension panel (Generation Reasoning feature)
+    // eslint-disable-next-line no-underscore-dangle
+    window.__vitamixGenerationData = {
+      query: effectiveQuery,
+      reasoningSteps,
+      reasoningComplete: reasoningCompleteData,
+      blockRationales,
+      intent: data.intent,
+      reasoning: data.reasoning,
+      recommendations: data.recommendations,
+      duration: Date.now() - startTime,
+      timestamp: Date.now(),
+    };
+    // Use postMessage to communicate with content script (isolated world)
+    window.postMessage({
+      type: 'VITAMIX_GENERATION_COMPLETE',
+      // eslint-disable-next-line no-underscore-dangle
+      data: window.__vitamixGenerationData,
+    }, '*');
   });
 
   eventSource.addEventListener('error', (e) => {

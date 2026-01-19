@@ -825,14 +825,84 @@
     }
   }
 
+  // ============================================
+  // Generation Reasoning Capture (for POC site)
+  // ============================================
+
+  /**
+   * Check if this is a generated page on the POC site
+   */
+  function isGeneratedPage() {
+    const url = new URL(window.location.href);
+    const isPocSite = url.hostname.includes('aem.live');
+    const hasCtxParam = url.searchParams.has('ctx');
+    const hasQueryParam = url.searchParams.has('q') || url.searchParams.has('query');
+    return isPocSite && (hasCtxParam || hasQueryParam);
+  }
+
+  /**
+   * Forward generation data to panel via background
+   */
+  function forwardGenerationData(data) {
+    if (!data) return;
+    console.log('[VitamixIntent] Forwarding generation data to panel:', data.query);
+    chrome.runtime.sendMessage({
+      type: 'GENERATION_DATA',
+      data,
+    }).catch(e => {
+      console.log('[VitamixIntent] Could not forward generation data:', e.message);
+    });
+  }
+
+  /**
+   * Set up generation data capture for POC site
+   */
+  function setupGenerationCapture() {
+    if (!isGeneratedPage()) return;
+
+    console.log('[VitamixIntent] Setting up generation data capture');
+
+    // Listen for postMessage from page (content scripts are in isolated world)
+    window.addEventListener('message', (e) => {
+      // Only accept messages from same window
+      if (e.source !== window) return;
+      if (e.data?.type === 'VITAMIX_GENERATION_COMPLETE') {
+        console.log('[VitamixIntent] Received VITAMIX_GENERATION_COMPLETE message');
+        forwardGenerationData(e.data.data);
+      }
+    });
+
+    // Also poll for data (page may have already completed generation before listener was set up)
+    // We inject a script to read from page context since window objects are isolated
+    const checkForExistingData = () => {
+      const script = document.createElement('script');
+      script.textContent = `
+        if (window.__vitamixGenerationData) {
+          window.postMessage({
+            type: 'VITAMIX_GENERATION_COMPLETE',
+            data: window.__vitamixGenerationData
+          }, '*');
+        }
+      `;
+      document.documentElement.appendChild(script);
+      script.remove();
+    };
+
+    // Check after a delay to allow page scripts to run
+    setTimeout(checkForExistingData, 2000);
+    setTimeout(checkForExistingData, 5000);
+  }
+
   // Initialize signal capture only (no panel auto-injection)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       init();
       captureQueryFromUrl();
+      setupGenerationCapture();
     });
   } else {
     init();
     captureQueryFromUrl();
+    setupGenerationCapture();
   }
 })();

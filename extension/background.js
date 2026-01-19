@@ -175,6 +175,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       return true;
 
+    case 'GENERATION_DATA':
+      // Forward generation data to panel (for Generation Reasoning feature)
+      handleGenerationData(message.data);
+      sendResponse({ success: true });
+      return false;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return false;
@@ -278,9 +284,14 @@ async function handleGeneratePageInternal(query, preset = 'all-cerebras', addToH
 
     const { id } = await response.json();
 
-    // Navigate to POC site with context ID
+    // Navigate to POC site with context ID (same tab for seamless experience)
     const url = `${POC_BASE_URL}/?ctx=${id}&preset=${preset}`;
-    chrome.tabs.create({ url });
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (activeTab) {
+      await chrome.tabs.update(activeTab.id, { url });
+    } else {
+      chrome.tabs.create({ url });
+    }
 
     // Notify panel of updated state (new query added to history)
     await notifyPanel();
@@ -457,6 +468,24 @@ async function handlePageTimeUpdate(data) {
 
   await saveProfileToStorage();
   await notifyPanel();
+}
+
+/**
+ * Handle generation data from content script
+ * Forwards to panel for Generation Reasoning display
+ */
+function handleGenerationData(data) {
+  console.log('[Background] Received generation data:', data?.query);
+  // Broadcast to panel
+  try {
+    chrome.runtime.sendMessage({
+      type: 'GENERATION_DATA',
+      data,
+    });
+  } catch (e) {
+    // Panel might not be open
+    console.log('[Background] Could not forward generation data:', e.message);
+  }
 }
 
 /**

@@ -10,6 +10,7 @@ let currentProfile = null;
 let currentSignals = [];
 let previousQueries = [];
 let selectedExample = null;
+let generationData = null;
 
 /**
  * Initialize panel
@@ -34,6 +35,11 @@ async function init() {
       previousQueries = message.previousQueries || [];
       render();
     }
+
+    if (message.type === 'GENERATION_DATA') {
+      generationData = message.data;
+      renderGenerationReasoning();
+    }
   });
 
   console.log('[Panel] Initialized');
@@ -43,11 +49,32 @@ async function init() {
  * Set up event listeners
  */
 function setupEventListeners() {
-  // Section toggles
+  // Section toggles with mutual exclusion for Generation Reasoning
   document.querySelectorAll('.section-header').forEach(header => {
     header.addEventListener('click', () => {
       const section = header.closest('.panel-section');
+      const isGenerationSection = section.dataset.section === 'generation';
+      const isIntentSection = ['signals', 'profile', 'history'].includes(section.dataset.section);
+      const willExpand = section.classList.contains('collapsed');
+
       section.classList.toggle('collapsed');
+
+      // Mutual exclusion: when Generation Reasoning expands, collapse Intent Inference sections
+      if (isGenerationSection && willExpand) {
+        document.querySelectorAll('.panel-section').forEach(s => {
+          if (['signals', 'profile', 'history'].includes(s.dataset.section)) {
+            s.classList.add('collapsed');
+          }
+        });
+      }
+
+      // Mutual exclusion: when Intent Inference section expands, collapse Generation Reasoning
+      if (isIntentSection && willExpand) {
+        const genSection = document.querySelector('[data-section="generation"]');
+        if (genSection) {
+          genSection.classList.add('collapsed');
+        }
+      }
     });
   });
 
@@ -55,6 +82,12 @@ function setupEventListeners() {
   document.getElementById('clear-btn').addEventListener('click', async () => {
     await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });
     selectedExample = null;
+    generationData = null;
+    // Hide generation reasoning section
+    const genSection = document.querySelector('[data-section="generation"]');
+    if (genSection) {
+      genSection.classList.add('hidden');
+    }
     await refreshState();
   });
 
@@ -503,6 +536,166 @@ function renderContextSummary() {
     container.textContent = `Context: ${parts.join(' • ')}`;
     btn.disabled = false;
   }
+}
+
+/**
+ * Render Generation Reasoning section
+ * Shows reasoning steps, confidence, and block rationales from AI generation
+ */
+function renderGenerationReasoning() {
+  const section = document.querySelector('[data-section="generation"]');
+  const container = document.getElementById('generation-content');
+
+  if (!generationData) {
+    section.classList.add('hidden');
+    return;
+  }
+
+  // Show section and expand it
+  section.classList.remove('hidden');
+  section.classList.remove('collapsed');
+
+  // Collapse Intent Inference sections when showing Generation Reasoning
+  document.querySelectorAll('.panel-section').forEach(s => {
+    if (['signals', 'profile', 'history'].includes(s.dataset.section)) {
+      s.classList.add('collapsed');
+    }
+  });
+
+  const {
+    query,
+    reasoningSteps = [],
+    reasoningComplete,
+    blockRationales = [],
+    intent,
+    reasoning,
+    recommendations,
+    duration,
+  } = generationData;
+
+  // Format duration
+  const durationSec = duration ? (duration / 1000).toFixed(1) : '?';
+
+  // Build reasoning steps HTML
+  const stepsHtml = reasoningSteps.map(step => {
+    const iconId = getReasoningStageIcon(step.stage);
+    return `
+      <div class="reasoning-step">
+        <svg class="icon reasoning-step-icon"><use href="#icon-${iconId}"/></svg>
+        <div class="reasoning-step-content">
+          <div class="reasoning-step-stage">${formatLabel(step.stage)}</div>
+          ${step.title ? `<div class="reasoning-step-title">${escapeHtml(step.title)}</div>` : ''}
+          ${step.content ? `<div class="reasoning-step-detail">${escapeHtml(step.content.slice(0, 200))}${step.content.length > 200 ? '...' : ''}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Build block rationales HTML
+  const rationalesHtml = blockRationales.map(br => `
+    <div class="block-rationale-item">
+      <span class="block-type-tag">${br.blockType}</span>
+      <span class="block-rationale-text">${escapeHtml(br.rationale.slice(0, 100))}${br.rationale.length > 100 ? '...' : ''}</span>
+    </div>
+  `).join('');
+
+  // Build confidence display
+  const confidence = reasoning?.confidence || reasoningComplete?.confidence;
+  const confidencePercent = confidence ? Math.round(confidence * 100) : null;
+  const confidenceClass = confidence >= 0.7 ? 'high' : confidence >= 0.4 ? 'medium' : 'low';
+
+  // Build block types tags
+  const blockTypes = recommendations?.blockTypes || [];
+  const blockTypesHtml = blockTypes.map(type => `<span class="block-type-tag">${type}</span>`).join('');
+
+  container.innerHTML = `
+    <div class="generation-reasoning-card">
+      <!-- Query -->
+      <div class="gen-section">
+        <div class="gen-section-title">Query</div>
+        <div class="gen-query">"${escapeHtml(query || 'No query')}"</div>
+      </div>
+
+      <!-- Confidence & Duration -->
+      <div class="gen-meta-row">
+        ${confidencePercent !== null ? `
+          <div class="gen-confidence">
+            <span class="gen-confidence-label">Confidence</span>
+            <span class="confidence-badge ${confidenceClass}">${confidencePercent}%</span>
+          </div>
+        ` : ''}
+        <div class="gen-duration">
+          <span class="gen-duration-label">Duration</span>
+          <span class="gen-duration-value">${durationSec}s</span>
+        </div>
+      </div>
+
+      <!-- Journey Stage -->
+      ${reasoning?.journeyStage ? `
+        <div class="gen-section">
+          <div class="gen-section-title">Journey Stage</div>
+          <div class="gen-journey-stage">${formatLabel(reasoning.journeyStage)}</div>
+          ${reasoning.nextBestAction ? `<div class="gen-next-action">Next: ${escapeHtml(reasoning.nextBestAction)}</div>` : ''}
+        </div>
+      ` : ''}
+
+      <!-- Reasoning Steps -->
+      ${stepsHtml ? `
+        <div class="gen-section">
+          <div class="gen-section-title">Reasoning Steps</div>
+          <div class="reasoning-steps-list">
+            ${stepsHtml}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Block Types -->
+      ${blockTypesHtml ? `
+        <div class="gen-section">
+          <div class="gen-section-title">Generated Blocks</div>
+          <div class="block-types-list">
+            ${blockTypesHtml}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Block Rationales -->
+      ${rationalesHtml ? `
+        <div class="gen-section">
+          <div class="gen-section-title">Block Rationales</div>
+          <div class="block-rationales-list">
+            ${rationalesHtml}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Follow-ups -->
+      ${reasoning?.suggestedFollowUps?.length ? `
+        <div class="gen-section">
+          <div class="gen-section-title">Suggested Follow-ups</div>
+          <div class="gen-followups">
+            ${reasoning.suggestedFollowUps.map(f => `<div class="gen-followup-item">${escapeHtml(f)}</div>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+/**
+ * Get icon ID for reasoning stage
+ */
+function getReasoningStageIcon(stage) {
+  const iconMap = {
+    signals: 'broadcast',
+    understanding: 'user',
+    history: 'chat',
+    intent: 'target',
+    layout: 'box',
+    blocks: 'box',
+    content: 'edit',
+  };
+  return iconMap[stage] || 'sparkle';
 }
 
 /**

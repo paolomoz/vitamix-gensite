@@ -4,14 +4,14 @@
  *
  * Design tokens used:
  * - Typography: Sentinel (headings), Gotham Narrow (body)
- * - Colors: charcoal background, white cards, red accents
+ * - Colors: charcoal background, white/cream cards, red accents
  * - Spacing: design system spacing tokens
- * - Borders: rounding-m for cards, rounding-s for buttons
+ * - Borders: rounding-m for cards
  */
 
 /* ===== Section Container ===== */
 .section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
-  padding: var(--spacing-300) var(--horizontal-spacing);
+  padding: var(--spacing-400) var(--horizontal-spacing);
 }
 
 .follow-up-advisor-container {
@@ -38,19 +38,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-200);
+  margin-bottom: var(--spacing-300);
   flex-wrap: wrap;
-  gap: var(--spacing-100);
+  gap: var(--spacing-200);
 }
 
 .advisor-title {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-medium);
+  font-family: var(--heading-font-family);
+  font-size: var(--body-size-m);
+  font-weight: var(--weight-light);
   line-height: var(--line-height-s);
-  color: var(--color-gray-400);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  color: var(--color-white);
+  letter-spacing: 0.02em;
   margin: 0;
 }
 
@@ -58,7 +57,7 @@
 .journey-indicator {
   display: flex;
   align-items: center;
-  gap: var(--spacing-100);
+  gap: var(--spacing-150);
 }
 
 .journey-dots {
@@ -68,10 +67,10 @@
 }
 
 .journey-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--color-gray-700);
+  background: var(--color-gray-600);
   transition: all 0.2s ease;
 }
 
@@ -81,13 +80,12 @@
 
 .journey-dot.current {
   background: var(--color-red);
-  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.3);
 }
 
 .journey-line {
-  width: 20px;
+  width: 16px;
   height: 2px;
-  background: var(--color-gray-700);
+  background: var(--color-gray-600);
   transition: background 0.2s ease;
 }
 
@@ -98,75 +96,62 @@
 .journey-label {
   font-family: var(--body-font-family);
   font-size: var(--body-size-xs);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-medium);
   color: var(--color-gray-400);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ===== Shared Card Styles ===== */
-.advisor-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--color-gray-700);
-  border-radius: var(--rounding-m);
-  padding: var(--spacing-200);
-  text-align: left;
-  transition: border-color 0.15s ease;
-}
-
-.advisor-card:hover {
-  border-color: var(--color-gray-500);
-}
-
-/* ===== Badge ===== */
-.advisor-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-60);
-  font-family: var(--body-font-family);
-  font-size: 10px;
-  font-weight: var(--weight-medium);
-  color: var(--color-white);
-  background: var(--color-red);
-  padding: 3px 8px;
-  border-radius: var(--rounding-s);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--spacing-100);
-}
-
-.badge-star {
-  display: none;
-}
-
-/* Secondary badge - subtle text-only style */
-.advisor-badge-secondary {
-  background: transparent;
-  color: var(--color-gray-500);
-  padding: 0;
-  margin-bottom: var(--spacing-60);
+  letter-spacing: 0.08em;
 }
 
 /* ===== Primary Advisor Card ===== */
 .advisor-card-primary {
+  background: var(--color-white);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-300);
   margin-bottom: var(--spacing-200);
+  position: relative;
+}
+
+.advisor-card-primary .advisor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-60);
+  font-family: var(--body-font-family);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  color: var(--color-red);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--spacing-100);
+}
+
+.advisor-card-primary .badge-icon {
+  display: inline-block;
 }
 
 .advisor-card-primary .advisor-headline {
-  display: inline-block;
+  display: block;
   font-family: var(--heading-font-family);
   font-size: var(--heading-size-s);
   font-weight: var(--weight-light);
   line-height: var(--line-height-s);
-  color: var(--color-white);
+  color: var(--color-charcoal);
   text-decoration: none;
-  margin: 0 0 var(--spacing-60) 0;
+  margin: 0 0 var(--spacing-100) 0;
   transition: color 0.15s ease;
 }
 
 .advisor-card-primary .advisor-headline:hover {
   color: var(--color-red);
-  text-decoration: underline;
+}
+
+.advisor-card-primary .advisor-headline::after {
+  content: " →";
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.advisor-card-primary .advisor-headline:hover::after {
+  opacity: 1;
 }
 
 .advisor-card-primary .advisor-rationale {
@@ -174,7 +159,7 @@
   font-size: var(--body-size-s);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
-  color: var(--color-gray-500);
+  color: var(--color-gray-900);
   margin: 0;
 }
 
@@ -186,21 +171,54 @@
 }
 
 /* ===== Secondary Advisor Card ===== */
+.advisor-card-secondary {
+  background: transparent;
+  border: 1px solid var(--color-gray-600);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-250);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.advisor-card-secondary:hover {
+  border-color: var(--color-gray-400);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.advisor-card-secondary .advisor-badge {
+  display: block;
+  font-family: var(--body-font-family);
+  font-size: 10px;
+  font-weight: var(--weight-medium);
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--spacing-100);
+}
+
 .advisor-card-secondary .advisor-headline {
-  display: inline-block;
+  display: block;
   font-family: var(--body-font-family);
   font-size: var(--body-size-m);
   font-weight: var(--weight-medium);
   line-height: var(--line-height-s);
   color: var(--color-white);
   text-decoration: none;
-  margin: 0 0 var(--spacing-60) 0;
+  margin: 0 0 var(--spacing-100) 0;
   transition: color 0.15s ease;
 }
 
 .advisor-card-secondary .advisor-headline:hover {
   color: var(--color-red);
-  text-decoration: underline;
+}
+
+.advisor-card-secondary .advisor-headline::after {
+  content: " →";
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.advisor-card-secondary .advisor-headline:hover::after {
+  opacity: 1;
 }
 
 .advisor-card-secondary .advisor-rationale {
@@ -217,31 +235,34 @@
   .advisor-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: var(--spacing-150);
   }
 
   .advisor-secondary-container {
-    gap: var(--spacing-200);
+    gap: var(--spacing-150);
+  }
+
+  .advisor-card-primary {
+    padding: var(--spacing-250);
+  }
+
+  .advisor-card-secondary {
+    padding: var(--spacing-200);
   }
 }
 
 /* ===== Responsive: Mobile ===== */
 @media (width < 600px) {
-  .journey-indicator {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .journey-dots {
-    flex: 1;
-    justify-content: center;
+  .section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
+    padding: var(--spacing-300) var(--horizontal-spacing);
   }
 
   .advisor-secondary-container {
     grid-template-columns: 1fr;
-    gap: var(--spacing-200);
+    gap: var(--spacing-150);
   }
 
   .advisor-card-primary .advisor-headline {
-    font-size: var(--body-size-m);
+    font-size: var(--body-size-l);
   }
 }

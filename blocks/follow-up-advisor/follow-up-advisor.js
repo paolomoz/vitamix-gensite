@@ -135,7 +135,7 @@ function createPrimaryCard(suggestion) {
   // Badge
   const badge = document.createElement('div');
   badge.className = 'advisor-badge';
-  badge.innerHTML = '<span class="badge-star">&#9733;</span> RECOMMENDED';
+  badge.innerHTML = '<span class="badge-icon">★</span> Recommended';
   card.appendChild(badge);
 
   // Clickable Headline
@@ -169,8 +169,8 @@ function createSecondaryCard(suggestion) {
 
   // Badge
   const badge = document.createElement('div');
-  badge.className = 'advisor-badge advisor-badge-secondary';
-  badge.textContent = 'ALSO CONSIDER';
+  badge.className = 'advisor-badge';
+  badge.textContent = 'Also consider';
   card.appendChild(badge);
 
   // Clickable Headline
@@ -219,7 +219,7 @@ export default function decorate(block) {
 
   const title = document.createElement('h3');
   title.className = 'advisor-title';
-  title.textContent = 'WHAT WOULD HELP YOU NEXT?';
+  title.textContent = 'What would help you next?';
   headerSection.appendChild(title);
 
   if (advisorData.journeyStage) {

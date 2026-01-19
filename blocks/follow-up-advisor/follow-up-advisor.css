@@ -156,22 +156,19 @@
   margin: 0;
 }
 
-/* ===== Primary Card (badge color) ===== */
-.advisor-card-primary {
-  margin-bottom: var(--spacing-200);
-}
-
-.advisor-card-primary .advisor-badge {
-  color: var(--color-red);
-}
-
-/* ===== Secondary Cards ===== */
-.advisor-secondary-container {
+/* ===== Cards Grid ===== */
+.advisor-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-200);
 }
 
+/* ===== Primary Card (badge color) ===== */
+.advisor-card-primary .advisor-badge {
+  color: var(--color-red);
+}
+
+/* ===== Secondary Card (badge color) ===== */
 .advisor-card-secondary .advisor-badge {
   color: var(--color-gray-600);
 }
@@ -184,16 +181,12 @@
     gap: var(--spacing-150);
   }
 
-  .advisor-secondary-container {
+  .advisor-cards {
     gap: var(--spacing-150);
   }
 
-  .advisor-card-primary {
+  .advisor-card {
     padding: var(--spacing-250);
-  }
-
-  .advisor-card-secondary {
-    padding: var(--spacing-200);
   }
 }
 
@@ -203,12 +196,12 @@
     padding: var(--spacing-300) var(--horizontal-spacing);
   }
 
-  .advisor-secondary-container {
+  .advisor-cards {
     grid-template-columns: 1fr;
     gap: var(--spacing-150);
   }
 
-  .advisor-card-primary .advisor-headline {
+  .advisor-card .advisor-headline {
     font-size: var(--body-size-l);
   }
 }

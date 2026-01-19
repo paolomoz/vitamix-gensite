@@ -231,23 +231,21 @@ export default function decorate(block) {
   // Sort suggestions by priority
   const suggestions = (advisorData.suggestions || []).sort((a, b) => a.priority - b.priority);
 
+  // Cards grid container
+  const cardsContainer = document.createElement('div');
+  cardsContainer.className = 'advisor-cards';
+
   // Primary card (priority 1)
   const primarySuggestion = suggestions.find((s) => s.priority === 1);
   if (primarySuggestion) {
-    block.appendChild(createPrimaryCard(primarySuggestion));
+    cardsContainer.appendChild(createPrimaryCard(primarySuggestion));
   }
 
-  // Secondary cards container
-  const secondarySuggestions = suggestions.filter((s) => s.priority > 1).slice(0, 2);
-  if (secondarySuggestions.length > 0) {
-    const secondaryContainer = document.createElement('div');
-    secondaryContainer.className = 'advisor-secondary-container';
+  // Secondary cards (priority > 1)
+  const secondarySuggestions = suggestions.filter((s) => s.priority > 1).slice(0, 3);
+  secondarySuggestions.forEach((suggestion) => {
+    cardsContainer.appendChild(createSecondaryCard(suggestion));
+  });
 
-    secondarySuggestions.forEach((suggestion) => {
-      secondaryContainer.appendChild(createSecondaryCard(suggestion));
-    });
-
-    block.appendChild(secondaryContainer);
-  }
-
+  block.appendChild(cardsContainer);
 }

@@ -106,7 +106,7 @@
 .advisor-card {
   background: var(--color-white);
   border-radius: var(--rounding-m);
-  padding: var(--spacing-250);
+  padding: var(--spacing-300);
 }
 
 .advisor-card .advisor-badge {
@@ -124,7 +124,7 @@
 .advisor-card .advisor-headline {
   display: block;
   font-family: var(--heading-font-family);
-  font-size: var(--body-size-l);
+  font-size: var(--heading-size-s);
   font-weight: var(--weight-light);
   line-height: var(--line-height-s);
   color: var(--color-charcoal);

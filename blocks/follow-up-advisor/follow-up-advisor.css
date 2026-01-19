@@ -106,10 +106,16 @@
 
 /* ===== Shared Card Styles ===== */
 .advisor-card {
-  background: transparent;
-  border: none;
-  padding: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-gray-700);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-200);
   text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.advisor-card:hover {
+  border-color: var(--color-gray-500);
 }
 
 /* ===== Badge ===== */
@@ -120,14 +126,25 @@
   font-family: var(--body-font-family);
   font-size: 10px;
   font-weight: var(--weight-medium);
-  color: var(--color-gray-500);
+  color: var(--color-white);
+  background: var(--color-red);
+  padding: 3px 8px;
+  border-radius: var(--rounding-s);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--spacing-60);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-100);
 }
 
 .badge-star {
-  color: var(--color-red);
+  display: none;
+}
+
+/* Secondary badge - subtle text-only style */
+.advisor-badge-secondary {
+  background: transparent;
+  color: var(--color-gray-500);
+  padding: 0;
+  margin-bottom: var(--spacing-60);
 }
 
 /* ===== Primary Advisor Card ===== */
@@ -165,7 +182,7 @@
 .advisor-secondary-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-300);
+  gap: var(--spacing-200);
 }
 
 /* ===== Secondary Advisor Card ===== */

@@ -167,6 +167,12 @@ function createSecondaryCard(suggestion) {
   const card = document.createElement('div');
   card.className = 'advisor-card advisor-card-secondary';
 
+  // Badge
+  const badge = document.createElement('div');
+  badge.className = 'advisor-badge advisor-badge-secondary';
+  badge.textContent = 'ALSO CONSIDER';
+  card.appendChild(badge);
+
   // Clickable Headline
   const headline = document.createElement('a');
   headline.className = 'advisor-headline';

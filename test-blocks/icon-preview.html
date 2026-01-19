@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitamix Icon Library</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: adobe-clean, "Source Sans Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 40px;
+      background: #1b1b1b;
+      color: #e3e3e3;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #6d6d6d;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 40px;
+      padding: 16px 20px;
+      background: #2c2c2c;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #5681ff;
+    }
+
+    .stat-label {
+      color: #6d6d6d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .search-box {
+      margin-bottom: 32px;
+    }
+
+    .search-box input {
+      width: 100%;
+      max-width: 400px;
+      padding: 12px 16px;
+      background: #2c2c2c;
+      border: 1px solid #393939;
+      border-radius: 8px;
+      color: #e3e3e3;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-box input:focus {
+      border-color: #5681ff;
+    }
+
+    .search-box input::placeholder {
+      color: #6d6d6d;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section h2 {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #afafaf;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #393939;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section h2 .count {
+      background: #393939;
+      color: #afafaf;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+
+    .icon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 12px;
+      background: #2c2c2c;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .icon-card:hover {
+      background: #393939;
+      border-color: #5681ff;
+      transform: translateY(-2px);
+    }
+
+    .icon-card.hidden {
+      display: none;
+    }
+
+    .icon-card svg {
+      width: 28px;
+      height: 28px;
+      color: #e3e3e3;
+    }
+
+    .icon-card .label {
+      font-size: 11px;
+      color: #afafaf;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .icon-card .tags {
+      display: none;
+    }
+
+    /* Size demo */
+    .size-demo {
+      display: flex;
+      align-items: flex-end;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding: 24px;
+      background: #2c2c2c;
+      border-radius: 8px;
+    }
+
+    .size-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .size-item svg {
+      color: #e3e3e3;
+    }
+
+    .size-item .size-label {
+      font-size: 11px;
+      color: #6d6d6d;
+    }
+
+    /* Color demo */
+    .color-demo {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 24px;
+      background: #2c2c2c;
+      border-radius: 8px;
+    }
+
+    .color-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-item svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .color-item .color-label {
+      font-size: 11px;
+      color: #6d6d6d;
+    }
+
+    .color-default { color: #e3e3e3; }
+    .color-blue { color: #5681ff; }
+    .color-green { color: #2d9d78; }
+    .color-orange { color: #e68619; }
+    .color-red { color: #c8102e; }
+    .color-muted { color: #6d6d6d; }
+
+    /* Light background demo */
+    .light-section {
+      background: #fafafa;
+      padding: 32px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    .light-section h3 {
+      color: #333;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .light-section .icon-grid {
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+
+    .light-section .icon-card {
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .light-section .icon-card:hover {
+      background: #f3f3f3;
+    }
+
+    .light-section .icon-card svg {
+      color: #333f48;
+    }
+
+    .light-section .icon-card .label {
+      color: #666;
+    }
+
+    /* Usage code */
+    .code-section {
+      background: #2c2c2c;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      padding: 12px 16px;
+      background: #393939;
+      font-size: 12px;
+      color: #afafaf;
+      font-family: "Source Code Pro", Monaco, monospace;
+    }
+
+    .code-block {
+      padding: 16px;
+      font-family: "Source Code Pro", Monaco, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .code-block .comment { color: #6d6d6d; }
+    .code-block .keyword { color: #c792ea; }
+    .code-block .string { color: #c3e88d; }
+    .code-block .function { color: #82aaff; }
+    .code-block .variable { color: #f78c6c; }
+
+    /* Specs */
+    .specs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      padding: 24px;
+      background: #2c2c2c;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .spec-label {
+      color: #6d6d6d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .spec-value {
+      color: #e3e3e3;
+      font-family: "Source Code Pro", Monaco, monospace;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #2d9d78;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Vitamix Icon Library</h1>
+  <p class="subtitle">Spectrum-style icons for blocks and generated content</p>
+
+  <div class="stats" id="stats">
+    <div class="stat">
+      <span class="stat-value" id="totalCount">0</span>
+      <span class="stat-label">Total Icons</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="categoryCount">0</span>
+      <span class="stat-label">Categories</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">24px</span>
+      <span class="stat-label">Canvas Size</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">1.5px</span>
+      <span class="stat-label">Stroke Width</span>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search icons by name or tag...">
+  </div>
+
+  <div id="categories"></div>
+
+  <div class="section">
+    <h2>Size Variations</h2>
+    <div class="size-demo" id="sizeDemo"></div>
+  </div>
+
+  <div class="section">
+    <h2>Color Inheritance</h2>
+    <div class="color-demo" id="colorDemo"></div>
+  </div>
+
+  <div class="section">
+    <h2>On Light Background</h2>
+    <div class="light-section">
+      <h3>Vitamix Brand Context</h3>
+      <div class="icon-grid" id="lightGrid"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Usage in Blocks</h2>
+    <div class="code-section">
+      <div class="code-header">scripts/icons.js</div>
+      <div class="code-block">
+<span class="comment">// Import the icon utilities</span>
+<span class="keyword">import</span> { createIcon, loadIcon, findIconsByTag } <span class="keyword">from</span> <span class="string">'../../scripts/icons.js'</span>;
+
+<span class="comment">// Create an icon element (async)</span>
+<span class="keyword">const</span> icon = <span class="keyword">await</span> <span class="function">createIcon</span>(<span class="string">'smoothie'</span>, { size: <span class="variable">24</span> });
+element.<span class="function">appendChild</span>(icon);
+
+<span class="comment">// Find icons by semantic tag</span>
+<span class="keyword">const</span> healthIcons = <span class="function">findIconsByTag</span>(<span class="string">'healthy'</span>);
+<span class="comment">// Returns: ['nutrition', 'organic', 'vegan', 'low-sugar', ...]</span>
+
+<span class="comment">// Auto-decorate elements based on text</span>
+<span class="keyword">import</span> { autoDecorateIcons } <span class="keyword">from</span> <span class="string">'../../scripts/icons.js'</span>;
+<span class="keyword">await</span> <span class="function">autoDecorateIcons</span>(block);
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Design Specifications</h2>
+    <div class="specs">
+      <div class="spec-item">
+        <span class="spec-label">Canvas Size</span>
+        <span class="spec-value">24 × 24px</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Stroke Width</span>
+        <span class="spec-value">1.5px</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Stroke Caps</span>
+        <span class="spec-value">round</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Stroke Joins</span>
+        <span class="spec-value">round</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Fill Color</span>
+        <span class="spec-value">currentColor</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Style</span>
+        <span class="spec-value">Outline / Stroke</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script type="module">
+    import {
+      ICON_REGISTRY,
+      loadIcon,
+      getIconsByCategory,
+      getCategories,
+      getAllIconNames,
+    } from '../scripts/icons.js';
+
+    const categoryLabels = {
+      product: 'Product Features',
+      recipe: 'Recipe Categories',
+      action: 'Cooking Actions',
+      ingredient: 'Ingredients',
+      nutrition: 'Nutrition & Dietary',
+      meta: 'Recipe Metadata',
+      ui: 'UI Elements',
+    };
+
+    const toast = document.getElementById('toast');
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    async function createIconCard(name, container) {
+      const card = document.createElement('div');
+      card.className = 'icon-card';
+      card.dataset.name = name;
+      card.dataset.tags = (ICON_REGISTRY[name]?.tags || []).join(' ');
+
+      const svg = await loadIcon(name);
+      if (svg) {
+        card.innerHTML = `
+          ${svg}
+          <span class="label">${name}</span>
+          <span class="tags">${card.dataset.tags}</span>
+        `;
+      }
+
+      card.addEventListener('click', () => {
+        navigator.clipboard.writeText(name);
+        showToast(`Copied: ${name}`);
+      });
+
+      container.appendChild(card);
+      return card;
+    }
+
+    async function init() {
+      const categories = getCategories();
+      const allIcons = getAllIconNames();
+
+      // Update stats
+      document.getElementById('totalCount').textContent = allIcons.length;
+      document.getElementById('categoryCount').textContent = categories.length;
+
+      // Render categories
+      const categoriesContainer = document.getElementById('categories');
+      for (const category of categories) {
+        const icons = getIconsByCategory(category);
+        const section = document.createElement('div');
+        section.className = 'section';
+        section.innerHTML = `
+          <h2>${categoryLabels[category] || category} <span class="count">${icons.length}</span></h2>
+          <div class="icon-grid" data-category="${category}"></div>
+        `;
+        categoriesContainer.appendChild(section);
+
+        const grid = section.querySelector('.icon-grid');
+        for (const iconName of icons) {
+          await createIconCard(iconName, grid);
+        }
+      }
+
+      // Size demo
+      const sizeDemo = document.getElementById('sizeDemo');
+      const sizes = [16, 20, 24, 32, 48, 64];
+      const demoIcon = await loadIcon('blender');
+      for (const size of sizes) {
+        const item = document.createElement('div');
+        item.className = 'size-item';
+        item.innerHTML = `
+          <div style="width: ${size}px; height: ${size}px;">${demoIcon}</div>
+          <span class="size-label">${size}px</span>
+        `;
+        item.querySelector('svg').style.width = '100%';
+        item.querySelector('svg').style.height = '100%';
+        sizeDemo.appendChild(item);
+      }
+
+      // Color demo
+      const colorDemo = document.getElementById('colorDemo');
+      const colors = [
+        { name: 'Default', class: 'color-default' },
+        { name: 'Accent', class: 'color-blue' },
+        { name: 'Success', class: 'color-green' },
+        { name: 'Warning', class: 'color-orange' },
+        { name: 'Vitamix Red', class: 'color-red' },
+        { name: 'Muted', class: 'color-muted' },
+      ];
+      const colorIcon = await loadIcon('nutrition');
+      for (const color of colors) {
+        const item = document.createElement('div');
+        item.className = `color-item ${color.class}`;
+        item.innerHTML = `
+          ${colorIcon}
+          <span class="color-label">${color.name}</span>
+        `;
+        colorDemo.appendChild(item);
+      }
+
+      // Light grid (sample of icons)
+      const lightGrid = document.getElementById('lightGrid');
+      const sampleIcons = ['blend', 'recipe', 'nutrition', 'timer', 'vegan', 'star', 'check-circle', 'smoothie'];
+      for (const iconName of sampleIcons) {
+        await createIconCard(iconName, lightGrid);
+      }
+
+      // Search functionality
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.icon-card');
+        cards.forEach((card) => {
+          const name = card.dataset.name || '';
+          const tags = card.dataset.tags || '';
+          const matches = name.includes(query) || tags.includes(query);
+          card.classList.toggle('hidden', !matches && query.length > 0);
+        });
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Gluten Free</title>
+  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+  <path d="M12 6V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M9 8L12 10L15 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M9 12L12 14L15 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M4 4L20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

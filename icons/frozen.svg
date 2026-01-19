@@ -1,0 +1,11 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Frozen</title>
+  <path d="M12 2V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M2 12H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M5 5L19 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M19 5L5 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M12 6L10 8M12 6L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M12 18L10 16M12 18L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M6 12L8 10M6 12L8 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M18 12L16 10M18 12L16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

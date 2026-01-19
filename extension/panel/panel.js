@@ -49,32 +49,15 @@ async function init() {
  * Set up event listeners
  */
 function setupEventListeners() {
-  // Section toggles with mutual exclusion for Generation Reasoning
+  // Navigation tabs - switch between Intent Inference and Generation Reasoning views
+  document.getElementById('tab-inference').addEventListener('click', () => switchView('inference'));
+  document.getElementById('tab-generation').addEventListener('click', () => switchView('generation'));
+
+  // Section toggles (within each view)
   document.querySelectorAll('.section-header').forEach(header => {
     header.addEventListener('click', () => {
       const section = header.closest('.panel-section');
-      const isGenerationSection = section.dataset.section === 'generation';
-      const isIntentSection = ['signals', 'profile', 'history'].includes(section.dataset.section);
-      const willExpand = section.classList.contains('collapsed');
-
       section.classList.toggle('collapsed');
-
-      // Mutual exclusion: when Generation Reasoning expands, collapse Intent Inference sections
-      if (isGenerationSection && willExpand) {
-        document.querySelectorAll('.panel-section').forEach(s => {
-          if (['signals', 'profile', 'history'].includes(s.dataset.section)) {
-            s.classList.add('collapsed');
-          }
-        });
-      }
-
-      // Mutual exclusion: when Intent Inference section expands, collapse Generation Reasoning
-      if (isIntentSection && willExpand) {
-        const genSection = document.querySelector('[data-section="generation"]');
-        if (genSection) {
-          genSection.classList.add('collapsed');
-        }
-      }
     });
   });
 
@@ -88,11 +71,10 @@ function setupEventListeners() {
     await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });
     selectedExample = null;
     generationData = null;
-    // Hide generation reasoning section
-    const genSection = document.querySelector('[data-section="generation"]');
-    if (genSection) {
-      genSection.classList.add('hidden');
-    }
+    // Reset generation view to empty state
+    renderGenerationReasoning();
+    // Switch back to inference view
+    switchView('inference');
     await refreshState();
   });
 
@@ -123,6 +105,21 @@ function setupEventListeners() {
         handleAddHint();
       }
     }
+  });
+}
+
+/**
+ * Switch between views (inference / generation)
+ */
+function switchView(viewId) {
+  // Update tab active states
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.id === `tab-${viewId}`);
+  });
+
+  // Update view visibility
+  document.querySelectorAll('.panel-view').forEach(view => {
+    view.classList.toggle('active', view.id === `view-${viewId}`);
   });
 }
 
@@ -544,28 +541,26 @@ function renderContextSummary() {
 }
 
 /**
- * Render Generation Reasoning section
+ * Render Generation Reasoning view
  * Shows reasoning steps, confidence, and block rationales from AI generation
  */
 function renderGenerationReasoning() {
-  const section = document.querySelector('[data-section="generation"]');
   const container = document.getElementById('generation-content');
 
   if (!generationData) {
-    section.classList.add('hidden');
+    // Show empty state
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg class="icon icon-lg"><use href="#icon-sparkle"/></svg>
+        <p>No generation data available</p>
+        <p class="hint">Navigate to a generated page (?q= URL) to see reasoning</p>
+      </div>
+    `;
     return;
   }
 
-  // Show section and expand it
-  section.classList.remove('hidden');
-  section.classList.remove('collapsed');
-
-  // Collapse Intent Inference sections when showing Generation Reasoning
-  document.querySelectorAll('.panel-section').forEach(s => {
-    if (['signals', 'profile', 'history'].includes(s.dataset.section)) {
-      s.classList.add('collapsed');
-    }
-  });
+  // Auto-switch to generation view when data arrives
+  switchView('generation');
 
   const {
     query,
@@ -581,7 +576,7 @@ function renderGenerationReasoning() {
   // Format duration
   const durationSec = duration ? (duration / 1000).toFixed(1) : '?';
 
-  // Build reasoning steps HTML
+  // Build reasoning steps HTML - full content, no truncation
   const stepsHtml = reasoningSteps.map(step => {
     const iconId = getReasoningStageIcon(step.stage);
     return `
@@ -590,17 +585,17 @@ function renderGenerationReasoning() {
         <div class="reasoning-step-content">
           <div class="reasoning-step-stage">${formatLabel(step.stage)}</div>
           ${step.title ? `<div class="reasoning-step-title">${escapeHtml(step.title)}</div>` : ''}
-          ${step.content ? `<div class="reasoning-step-detail">${escapeHtml(step.content.slice(0, 200))}${step.content.length > 200 ? '...' : ''}</div>` : ''}
+          ${step.content ? `<div class="reasoning-step-detail">${escapeHtml(step.content)}</div>` : ''}
         </div>
       </div>
     `;
   }).join('');
 
-  // Build block rationales HTML
+  // Build block rationales HTML - full content, no truncation
   const rationalesHtml = blockRationales.map(br => `
     <div class="block-rationale-item">
       <span class="block-type-tag">${br.blockType}</span>
-      <span class="block-rationale-text">${escapeHtml(br.rationale.slice(0, 100))}${br.rationale.length > 100 ? '...' : ''}</span>
+      <span class="block-rationale-text">${escapeHtml(br.rationale)}</span>
     </div>
   `).join('');
 

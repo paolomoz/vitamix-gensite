@@ -155,16 +155,51 @@ svg.icon-loading {
   flex-shrink: 0;
 }
 
-.panel-header-title {
+/* Navigation Tabs */
+.panel-header-nav {
   display: flex;
-  align-items: center;
-  gap: var(--spectrum-spacing-100);
-  font-weight: 600;
-  font-size: 14px;
+  gap: var(--spectrum-spacing-50);
 }
 
-.panel-header-title .icon {
-  font-size: 16px;
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spectrum-spacing-75);
+  padding: var(--spectrum-spacing-75) var(--spectrum-spacing-200);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+.nav-tab:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+.nav-tab.active {
+  background: var(--spectrum-blue-900-bg);
+  color: var(--accent);
+}
+
+.nav-tab .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.nav-tab span {
+  display: none;
+}
+
+@media (min-width: 360px) {
+  .nav-tab span {
+    display: inline;
+  }
 }
 
 .panel-header-actions {
@@ -862,17 +897,36 @@ svg.icon-loading {
 }
 
 /* ========================================
-   Generation Reasoning Section
+   Panel Views (Tab Switching)
    ======================================== */
 
-.generation-reasoning.hidden {
+.panel-view {
   display: none;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.panel-view.active {
+  display: block;
+}
+
+/* ========================================
+   Generation Reasoning View
+   ======================================== */
+
+.generation-view-content {
+  padding: var(--spectrum-spacing-200);
+}
+
+.generation-view-content .empty-state {
+  padding: var(--spectrum-spacing-400);
 }
 
 .generation-reasoning-card {
   background: var(--surface);
   border-radius: var(--radius);
   overflow: hidden;
+  margin-bottom: var(--spectrum-spacing-200);
 }
 
 .gen-section {
@@ -943,8 +997,6 @@ svg.icon-loading {
   display: flex;
   flex-direction: column;
   gap: var(--spectrum-spacing-100);
-  max-height: 200px;
-  overflow-y: auto;
 }
 
 .reasoning-step {
@@ -1009,8 +1061,6 @@ svg.icon-loading {
   display: flex;
   flex-direction: column;
   gap: var(--spectrum-spacing-75);
-  max-height: 150px;
-  overflow-y: auto;
 }
 
 .block-rationale-item {

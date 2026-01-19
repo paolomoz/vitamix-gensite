@@ -47,7 +47,7 @@ const MODEL_PRESETS: Record<string, ModelPreset> = {
   'all-cerebras': {
     reasoning: {
       provider: 'cerebras',
-      model: 'qwen-3-32b',  // Best consistency for instruction following
+      model: 'gpt-oss-120b',  // Larger model for better instruction following
       maxTokens: 4096,         // Detailed reasoning output
       temperature: 0.5,        // Focused, consistent responses
     },

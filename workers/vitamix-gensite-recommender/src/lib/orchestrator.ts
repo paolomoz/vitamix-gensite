@@ -24,6 +24,11 @@ import type {
   ExtensionSignal,
   QueryHistoryItem,
   AdvisorFollowUp,
+  StructuredSuggestion,
+  ResearchGap,
+  SuggestionEnhancementData,
+  JourneyStage,
+  ContentType,
 } from '../types';
 import { createModelFactory, type Message } from '../ai-clients/model-factory';
 import { analyzeAndSelectBlocks, formatReasoningForDisplay } from '../ai-clients/reasoning-engine';
@@ -46,7 +51,6 @@ import {
   type SafetyGuidelines,
 } from '../content/content-service';
 import { selectHeroImageWithMetadata, selectHeroImageSemantic, type HeroImageSelection } from './hero-images';
-import { buildQuestion, buildInterpolationContext, type QuestionIntentType } from './question-templates';
 
 // ============================================
 // Types
@@ -1572,23 +1576,6 @@ function generateFollowUpBlock(userJourney: ReasoningResult['userJourney']): Gen
 // ============================================
 
 /**
- * Map intent classification to question intent type
- */
-function mapToQuestionIntent(intent: IntentClassification): QuestionIntentType {
-  const intentMap: Record<string, QuestionIntentType> = {
-    recipe: 'recipe',
-    product_info: 'product_info',
-    comparison: 'comparison',
-    support: 'support',
-    troubleshooting: 'support',
-    general: 'general',
-    greetings: 'general',
-    discovery: 'general',
-  };
-  return intentMap[intent.intentType] || 'general';
-}
-
-/**
  * Extract content types from block types
  */
 function extractContentSeen(blockTypes: string[]): Array<'recipes' | 'reviews' | 'specs' | 'warranty' | 'comparison' | 'accessories'> {
@@ -1615,77 +1602,25 @@ function extractContentSeen(blockTypes: string[]): Array<'recipes' | 'reviews' |
 
 interface FollowUpAdvisorContext {
   userJourney: ReasoningResult['userJourney'];
-  intent: IntentClassification;
-  sessionContext: SessionContext | null | undefined;
-  generatedBlockTypes: string[];
 }
 
 /**
  * Generates follow-up-advisor block HTML with rich advisor data.
  * This block provides insightful, contextual suggestions with journey awareness.
- * Now also generates instant question templates from pre-computed data.
+ * Initially renders shimmer loading cards while AI-generated suggestions load in background.
  */
 function generateFollowUpAdvisorBlock(ctx: FollowUpAdvisorContext): GeneratedBlock {
-  const { userJourney, intent, sessionContext, generatedBlockTypes } = ctx;
-  const advisorData = userJourney.advisorFollowUp;
+  const { userJourney } = ctx;
 
-  // Build the instant question from templates
-  const questionIntent = mapToQuestionIntent(intent);
-
-  // Extract entities from current intent
-  // Note: IntentClassification uses useCases, which we map to goals for the question templates
-  const currentEntities = {
-    products: intent.entities?.products || [],
-    ingredients: intent.entities?.ingredients || [],
-    goals: intent.entities?.useCases || [],
+  // Send empty suggestions initially - shimmer loading cards will show
+  // The background AI enhancement will provide deeper suggestions
+  const initialAdvisorData: AdvisorFollowUp = {
+    journeyStage: userJourney.currentStage,
+    suggestions: [], // Empty - will be filled by enhancement event
+    gaps: [],
   };
 
-  // Gather content seen from session history + current generation
-  const sessionBlockTypes = sessionContext?.previousQueries?.flatMap(q => q.blockTypes || []) || [];
-  const allBlockTypes = [...sessionBlockTypes, ...generatedBlockTypes];
-  const contentSeen = extractContentSeen(allBlockTypes);
-
-  // Build interpolation context
-  const interpolationCtx = buildInterpolationContext(
-    sessionContext,
-    intent.intentType,
-    currentEntities,
-    contentSeen,
-    userJourney.currentStage
-  );
-
-  // Build the question
-  const question = buildQuestion(questionIntent, interpolationCtx);
-
-  console.log('[Orchestrator] Built question template:', question?.templateId || 'none', 'with', question?.options.length || 0, 'options');
-
-  // If no advisor data, fall back to a minimal version using suggestedFollowUps
-  if (!advisorData) {
-    console.log('[Orchestrator] No advisor follow-up data, generating from suggestedFollowUps');
-    const fallbackAdvisor: AdvisorFollowUp = {
-      journeyStage: userJourney.currentStage,
-      suggestions: userJourney.suggestedFollowUps.slice(0, 3).map((followUp, idx) => ({
-        query: followUp,
-        headline: followUp,
-        rationale: '',
-        category: idx === 0 ? 'go-deeper' : 'explore-more' as const,
-        priority: (idx + 1) as 1 | 2 | 3,
-        confidence: 0.7,
-        whyBullets: [],
-      })),
-      gaps: [],
-      question: question || undefined,
-    };
-    return buildFollowUpAdvisorHTML(fallbackAdvisor);
-  }
-
-  // Add question to existing advisor data
-  const enrichedAdvisorData: AdvisorFollowUp = {
-    ...advisorData,
-    question: question || undefined,
-  };
-
-  return buildFollowUpAdvisorHTML(enrichedAdvisorData);
+  return buildFollowUpAdvisorHTML(initialAdvisorData);
 }
 
 /**
@@ -1712,6 +1647,196 @@ function buildFollowUpAdvisorHTML(advisorData: AdvisorFollowUp): GeneratedBlock 
     `,
     sectionStyle: 'default',
   };
+}
+
+// ============================================
+// Background AI Enhancement for Deeper Suggestions
+// ============================================
+
+interface EnhancementContext {
+  query: string;
+  intent: IntentClassification;
+  journeyStage: JourneyStage;
+  sessionContext: SessionContext | null | undefined;
+  generatedBlockTypes: string[];
+  ragContext?: RAGContext;  // Full RAG context for content-aware suggestions
+}
+
+/**
+ * Generates enhanced suggestions via AI reasoning.
+ * This runs after all blocks are streamed and provides deeper insights.
+ * Returns suggestions with rich rationales and detected research gaps.
+ */
+async function generateEnhancedSuggestions(
+  ctx: EnhancementContext,
+  env: Env,
+  preset?: string
+): Promise<SuggestionEnhancementData> {
+  const modelFactory = createModelFactory(env, preset);
+
+  // Build context about what's been explored
+  const sessionQueries = ctx.sessionContext?.previousQueries || [];
+  const allBlockTypes = [
+    ...sessionQueries.flatMap(q => q.blockTypes || []),
+    ...ctx.generatedBlockTypes,
+  ];
+
+  // Detect what content types have been seen
+  const contentSeen = extractContentSeen(allBlockTypes);
+  const contentNotSeen = (['recipes', 'reviews', 'warranty', 'accessories', 'specs', 'comparisons'] as ContentType[])
+    .filter(t => !contentSeen.includes(t));
+
+  // Build session history summary
+  const sessionSummary = sessionQueries.length > 0
+    ? sessionQueries.map((q, i) => `${i + 1}. "${q.query}" → saw: ${(q.blockTypes || []).join(', ')}`).join('\n')
+    : 'This is their first query.';
+
+  // ============================================
+  // Build AVAILABLE CONTENT inventory from RAG context
+  // This grounds suggestions in actual content that exists
+  // ============================================
+  const rag = ctx.ragContext;
+
+  // Available products (with key details for comparison suggestions)
+  const availableProducts = rag?.relevantProducts?.slice(0, 8).map(p =>
+    `- ${p.name} ($${p.price || 'N/A'}) - ${p.series || 'Vitamix'} - Best for: ${p.bestFor?.slice(0, 3).join(', ') || 'general use'}`
+  ).join('\n') || 'No specific products matched';
+
+  // Available recipes (for recipe-based suggestions)
+  const availableRecipes = rag?.relevantRecipes?.slice(0, 6).map(r =>
+    `- "${r.name}" (${r.category || 'general'}) - ${r.time || r.prepTime || 'quick'}`
+  ).join('\n') || 'No specific recipes matched';
+
+  // Available use cases (for exploration suggestions)
+  const availableUseCases = rag?.relevantUseCases?.slice(0, 4).map(uc =>
+    `- ${uc.name}: ${uc.description?.slice(0, 60) || 'explore this use case'}...`
+  ).join('\n') || 'smoothies, soups, frozen desserts, nut butters';
+
+  // Content summary for awareness of what's possible
+  const contentInventory = rag?.contentSummary
+    ? `Products: ${rag.contentSummary.productCount}, Recipes: ${rag.contentSummary.recipeCount}, Use Cases: ${rag.contentSummary.useCaseCount}`
+    : 'Full Vitamix catalog available';
+
+  const prompt = `You are an expert shopping advisor for Vitamix blenders. Generate follow-up suggestions that are GROUNDED in actual available content.
+
+CRITICAL: Only suggest content that EXISTS. Use the AVAILABLE CONTENT section below to ensure your suggestions lead to real pages/content.
+
+CURRENT CONTEXT:
+- Query: "${ctx.query}"
+- Intent: ${ctx.intent.intentType} (${ctx.intent.entities.useCases?.join(', ') || 'general'})
+- Journey Stage: ${ctx.journeyStage}
+
+SESSION HISTORY:
+${sessionSummary}
+
+CONTENT THEY'VE SEEN: ${contentSeen.join(', ') || 'none yet'}
+CONTENT GAPS: ${contentNotSeen.join(', ') || 'all covered'}
+
+============================================
+AVAILABLE CONTENT (use ONLY these for suggestions)
+============================================
+
+PRODUCTS THAT MATCH THIS QUERY:
+${availableProducts}
+
+RECIPES THAT MATCH THIS QUERY:
+${availableRecipes}
+
+USE CASES WE CAN EXPLORE:
+${availableUseCases}
+
+CONTENT INVENTORY: ${contentInventory}
+
+============================================
+SUGGESTION GUIDELINES
+============================================
+
+Generate 4 suggestions using ONLY the available content above:
+
+1. **Product comparison** - Use actual product names from the list above (e.g., "Compare Ascent X5 vs X4")
+2. **Recipe exploration** - Reference actual recipe categories or names (e.g., "Try these green smoothie recipes")
+3. **Use case deep-dive** - Use actual use cases listed (e.g., "Explore soup-making capabilities")
+4. **General guidance** - Warranty, reviews, or specs are always available
+
+For each suggestion:
+- query: A search query using actual product/recipe names from above
+- headline: Conversational, like a helpful friend
+- rationale: 1-2 sentences explaining WHY this helps
+- whyBullets: 2-3 specific reasons based on their journey
+- category: go-deeper | explore-more | fill-gap
+- priority: 1 (primary), 2, 3, or 4
+- icon: compare | recipes | star | shield | gear | lightbulb | help | accessories
+
+Respond in JSON:
+{
+  "suggestions": [
+    {
+      "query": "search query using actual content names",
+      "headline": "conversational headline",
+      "rationale": "explanation grounded in their needs",
+      "category": "go-deeper|explore-more|fill-gap",
+      "priority": 1,
+      "confidence": 0.9,
+      "whyBullets": ["reason 1", "reason 2"],
+      "icon": "compare"
+    }
+  ],
+  "gaps": [
+    {
+      "type": "recipes|reviews|warranty|accessories|specs|comparisons",
+      "query": "query to fill gap",
+      "label": "short label",
+      "explanation": "why this matters"
+    }
+  ]
+}`;
+
+  try {
+    const messages: Message[] = [
+      { role: 'system', content: 'You are a helpful shopping advisor. Respond only with valid JSON.' },
+      { role: 'user', content: prompt },
+    ];
+
+    // Use the same model factory as the rest of the pipeline for consistent speed
+    const response = await modelFactory.call('reasoning', messages, env);
+    console.log('[Orchestrator] Enhanced suggestions generated in', response.duration, 'ms');
+
+    // Parse JSON from response
+    const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.warn('[Orchestrator] Failed to parse enhancement JSON');
+      return { suggestions: [], gaps: [] };
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    // Validate and clean the data - 4 suggestions with icons
+    const validIcons = ['compare', 'recipes', 'star', 'shield', 'gear', 'lightbulb', 'help', 'accessories'];
+    const suggestions: StructuredSuggestion[] = (parsed.suggestions || []).slice(0, 4).map((s: Record<string, unknown>) => ({
+      query: String(s.query || ''),
+      headline: String(s.headline || ''),
+      rationale: String(s.rationale || ''),
+      category: (['go-deeper', 'explore-more', 'fill-gap'].includes(s.category as string) ? s.category : 'explore-more') as 'go-deeper' | 'explore-more' | 'fill-gap',
+      priority: [1, 2, 3, 4].includes(s.priority as number) ? s.priority : 2,
+      confidence: typeof s.confidence === 'number' ? s.confidence : 0.8,
+      whyBullets: Array.isArray(s.whyBullets) ? s.whyBullets.map(String) : [],
+      icon: validIcons.includes(s.icon as string) ? s.icon as string : undefined,
+    })) as StructuredSuggestion[];
+
+    const gaps: ResearchGap[] = (parsed.gaps || []).slice(0, 2).map((g: Record<string, unknown>) => ({
+      type: (['recipes', 'reviews', 'warranty', 'accessories', 'specs', 'comparisons'].includes(g.type as string)
+        ? g.type
+        : 'specs') as ResearchGap['type'],
+      query: String(g.query || ''),
+      label: String(g.label || ''),
+      explanation: String(g.explanation || ''),
+    })) as ResearchGap[];
+
+    return { suggestions, gaps };
+  } catch (error) {
+    console.error('[Orchestrator] Enhancement generation failed:', error);
+    return { suggestions: [], gaps: [] };
+  }
 }
 
 // ============================================
@@ -1936,6 +2061,25 @@ export async function orchestrate(
       },
     });
 
+    // Start background enhancement in parallel with content generation
+    // This provides deeper, more insightful suggestions via AI reasoning
+    // Pass full RAG context so suggestions are grounded in actual available content
+    const enhancementPromise = generateEnhancedSuggestions(
+      {
+        query,
+        intent: ctx.intent!,
+        journeyStage: ctx.reasoningResult.userJourney.currentStage,
+        sessionContext,
+        generatedBlockTypes: [], // Will be populated after all blocks
+        ragContext: ctx.ragContext, // Full RAG context for content-aware suggestions
+      },
+      env,
+      preset
+    ).catch(err => {
+      console.error('[Orchestrator] Background enhancement failed:', err);
+      return { suggestions: [], gaps: [] } as SuggestionEnhancementData;
+    });
+
     // Stage 4: Resolve LLM-selected products
     // If the reasoning engine selected specific products, override RAG context
     // and attach match metadata (rationale, isPrimary) to each product
@@ -1983,13 +2127,9 @@ export async function orchestrate(
       if (blockSelection.type === 'reasoning-user') {
         block = generateReasoningUserBlock(ctx.reasoningResult);
       } else if (blockSelection.type === 'follow-up' || blockSelection.type === 'follow-up-advisor') {
-        // Generate follow-up-advisor block with instant question templates
-        const generatedBlockTypes = blocks.map(b => b.type);
+        // Generate follow-up-advisor block (shimmer initially, AI enhancement fills it)
         block = generateFollowUpAdvisorBlock({
           userJourney: ctx.reasoningResult.userJourney,
-          intent: ctx.intent!,
-          sessionContext,
-          generatedBlockTypes,
         });
       } else if (blockSelection.type === 'allergen-safety') {
         // SAFETY: Allergen-safety uses only vetted content, no LLM generation
@@ -2039,6 +2179,7 @@ export async function orchestrate(
     console.log('[Orchestrator] Block types:', blocks.map(b => b.type));
     console.log('[Orchestrator] Session context received:', sessionContext ? JSON.stringify(sessionContext).slice(0, 500) : 'none');
 
+    // Send generation-complete first so frontend knows content is ready
     onEvent({
       event: 'generation-complete',
       data: {
@@ -2058,6 +2199,24 @@ export async function orchestrate(
         },
       },
     });
+
+    // Wait for enhancement with a timeout (don't block forever)
+    // This allows the shimmer cards to be replaced with real suggestions
+    try {
+      const timeoutPromise = new Promise<SuggestionEnhancementData>((_, reject) =>
+        setTimeout(() => reject(new Error('Enhancement timeout')), 8000)
+      );
+      const enhancement = await Promise.race([enhancementPromise, timeoutPromise]);
+      if (enhancement.suggestions.length > 0 || enhancement.gaps.length > 0) {
+        console.log('[Orchestrator] Enhancement ready:', enhancement.suggestions.length, 'suggestions,', enhancement.gaps.length, 'gaps');
+        onEvent({
+          event: 'suggestion-enhancement',
+          data: enhancement,
+        });
+      }
+    } catch (enhancementError) {
+      console.log('[Orchestrator] Enhancement skipped (timeout or error):', enhancementError);
+    }
 
     return {
       blocks,
@@ -2456,13 +2615,9 @@ export async function orchestrateFromContext(
       if (blockSelection.type === 'reasoning-user') {
         block = generateReasoningUserBlock(ctx.reasoningResult);
       } else if (blockSelection.type === 'follow-up' || blockSelection.type === 'follow-up-advisor') {
-        // Generate follow-up-advisor block with instant question templates
-        const generatedBlockTypes = blocks.map(b => b.type);
+        // Generate follow-up-advisor block (shimmer initially, AI enhancement fills it)
         block = generateFollowUpAdvisorBlock({
           userJourney: ctx.reasoningResult.userJourney,
-          intent: ctx.intent!,
-          sessionContext,
-          generatedBlockTypes,
         });
       } else if (blockSelection.type === 'allergen-safety') {
         block = generateAllergenSafetyBlock();

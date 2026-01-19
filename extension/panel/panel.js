@@ -608,9 +608,6 @@ function renderGenerationReasoning() {
     return;
   }
 
-  // Auto-switch to generation view when data arrives
-  switchView('generation');
-
   const {
     query,
     reasoningSteps = [],

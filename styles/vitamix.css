@@ -170,8 +170,8 @@
 /* ===== SKELETON LOADING ===== */
 
 .skeleton-section {
-  padding: 24px;
-  margin: 20px 0;
+  padding: 0;
+  margin: 0;
 }
 
 .skeleton-section[data-block-type="reasoning"] {

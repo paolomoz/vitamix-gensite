@@ -334,6 +334,7 @@ export type BlockType =
   | 'testimonials'
   | 'faq'
   | 'follow-up'
+  | 'follow-up-advisor'   // Insightful follow-up with journey awareness
   | 'split-content'
   | 'columns'
   | 'text'
@@ -426,6 +427,8 @@ export interface UserJourneyPlan {
   currentStage: JourneyStage;
   nextBestAction: string;
   suggestedFollowUps: string[];
+  /** Structured advisor follow-up data (optional, generated separately) */
+  advisorFollowUp?: AdvisorFollowUp;
 }
 
 // ============================================
@@ -664,4 +667,181 @@ export interface SignalInterpretation {
     /** Specific content guidance based on their signals */
     specialGuidance: string;
   };
+}
+
+// ============================================
+// Follow-up Advisor Types (Insightful Suggestions)
+// ============================================
+
+/**
+ * A structured follow-up suggestion with context and rationale.
+ * Unlike simple text chips, these explain WHY a suggestion is relevant.
+ */
+export interface StructuredSuggestion {
+  /** The actual search query to execute */
+  query: string;
+  /** Display text (conversational headline) */
+  headline: string;
+  /** 1-2 sentence explanation of why this helps */
+  rationale: string;
+  /** Category for visual grouping */
+  category: 'go-deeper' | 'explore-more' | 'fill-gap';
+  /** Priority: 1 = primary (featured), 2-3 = secondary */
+  priority: 1 | 2 | 3;
+  /** Confidence score for this suggestion */
+  confidence: number;
+  /** Data points for "Why I suggest this" expandable section */
+  whyBullets: string[];
+}
+
+/**
+ * Research gap - something the user hasn't explored yet that would help.
+ */
+export interface ResearchGap {
+  /** Type of content gap */
+  type: 'recipes' | 'reviews' | 'warranty' | 'accessories' | 'specs' | 'comparisons';
+  /** Query to fill this gap */
+  query: string;
+  /** Display label (e.g., "Warranty Coverage") */
+  label: string;
+  /** Brief explanation of why this matters (e.g., "10-year warranty — worth knowing") */
+  explanation: string;
+}
+
+/**
+ * Complete advisor follow-up data with journey awareness and gap detection.
+ */
+export interface AdvisorFollowUp {
+  /** Current journey stage for progress indicator */
+  journeyStage: JourneyStage;
+  /** Structured suggestions (1 primary + 2 secondary max) */
+  suggestions: StructuredSuggestion[];
+  /** Detected research gaps based on session history */
+  gaps: ResearchGap[];
+  /** Question-based follow-up (instant, template-driven) */
+  question?: RenderedQuestion;
+}
+
+// ============================================
+// Question Template Types (Instant Follow-up)
+// ============================================
+
+/**
+ * A single clickable option within a question
+ */
+export interface QuestionOption {
+  /** Unique identifier for analytics */
+  id: string;
+  /** Template string for the label (supports ${products}, ${goal}, etc.) */
+  labelTemplate: string;
+  /** Fallback label when entities unavailable */
+  labelFallback: string;
+  /** Template string for the query to execute on click */
+  queryTemplate: string;
+  /** Fallback query when entities unavailable */
+  queryFallback: string;
+  /** Optional icon identifier */
+  icon?: QuestionIcon;
+  /** Condition for showing this option */
+  showWhen?: OptionCondition;
+}
+
+export type QuestionIcon = 'price' | 'recipe' | 'review' | 'compare' | 'specs' | 'warranty' | 'accessories' | 'help';
+
+/**
+ * Conditions for showing/hiding options
+ */
+export interface OptionCondition {
+  /** Show only if user has viewed multiple products */
+  hasMultipleProducts?: boolean;
+  /** Show only if user has expressed a goal */
+  hasGoal?: boolean;
+  /** Show only if specific content type NOT yet seen */
+  notYetSeen?: ContentType[];
+  /** Show only if specific content type already seen */
+  alreadySeen?: ContentType[];
+}
+
+export type ContentType = 'recipes' | 'reviews' | 'specs' | 'warranty' | 'comparison' | 'accessories';
+
+/**
+ * A complete question template
+ */
+export interface QuestionTemplate {
+  /** Unique identifier */
+  id: string;
+  /** Which intents this template applies to */
+  intents: QuestionIntentType[];
+  /** Which journey stages this template applies to */
+  stages: JourneyStage[];
+  /** The question text (can include interpolation) */
+  questionTemplate: string;
+  /** Fallback question when interpolation fails */
+  questionFallback: string;
+  /** Available options (3-4 typically) */
+  options: QuestionOption[];
+  /** Priority for selection when multiple templates match (higher = preferred) */
+  priority: number;
+  /** Additional conditions for this template */
+  conditions?: TemplateCondition;
+}
+
+/** Intent types for question template matching */
+export type QuestionIntentType = 'recipe' | 'product_info' | 'comparison' | 'support' | 'general';
+
+/**
+ * Conditions for selecting a template
+ */
+export interface TemplateCondition {
+  /** Minimum number of queries in session */
+  minQueries?: number;
+  /** Maximum number of queries in session */
+  maxQueries?: number;
+  /** Requires specific product mentions */
+  requiresProducts?: boolean;
+  /** Requires specific goal mentions */
+  requiresGoal?: boolean;
+}
+
+/**
+ * Entities extracted from session context for interpolation
+ */
+export interface InterpolationContext {
+  /** All products mentioned (e.g., ["A3500", "X5"]) */
+  products: string[];
+  /** First product */
+  product1?: string;
+  /** Second product */
+  product2?: string;
+  /** Formatted product comparison string (e.g., "A3500 vs X5") */
+  productsFormatted?: string;
+  /** User's stated goal (e.g., "soups", "smoothies", "baby food") */
+  goal?: string;
+  /** Mentioned ingredients */
+  ingredients: string[];
+  /** Content types already seen in session */
+  contentSeen: ContentType[];
+  /** Current journey stage */
+  journeyStage: JourneyStage;
+  /** Number of queries in session */
+  queryCount: number;
+}
+
+/**
+ * A rendered option ready for display
+ */
+export interface RenderedOption {
+  id: string;
+  label: string;
+  query: string;
+  icon?: QuestionIcon;
+}
+
+/**
+ * A fully rendered question ready for display
+ */
+export interface RenderedQuestion {
+  templateId: string;
+  question: string;
+  options: RenderedOption[];
 }

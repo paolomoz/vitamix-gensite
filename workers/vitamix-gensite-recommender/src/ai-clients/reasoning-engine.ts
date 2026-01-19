@@ -19,6 +19,9 @@ import type {
   UserJourneyPlan,
   SignalInterpretation,
   ProductSelection,
+  AdvisorFollowUp,
+  StructuredSuggestion,
+  ResearchGap,
 } from '../types';
 import type { RAGContext } from '../content/content-service';
 import { buildCompactProductCatalog } from '../content/content-service';
@@ -300,7 +303,38 @@ Respond with valid JSON only:
   "userJourney": {
     "currentStage": "exploring",
     "nextBestAction": "explore_use_cases",
-    "suggestedFollowUps": ["What can I make with a Vitamix?", "Compare top models"]
+    "suggestedFollowUps": ["What can I make with a Vitamix?", "Compare top models"],
+    "advisorFollowUp": {
+      "journeyStage": "exploring",
+      "suggestions": [
+        {
+          "query": "Compare A3500 vs X5 for soups",
+          "headline": "Let me help you narrow it down",
+          "rationale": "You've been comparing the A3500 and X5. Based on your soup focus, let me show you the $200 price difference and what you get.",
+          "category": "go-deeper",
+          "priority": 1,
+          "confidence": 0.85,
+          "whyBullets": ["You've viewed both models", "Both match your soup use-case", "Price comparison not yet shown"]
+        },
+        {
+          "query": "Vitamix soup recipes for beginners",
+          "headline": "See soup recipes",
+          "rationale": "Know what you'll actually make with it.",
+          "category": "explore-more",
+          "priority": 2,
+          "confidence": 0.75,
+          "whyBullets": ["Recipes help visualize ownership"]
+        }
+      ],
+      "gaps": [
+        {
+          "type": "warranty",
+          "query": "Vitamix warranty coverage details",
+          "label": "Warranty Coverage",
+          "explanation": "Vitamix has industry-leading 10-year warranty — worth knowing."
+        }
+      ]
+    }
   },
   "confidence": {
     "intent": 0.92,
@@ -343,6 +377,53 @@ suggestedFollowUps MUST:
 4. NEVER include purchase-intent language:
    - NO: "Buy now", "Add to cart", "Shop now", "Purchase", "Checkout"
    - YES: "View details", "Learn more", "Explore options", "See full specs"
+
+## CRITICAL: Advisor Follow-Up Structure (advisorFollowUp)
+
+The advisorFollowUp provides rich, contextual suggestions that explain WHY they're relevant.
+ALWAYS generate this structure with meaningful, personalized content.
+
+### Suggestions Array (1 primary + up to 2 secondary)
+
+**CRITICAL: The "query" field must be a NATURAL SEARCH QUERY** - something a user would actually type:
+- GOOD queries: "Compare Vitamix X5 vs X4", "Vitamix X5 soup recipes", "quietest Vitamix blender"
+- BAD queries: "View details for X5", "Learn more about X5", "See the comparison"
+The query is sent to the search system, so it must be searchable text, NOT action descriptions.
+
+**Primary suggestion (priority: 1)** - The MOST helpful next step:
+- query: A natural search query the user would type (e.g., "Compare X5 vs X4 for soups")
+- headline: Conversational, like advice from a friend ("Let me help you narrow it down")
+- rationale: 2-3 sentences explaining WHY this helps based on their specific situation
+- whyBullets: 2-4 data points that justify this suggestion (what they've seen, gaps, patterns)
+- category: "go-deeper" (drill down), "explore-more" (broaden), or "fill-gap" (missing info)
+
+**Secondary suggestions (priority: 2-3)** - Alternative paths:
+- query: Natural search query (NOT action text like "View" or "See")
+- Shorter rationale (1 sentence)
+- 1-2 whyBullets
+- Offer different directions than the primary
+
+### Gaps Array - Research gaps based on session history
+
+Analyze the blockTypes from previousQueries to detect what's missing:
+- "recipes" gap: No recipe-cards shown yet → "What can I make with a Vitamix?"
+- "reviews" gap: No testimonials shown yet → "What do real owners say?"
+- "warranty" gap: Not discussed yet → "What's the warranty coverage?"
+- "accessories" gap: No accessory info → "What accessories expand capabilities?"
+- "specs" gap: No specs-table shown → "See detailed specifications"
+- "comparisons" gap: No comparison-table yet → "Compare models side by side"
+
+Only include gaps that are RELEVANT to their journey stage:
+- exploring: All gaps valid
+- comparing: Focus on specs, reviews, comparisons
+- deciding: Focus on warranty, accessories, reviews
+
+### Journey Stage Logic
+
+Set journeyStage based on:
+- "exploring": First 1-2 queries, broad questions, no specific products
+- "comparing": User has seen 2+ products, asking "vs" or "which", comparing features
+- "deciding": User focused on 1 product, asking about warranty, price, reviews
 
 ## CRITICAL: "Back to..." Session Reference Rules
 
@@ -745,10 +826,43 @@ function parseReasoningResponse(content: string): ReasoningResult {
       console.log('[ReasoningEngine] Product selection rationale:', productSelectionRationale);
     }
 
+    // Parse advisor follow-up data if present
+    let userJourney: UserJourneyPlan = parsed.userJourney;
+    if (parsed.userJourney?.advisorFollowUp) {
+      const advisorData = parsed.userJourney.advisorFollowUp;
+      const advisorFollowUp: AdvisorFollowUp = {
+        journeyStage: advisorData.journeyStage || parsed.userJourney.currentStage || 'exploring',
+        suggestions: (advisorData.suggestions || []).map((s: Record<string, unknown>): StructuredSuggestion => ({
+          query: String(s.query || ''),
+          headline: String(s.headline || ''),
+          rationale: String(s.rationale || ''),
+          category: (s.category as 'go-deeper' | 'explore-more' | 'fill-gap') || 'go-deeper',
+          priority: (s.priority as 1 | 2 | 3) || 2,
+          confidence: Number(s.confidence) || 0.7,
+          whyBullets: Array.isArray(s.whyBullets) ? s.whyBullets.map(String) : [],
+        })).filter((s: StructuredSuggestion) => s.query && s.headline),
+        gaps: (advisorData.gaps || []).map((g: Record<string, unknown>): ResearchGap => ({
+          type: (g.type as ResearchGap['type']) || 'specs',
+          query: String(g.query || ''),
+          label: String(g.label || ''),
+          explanation: String(g.explanation || ''),
+        })).filter((g: ResearchGap) => g.query && g.label),
+      };
+      userJourney = {
+        ...parsed.userJourney,
+        advisorFollowUp,
+      };
+      console.log('[ReasoningEngine] Parsed advisor follow-up:', {
+        journeyStage: advisorFollowUp.journeyStage,
+        suggestionsCount: advisorFollowUp.suggestions.length,
+        gapsCount: advisorFollowUp.gaps.length,
+      });
+    }
+
     return {
       selectedBlocks: parsed.selectedBlocks,
       reasoning: parsed.reasoning,
-      userJourney: parsed.userJourney,
+      userJourney,
       confidence,
       confidenceLegacy: typeof parsed.confidence === 'number' ? parsed.confidence : confidence.intent,
       selectedProducts,
@@ -1275,6 +1389,43 @@ function getFallbackReasoningResult(
         'What can I make?',
         'Compare models',
       ],
+      advisorFollowUp: {
+        journeyStage: intent.journeyStage,
+        suggestions: [
+          {
+            query: 'What can I make with a Vitamix?',
+            headline: 'Discover what you can create',
+            rationale: 'See the full range of recipes and possibilities with a Vitamix blender.',
+            category: 'explore-more',
+            priority: 1,
+            confidence: 0.7,
+            whyBullets: ['Great starting point for exploring', 'Helps visualize daily use'],
+          },
+          {
+            query: 'Compare Vitamix models',
+            headline: 'Compare your options',
+            rationale: 'See how different models stack up side by side.',
+            category: 'go-deeper',
+            priority: 2,
+            confidence: 0.7,
+            whyBullets: ['Multiple models to consider'],
+          },
+        ],
+        gaps: [
+          {
+            type: 'recipes',
+            query: 'vitamix recipes',
+            label: 'Recipes',
+            explanation: 'See what you can make with a Vitamix.',
+          },
+          {
+            type: 'reviews',
+            query: 'vitamix reviews',
+            label: 'Customer Reviews',
+            explanation: 'Hear from real Vitamix owners.',
+          },
+        ],
+      },
     },
     confidence: {
       intent: 0.6,

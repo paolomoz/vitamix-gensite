@@ -76,8 +76,73 @@ function parseAdvisorData(block) {
 }
 
 // ============================================
+// Icon Mapping
+// ============================================
+
+const QUESTION_ICONS = {
+  price: '💰',
+  recipe: '🍳',
+  review: '⭐',
+  compare: '⚖️',
+  specs: '📋',
+  warranty: '🛡️',
+  accessories: '🔧',
+  help: '❓',
+};
+
+// ============================================
 // Component Creation Functions
 // ============================================
+
+/**
+ * Create the question section with clickable options
+ * @param {Object} question - { templateId, question, options }
+ * @returns {HTMLElement}
+ */
+function createQuestionSection(question) {
+  const section = document.createElement('div');
+  section.className = 'advisor-question-section';
+
+  // Question text
+  const questionText = document.createElement('div');
+  questionText.className = 'advisor-question-text';
+  questionText.textContent = question.question;
+  section.appendChild(questionText);
+
+  // Options container
+  const optionsContainer = document.createElement('div');
+  optionsContainer.className = 'advisor-question-options';
+
+  question.options.forEach((option) => {
+    const optionEl = document.createElement('button');
+    optionEl.className = 'advisor-question-option';
+    optionEl.type = 'button';
+
+    // Icon
+    if (option.icon && QUESTION_ICONS[option.icon]) {
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'option-icon';
+      iconSpan.textContent = QUESTION_ICONS[option.icon];
+      optionEl.appendChild(iconSpan);
+    }
+
+    // Label
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'option-label';
+    labelSpan.textContent = option.label;
+    optionEl.appendChild(labelSpan);
+
+    optionEl.addEventListener('click', () => {
+      navigateToQuery(option.query);
+    });
+
+    optionsContainer.appendChild(optionEl);
+  });
+
+  section.appendChild(optionsContainer);
+
+  return section;
+}
 
 /**
  * Create a primary advisor card with clickable headline
@@ -179,6 +244,12 @@ export default function decorate(block) {
   headerSection.appendChild(title);
 
   block.appendChild(headerSection);
+
+  // Render question section if available (instant template-based question)
+  if (advisorData.question && advisorData.question.options?.length >= 2) {
+    const questionSection = createQuestionSection(advisorData.question);
+    block.appendChild(questionSection);
+  }
 
   // Sort suggestions by priority
   const suggestions = (advisorData.suggestions || []).sort((a, b) => a.priority - b.priority);

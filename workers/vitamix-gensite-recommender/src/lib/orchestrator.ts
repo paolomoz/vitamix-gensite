@@ -23,6 +23,7 @@ import type {
   ExtensionContext,
   ExtensionSignal,
   QueryHistoryItem,
+  AdvisorFollowUp,
 } from '../types';
 import { createModelFactory, type Message } from '../ai-clients/model-factory';
 import { analyzeAndSelectBlocks, formatReasoningForDisplay } from '../ai-clients/reasoning-engine';
@@ -45,6 +46,7 @@ import {
   type SafetyGuidelines,
 } from '../content/content-service';
 import { selectHeroImageWithMetadata, selectHeroImageSemantic, type HeroImageSelection } from './hero-images';
+import { buildQuestion, buildInterpolationContext, type QuestionIntentType } from './question-templates';
 
 // ============================================
 // Types
@@ -1566,6 +1568,153 @@ function generateFollowUpBlock(userJourney: ReasoningResult['userJourney']): Gen
 }
 
 // ============================================
+// Follow-up Advisor Block Generation
+// ============================================
+
+/**
+ * Map intent classification to question intent type
+ */
+function mapToQuestionIntent(intent: IntentClassification): QuestionIntentType {
+  const intentMap: Record<string, QuestionIntentType> = {
+    recipe: 'recipe',
+    product_info: 'product_info',
+    comparison: 'comparison',
+    support: 'support',
+    troubleshooting: 'support',
+    general: 'general',
+    greetings: 'general',
+    discovery: 'general',
+  };
+  return intentMap[intent.intentType] || 'general';
+}
+
+/**
+ * Extract content types from block types
+ */
+function extractContentSeen(blockTypes: string[]): Array<'recipes' | 'reviews' | 'specs' | 'warranty' | 'comparison' | 'accessories'> {
+  const contentTypes: Array<'recipes' | 'reviews' | 'specs' | 'warranty' | 'comparison' | 'accessories'> = [];
+
+  if (blockTypes.some(b => ['recipe-cards', 'recipe-hero', 'recipe-steps'].includes(b))) {
+    contentTypes.push('recipes');
+  }
+  if (blockTypes.some(b => ['testimonials', 'reviews'].includes(b))) {
+    contentTypes.push('reviews');
+  }
+  if (blockTypes.some(b => ['specs-table', 'engineering-specs'].includes(b))) {
+    contentTypes.push('specs');
+  }
+  if (blockTypes.some(b => ['comparison-table', 'product-compare'].includes(b))) {
+    contentTypes.push('comparison');
+  }
+  if (blockTypes.some(b => ['accessories', 'accessory-cards'].includes(b))) {
+    contentTypes.push('accessories');
+  }
+
+  return contentTypes;
+}
+
+interface FollowUpAdvisorContext {
+  userJourney: ReasoningResult['userJourney'];
+  intent: IntentClassification;
+  sessionContext: SessionContext | null | undefined;
+  generatedBlockTypes: string[];
+}
+
+/**
+ * Generates follow-up-advisor block HTML with rich advisor data.
+ * This block provides insightful, contextual suggestions with journey awareness.
+ * Now also generates instant question templates from pre-computed data.
+ */
+function generateFollowUpAdvisorBlock(ctx: FollowUpAdvisorContext): GeneratedBlock {
+  const { userJourney, intent, sessionContext, generatedBlockTypes } = ctx;
+  const advisorData = userJourney.advisorFollowUp;
+
+  // Build the instant question from templates
+  const questionIntent = mapToQuestionIntent(intent);
+
+  // Extract entities from current intent
+  // Note: IntentClassification uses useCases, which we map to goals for the question templates
+  const currentEntities = {
+    products: intent.entities?.products || [],
+    ingredients: intent.entities?.ingredients || [],
+    goals: intent.entities?.useCases || [],
+  };
+
+  // Gather content seen from session history + current generation
+  const sessionBlockTypes = sessionContext?.previousQueries?.flatMap(q => q.blockTypes || []) || [];
+  const allBlockTypes = [...sessionBlockTypes, ...generatedBlockTypes];
+  const contentSeen = extractContentSeen(allBlockTypes);
+
+  // Build interpolation context
+  const interpolationCtx = buildInterpolationContext(
+    sessionContext,
+    intent.intentType,
+    currentEntities,
+    contentSeen,
+    userJourney.currentStage
+  );
+
+  // Build the question
+  const question = buildQuestion(questionIntent, interpolationCtx);
+
+  console.log('[Orchestrator] Built question template:', question?.templateId || 'none', 'with', question?.options.length || 0, 'options');
+
+  // If no advisor data, fall back to a minimal version using suggestedFollowUps
+  if (!advisorData) {
+    console.log('[Orchestrator] No advisor follow-up data, generating from suggestedFollowUps');
+    const fallbackAdvisor: AdvisorFollowUp = {
+      journeyStage: userJourney.currentStage,
+      suggestions: userJourney.suggestedFollowUps.slice(0, 3).map((followUp, idx) => ({
+        query: followUp,
+        headline: followUp,
+        rationale: '',
+        category: idx === 0 ? 'go-deeper' : 'explore-more' as const,
+        priority: (idx + 1) as 1 | 2 | 3,
+        confidence: 0.7,
+        whyBullets: [],
+      })),
+      gaps: [],
+      question: question || undefined,
+    };
+    return buildFollowUpAdvisorHTML(fallbackAdvisor);
+  }
+
+  // Add question to existing advisor data
+  const enrichedAdvisorData: AdvisorFollowUp = {
+    ...advisorData,
+    question: question || undefined,
+  };
+
+  return buildFollowUpAdvisorHTML(enrichedAdvisorData);
+}
+
+/**
+ * Builds the HTML for the follow-up-advisor block.
+ * The data is passed as a JSON attribute that the client-side JS will parse.
+ */
+function buildFollowUpAdvisorHTML(advisorData: AdvisorFollowUp): GeneratedBlock {
+  // Escape JSON for safe embedding in HTML attribute
+  const escapedJson = JSON.stringify(advisorData)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Also generate a DA table row with the JSON for persistence
+  const jsonRow = `<div><div>${JSON.stringify(advisorData)}</div></div>`;
+
+  return {
+    type: 'follow-up-advisor',
+    html: `
+      <div class="follow-up-advisor" data-advisor-follow-up="${escapedJson}">
+        ${jsonRow}
+      </div>
+    `,
+    sectionStyle: 'default',
+  };
+}
+
+// ============================================
 // Allergen Safety Block Generation (NO LLM - vetted content only)
 // ============================================
 
@@ -1833,8 +1982,15 @@ export async function orchestrate(
       // Special handling for blocks that bypass LLM generation
       if (blockSelection.type === 'reasoning-user') {
         block = generateReasoningUserBlock(ctx.reasoningResult);
-      } else if (blockSelection.type === 'follow-up') {
-        block = generateFollowUpBlock(ctx.reasoningResult.userJourney);
+      } else if (blockSelection.type === 'follow-up' || blockSelection.type === 'follow-up-advisor') {
+        // Generate follow-up-advisor block with instant question templates
+        const generatedBlockTypes = blocks.map(b => b.type);
+        block = generateFollowUpAdvisorBlock({
+          userJourney: ctx.reasoningResult.userJourney,
+          intent: ctx.intent!,
+          sessionContext,
+          generatedBlockTypes,
+        });
       } else if (blockSelection.type === 'allergen-safety') {
         // SAFETY: Allergen-safety uses only vetted content, no LLM generation
         block = generateAllergenSafetyBlock();
@@ -2299,8 +2455,15 @@ export async function orchestrateFromContext(
 
       if (blockSelection.type === 'reasoning-user') {
         block = generateReasoningUserBlock(ctx.reasoningResult);
-      } else if (blockSelection.type === 'follow-up') {
-        block = generateFollowUpBlock(ctx.reasoningResult.userJourney);
+      } else if (blockSelection.type === 'follow-up' || blockSelection.type === 'follow-up-advisor') {
+        // Generate follow-up-advisor block with instant question templates
+        const generatedBlockTypes = blocks.map(b => b.type);
+        block = generateFollowUpAdvisorBlock({
+          userJourney: ctx.reasoningResult.userJourney,
+          intent: ctx.intent!,
+          sessionContext,
+          generatedBlockTypes,
+        });
       } else if (blockSelection.type === 'allergen-safety') {
         block = generateAllergenSafetyBlock();
       } else {

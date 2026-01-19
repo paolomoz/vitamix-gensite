@@ -55,9 +55,18 @@
 
 /* ===== Advisor Card (shared styles) ===== */
 .advisor-card {
+  display: block;
   background: var(--color-white);
   border-radius: var(--rounding-m);
   padding: var(--spacing-300);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.advisor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .advisor-card .advisor-badge {
@@ -73,29 +82,12 @@
 }
 
 .advisor-card .advisor-headline {
-  display: block;
   font-family: var(--heading-font-family);
   font-size: var(--heading-size-s);
   font-weight: var(--weight-light);
   line-height: var(--line-height-s);
   color: var(--color-charcoal);
-  text-decoration: none;
   margin: 0 0 var(--spacing-100) 0;
-  transition: color 0.15s ease;
-}
-
-.advisor-card .advisor-headline:hover {
-  color: var(--color-red);
-}
-
-.advisor-card .advisor-headline::after {
-  content: " →";
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.advisor-card .advisor-headline:hover::after {
-  opacity: 1;
 }
 
 .advisor-card .advisor-rationale {

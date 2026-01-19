@@ -85,8 +85,13 @@ function parseAdvisorData(block) {
  * @returns {HTMLElement}
  */
 function createPrimaryCard(suggestion) {
-  const card = document.createElement('div');
+  const card = document.createElement('a');
   card.className = 'advisor-card advisor-card-primary';
+  card.href = '#';
+  card.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateToQuery(suggestion.query);
+  });
 
   // Badge
   const badge = document.createElement('div');
@@ -94,15 +99,10 @@ function createPrimaryCard(suggestion) {
   badge.innerHTML = '<span class="badge-icon">★</span> Recommended';
   card.appendChild(badge);
 
-  // Clickable Headline
-  const headline = document.createElement('a');
+  // Headline
+  const headline = document.createElement('h4');
   headline.className = 'advisor-headline';
   headline.textContent = suggestion.headline;
-  headline.href = '#';
-  headline.addEventListener('click', (e) => {
-    e.preventDefault();
-    navigateToQuery(suggestion.query);
-  });
   card.appendChild(headline);
 
   // Rationale
@@ -115,13 +115,18 @@ function createPrimaryCard(suggestion) {
 }
 
 /**
- * Create a secondary advisor card with clickable headline
+ * Create a secondary advisor card
  * @param {Object} suggestion
  * @returns {HTMLElement}
  */
 function createSecondaryCard(suggestion) {
-  const card = document.createElement('div');
+  const card = document.createElement('a');
   card.className = 'advisor-card advisor-card-secondary';
+  card.href = '#';
+  card.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateToQuery(suggestion.query);
+  });
 
   // Badge
   const badge = document.createElement('div');
@@ -129,15 +134,10 @@ function createSecondaryCard(suggestion) {
   badge.textContent = 'Also consider';
   card.appendChild(badge);
 
-  // Clickable Headline
-  const headline = document.createElement('a');
+  // Headline
+  const headline = document.createElement('h4');
   headline.className = 'advisor-headline';
   headline.textContent = suggestion.headline;
-  headline.href = '#';
-  headline.addEventListener('click', (e) => {
-    e.preventDefault();
-    navigateToQuery(suggestion.query);
-  });
   card.appendChild(headline);
 
   // Short rationale

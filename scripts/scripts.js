@@ -398,8 +398,6 @@ async function renderGenerativePage() {
   });
 
   eventSource.addEventListener('generation-complete', (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Standard] DEBUG-HANDLER-400: generation-complete handler started');
     eventSource.close();
 
     // Update document title
@@ -1035,8 +1033,6 @@ async function renderVitamixRecommenderPage() {
   });
 
   eventSource.addEventListener('generation-complete', (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] DEBUG-HANDLER-1035: generation-complete handler started');
     eventSource.close();
     const data = JSON.parse(e.data);
     const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -1095,15 +1091,8 @@ async function renderVitamixRecommenderPage() {
       products: data.recommendations?.products,
     });
 
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] DEBUG-MARKER-A: About to enter try block for generation data');
-
-    // Expose generation data for extension panel BEFORE persist (Generation Reasoning feature)
+    // Expose generation data for extension panel (Generation Reasoning feature)
     try {
-      // eslint-disable-next-line no-console
-      console.log('[Recommender] DEBUG-MARKER-B: Inside try block');
-      // eslint-disable-next-line no-console
-      console.log('[Recommender] Setting generation data for extension panel');
       // eslint-disable-next-line no-underscore-dangle
       window.__vitamixGenerationData = {
         query: effectiveQuery,
@@ -1122,11 +1111,10 @@ async function renderVitamixRecommenderPage() {
         // eslint-disable-next-line no-underscore-dangle
         data: window.__vitamixGenerationData,
       }, '*');
-      // eslint-disable-next-line no-console
-      console.log('[Recommender] Generation data posted to extension');
     } catch (err) {
+      // Silent failure - extension panel feature is optional
       // eslint-disable-next-line no-console
-      console.error('[Recommender] Error setting generation data:', err);
+      console.warn('[Recommender] Extension data setup failed:', err.message);
     }
 
     // Auto-persist to DA

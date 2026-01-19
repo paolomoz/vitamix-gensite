@@ -79,6 +79,41 @@ interface GeneratedBlock {
 type SSECallback = (event: SSEEvent) => void;
 
 // ============================================
+// Text Similarity Utilities
+// ============================================
+
+/**
+ * Calculate Jaccard similarity between two strings based on word sets.
+ * Returns a value between 0 (no overlap) and 1 (identical).
+ */
+function calculateJaccardSimilarity(str1: string, str2: string): number {
+  const normalize = (s: string) =>
+    s.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
+
+  const set1 = new Set(normalize(str1));
+  const set2 = new Set(normalize(str2));
+
+  if (set1.size === 0 || set2.size === 0) return 0;
+
+  const intersection = new Set([...set1].filter((x) => set2.has(x)));
+  const union = new Set([...set1, ...set2]);
+
+  return intersection.size / union.size;
+}
+
+/**
+ * Check if a suggestion is too similar to the original query.
+ * Uses Jaccard similarity with 0.8 threshold (80% word overlap = reject).
+ */
+function isTooSimilarToQuery(suggestionQuery: string, originalQuery: string): boolean {
+  const similarity = calculateJaccardSimilarity(suggestionQuery, originalQuery);
+  return similarity > 0.8;
+}
+
+// ============================================
 // Intent Classification
 // ============================================
 
@@ -1144,8 +1179,22 @@ async function generateBlockContent(
     if (relevantFAQs.length > 0) {
       dataContext = `\n\n## Real FAQs (USE THESE EXACT Q&A PAIRS - do not invent):\n${buildFAQContext(relevantFAQs.slice(0, 6))}`;
     } else {
-      // Fallback if no FAQs match - provide product context for general questions
-      dataContext = `\n\n## Context:\n- User's question: ${block.contentGuidance}\n- Related products: ${ragContext.relevantProducts.slice(0, 2).map(p => p.name).join(', ')}\n\nGenerate FAQs about Vitamix blender warranty, cleaning, and usage.`;
+      // Fallback if no FAQs match - provide rich product/use-case context for specific FAQs
+      const products = ragContext.relevantProducts.slice(0, 3);
+      const productDetails = products.map(p =>
+        `- ${p.name} (${p.series || 'Vitamix'}): ${p.features?.slice(0, 3).join(', ') || 'high performance blending'}, warranty: ${p.warranty || '10-year'}`
+      ).join('\n');
+      const useCases = ragContext.relevantUseCases?.slice(0, 3).map(uc => uc.name).join(', ') || 'general blending';
+
+      dataContext = `\n\n## PRODUCT-SPECIFIC CONTEXT (generate FAQs about THESE products):
+- User's question: ${block.contentGuidance || query}
+- Primary product(s): ${products.map(p => p.name).join(', ') || 'Vitamix blenders'}
+
+${productDetails ? `## Product Details:\n${productDetails}` : ''}
+
+- Relevant use cases: ${useCases}
+
+CRITICAL: Generate FAQs that are SPECIFIC to the products above. Each FAQ must mention at least one product name or specific feature. Generic FAQs about "Vitamix blenders" are NOT acceptable.`;
     }
   } else if (['recipe-cards'].includes(block.type)) {
     // Filter recipes based on contentGuidance to ensure relevance
@@ -1721,6 +1770,13 @@ async function generateEnhancedSuggestions(
 
 CRITICAL: Only suggest content that EXISTS. Use the AVAILABLE CONTENT section below to ensure your suggestions lead to real pages/content.
 
+============================================
+QUERIES TO AVOID (do NOT suggest these or similar)
+============================================
+- Current query: "${ctx.query}"
+- Any suggestion that is essentially the same as the current query
+- Rephrased versions of the current query with the same meaning
+
 CURRENT CONTEXT:
 - Query: "${ctx.query}"
 - Intent: ${ctx.intent.intentType} (${ctx.intent.entities.useCases?.join(', ') || 'general'})
@@ -1812,7 +1868,7 @@ Respond in JSON:
 
     // Validate and clean the data - 4 suggestions with icons
     const validIcons = ['compare', 'recipes', 'star', 'shield', 'gear', 'lightbulb', 'help', 'accessories'];
-    const suggestions: StructuredSuggestion[] = (parsed.suggestions || []).slice(0, 4).map((s: Record<string, unknown>) => ({
+    const rawSuggestions: StructuredSuggestion[] = (parsed.suggestions || []).slice(0, 6).map((s: Record<string, unknown>) => ({
       query: String(s.query || ''),
       headline: String(s.headline || ''),
       rationale: String(s.rationale || ''),
@@ -1822,6 +1878,17 @@ Respond in JSON:
       whyBullets: Array.isArray(s.whyBullets) ? s.whyBullets.map(String) : [],
       icon: validIcons.includes(s.icon as string) ? s.icon as string : undefined,
     })) as StructuredSuggestion[];
+
+    // Post-process: Filter out suggestions that are too similar to the original query
+    const suggestions = rawSuggestions
+      .filter((s) => {
+        const tooSimilar = isTooSimilarToQuery(s.query, ctx.query);
+        if (tooSimilar) {
+          console.log(`[Orchestrator] Filtered circular suggestion: "${s.query}" (too similar to "${ctx.query}")`);
+        }
+        return !tooSimilar;
+      })
+      .slice(0, 4);
 
     const gaps: ResearchGap[] = (parsed.gaps || []).slice(0, 2).map((g: Record<string, unknown>) => ({
       type: (['recipes', 'reviews', 'warranty', 'accessories', 'specs', 'comparisons'].includes(g.type as string)

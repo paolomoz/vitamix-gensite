@@ -134,11 +134,14 @@ export function generateSemanticSlug(
   query: string,
   intent: IntentClassification,
 ): string {
-  // Try to build slug from entities first
+  // Try to build slug from entities first (with null coalescing for safety)
+  const products = intent.entities?.products || [];
+  const useCases = intent.entities?.useCases || [];
+  const features = intent.entities?.features || [];
   const concepts = [
-    ...intent.entities.products.slice(0, 2),
-    ...intent.entities.useCases.slice(0, 1),
-    ...intent.entities.features.slice(0, 1),
+    ...products.slice(0, 2),
+    ...useCases.slice(0, 1),
+    ...features.slice(0, 1),
   ].filter(Boolean);
 
   let baseSlug: string;

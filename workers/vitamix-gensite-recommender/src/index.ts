@@ -514,12 +514,16 @@ async function handlePersist(request: Request, env: Env): Promise<Response> {
       );
     }
 
-    // Create a default intent if not provided
-    const effectiveIntent: IntentClassification = intent || {
-      intentType: 'discovery',
-      confidence: 0.5,
-      entities: { products: [], useCases: [], features: [] },
-      journeyStage: 'exploring',
+    // Create a default intent if not provided, normalizing entities to ensure arrays exist
+    const effectiveIntent: IntentClassification = {
+      intentType: intent?.intentType || 'discovery',
+      confidence: intent?.confidence || 0.5,
+      entities: {
+        products: intent?.entities?.products || [],
+        useCases: intent?.entities?.useCases || [],
+        features: intent?.entities?.features || [],
+      },
+      journeyStage: intent?.journeyStage || 'exploring',
     };
 
     // Classify category and generate slug

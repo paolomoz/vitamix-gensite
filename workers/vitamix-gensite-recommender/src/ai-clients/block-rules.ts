@@ -54,6 +54,8 @@ export interface TriggerCondition {
   entityType?: 'products' | 'useCases' | 'features' | 'ingredients';
   /** Minimum count for entity triggers */
   minCount?: number;
+  /** Patterns that prevent this trigger from firing (for disambiguation) */
+  negativePatterns?: string[];
 }
 
 export interface SequenceHint {
@@ -121,7 +123,21 @@ export const BLOCK_RULES: BlockRule[] = [
       { type: 'keyword', value: '\\bproblem\\b' },
       { type: 'keyword', value: '\\bbroken\\b' },
       { type: 'keyword', value: '\\bfrustrated\\b' },
-      { type: 'keyword', value: '\\bwarranty\\b' },
+      {
+        type: 'keyword',
+        value: '\\bwarranty\\b',
+        // Don't trigger support flow for research queries about warranty as a feature
+        negativePatterns: [
+          '\\bspecs\\b',
+          '\\bspecifications\\b',
+          '\\bfeatures\\b',
+          '\\bwhat (does|is).*warranty.*cover',
+          '\\bhow long.*warranty',
+          '\\bwarranty (length|period|coverage|duration)',
+          '\\byear.*warranty',
+          '\\bwarranty.*year',
+        ],
+      },
       { type: 'keyword', value: '\\breturn\\b' },
       { type: 'keyword', value: '\\bissue\\b' },
       { type: 'keyword', value: '\\bnot working\\b' },
@@ -390,8 +406,8 @@ export const BLOCK_RULES: BlockRule[] = [
       { type: 'intent', intentType: 'specs' },
     ],
     requires: ['engineering-specs'],
-    excludes: [],
-    enhances: ['comparison-table', 'specs-table'],
+    excludes: ['specs-table'], // Prevent redundant spec blocks
+    enhances: ['comparison-table'],
     sequenceHints: [
       { block: 'engineering-specs', position: 'middle' },
     ],
@@ -414,7 +430,7 @@ export const BLOCK_RULES: BlockRule[] = [
       { type: 'keyword', value: '\\bjuice bar\\b' },
     ],
     requires: ['specs-table'],
-    excludes: [],
+    excludes: ['engineering-specs'], // Prevent redundant spec blocks
     enhances: ['comparison-table'],
     sequenceHints: [
       { block: 'specs-table', position: 'middle' },
@@ -495,6 +511,16 @@ function evaluateTrigger(
   intent?: { intentType?: string; entities?: { products?: string[]; useCases?: string[]; features?: string[]; ingredients?: string[] } }
 ): boolean {
   const lowerQuery = query.toLowerCase();
+
+  // Check negative patterns first - if any match, this trigger doesn't fire
+  if (trigger.negativePatterns && trigger.negativePatterns.length > 0) {
+    for (const negPattern of trigger.negativePatterns) {
+      const negRegex = new RegExp(negPattern, 'i');
+      if (negRegex.test(lowerQuery)) {
+        return false;
+      }
+    }
+  }
 
   switch (trigger.type) {
     case 'keyword': {

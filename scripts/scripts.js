@@ -1091,34 +1091,39 @@ async function renderVitamixRecommenderPage() {
       products: data.recommendations?.products,
     });
 
+    // Expose generation data for extension panel BEFORE persist (Generation Reasoning feature)
+    try {
+      // eslint-disable-next-line no-console
+      console.log('[Recommender] Setting generation data for extension panel');
+      // eslint-disable-next-line no-underscore-dangle
+      window.__vitamixGenerationData = {
+        query: effectiveQuery,
+        reasoningSteps,
+        reasoningComplete: reasoningCompleteData,
+        blockRationales,
+        intent: data.intent,
+        reasoning: data.reasoning,
+        recommendations: data.recommendations,
+        duration: Date.now() - startTime,
+        timestamp: Date.now(),
+      };
+      // Use postMessage to communicate with content script (isolated world)
+      window.postMessage({
+        type: 'VITAMIX_GENERATION_COMPLETE',
+        // eslint-disable-next-line no-underscore-dangle
+        data: window.__vitamixGenerationData,
+      }, '*');
+      // eslint-disable-next-line no-console
+      console.log('[Recommender] Generation data posted to extension');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Recommender] Error setting generation data:', err);
+    }
+
     // Auto-persist to DA
     if (generatedBlocks.length > 0) {
       persistToDA(effectiveQuery, generatedBlocks, data.intent);
     }
-
-    // Expose generation data for extension panel (Generation Reasoning feature)
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] Setting generation data for extension panel');
-    // eslint-disable-next-line no-underscore-dangle
-    window.__vitamixGenerationData = {
-      query: effectiveQuery,
-      reasoningSteps,
-      reasoningComplete: reasoningCompleteData,
-      blockRationales,
-      intent: data.intent,
-      reasoning: data.reasoning,
-      recommendations: data.recommendations,
-      duration: Date.now() - startTime,
-      timestamp: Date.now(),
-    };
-    // Use postMessage to communicate with content script (isolated world)
-    window.postMessage({
-      type: 'VITAMIX_GENERATION_COMPLETE',
-      // eslint-disable-next-line no-underscore-dangle
-      data: window.__vitamixGenerationData,
-    }, '*');
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] Generation data posted to extension');
   });
 
   eventSource.addEventListener('error', (e) => {

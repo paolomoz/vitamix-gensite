@@ -102,95 +102,26 @@
   letter-spacing: 0.08em;
 }
 
-/* ===== Primary Advisor Card ===== */
-.advisor-card-primary {
-  background: var(--color-white);
-  border-radius: var(--rounding-m);
-  padding: var(--spacing-300);
-  margin-bottom: var(--spacing-200);
-  position: relative;
-}
-
-.advisor-card-primary .advisor-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-60);
-  font-family: var(--body-font-family);
-  font-size: 11px;
-  font-weight: var(--weight-medium);
-  color: var(--color-red);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--spacing-100);
-}
-
-.advisor-card-primary .badge-icon {
-  display: inline-block;
-}
-
-.advisor-card-primary .advisor-headline {
-  display: block;
-  font-family: var(--heading-font-family);
-  font-size: var(--heading-size-s);
-  font-weight: var(--weight-light);
-  line-height: var(--line-height-s);
-  color: var(--color-charcoal);
-  text-decoration: none;
-  margin: 0 0 var(--spacing-100) 0;
-  transition: color 0.15s ease;
-}
-
-.advisor-card-primary .advisor-headline:hover {
-  color: var(--color-red);
-}
-
-.advisor-card-primary .advisor-headline::after {
-  content: " →";
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.advisor-card-primary .advisor-headline:hover::after {
-  opacity: 1;
-}
-
-.advisor-card-primary .advisor-rationale {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-regular);
-  line-height: var(--line-height-m);
-  color: var(--color-gray-900);
-  margin: 0;
-}
-
-/* ===== Secondary Cards Container ===== */
-.advisor-secondary-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-200);
-}
-
-/* ===== Secondary Advisor Card ===== */
-.advisor-card-secondary {
+/* ===== Advisor Card (shared styles) ===== */
+.advisor-card {
   background: var(--color-white);
   border-radius: var(--rounding-m);
   padding: var(--spacing-250);
 }
 
-.advisor-card-secondary .advisor-badge {
+.advisor-card .advisor-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-60);
   font-family: var(--body-font-family);
   font-size: 11px;
   font-weight: var(--weight-medium);
-  color: var(--color-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: var(--spacing-100);
 }
 
-.advisor-card-secondary .advisor-headline {
+.advisor-card .advisor-headline {
   display: block;
   font-family: var(--heading-font-family);
   font-size: var(--body-size-l);
@@ -202,27 +133,47 @@
   transition: color 0.15s ease;
 }
 
-.advisor-card-secondary .advisor-headline:hover {
+.advisor-card .advisor-headline:hover {
   color: var(--color-red);
 }
 
-.advisor-card-secondary .advisor-headline::after {
+.advisor-card .advisor-headline::after {
   content: " →";
   opacity: 0;
   transition: opacity 0.15s ease;
 }
 
-.advisor-card-secondary .advisor-headline:hover::after {
+.advisor-card .advisor-headline:hover::after {
   opacity: 1;
 }
 
-.advisor-card-secondary .advisor-rationale {
+.advisor-card .advisor-rationale {
   font-family: var(--body-font-family);
   font-size: var(--body-size-s);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
   color: var(--color-gray-900);
   margin: 0;
+}
+
+/* ===== Primary Card (badge color) ===== */
+.advisor-card-primary {
+  margin-bottom: var(--spacing-200);
+}
+
+.advisor-card-primary .advisor-badge {
+  color: var(--color-red);
+}
+
+/* ===== Secondary Cards ===== */
+.advisor-secondary-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-200);
+}
+
+.advisor-card-secondary .advisor-badge {
+  color: var(--color-gray-600);
 }
 
 /* ===== Responsive: Tablet ===== */

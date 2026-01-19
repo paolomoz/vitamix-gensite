@@ -1,0 +1,462 @@
+/**
+ * Follow-up Advisor Block Styles
+ * Aligned to Vitamix Design System (reference: ../vitamix/)
+ *
+ * Design tokens used:
+ * - Typography: Sentinel (headings), Gotham Narrow (body)
+ * - Colors: charcoal background, white cards, red accents
+ * - Spacing: design system spacing tokens
+ * - Borders: rounding-m for cards, rounding-s for buttons
+ */
+
+/* ===== Section Container ===== */
+.section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
+  padding: var(--spacing-600) var(--horizontal-spacing);
+}
+
+.follow-up-advisor-container {
+  background: var(--color-charcoal);
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.follow-up-advisor-wrapper {
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+}
+
+/* ===== Block Base ===== */
+.follow-up-advisor.block {
+  background: transparent;
+  padding: 0;
+}
+
+/* ===== Header Section ===== */
+.advisor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-400);
+  flex-wrap: wrap;
+  gap: var(--spacing-200);
+}
+
+.advisor-title {
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-s);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--color-white);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* ===== Journey Indicator ===== */
+.journey-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-100);
+}
+
+.journey-dots {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.journey-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-gray-700);
+  transition: all 0.2s ease;
+}
+
+.journey-dot.active {
+  background: var(--color-gray-400);
+}
+
+.journey-dot.current {
+  background: var(--color-red);
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.3);
+}
+
+.journey-line {
+  width: 20px;
+  height: 2px;
+  background: var(--color-gray-700);
+  transition: background 0.2s ease;
+}
+
+.journey-line.active {
+  background: var(--color-gray-400);
+}
+
+.journey-label {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-xs);
+  font-weight: var(--weight-regular);
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===== Primary Advisor Card ===== */
+.advisor-card-primary {
+  background: var(--color-white);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-400);
+  margin-bottom: var(--spacing-300);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.advisor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-60);
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-red);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--spacing-200);
+}
+
+.badge-star {
+  color: var(--color-red);
+}
+
+.advisor-card-primary .advisor-headline {
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-m);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+  color: var(--color-charcoal);
+  margin: 0 0 var(--spacing-200) 0;
+}
+
+.advisor-card-primary .advisor-rationale {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-m);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--spacing-300) 0;
+}
+
+/* ===== Expandable Why Section ===== */
+.advisor-why {
+  margin-bottom: var(--spacing-300);
+  border-top: 1px solid var(--color-gray-300);
+  padding-top: var(--spacing-200);
+}
+
+.advisor-why summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-60);
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-medium);
+  color: var(--color-charcoal);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.advisor-why summary::-webkit-details-marker {
+  display: none;
+}
+
+.why-chevron {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: var(--color-gray-900);
+}
+
+.advisor-why[open] .why-chevron {
+  transform: rotate(180deg);
+}
+
+.advisor-bullets {
+  margin: var(--spacing-200) 0 0 var(--spacing-200);
+  padding: 0;
+  list-style: disc;
+}
+
+.advisor-bullets li {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-m);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-60);
+}
+
+/* ===== Primary CTA Button ===== */
+.advisor-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-100);
+  padding: 14px 24px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-white);
+  background: var(--color-red);
+  border: none;
+  border-radius: var(--rounding-s);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.advisor-cta:hover {
+  background: var(--color-madder);
+}
+
+.advisor-cta:focus {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.advisor-cta:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.advisor-cta:focus-visible {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.cta-arrow {
+  transition: transform 0.2s ease;
+}
+
+.advisor-cta:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ===== Secondary Cards Container ===== */
+.advisor-secondary-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-200);
+  margin-bottom: var(--spacing-400);
+}
+
+/* ===== Secondary Advisor Card ===== */
+.advisor-card-secondary {
+  background: transparent;
+  border: 1px solid var(--color-gray-700);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-300);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.advisor-card-secondary:hover {
+  border-color: var(--color-red);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.advisor-card-secondary:focus {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.advisor-card-secondary:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.advisor-card-secondary:focus-visible {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.advisor-card-secondary .advisor-headline {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-height-s);
+  color: var(--color-white);
+  margin: 0 0 var(--spacing-100) 0;
+}
+
+.advisor-card-secondary .advisor-rationale {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-m);
+  color: var(--color-gray-400);
+  margin: 0;
+}
+
+/* ===== Gaps Section ===== */
+.advisor-gaps {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-gray-700);
+  border-radius: var(--rounding-m);
+  padding: var(--spacing-300);
+}
+
+.gaps-header {
+  margin-bottom: var(--spacing-200);
+}
+
+.gaps-header h4 {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 var(--spacing-60) 0;
+}
+
+.gaps-header p {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-m);
+  color: var(--color-gray-500);
+  margin: 0;
+}
+
+.gaps-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-100);
+}
+
+/* ===== Gap Chip ===== */
+.gap-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-60);
+  padding: var(--spacing-100) var(--spacing-200);
+  background: transparent;
+  border: 1px solid var(--color-gray-600);
+  border-radius: var(--rounding-s);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  max-width: 280px;
+}
+
+.gap-chip:hover {
+  border-color: var(--color-red);
+  background: rgba(200, 16, 46, 0.1);
+}
+
+.gap-chip:focus {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.gap-chip:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.gap-chip:focus-visible {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.gap-label {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+}
+
+.gap-explanation {
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-xs);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-m);
+  color: var(--color-gray-500);
+}
+
+/* ===== Responsive: Tablet ===== */
+@media (width < 900px) {
+  .follow-up-advisor-wrapper {
+    padding: var(--spacing-500) var(--spacing-400);
+  }
+
+  .advisor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .advisor-secondary-container {
+    gap: var(--spacing-100);
+  }
+
+  .advisor-card-primary {
+    padding: var(--spacing-300);
+  }
+
+  .advisor-card-secondary {
+    padding: var(--spacing-200);
+  }
+}
+
+/* ===== Responsive: Mobile ===== */
+@media (width < 600px) {
+  .follow-up-advisor-wrapper {
+    padding: var(--spacing-400) var(--spacing-200);
+  }
+
+  .advisor-title {
+    font-size: var(--body-size-m);
+  }
+
+  .journey-indicator {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .journey-dots {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .advisor-secondary-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-100);
+  }
+
+  .advisor-card-primary .advisor-headline {
+    font-size: var(--heading-size-s);
+  }
+
+  .advisor-card-primary .advisor-rationale {
+    font-size: var(--body-size-s);
+  }
+
+  .advisor-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .advisor-gaps {
+    padding: var(--spacing-200);
+  }
+
+  .gaps-list {
+    flex-direction: column;
+  }
+
+  .gap-chip {
+    max-width: none;
+    width: 100%;
+  }
+}

@@ -127,11 +127,11 @@
 /* ===== Responsive: Tablet & Mobile ===== */
 @media (width < 900px) {
   .section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
-    padding: var(--spacing-300) var(--horizontal-spacing);
+    padding: var(--spacing-400) var(--spacing-300);
   }
 
   .advisor-header {
-    margin-bottom: var(--spacing-200);
+    margin-bottom: var(--spacing-250);
   }
 
   .advisor-cards {
@@ -140,7 +140,7 @@
   }
 
   .advisor-card {
-    padding: var(--spacing-250);
+    padding: var(--spacing-300);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 

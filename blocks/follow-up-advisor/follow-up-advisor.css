@@ -172,24 +172,19 @@
 
 /* ===== Secondary Advisor Card ===== */
 .advisor-card-secondary {
-  background: transparent;
-  border: 1px solid var(--color-gray-600);
+  background: var(--color-white);
   border-radius: var(--rounding-m);
   padding: var(--spacing-250);
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.advisor-card-secondary:hover {
-  border-color: var(--color-gray-400);
-  background: rgba(255, 255, 255, 0.03);
 }
 
 .advisor-card-secondary .advisor-badge {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-60);
   font-family: var(--body-font-family);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: var(--weight-medium);
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: var(--spacing-100);
@@ -197,11 +192,11 @@
 
 .advisor-card-secondary .advisor-headline {
   display: block;
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-m);
-  font-weight: var(--weight-medium);
+  font-family: var(--heading-font-family);
+  font-size: var(--body-size-l);
+  font-weight: var(--weight-light);
   line-height: var(--line-height-s);
-  color: var(--color-white);
+  color: var(--color-charcoal);
   text-decoration: none;
   margin: 0 0 var(--spacing-100) 0;
   transition: color 0.15s ease;
@@ -223,10 +218,10 @@
 
 .advisor-card-secondary .advisor-rationale {
   font-family: var(--body-font-family);
-  font-size: var(--body-size-xs);
+  font-size: var(--body-size-s);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
-  color: var(--color-gray-500);
+  color: var(--color-gray-900);
   margin: 0;
 }
 

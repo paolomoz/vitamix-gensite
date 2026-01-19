@@ -1091,8 +1091,13 @@ async function renderVitamixRecommenderPage() {
       products: data.recommendations?.products,
     });
 
+    // eslint-disable-next-line no-console
+    console.log('[Recommender] DEBUG-MARKER-A: About to enter try block for generation data');
+
     // Expose generation data for extension panel BEFORE persist (Generation Reasoning feature)
     try {
+      // eslint-disable-next-line no-console
+      console.log('[Recommender] DEBUG-MARKER-B: Inside try block');
       // eslint-disable-next-line no-console
       console.log('[Recommender] Setting generation data for extension panel');
       // eslint-disable-next-line no-underscore-dangle

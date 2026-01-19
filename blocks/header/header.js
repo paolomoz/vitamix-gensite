@@ -7,6 +7,7 @@
 
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { SessionContextManager } from '../../scripts/session-context.js';
 
 // Media query for desktop
 const isDesktop = window.matchMedia('(min-width: 1000px)');
@@ -26,6 +27,145 @@ function toggleMenu(nav, forceExpanded = null) {
   if (button) {
     button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
   }
+}
+
+/**
+ * Creates the AI Generate panel that expands from the header
+ * @returns {Object} - Object containing the button and panel elements
+ */
+function createAIGeneratePanel() {
+  // Create the AI Generate button for nav-tools
+  const aiGenerateBtn = document.createElement('button');
+  aiGenerateBtn.className = 'icon-wrapper ai-generate-btn';
+  aiGenerateBtn.setAttribute('aria-expanded', 'false');
+  aiGenerateBtn.setAttribute('aria-controls', 'ai-generate-panel');
+  aiGenerateBtn.setAttribute('title', 'Ask');
+  aiGenerateBtn.innerHTML = `
+    <span class="icon icon-sparkle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
+        <circle cx="18" cy="5" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="6" cy="18" r="2" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span>Ask</span>
+  `;
+
+  // Create the expandable panel
+  const panel = document.createElement('div');
+  panel.className = 'ai-generate-panel';
+  panel.id = 'ai-generate-panel';
+  panel.innerHTML = `
+    <div class="ai-generate-content">
+      <form class="ai-generate-form">
+        <input
+          type="text"
+          class="ai-generate-input"
+          placeholder="What would you like to generate?"
+          autocomplete="off"
+          aria-label="Generation query"
+        />
+        <button type="submit" class="ai-generate-submit" title="Generate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+      <div class="ai-generate-context"></div>
+    </div>
+  `;
+
+  const form = panel.querySelector('.ai-generate-form');
+  const input = panel.querySelector('.ai-generate-input');
+  const contextDiv = panel.querySelector('.ai-generate-context');
+
+  // Update context display
+  function updateContext() {
+    const context = SessionContextManager.getContext();
+    const queryCount = context.queries.length;
+
+    if (queryCount > 0) {
+      contextDiv.innerHTML = `<span class="context-indicator">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
+          <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 12.5a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11zM7.25 4.5v4l3 1.5.5-.87-2.5-1.25V4.5h-1z"/>
+        </svg>
+        ${queryCount} previous ${queryCount === 1 ? 'query' : 'queries'} in context
+      </span>`;
+    } else {
+      contextDiv.innerHTML = '';
+    }
+  }
+
+  // Toggle panel
+  function togglePanel(forceState = null) {
+    const isExpanded = forceState !== null
+      ? forceState
+      : aiGenerateBtn.getAttribute('aria-expanded') !== 'true';
+
+    aiGenerateBtn.setAttribute('aria-expanded', isExpanded);
+    panel.classList.toggle('expanded', isExpanded);
+    aiGenerateBtn.classList.toggle('active', isExpanded);
+
+    if (isExpanded) {
+      updateContext();
+      input.focus();
+    }
+  }
+
+  // Handle button click
+  aiGenerateBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    togglePanel();
+  });
+
+  // Handle form submit
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (!query) {
+      input.focus();
+      return;
+    }
+
+    // Build URL with query, preset, and context
+    const params = new URLSearchParams();
+    params.set('q', query);
+    params.set('preset', 'all-cerebras');
+
+    // Add context if we have previous queries (use buildContextParam, not encoded version)
+    if (SessionContextManager.hasContext()) {
+      const contextParam = SessionContextManager.buildContextParam();
+      params.set('ctx', JSON.stringify(contextParam));
+    }
+
+    // Navigate
+    window.location.href = `/?${params.toString()}`;
+  });
+
+  // Handle keyboard shortcuts
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      togglePanel(false);
+      aiGenerateBtn.focus();
+    }
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && !aiGenerateBtn.contains(e.target)) {
+      togglePanel(false);
+    }
+  });
+
+  // Global keyboard shortcut (Cmd/Ctrl + G)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'g' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
+      e.preventDefault();
+      togglePanel();
+    }
+  });
+
+  return { button: aiGenerateBtn, panel };
 }
 
 /**
@@ -91,10 +231,21 @@ export default async function decorate(block) {
     toolsSection.className = 'nav-tools';
     toolsSection.id = 'nav-tools';
 
+    // Create AI Generate panel
+    const { button: aiGenerateBtn, panel: aiGeneratePanel } = createAIGeneratePanel();
+
+    // Create tools list with AI Generate button first
+    const toolsList = document.createElement('ul');
+
+    // Add AI Generate button as first item in tools
+    const aiGenerateLi = document.createElement('li');
+    aiGenerateLi.className = 'nav-tools-ai-generate';
+    aiGenerateLi.appendChild(aiGenerateBtn);
+    toolsList.appendChild(aiGenerateLi);
+
     if (sections[2]) {
       const toolsUl = sections[2].querySelector('ul');
       if (toolsUl) {
-        const toolsList = document.createElement('ul');
         toolsUl.querySelectorAll(':scope > li').forEach((li) => {
           const newLi = document.createElement('li');
           // Handle both li > a and li > p > a structures
@@ -237,9 +388,9 @@ export default async function decorate(block) {
 
           toolsList.appendChild(newLi);
         });
-        toolsSection.appendChild(toolsList);
       }
     }
+    toolsSection.appendChild(toolsList);
 
     // Add Cart link from 4th section
     if (sections[3]) {
@@ -256,8 +407,6 @@ export default async function decorate(block) {
           }
         }
         cartLi.appendChild(newCartLink);
-        const toolsList = toolsSection.querySelector('ul') || document.createElement('ul');
-        if (!toolsSection.querySelector('ul')) toolsSection.appendChild(toolsList);
         toolsList.appendChild(cartLi);
       }
     }
@@ -277,15 +426,16 @@ export default async function decorate(block) {
     nav.appendChild(logoSection);
     nav.appendChild(navSections);
     nav.appendChild(toolsSection);
+
+    // Wrap and append
+    const navWrapper = document.createElement('div');
+    navWrapper.className = 'nav-wrapper';
+    navWrapper.appendChild(nav);
+    navWrapper.appendChild(aiGeneratePanel);
+    block.appendChild(navWrapper);
+
+    // Handle responsive
+    toggleMenu(nav, isDesktop.matches);
+    isDesktop.addEventListener('change', () => toggleMenu(nav, isDesktop.matches));
   }
-
-  // Handle responsive
-  toggleMenu(nav, isDesktop.matches);
-  isDesktop.addEventListener('change', () => toggleMenu(nav, isDesktop.matches));
-
-  // Wrap and append
-  const navWrapper = document.createElement('div');
-  navWrapper.className = 'nav-wrapper';
-  navWrapper.appendChild(nav);
-  block.appendChild(navWrapper);
 }

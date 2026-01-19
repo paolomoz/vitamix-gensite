@@ -92,6 +92,16 @@ export class SessionContextManager {
       nextBestAction: entry.nextBestAction || '',
     };
 
+    // Deduplicate: don't add if the same query was just added (prevents duplicates from page reloads)
+    const lastQuery = context.queries[context.queries.length - 1];
+    if (lastQuery && lastQuery.query === normalizedEntry.query) {
+      // Update the existing entry with new enriched data instead of adding duplicate
+      context.queries[context.queries.length - 1] = normalizedEntry;
+      context.lastUpdated = Date.now();
+      sessionStorage.setItem(CONTEXT_KEY, JSON.stringify(context));
+      return;
+    }
+
     context.queries.push(normalizedEntry);
 
     // Keep only the last MAX_HISTORY queries
@@ -216,6 +226,150 @@ export class SessionContextManager {
     return context.queries
       .map((q, i) => `${i + 1}. "${q.query}" (${q.intent})`)
       .join('\n');
+  }
+
+  /**
+   * Analyze what content types have been explored in this session.
+   * Used by follow-up-advisor to detect research gaps.
+   *
+   * @typedef {Object} ResearchCoverage
+   * @property {boolean} products - Whether product content was shown
+   * @property {boolean} recipes - Whether recipe content was shown
+   * @property {boolean} reviews - Whether testimonials/reviews were shown
+   * @property {boolean} warranty - Whether warranty info was discussed
+   * @property {boolean} specs - Whether technical specs were shown
+   * @property {boolean} comparisons - Whether comparison tables were shown
+   * @property {boolean} accessories - Whether accessory info was shown
+   *
+   * @returns {ResearchCoverage}
+   */
+  static getResearchCoverage() {
+    const context = this.getContext();
+
+    const coverage = {
+      products: false,
+      recipes: false,
+      reviews: false,
+      warranty: false,
+      specs: false,
+      comparisons: false,
+      accessories: false,
+    };
+
+    // Analyze all queries in the session
+    context.queries.forEach((q) => {
+      const blockTypes = q.blockTypes || [];
+      const queryText = (q.query || '').toLowerCase();
+
+      // Check blockTypes
+      if (
+        blockTypes.includes('product-cards')
+        || blockTypes.includes('product-recommendation')
+        || blockTypes.includes('product-hero')
+        || blockTypes.includes('best-pick')
+      ) {
+        coverage.products = true;
+      }
+
+      if (blockTypes.includes('recipe-cards') || blockTypes.includes('recipe-hero')) {
+        coverage.recipes = true;
+      }
+
+      if (blockTypes.includes('testimonials')) {
+        coverage.reviews = true;
+      }
+
+      if (blockTypes.includes('specs-table') || blockTypes.includes('engineering-specs')) {
+        coverage.specs = true;
+      }
+
+      if (blockTypes.includes('comparison-table')) {
+        coverage.comparisons = true;
+      }
+
+      // Check query text for warranty/accessory topics
+      if (
+        queryText.includes('warranty')
+        || queryText.includes('guarantee')
+        || queryText.includes('return')
+      ) {
+        coverage.warranty = true;
+      }
+
+      if (
+        queryText.includes('accessor')
+        || queryText.includes('container')
+        || queryText.includes('attachment')
+      ) {
+        coverage.accessories = true;
+      }
+    });
+
+    return coverage;
+  }
+
+  /**
+   * Get research gaps based on coverage analysis.
+   * Returns an array of gap types that haven't been explored.
+   *
+   * @param {string} [journeyStage='exploring'] - Current journey stage
+   * @returns {Array<{type: string, query: string, label: string, explanation: string}>}
+   */
+  static getResearchGaps(journeyStage = 'exploring') {
+    const coverage = this.getResearchCoverage();
+
+    // Define all possible gaps with their queries and explanations
+    const allGaps = [
+      {
+        type: 'recipes',
+        query: 'vitamix recipes',
+        label: 'Recipes',
+        explanation: 'See what you can make with a Vitamix.',
+        stages: ['exploring', 'comparing', 'deciding'],
+      },
+      {
+        type: 'reviews',
+        query: 'vitamix customer reviews',
+        label: 'Customer Reviews',
+        explanation: 'Hear from real Vitamix owners.',
+        stages: ['comparing', 'deciding'],
+      },
+      {
+        type: 'warranty',
+        query: 'vitamix warranty coverage',
+        label: 'Warranty Coverage',
+        explanation: 'Vitamix has industry-leading 10-year warranty.',
+        stages: ['comparing', 'deciding'],
+      },
+      {
+        type: 'specs',
+        query: 'vitamix specifications',
+        label: 'Technical Specs',
+        explanation: 'See detailed specifications and measurements.',
+        stages: ['comparing'],
+      },
+      {
+        type: 'comparisons',
+        query: 'compare vitamix models',
+        label: 'Model Comparison',
+        explanation: 'See models side by side.',
+        stages: ['exploring', 'comparing'],
+      },
+      {
+        type: 'accessories',
+        query: 'vitamix accessories',
+        label: 'Accessories',
+        explanation: 'Compatible containers and bowls expand capabilities.',
+        stages: ['deciding'],
+      },
+    ];
+
+    // Filter to gaps that:
+    // 1. Haven't been explored yet (coverage is false)
+    // 2. Are relevant to the current journey stage
+    return allGaps
+      .filter((gap) => !coverage[gap.type] && gap.stages.includes(journeyStage))
+      .map(({ type, query, label, explanation }) => ({ type, query, label, explanation }));
   }
 }
 

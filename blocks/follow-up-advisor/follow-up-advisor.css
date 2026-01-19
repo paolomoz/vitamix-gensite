@@ -67,6 +67,11 @@
 
 .advisor-card:hover {
   border-color: rgba(200, 16, 46, 0.4);
+  text-decoration: none;
+}
+
+.advisor-card:hover * {
+  text-decoration: none;
 }
 
 .advisor-card .advisor-badge {

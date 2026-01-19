@@ -53,11 +53,6 @@ export default function decorate(block) {
   const header = document.createElement('div');
   header.className = 'budget-header';
 
-  const icon = document.createElement('div');
-  icon.className = 'budget-icon';
-  icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>';
-  header.appendChild(icon);
-
   const titleEl = document.createElement('h2');
   titleEl.className = 'budget-title';
   titleEl.textContent = title;
@@ -133,18 +128,16 @@ export default function decorate(block) {
   valueNote.className = 'budget-value-note';
   valueNote.innerHTML = `
     <div class="value-note-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
     </div>
-    <div class="value-note-text">
-      <strong>Pro tip:</strong> Vitamix blenders last 10-20+ years. A $400 blender used daily for 10 years costs just <strong>$0.11/day</strong>.
-    </div>
+    <span class="value-note-text"><strong>Pro tip:</strong> A $400 Vitamix used daily for 10 years = <strong>$0.11/day</strong></span>
   `;
   block.appendChild(valueNote);
 
   // Add refurbished CTA
   const refurbCta = document.createElement('a');
   refurbCta.className = 'budget-refurb-cta';
-  refurbCta.href = 'https://www.vitamix.com/shop/certified-reconditioned';
+  refurbCta.href = 'https://www.vitamix.com/us/en_us/shop/certified-reconditioned-series';
   refurbCta.target = '_blank';
   refurbCta.innerHTML = `
     <span class="refurb-badge">SAVE UP TO 40%</span>

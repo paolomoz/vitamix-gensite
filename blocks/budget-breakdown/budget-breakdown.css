@@ -1,18 +1,18 @@
 /**
- * Budget Breakdown Block Styles - Vitamix Design System
+ * Budget Breakdown Block Styles - Vitamix Design System (Compact)
  *
  * Shows transparent pricing information for budget-conscious users.
  * Card-based tier layout with color-coded accents.
  *
  * Design Reference:
  * - Typography: Sentinel (headings), Gotham Narrow (body)
- * - Colors: Brand charcoal, red, grays
- * - Pattern: Clean card layout similar to product-cards
+ * - Colors: Brand charcoal, red, grays from styles.css tokens
+ * - Pattern: Clean, compact card layout aligned with product-cards
  */
 
 /* ===== Container ===== */
 .budget-breakdown {
-  padding: var(--spacing-700) var(--spacing-400);
+  padding: var(--spacing-400) var(--spacing-300);
   max-width: var(--max-width-content);
   margin: 0 auto;
 }
@@ -20,23 +20,12 @@
 /* ===== Header ===== */
 .budget-header {
   text-align: center;
-  margin-bottom: var(--spacing-600);
-}
-
-.budget-icon {
-  color: var(--color-red);
-  margin-bottom: var(--spacing-100);
-}
-
-.budget-icon svg {
-  width: 28px;
-  height: 28px;
-  stroke-width: 1.5;
+  margin-bottom: var(--spacing-300);
 }
 
 .budget-title {
   font-family: var(--heading-font-family);
-  font-size: var(--heading-size-xl);
+  font-size: var(--heading-size-l);
   font-weight: var(--weight-light);
   color: var(--color-charcoal);
   margin: 0;
@@ -46,9 +35,9 @@
 /* ===== Tiers Grid ===== */
 .budget-tiers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-400);
-  margin-bottom: var(--spacing-600);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-200);
+  margin-bottom: var(--spacing-300);
 }
 
 /* ===== Individual Tier Card ===== */
@@ -56,11 +45,17 @@
   background: var(--color-white);
   border: var(--border-s) solid var(--color-gray-400);
   overflow: hidden;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.budget-tier:hover {
+  border-color: var(--color-gray-800);
+  box-shadow: var(--shadow-hover);
 }
 
 /* ===== Tier Header ===== */
 .tier-header {
-  padding: var(--spacing-100) var(--spacing-300);
+  padding: var(--spacing-60) var(--spacing-200);
   background: var(--color-gray-200);
   border-bottom: var(--border-s) solid var(--color-gray-400);
   position: relative;
@@ -73,13 +68,13 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 4px;
+  width: 3px;
   background: var(--color-charcoal);
 }
 
 .tier-label {
   font-family: var(--body-font-family);
-  font-size: 11px;
+  font-size: var(--detail-size-s);
   font-weight: var(--weight-medium);
   color: var(--color-charcoal);
   text-transform: uppercase;
@@ -105,7 +100,7 @@
 
 /* ===== Tier Body ===== */
 .tier-body {
-  padding: var(--spacing-60) 0;
+  padding: 0;
 }
 
 /* ===== Product Items ===== */
@@ -113,8 +108,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-100) var(--spacing-300);
+  padding: var(--spacing-60) var(--spacing-200);
   border-bottom: var(--border-s) solid var(--color-gray-300);
+  transition: background-color var(--transition-fast);
+}
+
+.product-item:hover {
+  background-color: var(--color-gray-100);
 }
 
 .product-item:last-child {
@@ -123,7 +123,7 @@
 
 .product-name {
   font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
+  font-size: var(--body-size-xs);
   color: var(--color-charcoal);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
@@ -131,117 +131,128 @@
 
 .product-price {
   font-family: var(--body-font-family);
-  font-size: var(--body-size-m);
+  font-size: var(--body-size-s);
   font-weight: var(--weight-medium);
   color: var(--color-charcoal);
   white-space: nowrap;
-  margin-left: var(--spacing-200);
+  margin-left: var(--spacing-100);
 }
 
 /* ===== Value Note ===== */
 .budget-value-note {
   display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-100);
+  align-items: center;
+  gap: var(--spacing-60);
   background: var(--color-gray-200);
-  border-left: 4px solid var(--color-asparagus);
-  padding: var(--spacing-200) var(--spacing-300);
-  margin-bottom: var(--spacing-400);
+  border-left: 3px solid var(--color-asparagus);
+  padding: var(--spacing-100) var(--spacing-200);
+  margin-bottom: var(--spacing-200);
 }
 
 .value-note-icon {
   color: var(--color-asparagus);
   flex-shrink: 0;
-  margin-top: 2px;
 }
 
 .value-note-icon svg {
-  width: 20px;
-  height: 20px;
+  width: var(--icon-s);
+  height: var(--icon-s);
 }
 
 .value-note-text {
   font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
+  font-size: var(--body-size-xs);
   color: var(--color-charcoal);
-  line-height: var(--line-height-l);
+  line-height: var(--line-height-m);
 }
 
 .value-note-text strong {
   font-weight: var(--weight-medium);
-  color: var(--color-charcoal);
 }
 
-/* ===== Refurbished CTA - Outlined Button Style ===== */
+/* ===== Refurbished CTA - Compact Outlined Button ===== */
 .budget-refurb-cta {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-100);
+  gap: var(--spacing-60);
   background: transparent;
   color: var(--color-charcoal);
   border: var(--border-s) solid var(--color-charcoal);
+  border-radius: 0;
   text-decoration: none;
-  padding: var(--spacing-100) var(--spacing-400);
+  padding: var(--spacing-60) var(--spacing-300);
   font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
+  font-size: var(--body-size-xs);
   font-weight: var(--weight-regular);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  letter-spacing: var(--letter-spacing-s);
+  line-height: var(--line-height-s);
+  transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal);
 }
 
 .budget-refurb-cta:hover {
   background: var(--color-charcoal);
+  border-color: var(--color-charcoal);
   color: var(--color-white);
   text-decoration: none;
+}
+
+.budget-refurb-cta:focus {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.budget-refurb-cta:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.budget-refurb-cta:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
 }
 
 .refurb-badge {
   background: var(--color-red);
   color: var(--color-white);
-  padding: var(--spacing-40) var(--spacing-60);
-  font-size: 11px;
+  padding: var(--spacing-20) var(--spacing-60);
+  font-size: 10px;
   font-weight: var(--weight-medium);
   letter-spacing: var(--letter-spacing-m);
 }
 
 .refurb-text {
-  font-size: var(--body-size-s);
+  font-size: var(--body-size-xs);
   font-weight: var(--weight-regular);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-s);
 }
 
 .budget-refurb-cta svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   transition: transform var(--transition-normal);
 }
 
 .budget-refurb-cta:hover svg {
-  transform: translateX(4px);
+  transform: translateX(var(--spacing-40));
 }
 
 /* ===== Responsive ===== */
 @media (width < 900px) {
   .budget-breakdown {
-    padding: var(--spacing-500) var(--spacing-300);
-  }
-
-  .budget-title {
-    font-size: var(--heading-size-l);
+    padding: var(--spacing-300) var(--spacing-200);
   }
 }
 
 @media (width < 600px) {
   .budget-breakdown {
-    padding: var(--spacing-400) var(--spacing-200);
+    padding: var(--spacing-200) var(--spacing-100);
   }
 
   .budget-tiers-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-300);
+    gap: var(--spacing-100);
   }
 
   .budget-title {
@@ -249,9 +260,7 @@
   }
 
   .budget-refurb-cta {
-    flex-direction: column;
-    gap: var(--spacing-60);
-    padding: var(--spacing-200);
+    width: 100%;
   }
 }
 
@@ -259,7 +268,8 @@
   .product-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-40);
+    gap: var(--spacing-20);
+    padding: var(--spacing-60) var(--spacing-100);
   }
 
   .product-price {
@@ -269,6 +279,7 @@
 
   .budget-value-note {
     flex-direction: column;
-    padding: var(--spacing-200);
+    align-items: flex-start;
+    padding: var(--spacing-100);
   }
 }

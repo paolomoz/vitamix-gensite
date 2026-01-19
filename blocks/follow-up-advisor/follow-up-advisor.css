@@ -124,27 +124,14 @@
   color: var(--color-gray-900);
 }
 
-/* ===== Responsive: Tablet ===== */
+/* ===== Responsive: Tablet & Mobile ===== */
 @media (width < 900px) {
-  .advisor-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-150);
-  }
-
-  .advisor-cards {
-    gap: var(--spacing-150);
-  }
-
-  .advisor-card {
-    padding: var(--spacing-250);
-  }
-}
-
-/* ===== Responsive: Mobile ===== */
-@media (width < 600px) {
   .section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
     padding: var(--spacing-300) var(--horizontal-spacing);
+  }
+
+  .advisor-header {
+    margin-bottom: var(--spacing-200);
   }
 
   .advisor-cards {
@@ -152,7 +139,15 @@
     gap: var(--spacing-150);
   }
 
+  .advisor-card {
+    padding: var(--spacing-250);
+  }
+
   .advisor-card .advisor-headline {
     font-size: var(--body-size-l);
+  }
+
+  .advisor-card .advisor-rationale {
+    font-size: var(--body-size-xs);
   }
 }

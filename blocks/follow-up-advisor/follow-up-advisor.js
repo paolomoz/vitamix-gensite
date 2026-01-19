@@ -153,13 +153,14 @@ function createJourneyIndicator(stage) {
 }
 
 /**
- * Create a primary advisor card with full rationale
+ * Create a primary advisor card with full rationale (clickable)
  * @param {Object} suggestion
  * @returns {HTMLElement}
  */
 function createPrimaryCard(suggestion) {
-  const card = document.createElement('div');
+  const card = document.createElement('button');
   card.className = 'advisor-card advisor-card-primary';
+  card.setAttribute('type', 'button');
 
   // Badge
   const badge = document.createElement('div');
@@ -179,14 +180,15 @@ function createPrimaryCard(suggestion) {
   rationale.textContent = suggestion.rationale;
   card.appendChild(rationale);
 
-  // Expandable "Why I suggest this" section
+  // "Why I suggest this" section (always visible)
   if (suggestion.whyBullets?.length > 0) {
-    const whySection = document.createElement('details');
+    const whySection = document.createElement('div');
     whySection.className = 'advisor-why';
 
-    const summary = document.createElement('summary');
-    summary.innerHTML = '<span class="why-chevron">&#9660;</span> Why I suggest this';
-    whySection.appendChild(summary);
+    const whyHeader = document.createElement('div');
+    whyHeader.className = 'why-header';
+    whyHeader.textContent = 'Why I suggest this';
+    whySection.appendChild(whyHeader);
 
     const bulletList = document.createElement('ul');
     bulletList.className = 'advisor-bullets';
@@ -200,13 +202,8 @@ function createPrimaryCard(suggestion) {
     card.appendChild(whySection);
   }
 
-  // CTA Button
-  const cta = document.createElement('button');
-  cta.className = 'advisor-cta';
-  cta.setAttribute('type', 'button');
-  cta.innerHTML = '<span>Explore this</span><span class="cta-arrow">&#8594;</span>';
-  cta.addEventListener('click', () => navigateToQuery(suggestion.query));
-  card.appendChild(cta);
+  // Click handler on entire card
+  card.addEventListener('click', () => navigateToQuery(suggestion.query));
 
   return card;
 }
@@ -221,6 +218,12 @@ function createSecondaryCard(suggestion) {
   card.className = 'advisor-card advisor-card-secondary';
   card.setAttribute('type', 'button');
 
+  // Badge (ALSO CONSIDER instead of RECOMMENDED)
+  const badge = document.createElement('div');
+  badge.className = 'advisor-badge';
+  badge.textContent = 'ALSO CONSIDER';
+  card.appendChild(badge);
+
   // Headline
   const headline = document.createElement('h4');
   headline.className = 'advisor-headline';
@@ -232,6 +235,28 @@ function createSecondaryCard(suggestion) {
   rationale.className = 'advisor-rationale';
   rationale.textContent = suggestion.rationale;
   card.appendChild(rationale);
+
+  // "Why I suggest this" section (if whyBullets available)
+  if (suggestion.whyBullets?.length > 0) {
+    const whySection = document.createElement('div');
+    whySection.className = 'advisor-why';
+
+    const whyHeader = document.createElement('div');
+    whyHeader.className = 'why-header';
+    whyHeader.textContent = 'Why I suggest this';
+    whySection.appendChild(whyHeader);
+
+    const bulletList = document.createElement('ul');
+    bulletList.className = 'advisor-bullets';
+    suggestion.whyBullets.forEach((bullet) => {
+      const li = document.createElement('li');
+      li.textContent = bullet;
+      bulletList.appendChild(li);
+    });
+    whySection.appendChild(bulletList);
+
+    card.appendChild(whySection);
+  }
 
   // Click handler on entire card
   card.addEventListener('click', () => navigateToQuery(suggestion.query));

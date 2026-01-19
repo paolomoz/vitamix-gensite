@@ -103,15 +103,39 @@
   letter-spacing: 0.05em;
 }
 
-/* ===== Primary Advisor Card ===== */
-.advisor-card-primary {
+/* ===== Shared Card Styles ===== */
+.advisor-card {
   background: var(--color-white);
+  border: none;
   border-radius: var(--rounding-m);
   padding: var(--spacing-400);
-  margin-bottom: var(--spacing-300);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+.advisor-card:hover {
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.advisor-card:focus {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.advisor-card:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.advisor-card:focus-visible {
+  outline: var(--border-m) solid var(--color-red);
+  outline-offset: 2px;
+}
+
+/* ===== Badge ===== */
 .advisor-badge {
   display: inline-flex;
   align-items: center;
@@ -127,6 +151,11 @@
 
 .badge-star {
   color: var(--color-red);
+}
+
+/* ===== Primary Advisor Card ===== */
+.advisor-card-primary {
+  margin-bottom: var(--spacing-300);
 }
 
 .advisor-card-primary .advisor-headline {
@@ -147,42 +176,22 @@
   margin: 0 0 var(--spacing-300) 0;
 }
 
-/* ===== Expandable Why Section ===== */
+/* ===== Why Section (Always Visible) ===== */
 .advisor-why {
-  margin-bottom: var(--spacing-300);
   border-top: 1px solid var(--color-gray-300);
   padding-top: var(--spacing-200);
 }
 
-.advisor-why summary {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-60);
+.why-header {
   font-family: var(--body-font-family);
   font-size: var(--body-size-s);
   font-weight: var(--weight-medium);
   color: var(--color-charcoal);
-  cursor: pointer;
-  list-style: none;
-  user-select: none;
-}
-
-.advisor-why summary::-webkit-details-marker {
-  display: none;
-}
-
-.why-chevron {
-  font-size: 10px;
-  transition: transform 0.2s ease;
-  color: var(--color-gray-900);
-}
-
-.advisor-why[open] .why-chevron {
-  transform: rotate(180deg);
+  margin-bottom: var(--spacing-100);
 }
 
 .advisor-bullets {
-  margin: var(--spacing-200) 0 0 var(--spacing-200);
+  margin: 0 0 0 var(--spacing-200);
   padding: 0;
   list-style: disc;
 }
@@ -196,49 +205,8 @@
   margin-bottom: var(--spacing-60);
 }
 
-/* ===== Primary CTA Button ===== */
-.advisor-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-100);
-  padding: 14px 24px;
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-medium);
-  line-height: 1;
-  letter-spacing: 0.02em;
-  color: var(--color-white);
-  background: var(--color-red);
-  border: none;
-  border-radius: var(--rounding-s);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.advisor-cta:hover {
-  background: var(--color-madder);
-}
-
-.advisor-cta:focus {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.advisor-cta:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.advisor-cta:focus-visible {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.cta-arrow {
-  transition: transform 0.2s ease;
-}
-
-.advisor-cta:hover .cta-arrow {
-  transform: translateX(4px);
+.advisor-bullets li:last-child {
+  margin-bottom: 0;
 }
 
 /* ===== Secondary Cards Container ===== */
@@ -251,41 +219,19 @@
 
 /* ===== Secondary Advisor Card ===== */
 .advisor-card-secondary {
-  background: transparent;
-  border: 1px solid var(--color-gray-700);
-  border-radius: var(--rounding-m);
   padding: var(--spacing-300);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  width: 100%;
 }
 
-.advisor-card-secondary:hover {
-  border-color: var(--color-red);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.advisor-card-secondary:focus {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.advisor-card-secondary:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.advisor-card-secondary:focus-visible {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
+.advisor-card-secondary .advisor-badge {
+  color: var(--color-gray-900);
 }
 
 .advisor-card-secondary .advisor-headline {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-m);
-  font-weight: var(--weight-medium);
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-s);
+  font-weight: var(--weight-light);
   line-height: var(--line-height-s);
-  color: var(--color-white);
+  color: var(--color-charcoal);
   margin: 0 0 var(--spacing-100) 0;
 }
 
@@ -294,8 +240,16 @@
   font-size: var(--body-size-s);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
-  color: var(--color-gray-400);
+  color: var(--color-gray-900);
   margin: 0;
+}
+
+.advisor-card-secondary .advisor-why {
+  margin-top: var(--spacing-200);
+}
+
+.advisor-card-secondary .advisor-rationale:last-child {
+  margin-bottom: 0;
 }
 
 /* ===== Gaps Section ===== */
@@ -400,7 +354,7 @@
     gap: var(--spacing-100);
   }
 
-  .advisor-card-primary {
+  .advisor-card {
     padding: var(--spacing-300);
   }
 
@@ -440,11 +394,6 @@
 
   .advisor-card-primary .advisor-rationale {
     font-size: var(--body-size-s);
-  }
-
-  .advisor-cta {
-    width: 100%;
-    justify-content: center;
   }
 
   .advisor-gaps {

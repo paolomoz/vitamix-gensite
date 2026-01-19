@@ -76,6 +76,11 @@
     <symbol id="icon-chevron-down" viewBox="0 0 18 18">
       <path d="M4 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+    <symbol id="icon-layers" viewBox="0 0 18 18">
+      <path d="M9 2L2 6l7 4 7-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M2 10l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 14l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
   </svg>
 
   <div class="panel">
@@ -86,6 +91,9 @@
         <span>Intent Inference</span>
       </div>
       <div class="panel-header-actions">
+        <button class="icon-btn" id="infographic-btn" title="Content Generation Spectrum">
+          <svg class="icon"><use href="#icon-layers"/></svg>
+        </button>
         <button class="icon-btn" id="clear-btn" title="Clear Session">
           <svg class="icon"><use href="#icon-delete"/></svg>
         </button>

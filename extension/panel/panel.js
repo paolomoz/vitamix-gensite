@@ -78,6 +78,11 @@ function setupEventListeners() {
     });
   });
 
+  // Infographic button - opens Content Generation Spectrum in new tab
+  document.getElementById('infographic-btn').addEventListener('click', () => {
+    chrome.tabs.create({ url: 'http://localhost:3000/infographic/content-generation.html' });
+  });
+
   // Clear session button
   document.getElementById('clear-btn').addEventListener('click', async () => {
     await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });

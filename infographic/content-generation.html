@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Generation Spectrum | Vitamix AI Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Adobe Spectrum Dark Theme Tokens */
+    :root {
+      /* Backgrounds */
+      --spectrum-gray-25: rgb(17, 17, 17);
+      --spectrum-gray-50: rgb(27, 27, 27);
+      --spectrum-gray-75: rgb(34, 34, 34);
+      --spectrum-gray-100: rgb(44, 44, 44);
+      --spectrum-gray-200: rgb(50, 50, 50);
+      --spectrum-gray-300: rgb(57, 57, 57);
+      --spectrum-gray-400: rgb(68, 68, 68);
+      --spectrum-gray-500: rgb(109, 109, 109);
+      --spectrum-gray-700: rgb(175, 175, 175);
+      --spectrum-gray-900: rgb(227, 227, 227);
+      --spectrum-gray-1000: rgb(255, 255, 255);
+
+      /* Accent */
+      --spectrum-blue-900: rgb(86, 129, 255);
+      --spectrum-blue-1000: rgb(105, 149, 254);
+
+      /* Semantic */
+      --spectrum-green-900: rgb(45, 157, 120);
+      --spectrum-orange-900: rgb(230, 134, 25);
+      --spectrum-red-900: rgb(215, 50, 32);
+      --spectrum-purple-900: rgb(150, 86, 255);
+      --spectrum-seafoam-900: rgb(32, 163, 145);
+      --spectrum-magenta-900: rgb(222, 61, 130);
+
+
+      /* Spacing */
+      --spectrum-spacing-50: 2px;
+      --spectrum-spacing-75: 4px;
+      --spectrum-spacing-100: 8px;
+      --spectrum-spacing-200: 12px;
+      --spectrum-spacing-300: 16px;
+      --spectrum-spacing-400: 24px;
+      --spectrum-spacing-500: 32px;
+
+      /* Border Radius */
+      --spectrum-corner-radius-75: 4px;
+      --spectrum-corner-radius-100: 8px;
+      --spectrum-corner-radius-200: 10px;
+
+      /* Animation */
+      --spectrum-animation-duration-100: 130ms;
+      --spectrum-animation-duration-200: 160ms;
+      --spectrum-animation-ease-in-out: cubic-bezier(0.45, 0, 0.4, 1);
+
+      /* Semantic Colors */
+      --brand-color: var(--spectrum-blue-900);
+      --ai-color: var(--spectrum-orange-900);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--spectrum-gray-25);
+      color: var(--spectrum-gray-900);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Spectrum Icons */
+    .spectrum-icon {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .spectrum-icon-lg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Main Layout */
+    .dashboard {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: var(--spectrum-spacing-300);
+      padding: var(--spectrum-spacing-300);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spectrum-spacing-200) var(--spectrum-spacing-400);
+      background: var(--spectrum-gray-50);
+      border-radius: var(--spectrum-corner-radius-100);
+      border: 1px solid var(--spectrum-gray-300);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-400);
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--spectrum-gray-1000);
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-100);
+    }
+
+    .header h1 .accent {
+      color: var(--spectrum-blue-900);
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--spectrum-spacing-400);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-100);
+      font-size: 13px;
+      color: var(--spectrum-gray-700);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.brand { background: var(--brand-color); }
+    .legend-dot.ai { background: var(--ai-color); }
+
+    /* Main Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      grid-template-rows: auto auto 1fr auto;
+      gap: var(--spectrum-spacing-300);
+      min-height: 0;
+    }
+
+    /* Panel Base */
+    .panel {
+      background: var(--spectrum-gray-50);
+      border: 1px solid var(--spectrum-gray-300);
+      border-radius: var(--spectrum-corner-radius-100);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+      border-bottom: 1px solid var(--spectrum-gray-300);
+      background: var(--spectrum-gray-75);
+    }
+
+    .panel-header h2 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--spectrum-gray-700);
+    }
+
+    .panel-content {
+      padding: var(--spectrum-spacing-300);
+    }
+
+    /* Spectrum Bar Section */
+    .spectrum-panel {
+      grid-column: 1 / -1;
+    }
+
+    .spectrum-panel .panel-content {
+      padding: var(--spectrum-spacing-300) var(--spectrum-spacing-400);
+    }
+
+    .spectrum-visualization {
+      position: relative;
+    }
+
+    .spectrum-bar-container {
+      position: relative;
+      margin-bottom: var(--spectrum-spacing-200);
+    }
+
+    .spectrum-bar {
+      height: 8px;
+      background: linear-gradient(90deg,
+        var(--spectrum-blue-900) 0%,
+        var(--spectrum-gray-500) 60%,
+        var(--spectrum-orange-900) 100%
+      );
+      border-radius: 4px;
+    }
+
+    .spectrum-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--spectrum-gray-500);
+      margin-bottom: var(--spectrum-spacing-200);
+    }
+
+    .spectrum-labels .brand-zone {
+      color: var(--spectrum-blue-900);
+      font-weight: 600;
+    }
+
+    .content-markers {
+      position: relative;
+      height: 60px;
+    }
+
+    .marker {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform: translateX(-50%);
+      transition: left 0.15s var(--spectrum-animation-ease-in-out);
+      cursor: grab;
+      user-select: none;
+    }
+
+    .marker:hover {
+      z-index: 10;
+    }
+
+    .marker.dragging {
+      cursor: grabbing;
+      transition: none;
+      z-index: 20;
+    }
+
+    .marker.dragging .marker-dot {
+      transform: scale(1.3);
+    }
+
+    .marker-line {
+      width: 2px;
+      height: 12px;
+      background: var(--spectrum-gray-400);
+      margin-bottom: var(--spectrum-spacing-75);
+      transition: height 0.1s ease;
+    }
+
+    .marker:hover .marker-line,
+    .marker.dragging .marker-line {
+      height: 16px;
+      background: var(--spectrum-gray-500);
+    }
+
+    .marker-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-bottom: var(--spectrum-spacing-75);
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .marker:hover .marker-dot {
+      transform: scale(1.2);
+    }
+
+    .marker-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--spectrum-gray-900);
+      white-space: nowrap;
+    }
+
+    .marker-detail {
+      font-size: 10px;
+      color: var(--spectrum-gray-500);
+    }
+
+    /* Content Type Cards */
+    .cards-panel {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .cards-panel .panel-content {
+      padding: var(--spectrum-spacing-200);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spectrum-spacing-200);
+    }
+
+    .content-card {
+      background: var(--spectrum-gray-75);
+      border-radius: var(--spectrum-corner-radius-100);
+      padding: var(--spectrum-spacing-200);
+      border: 1px solid var(--spectrum-gray-300);
+      transition: border-color var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out),
+                  box-shadow var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+    }
+
+    .content-card:hover {
+      border-color: var(--spectrum-gray-400);
+    }
+
+    .content-card.active {
+      border-color: var(--spectrum-blue-900);
+      box-shadow: 0 0 0 1px var(--spectrum-blue-900);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-100);
+      margin-bottom: var(--spectrum-spacing-200);
+    }
+
+    .card-icon {
+      color: var(--spectrum-gray-500);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--spectrum-gray-900);
+    }
+
+    .ratio-bar {
+      height: 5px;
+      background: var(--spectrum-gray-300);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: var(--spectrum-spacing-100);
+    }
+
+    .ratio-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s var(--spectrum-animation-ease-in-out);
+      background: var(--spectrum-blue-900);
+    }
+
+    .ratio-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: var(--spectrum-spacing-100);
+    }
+
+    .ratio-labels .brand { color: var(--brand-color); font-weight: 600; }
+    .ratio-labels .ai { color: var(--ai-color); font-weight: 600; }
+
+    .card-details {
+      font-size: 11px;
+      color: var(--spectrum-gray-500);
+      line-height: 1.4;
+    }
+
+    .card-details strong {
+      color: var(--spectrum-gray-700);
+    }
+
+    /* Sources of Truth Section */
+    .sources-panel {
+      grid-column: 1;
+      grid-row: 3;
+    }
+
+    .sources-panel .panel-content {
+      padding: var(--spectrum-spacing-200);
+    }
+
+    .sources-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spectrum-spacing-200);
+    }
+
+    .source-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-200);
+      padding: var(--spectrum-spacing-200);
+      background: var(--spectrum-gray-75);
+      border-radius: var(--spectrum-corner-radius-75);
+      border-left: 3px solid var(--spectrum-blue-900);
+      transition: background var(--spectrum-animation-duration-100) ease;
+    }
+
+    .source-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--spectrum-corner-radius-75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(86, 129, 255, 0.15);
+      color: var(--spectrum-blue-900);
+    }
+
+    .source-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .source-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--spectrum-gray-900);
+    }
+
+    .source-desc {
+      display: block;
+      font-size: 10px;
+      color: var(--spectrum-gray-500);
+    }
+
+    .source-badge {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: var(--spectrum-spacing-50) var(--spectrum-spacing-100);
+      border-radius: var(--spectrum-corner-radius-75);
+      flex-shrink: 0;
+      background: rgba(86, 129, 255, 0.15);
+      color: var(--spectrum-blue-900);
+    }
+
+    /* Tuning Panel */
+    .tuning-panel {
+      grid-column: 2;
+      grid-row: 2 / 5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tuning-panel .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tuning-panel .panel-header .hint {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--spectrum-gray-500);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .tuning-panel .panel-content {
+      padding: var(--spectrum-spacing-200);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spectrum-spacing-200);
+      flex: 1;
+    }
+
+    .tuning-control {
+      background: var(--spectrum-gray-75);
+      border-radius: var(--spectrum-corner-radius-100);
+      padding: var(--spectrum-spacing-200);
+      border: 1px solid var(--spectrum-gray-300);
+      cursor: pointer;
+      transition: border-color var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out),
+                  box-shadow var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .tuning-control:hover {
+      border-color: var(--spectrum-gray-400);
+    }
+
+    .tuning-control.active {
+      border-color: var(--spectrum-blue-900);
+      box-shadow: 0 0 0 1px var(--spectrum-blue-900);
+    }
+
+    .tuning-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spectrum-spacing-100);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--spectrum-gray-900);
+      margin-bottom: var(--spectrum-spacing-100);
+    }
+
+    .tuning-label-left {
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-100);
+      color: var(--spectrum-gray-500);
+    }
+
+    .tuning-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--spectrum-blue-900);
+    }
+
+    .tuning-slider {
+      position: relative;
+      height: 5px;
+      background: var(--spectrum-gray-300);
+      border-radius: 3px;
+      margin-bottom: var(--spectrum-spacing-75);
+      cursor: pointer;
+    }
+
+    .tuning-slider .fill {
+      height: 100%;
+      background: var(--spectrum-blue-900);
+      border-radius: 3px;
+      transition: width var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+    }
+
+    .tuning-slider .handle {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      background: var(--spectrum-gray-1000);
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+      cursor: grab;
+      transition: transform var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+    }
+
+    .tuning-slider:hover .handle {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .tuning-hints {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: var(--spectrum-gray-500);
+    }
+
+    /* Flow Section */
+    .flow-panel {
+      grid-column: 1;
+      grid-row: 4;
+    }
+
+    .flow-panel .panel-content {
+      padding: var(--spectrum-spacing-200);
+    }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-200);
+    }
+
+    .flow-step {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-200);
+      padding: var(--spectrum-spacing-200);
+      background: var(--spectrum-gray-75);
+      border-radius: var(--spectrum-corner-radius-100);
+      border: 1px solid var(--spectrum-gray-300);
+    }
+
+    .flow-step.brand-step { border-color: var(--brand-color); background: rgba(86, 129, 255, 0.08); }
+    .flow-step.ai-step { border-color: var(--ai-color); background: rgba(230, 134, 25, 0.08); }
+    .flow-step.output-step { border-color: var(--spectrum-green-900); background: rgba(45, 157, 120, 0.08); }
+
+    .flow-step-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--spectrum-corner-radius-75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--spectrum-gray-100);
+      color: var(--spectrum-gray-700);
+      flex-shrink: 0;
+    }
+
+    .flow-step.brand-step .flow-step-icon { background: rgba(86, 129, 255, 0.2); color: var(--brand-color); }
+    .flow-step.ai-step .flow-step-icon { background: rgba(230, 134, 25, 0.2); color: var(--ai-color); }
+    .flow-step.output-step .flow-step-icon { background: rgba(45, 157, 120, 0.2); color: var(--spectrum-green-900); }
+
+    .flow-step-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .flow-step-text h4 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--spectrum-gray-900);
+    }
+
+    .flow-step-text p {
+      font-size: 10px;
+      color: var(--spectrum-gray-500);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .flow-arrow {
+      color: var(--spectrum-gray-400);
+      flex-shrink: 0;
+    }
+
+    /* Quote Badge */
+    .quote-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spectrum-spacing-100);
+      padding: var(--spectrum-spacing-100) var(--spectrum-spacing-300);
+      background: var(--spectrum-gray-100);
+      border-radius: var(--spectrum-corner-radius-75);
+      font-size: 12px;
+      color: var(--spectrum-gray-700);
+      font-style: italic;
+    }
+
+    .quote-badge strong {
+      color: var(--spectrum-blue-900);
+      font-style: normal;
+    }
+
+    /* Responsive */
+    @media (max-height: 820px) {
+      .dashboard {
+        padding: var(--spectrum-spacing-200);
+        gap: var(--spectrum-spacing-200);
+      }
+      .content-grid {
+        gap: var(--spectrum-spacing-200);
+      }
+      .panel-content {
+        padding: var(--spectrum-spacing-200);
+      }
+      .spectrum-panel .panel-content {
+        padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+      }
+      .content-markers {
+        height: 55px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1>
+          <svg class="spectrum-icon spectrum-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          Content <span class="accent">Generation Spectrum</span>
+        </h1>
+        <span class="quote-badge">"Every fact is <strong>verified</strong>. Every experience is <strong>personal</strong>."</span>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot brand"></div>
+          <span>Brand Database</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot ai"></div>
+          <span>AI Generated</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-grid">
+      <!-- Spectrum Visualization -->
+      <section class="panel spectrum-panel">
+        <div class="panel-header">
+          <h2>Content Type Positioning</h2>
+        </div>
+        <div class="panel-content">
+          <div class="spectrum-visualization">
+            <div class="spectrum-bar-container">
+              <div class="spectrum-bar"></div>
+            </div>
+            <div class="spectrum-labels">
+              <span class="brand-zone">Brand Controlled</span>
+              <span>Balanced</span>
+              <span>AI Personalized</span>
+            </div>
+            <div class="content-markers">
+              <div class="marker" data-type="products" data-base="3" style="left: 3%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-blue-900);"></div>
+                <span class="marker-label">Pricing</span>
+                <span class="marker-detail">100% DB</span>
+              </div>
+              <div class="marker" data-type="products" data-base="8" style="left: 8%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-blue-900);"></div>
+                <span class="marker-label">Product Specs</span>
+                <span class="marker-detail">100% DB</span>
+              </div>
+              <div class="marker" data-type="images" data-base="14" style="left: 14%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-blue-900);"></div>
+                <span class="marker-label">Product Images</span>
+                <span class="marker-detail">100% Authored</span>
+              </div>
+              <div class="marker" data-type="recipes" data-base="28" style="left: 28%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-blue-900);"></div>
+                <span class="marker-label">Recipes</span>
+                <span class="marker-detail">70% Retrieved</span>
+              </div>
+              <div class="marker" data-type="images" data-base="42" style="left: 42%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-gray-500);"></div>
+                <span class="marker-label">Hero Images</span>
+                <span class="marker-detail">Pre-generated</span>
+              </div>
+              <div class="marker" data-type="text" data-base="62" style="left: 62%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-orange-900);"></div>
+                <span class="marker-label">Answers</span>
+                <span class="marker-detail">Adapted Text</span>
+              </div>
+              <div class="marker" data-type="text" data-base="78" style="left: 78%">
+                <div class="marker-line"></div>
+                <div class="marker-dot" style="background: var(--spectrum-orange-900);"></div>
+                <span class="marker-label">Recommendations</span>
+                <span class="marker-detail">Intent-based</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content Type Cards -->
+      <section class="panel cards-panel">
+        <div class="panel-header">
+          <h2>Content Type Details</h2>
+        </div>
+        <div class="panel-content">
+          <div class="cards-grid">
+            <div class="content-card" data-type="products">
+              <div class="card-header">
+                <svg class="spectrum-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span class="card-title">Products</span>
+              </div>
+              <div class="ratio-bar">
+                <div class="ratio-fill" data-base="95" style="width: 95%"></div>
+              </div>
+              <div class="ratio-labels">
+                <span class="brand" data-brand>95%</span>
+                <span class="ai" data-ai>5%</span>
+              </div>
+              <div class="card-details">
+                <strong>DB:</strong> Specs, pricing, SKUs<br>
+                <strong>AI:</strong> Selection, ordering
+              </div>
+            </div>
+
+            <div class="content-card" data-type="recipes">
+              <div class="card-header">
+                <svg class="spectrum-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <span class="card-title">Recipes</span>
+              </div>
+              <div class="ratio-bar">
+                <div class="ratio-fill" data-base="70" style="width: 70%"></div>
+              </div>
+              <div class="ratio-labels">
+                <span class="brand" data-brand>70%</span>
+                <span class="ai" data-ai>30%</span>
+              </div>
+              <div class="card-details">
+                <strong>DB:</strong> Tested recipes<br>
+                <strong>AI:</strong> Intro, variations
+              </div>
+            </div>
+
+            <div class="content-card" data-type="images">
+              <div class="card-header">
+                <svg class="spectrum-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span class="card-title">Images</span>
+              </div>
+              <div class="ratio-bar">
+                <div class="ratio-fill" data-base="80" style="width: 80%"></div>
+              </div>
+              <div class="ratio-labels">
+                <span class="brand" data-brand>80%</span>
+                <span class="ai" data-ai>20%</span>
+              </div>
+              <div class="card-details">
+                <strong>Assets:</strong> Product photos<br>
+                <strong>Gen:</strong> Hero images
+              </div>
+            </div>
+
+            <div class="content-card" data-type="text">
+              <div class="card-header">
+                <svg class="spectrum-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span class="card-title">Answers</span>
+              </div>
+              <div class="ratio-bar">
+                <div class="ratio-fill" data-base="40" style="width: 40%"></div>
+              </div>
+              <div class="ratio-labels">
+                <span class="brand" data-brand>40%</span>
+                <span class="ai" data-ai>60%</span>
+              </div>
+              <div class="card-details">
+                <strong>Brand:</strong> Tone, messages<br>
+                <strong>AI:</strong> Personalized copy
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sources of Truth -->
+      <section class="panel sources-panel">
+        <div class="panel-header">
+          <h2>Sources of Truth</h2>
+        </div>
+        <div class="panel-content">
+          <div class="sources-grid">
+            <div class="source-item" data-type="products">
+              <div class="source-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+              </div>
+              <div class="source-info">
+                <span class="source-name">Product Database</span>
+                <span class="source-desc">Specs, pricing, SKUs, warranties</span>
+              </div>
+              <div class="source-badge">Verified</div>
+            </div>
+            <div class="source-item" data-type="recipes">
+              <div class="source-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+              </div>
+              <div class="source-info">
+                <span class="source-name">Recipe Library</span>
+                <span class="source-desc">2,400+ tested recipes</span>
+              </div>
+              <div class="source-badge">Curated</div>
+            </div>
+            <div class="source-item" data-type="images">
+              <div class="source-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <div class="source-info">
+                <span class="source-name">Brand Assets</span>
+                <span class="source-desc">Product & lifestyle photos</span>
+              </div>
+              <div class="source-badge">Approved</div>
+            </div>
+            <div class="source-item" data-type="text">
+              <div class="source-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="source-info">
+                <span class="source-name">Brand Guidelines</span>
+                <span class="source-desc">Tone, messaging, compliance</span>
+              </div>
+              <div class="source-badge">Enforced</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Generation Flow -->
+      <section class="panel flow-panel">
+        <div class="panel-header">
+          <h2>Generation Flow</h2>
+        </div>
+        <div class="panel-content">
+          <div class="flow-diagram">
+            <div class="flow-step">
+              <div class="flow-step-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4"/>
+                  <path d="M12 8h.01"/>
+                </svg>
+              </div>
+              <div class="flow-step-text">
+                <h4>User Intent</h4>
+                <p>"Best blender for smoothies under $400"</p>
+              </div>
+            </div>
+
+            <svg class="flow-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+
+            <div class="flow-step brand-step">
+              <div class="flow-step-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+              </div>
+              <div class="flow-step-text">
+                <h4>Brand Database</h4>
+                <p>Verified specs, pricing, images</p>
+              </div>
+            </div>
+
+            <svg class="flow-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+
+            <div class="flow-step ai-step">
+              <div class="flow-step-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22l-.75-12.07A4.001 4.001 0 0 1 12 2z"/>
+                  <path d="M9 6.5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0z"/>
+                  <path d="M20 6.5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0z"/>
+                </svg>
+              </div>
+              <div class="flow-step-text">
+                <h4>AI Engine</h4>
+                <p>Select, arrange, personalize</p>
+              </div>
+            </div>
+
+            <svg class="flow-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+
+            <div class="flow-step output-step">
+              <div class="flow-step-icon">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </div>
+              <div class="flow-step-text">
+                <h4>Personalized Page</h4>
+                <p>Accurate data, tailored experience</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tuning Panel -->
+      <section class="panel tuning-panel">
+        <div class="panel-header">
+          <h2>Generation Tuning</h2>
+          <span class="hint">Drag to adjust</span>
+        </div>
+        <div class="panel-content">
+          <div class="tuning-control" data-type="products">
+            <div class="tuning-label">
+              <span class="tuning-label-left">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                Product Information
+              </span>
+              <span class="tuning-value">10%</span>
+            </div>
+            <div class="tuning-slider">
+              <div class="fill" style="width: 10%"></div>
+              <div class="handle" style="left: 10%"></div>
+            </div>
+            <div class="tuning-hints">
+              <span>Strict (DB only)</span>
+              <span>Flexible</span>
+            </div>
+          </div>
+
+          <div class="tuning-control" data-type="recipes">
+            <div class="tuning-label">
+              <span class="tuning-label-left">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Recipe Content
+              </span>
+              <span class="tuning-value">35%</span>
+            </div>
+            <div class="tuning-slider">
+              <div class="fill" style="width: 35%"></div>
+              <div class="handle" style="left: 35%"></div>
+            </div>
+            <div class="tuning-hints">
+              <span>Strict</span>
+              <span>Flexible</span>
+            </div>
+          </div>
+
+          <div class="tuning-control" data-type="images">
+            <div class="tuning-label">
+              <span class="tuning-label-left">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Visual Content
+              </span>
+              <span class="tuning-value">50%</span>
+            </div>
+            <div class="tuning-slider">
+              <div class="fill" style="width: 50%"></div>
+              <div class="handle" style="left: 50%"></div>
+            </div>
+            <div class="tuning-hints">
+              <span>Strict</span>
+              <span>Flexible</span>
+            </div>
+          </div>
+
+          <div class="tuning-control" data-type="text">
+            <div class="tuning-label">
+              <span class="tuning-label-left">
+                <svg class="spectrum-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Conversational Text
+              </span>
+              <span class="tuning-value">75%</span>
+            </div>
+            <div class="tuning-slider">
+              <div class="fill" style="width: 75%"></div>
+              <div class="handle" style="left: 75%"></div>
+            </div>
+            <div class="tuning-hints">
+              <span>Strict</span>
+              <span>Flexible</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Interactive system - tuning sliders affect other panels
+    const tuningControls = document.querySelectorAll('.tuning-control');
+    const contentCards = document.querySelectorAll('.content-card');
+    const sourceItems = document.querySelectorAll('.source-item');
+    const markers = document.querySelectorAll('.marker');
+
+    // Configuration for how tuning affects content
+    const typeConfig = {
+      products: { baseRatio: 95 },
+      recipes: { baseRatio: 70 },
+      images: { baseRatio: 80 },
+      text: { baseRatio: 40 }
+    };
+
+    function updateVisualization(type, flexValue) {
+      // Update content card
+      const card = document.querySelector(`.content-card[data-type="${type}"]`);
+      if (card) {
+        const ratioFill = card.querySelector('.ratio-fill');
+        const brandLabel = card.querySelector('[data-brand]');
+        const aiLabel = card.querySelector('[data-ai]');
+
+        const baseRatio = typeConfig[type].baseRatio;
+        const adjustment = (flexValue / 100) * (baseRatio - 20);
+        const newRatio = Math.round(baseRatio - adjustment);
+
+        ratioFill.style.width = newRatio + '%';
+        brandLabel.textContent = newRatio + '%';
+        aiLabel.textContent = (100 - newRatio) + '%';
+      }
+
+      // Update markers
+      markers.forEach(marker => {
+        if (marker.dataset.type === type) {
+          const basePos = parseFloat(marker.dataset.base);
+          const adjustment = (flexValue / 100) * 15;
+          const newPos = Math.min(90, basePos + adjustment);
+          marker.style.left = newPos + '%';
+
+          // Update dot color based on position (blue = brand, grey = balanced, orange = AI)
+          const dot = marker.querySelector('.marker-dot');
+          if (newPos < 35) {
+            dot.style.background = 'var(--spectrum-blue-900)';
+          } else if (newPos < 55) {
+            dot.style.background = 'var(--spectrum-gray-500)';
+          } else {
+            dot.style.background = 'var(--spectrum-orange-900)';
+          }
+        }
+      });
+    }
+
+    // Initialize sliders with interactivity
+    tuningControls.forEach(control => {
+      const slider = control.querySelector('.tuning-slider');
+      const handle = slider.querySelector('.handle');
+      const fill = slider.querySelector('.fill');
+      const valueDisplay = control.querySelector('.tuning-value');
+      const type = control.dataset.type;
+      const card = document.querySelector(`.content-card[data-type="${type}"]`);
+      const source = document.querySelector(`.source-item[data-type="${type}"]`);
+
+      let isDragging = false;
+
+      const updateSlider = (e) => {
+        const rect = slider.getBoundingClientRect();
+        const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const percentage = Math.round((x / rect.width) * 100);
+
+        handle.style.left = percentage + '%';
+        fill.style.width = percentage + '%';
+        valueDisplay.textContent = percentage + '%';
+
+        updateVisualization(type, percentage);
+      };
+
+      const setActive = (active) => {
+        control.classList.toggle('active', active);
+        if (card) card.classList.toggle('active', active);
+        if (source) source.style.background = active ? 'var(--spectrum-gray-100)' : '';
+      };
+
+      slider.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        setActive(true);
+        updateSlider(e);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) updateSlider(e);
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          setActive(false);
+        }
+      });
+
+      control.addEventListener('mouseenter', () => {
+        if (!isDragging) setActive(true);
+      });
+
+      control.addEventListener('mouseleave', () => {
+        if (!isDragging) setActive(false);
+      });
+    });
+
+    // Card hover highlights corresponding elements
+    contentCards.forEach(card => {
+      const type = card.dataset.type;
+      const control = document.querySelector(`.tuning-control[data-type="${type}"]`);
+      const source = document.querySelector(`.source-item[data-type="${type}"]`);
+
+      card.addEventListener('mouseenter', () => {
+        card.classList.add('active');
+        if (control) control.classList.add('active');
+        if (source) source.style.background = 'var(--spectrum-gray-100)';
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('active');
+        if (control) control.classList.remove('active');
+        if (source) source.style.background = '';
+      });
+    });
+
+    // Source hover highlights corresponding elements
+    sourceItems.forEach(source => {
+      const type = source.dataset.type;
+      const control = document.querySelector(`.tuning-control[data-type="${type}"]`);
+      const card = document.querySelector(`.content-card[data-type="${type}"]`);
+
+      source.addEventListener('mouseenter', () => {
+        source.style.background = 'var(--spectrum-gray-100)';
+        if (control) control.classList.add('active');
+        if (card) card.classList.add('active');
+      });
+
+      source.addEventListener('mouseleave', () => {
+        source.style.background = '';
+        if (control) control.classList.remove('active');
+        if (card) card.classList.remove('active');
+      });
+    });
+
+    // Marker hover and drag functionality
+    const spectrumBar = document.querySelector('.spectrum-bar');
+    const markersContainer = document.querySelector('.content-markers');
+
+    markers.forEach(marker => {
+      const type = marker.dataset.type;
+      const control = document.querySelector(`.tuning-control[data-type="${type}"]`);
+      const card = document.querySelector(`.content-card[data-type="${type}"]`);
+      const source = document.querySelector(`.source-item[data-type="${type}"]`);
+
+      let isDragging = false;
+
+      const setMarkerActive = (active) => {
+        if (control) control.classList.toggle('active', active);
+        if (card) card.classList.toggle('active', active);
+        if (source) source.style.background = active ? 'var(--spectrum-gray-100)' : '';
+      };
+
+      // Hover highlighting
+      marker.addEventListener('mouseenter', () => {
+        if (!isDragging) setMarkerActive(true);
+      });
+
+      marker.addEventListener('mouseleave', () => {
+        if (!isDragging) setMarkerActive(false);
+      });
+
+      // Drag functionality
+      marker.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        isDragging = true;
+        marker.classList.add('dragging');
+        setMarkerActive(true);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = markersContainer.getBoundingClientRect();
+        const x = e.clientX - containerRect.left;
+        const percentage = Math.max(2, Math.min(95, (x / containerRect.width) * 100));
+
+        // Only move THIS marker (not others of same type)
+        marker.style.left = percentage + '%';
+
+        // Update marker dot color based on position
+        const dot = marker.querySelector('.marker-dot');
+        if (percentage < 35) {
+          dot.style.background = 'var(--spectrum-blue-900)';
+        } else if (percentage < 55) {
+          dot.style.background = 'var(--spectrum-gray-500)';
+        } else {
+          dot.style.background = 'var(--spectrum-orange-900)';
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          marker.classList.remove('dragging');
+          setMarkerActive(false);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

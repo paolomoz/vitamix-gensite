@@ -12,6 +12,9 @@ const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
 // Worker API URL for context storage
 const WORKER_API_URL = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev';
 
+// Analytics worker URL for self-improve analysis
+const ANALYTICS_WORKER_URL = 'https://vitamix-gensite-analytics.paolo-moz.workers.dev';
+
 // Supported domains for the extension
 const SUPPORTED_DOMAINS = [
   'vitamix.com',
@@ -180,6 +183,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleGenerationData(message.data);
       sendResponse({ success: true });
       return false;
+
+    // Self-Improve: Analysis handlers
+    case 'RUN_ANALYSIS':
+      handleRunAnalysis(message.force).then(sendResponse);
+      return true;
+
+    case 'GET_CACHED_ANALYSIS':
+      handleGetCachedAnalysis().then(sendResponse);
+      return true;
+
+    case 'EXECUTE_IMPROVEMENT':
+      handleExecuteImprovement(message.improvement, message.pageUrl).then(sendResponse);
+      return true;
+
+    case 'EXECUTE_BATCH':
+      handleExecuteBatch(message.improvements).then(sendResponse);
+      return true;
 
     default:
       sendResponse({ error: 'Unknown message type' });
@@ -580,6 +600,223 @@ async function notifyPanel() {
       profile: profileEngine.getProfile(),
       signals: profileEngine.getSignals(),
       previousQueries,
+    });
+  } catch (e) {
+    // Panel might not be open
+  }
+}
+
+// ============================================
+// Self-Improve: Analysis and Execution Handlers
+// ============================================
+
+/**
+ * Run AI analysis on recent pages
+ * @param {boolean} force - Bypass rate limiting
+ */
+async function handleRunAnalysis(force = false) {
+  try {
+    const url = force
+      ? `${ANALYTICS_WORKER_URL}/api/analytics/analyze?force=true`
+      : `${ANALYTICS_WORKER_URL}/api/analytics/analyze`;
+
+    const response = await fetch(url, { method: 'POST' });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return { success: false, error: error.error || 'Analysis failed' };
+    }
+
+    const data = await response.json();
+
+    // Broadcast result to panel
+    try {
+      chrome.runtime.sendMessage({
+        type: 'ANALYSIS_RESULT',
+        analysis: data.analysis,
+        cached: data.cached,
+      });
+    } catch (e) {
+      // Panel might not be open
+    }
+
+    return { success: true, analysis: data.analysis, cached: data.cached };
+  } catch (error) {
+    console.error('[Background] Analysis failed:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Get cached analysis data (if available)
+ */
+async function handleGetCachedAnalysis() {
+  try {
+    const response = await fetch(`${ANALYTICS_WORKER_URL}/api/analytics/summary`);
+
+    if (!response.ok) {
+      return { success: false, analysis: null };
+    }
+
+    const data = await response.json();
+
+    if (data.lastAnalysis && data.lastAnalysis.overallScore !== undefined) {
+      return { success: true, analysis: data.lastAnalysis };
+    }
+
+    return { success: true, analysis: null };
+  } catch (error) {
+    console.error('[Background] Failed to get cached analysis:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Execute a single improvement by regenerating the page
+ * @param {object} improvement - The improvement suggestion
+ * @param {string} pageUrl - The identifier for this improvement (used for tracking state)
+ */
+async function handleExecuteImprovement(improvement, pageUrl) {
+  try {
+    // Build an enhanced query based on the improvement
+    const enhancedQuery = buildEnhancedQuery(improvement);
+
+    console.log('[Background] Executing improvement:', improvement.text);
+    console.log('[Background] Enhanced query:', enhancedQuery);
+
+    // Notify panel that we're starting
+    notifyExecutionProgress(pageUrl, 'Analyzing improvement...');
+
+    // Generate the page using the recommender worker
+    const context = {
+      signals: profileEngine.getSignals(),
+      query: enhancedQuery,
+      previousQueries,
+      profile: profileEngine.getProfile(),
+      timestamp: Date.now(),
+      improvement: {
+        text: improvement.text,
+        category: improvement.category,
+        impact: improvement.impact,
+        effort: improvement.effort,
+      },
+    };
+
+    // Store context
+    notifyExecutionProgress(pageUrl, 'Storing context...');
+    const storeResponse = await fetch(`${WORKER_API_URL}/store-context`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(context),
+    });
+
+    if (!storeResponse.ok) {
+      throw new Error('Failed to store context');
+    }
+
+    const { id: contextId } = await storeResponse.json();
+
+    // Generate page with SSE streaming
+    notifyExecutionProgress(pageUrl, 'Generating improved page...');
+
+    const generateUrl = `${POC_BASE_URL}/?ctx=${contextId}&preset=all-cerebras`;
+
+    // For now, just navigate to the generated page
+    // The SSE streaming happens in the browser, and page auto-persists
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (activeTab) {
+      await chrome.tabs.update(activeTab.id, { url: generateUrl });
+    }
+
+    // Notify completion
+    try {
+      chrome.runtime.sendMessage({
+        type: 'EXECUTION_COMPLETE',
+        pageUrl,
+        newUrl: generateUrl,
+      });
+    } catch (e) {
+      // Panel might not be open
+    }
+
+    return { success: true, newUrl: generateUrl };
+  } catch (error) {
+    console.error('[Background] Execution failed:', error);
+
+    try {
+      chrome.runtime.sendMessage({
+        type: 'EXECUTION_ERROR',
+        pageUrl,
+        error: error.message,
+      });
+    } catch (e) {
+      // Panel might not be open
+    }
+
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Execute multiple improvements in batch
+ * @param {array} improvements - Array of improvement suggestions
+ */
+async function handleExecuteBatch(improvements) {
+  const results = [];
+
+  for (let i = 0; i < improvements.length; i++) {
+    const improvement = improvements[i];
+    const pageUrl = `batch_${i}`;
+
+    notifyExecutionProgress(pageUrl, `Processing ${i + 1}/${improvements.length}...`);
+
+    const result = await handleExecuteImprovement(improvement, pageUrl);
+    results.push(result);
+
+    // Small delay between executions to avoid rate limiting
+    if (i < improvements.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  const succeeded = results.filter(r => r.success).length;
+  const failed = results.length - succeeded;
+
+  return {
+    success: true,
+    results,
+    summary: `${succeeded} succeeded, ${failed} failed`,
+  };
+}
+
+/**
+ * Build an enhanced query from an improvement suggestion
+ */
+function buildEnhancedQuery(improvement) {
+  const categoryContext = {
+    content: 'focus on content quality and completeness',
+    layout: 'focus on visual hierarchy and structure',
+    conversion: 'focus on CTAs and conversion optimization',
+  };
+
+  // If we have a recent query in history, use it as a base
+  const baseQuery = previousQueries.length > 0
+    ? previousQueries[previousQueries.length - 1]
+    : 'Vitamix products and recipes';
+
+  return `${baseQuery} - ${improvement.text} (${categoryContext[improvement.category] || improvement.category})`;
+}
+
+/**
+ * Notify panel of execution progress
+ */
+function notifyExecutionProgress(pageUrl, stage, blockIndex = null) {
+  try {
+    chrome.runtime.sendMessage({
+      type: 'EXECUTION_PROGRESS',
+      pageUrl,
+      stage,
+      blockIndex,
     });
   } catch (e) {
     // Panel might not be open

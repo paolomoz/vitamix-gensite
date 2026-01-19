@@ -12,6 +12,11 @@ let previousQueries = [];
 let selectedExample = null;
 let generationData = null;
 
+// Self-Improve state
+let analysisResults = null;
+let analysisLoading = false;
+let executionState = {}; // { [pageUrl]: { status: 'pending'|'executing'|'complete'|'error', message: string } }
+
 /**
  * Initialize panel
  */
@@ -40,6 +45,39 @@ async function init() {
       generationData = message.data;
       renderGenerationReasoning();
     }
+
+    // Self-Improve messages
+    if (message.type === 'ANALYSIS_RESULT') {
+      analysisResults = message.analysis;
+      analysisLoading = false;
+      renderImproveView();
+    }
+
+    if (message.type === 'EXECUTION_PROGRESS') {
+      executionState[message.pageUrl] = {
+        status: 'executing',
+        message: message.stage,
+        blockIndex: message.blockIndex,
+      };
+      renderImproveView();
+    }
+
+    if (message.type === 'EXECUTION_COMPLETE') {
+      executionState[message.pageUrl] = {
+        status: 'complete',
+        message: 'Completed',
+        newUrl: message.newUrl,
+      };
+      renderImproveView();
+    }
+
+    if (message.type === 'EXECUTION_ERROR') {
+      executionState[message.pageUrl] = {
+        status: 'error',
+        message: message.error,
+      };
+      renderImproveView();
+    }
   });
 
   console.log('[Panel] Initialized');
@@ -49,9 +87,14 @@ async function init() {
  * Set up event listeners
  */
 function setupEventListeners() {
-  // Navigation tabs - switch between Intent Inference and Generation Reasoning views
+  // Navigation tabs - switch between Intent Inference, Generation Reasoning, and Self-Improve views
   document.getElementById('tab-inference').addEventListener('click', () => switchView('inference'));
   document.getElementById('tab-generation').addEventListener('click', () => switchView('generation'));
+  document.getElementById('tab-improve').addEventListener('click', () => {
+    switchView('improve');
+    // Fetch analysis data when switching to improve tab
+    fetchAnalysisData();
+  });
 
   // Section toggles (within each view)
   document.querySelectorAll('.section-header').forEach(header => {
@@ -109,12 +152,18 @@ function setupEventListeners() {
 }
 
 /**
- * Switch between views (inference / generation)
+ * Switch between views (inference / generation / improve)
  */
 function switchView(viewId) {
-  // Update tab active states
+  // Update tab active states and get the active tab's title
   document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.id === `tab-${viewId}`);
+    const isActive = tab.id === `tab-${viewId}`;
+    tab.classList.toggle('active', isActive);
+    if (isActive) {
+      // Update header title from data-title attribute
+      const title = tab.dataset.title || viewId;
+      document.getElementById('panel-title').textContent = title;
+    }
   });
 
   // Update view visibility
@@ -132,7 +181,7 @@ async function handleGenerate() {
 
   // Disable button while processing
   btn.disabled = true;
-  btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg><span>Generating...</span>';
+  btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg>';
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -152,7 +201,7 @@ async function handleGenerate() {
     alert('Failed to generate page: ' + error.message);
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<svg class="icon"><use href="#icon-play"/></svg><span>Generate Page</span>';
+    btn.innerHTML = '<svg class="icon"><use href="#icon-play"/></svg>';
   }
 }
 
@@ -165,7 +214,7 @@ async function handleAddHint() {
 
   // Disable button while processing
   btn.disabled = true;
-  btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg><span>Generating...</span>';
+  btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg>';
   statusEl.textContent = 'Generating hint...';
   statusEl.className = 'hint-status hint-status-loading';
 
@@ -173,7 +222,7 @@ async function handleAddHint() {
     const response = await chrome.runtime.sendMessage({ type: 'GENERATE_HINT' });
 
     if (response.success) {
-      statusEl.textContent = 'Hint added to page!';
+      statusEl.textContent = 'Hint added!';
       statusEl.className = 'hint-status hint-status-success';
       // Clear status after 3 seconds
       setTimeout(() => {
@@ -181,7 +230,7 @@ async function handleAddHint() {
         statusEl.className = 'hint-status';
       }, 3000);
     } else {
-      statusEl.textContent = response.error || 'Failed to generate hint';
+      statusEl.textContent = response.error || 'Failed';
       statusEl.className = 'hint-status hint-status-error';
     }
   } catch (error) {
@@ -190,7 +239,7 @@ async function handleAddHint() {
     statusEl.className = 'hint-status hint-status-error';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<svg class="icon"><use href="#icon-sparkle"/></svg><span>Add AI Hint</span>';
+    btn.innerHTML = '<svg class="icon"><use href="#icon-sparkle"/></svg>';
     updateHintButton();
   }
 }
@@ -812,6 +861,396 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+/**
+ * Fetch analysis data from background (cached or run new)
+ */
+async function fetchAnalysisData(force = false) {
+  const container = document.getElementById('improve-content');
+  if (!container) return;
+
+  if (!force && analysisResults) {
+    // Already have data, just render
+    renderImproveView();
+    return;
+  }
+
+  analysisLoading = true;
+  renderImproveView();
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: force ? 'RUN_ANALYSIS' : 'GET_CACHED_ANALYSIS',
+      force,
+    });
+
+    if (response.analysis) {
+      analysisResults = response.analysis;
+    }
+    analysisLoading = false;
+    renderImproveView();
+  } catch (error) {
+    console.error('[Panel] Failed to fetch analysis:', error);
+    analysisLoading = false;
+    renderImproveView();
+  }
+}
+
+/**
+ * Handle execute improvement click
+ */
+async function handleExecuteImprovement(improvement, pageUrl) {
+  executionState[pageUrl || 'current'] = {
+    status: 'executing',
+    message: 'Starting...',
+  };
+  renderImproveView();
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: 'EXECUTE_IMPROVEMENT',
+      improvement,
+      pageUrl,
+    });
+
+    if (!response.success) {
+      executionState[pageUrl || 'current'] = {
+        status: 'error',
+        message: response.error || 'Execution failed',
+      };
+    }
+    // Success state will be set by EXECUTION_COMPLETE message
+  } catch (error) {
+    console.error('[Panel] Execution error:', error);
+    executionState[pageUrl || 'current'] = {
+      status: 'error',
+      message: error.message,
+    };
+    renderImproveView();
+  }
+}
+
+/**
+ * Handle copy prompt to clipboard (for non-executable improvements)
+ */
+async function handleCopyPrompt(improvement) {
+  const categoryContext = {
+    content: 'content quality, relevance, and information completeness',
+    layout: 'visual hierarchy, formatting, and page structure',
+    conversion: 'CTAs, product links, and conversion optimization',
+  };
+
+  const prompt = `# Improvement Task: ${improvement.category.charAt(0).toUpperCase() + improvement.category.slice(1)}
+
+## Issue to Address
+${improvement.text}
+
+## Category Focus
+This improvement focuses on ${categoryContext[improvement.category] || improvement.category}.
+
+## Instructions
+1. Analyze the relevant blocks and templates in this AEM Edge Delivery Services project
+2. Identify the specific code changes needed to address this improvement
+3. Implement the changes following existing code patterns and styles
+4. Test the changes locally before committing
+
+## Project Context
+- This is a Vitamix product recommendation site built on AEM Edge Delivery Services
+- Generated pages are created dynamically based on user queries
+- Focus on improving the user experience and conversion rate
+
+Please implement this improvement across the affected components.`;
+
+  try {
+    await navigator.clipboard.writeText(prompt);
+    return { success: true };
+  } catch (error) {
+    console.error('[Panel] Failed to copy prompt:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Create a score gauge element
+ */
+function createScoreGauge(score, label) {
+  const color = score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low';
+  return `
+    <div class="score-gauge">
+      <div class="gauge-circle ${color}" style="--score: ${score}">
+        <span class="gauge-value">${score}</span>
+      </div>
+      <div class="gauge-label">${label}</div>
+    </div>
+  `;
+}
+
+/**
+ * Calculate priority score for sorting (higher = do first)
+ */
+function calculatePriority(impact, effort) {
+  const impactScore = { high: 3, medium: 2, low: 1 };
+  const effortScore = { low: 3, medium: 2, high: 1 };
+  return impactScore[impact] * 2 + effortScore[effort];
+}
+
+/**
+ * Normalize a suggestion to ensure consistent format
+ */
+function normalizeSuggestion(suggestion, category) {
+  if (typeof suggestion === 'object' && suggestion.text) {
+    return {
+      text: suggestion.text,
+      impact: suggestion.impact || 'medium',
+      effort: suggestion.effort || 'medium',
+      category,
+      executable: suggestion.executable !== false, // Default to executable
+    };
+  }
+  return {
+    text: String(suggestion),
+    impact: 'medium',
+    effort: 'medium',
+    category,
+    executable: true,
+  };
+}
+
+/**
+ * Render Self-Improve view
+ */
+function renderImproveView() {
+  const container = document.getElementById('improve-content');
+  if (!container) return;
+
+  // Loading state
+  if (analysisLoading) {
+    container.innerHTML = `
+      <div class="improve-loading">
+        <svg class="icon icon-loading"><use href="#icon-loading"/></svg>
+        <p>Running AI analysis...</p>
+        <p class="hint">This may take 30-60 seconds</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Empty state
+  if (!analysisResults) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg class="icon icon-lg"><use href="#icon-settings"/></svg>
+        <p>No analysis data available</p>
+        <p class="hint">Click "Run Analysis" to get improvement suggestions</p>
+      </div>
+      <div class="improve-actions">
+        <button class="btn btn-primary" id="run-analysis-btn">
+          <svg class="icon"><use href="#icon-play"/></svg>
+          <span>Run Analysis</span>
+        </button>
+      </div>
+    `;
+
+    document.getElementById('run-analysis-btn')?.addEventListener('click', () => {
+      fetchAnalysisData(true);
+    });
+    return;
+  }
+
+  // Collect and sort all suggestions
+  const allSuggestions = [];
+  if (analysisResults.suggestions?.content) {
+    analysisResults.suggestions.content.forEach(s => {
+      allSuggestions.push(normalizeSuggestion(s, 'content'));
+    });
+  }
+  if (analysisResults.suggestions?.layout) {
+    analysisResults.suggestions.layout.forEach(s => {
+      allSuggestions.push(normalizeSuggestion(s, 'layout'));
+    });
+  }
+  if (analysisResults.suggestions?.conversion) {
+    analysisResults.suggestions.conversion.forEach(s => {
+      allSuggestions.push(normalizeSuggestion(s, 'conversion'));
+    });
+  }
+
+  allSuggestions.sort((a, b) => {
+    const priorityA = calculatePriority(a.impact, a.effort);
+    const priorityB = calculatePriority(b.impact, b.effort);
+    return priorityB - priorityA;
+  });
+
+  // Build HTML
+  const scoresHtml = `
+    <div class="improve-scores">
+      ${createScoreGauge(analysisResults.overallScore || 0, 'Overall')}
+      ${createScoreGauge(analysisResults.contentScore || 0, 'Content')}
+      ${createScoreGauge(analysisResults.layoutScore || 0, 'Layout')}
+      ${createScoreGauge(analysisResults.conversionScore || 0, 'Conversion')}
+    </div>
+  `;
+
+  const topIssuesHtml = analysisResults.topIssues?.length > 0 ? `
+    <div class="improve-section">
+      <div class="improve-section-title">Top Issues</div>
+      <ul class="top-issues-list">
+        ${analysisResults.topIssues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}
+      </ul>
+    </div>
+  ` : '';
+
+  const improvementsHtml = allSuggestions.length > 0 ? `
+    <div class="improve-section">
+      <div class="improve-section-title">Actionable Improvements</div>
+      <p class="improve-section-hint">Sorted by priority. Select and execute, or copy prompt for code changes.</p>
+      <div class="select-controls">
+        <label class="select-all-label">
+          <input type="checkbox" class="select-all-checkbox" id="select-all">
+          <span>Select All</span>
+        </label>
+        <button class="btn btn-secondary execute-selected-btn" id="execute-selected" disabled>
+          Execute Selected
+        </button>
+      </div>
+      <ul class="improvements-list">
+        ${allSuggestions.map((s, i) => {
+          const execState = executionState[`improvement_${i}`] || {};
+          const statusClass = execState.status || '';
+          const isExecutable = s.executable;
+
+          return `
+            <li class="improvement-item ${statusClass}" data-index="${i}">
+              <input type="checkbox" class="item-checkbox" data-index="${i}">
+              <div class="improvement-content">
+                <div class="improvement-header">
+                  <span class="order-badge">#${i + 1}</span>
+                  <span class="category-badge ${s.category}">${s.category}</span>
+                  <span class="metric-badge impact-${s.impact}">Impact: ${s.impact}</span>
+                  <span class="metric-badge effort-${s.effort}">Effort: ${s.effort}</span>
+                </div>
+                <div class="improvement-text">${escapeHtml(s.text)}</div>
+                ${execState.status === 'executing' ? `<div class="improvement-progress">${escapeHtml(execState.message)}</div>` : ''}
+                ${execState.status === 'complete' ? `<div class="improvement-success"><a href="${execState.newUrl}" target="_blank">View Page</a></div>` : ''}
+                ${execState.status === 'error' ? `<div class="improvement-error">${escapeHtml(execState.message)}</div>` : ''}
+              </div>
+              <button class="improvement-action-btn ${isExecutable ? 'execute-btn' : 'copy-btn'}" data-index="${i}" ${execState.status === 'executing' ? 'disabled' : ''}>
+                ${isExecutable ? (execState.status === 'executing' ? '<svg class="icon icon-loading"><use href="#icon-loading"/></svg>' : 'Execute') : 'Copy Prompt'}
+              </button>
+            </li>
+          `;
+        }).join('')}
+      </ul>
+    </div>
+  ` : '';
+
+  const lastAnalysisTime = analysisResults.timestamp
+    ? formatRelativeTime(analysisResults.timestamp)
+    : 'Unknown';
+
+  container.innerHTML = `
+    <div class="improve-card">
+      <div class="improve-header">
+        <span class="improve-meta">Last analysis: ${lastAnalysisTime}</span>
+        <button class="btn btn-secondary btn-sm" id="refresh-analysis-btn">
+          <svg class="icon"><use href="#icon-loading"/></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+      ${scoresHtml}
+      ${topIssuesHtml}
+      ${improvementsHtml}
+    </div>
+  `;
+
+  // Add event listeners
+  document.getElementById('refresh-analysis-btn')?.addEventListener('click', () => {
+    fetchAnalysisData(true);
+  });
+
+  // Select all checkbox
+  const selectAllCheckbox = document.getElementById('select-all');
+  const executeSelectedBtn = document.getElementById('execute-selected');
+  const itemCheckboxes = container.querySelectorAll('.item-checkbox');
+
+  selectAllCheckbox?.addEventListener('change', () => {
+    itemCheckboxes.forEach(cb => {
+      cb.checked = selectAllCheckbox.checked;
+    });
+    updateExecuteSelectedState();
+  });
+
+  itemCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateExecuteSelectedState);
+  });
+
+  function updateExecuteSelectedState() {
+    const selectedCount = [...itemCheckboxes].filter(cb => cb.checked).length;
+    if (executeSelectedBtn) {
+      executeSelectedBtn.disabled = selectedCount === 0;
+      executeSelectedBtn.textContent = selectedCount > 0
+        ? `Execute Selected (${selectedCount})`
+        : 'Execute Selected';
+    }
+  }
+
+  // Execute selected
+  executeSelectedBtn?.addEventListener('click', async () => {
+    const selectedItems = [...itemCheckboxes]
+      .filter(cb => cb.checked)
+      .map(cb => ({
+        index: parseInt(cb.dataset.index),
+        ...allSuggestions[parseInt(cb.dataset.index)],
+      }));
+
+    if (selectedItems.length === 0) return;
+
+    // Execute sequentially
+    for (const item of selectedItems) {
+      if (item.executable) {
+        await handleExecuteImprovement(item, `improvement_${item.index}`);
+      } else {
+        await handleCopyPrompt(item);
+      }
+    }
+  });
+
+  // Individual action buttons
+  container.querySelectorAll('.improvement-action-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const index = parseInt(btn.dataset.index);
+      const suggestion = allSuggestions[index];
+
+      if (suggestion.executable) {
+        await handleExecuteImprovement(suggestion, `improvement_${index}`);
+      } else {
+        const result = await handleCopyPrompt(suggestion);
+        if (result.success) {
+          btn.textContent = 'Copied!';
+          setTimeout(() => {
+            btn.textContent = 'Copy Prompt';
+          }, 2000);
+        }
+      }
+    });
+  });
+}
+
+/**
+ * Format relative time
+ */
+function formatRelativeTime(timestamp) {
+  if (!timestamp) return 'Never';
+  const diff = Date.now() - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}d ago`;
+  if (hours > 0) return `${hours}h ago`;
+  if (minutes > 0) return `${minutes}m ago`;
+  return 'Just now';
 }
 
 // Update context summary when query input changes

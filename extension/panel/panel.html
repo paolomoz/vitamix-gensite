@@ -86,23 +86,28 @@
   <div class="panel">
     <!-- Header -->
     <header class="panel-header">
-      <div class="panel-header-nav">
-        <button class="nav-tab active" id="tab-inference" title="Intent Inference">
-          <svg class="icon"><use href="#icon-target"/></svg>
-          <span>Intent Inference</span>
-        </button>
-        <button class="nav-tab" id="tab-generation" title="Generation Reasoning">
-          <svg class="icon"><use href="#icon-sparkle"/></svg>
-          <span>Generation Reasoning</span>
-        </button>
-      </div>
-      <div class="panel-header-actions">
-        <button class="icon-btn" id="infographic-btn" title="Content Generation Spectrum">
-          <svg class="icon"><use href="#icon-layers"/></svg>
-        </button>
-        <button class="icon-btn" id="clear-btn" title="Clear Session">
-          <svg class="icon"><use href="#icon-delete"/></svg>
-        </button>
+      <div class="panel-header-title" id="panel-title">Inference</div>
+      <div class="panel-header-controls">
+        <div class="panel-header-nav">
+          <button class="nav-tab active" id="tab-inference" data-title="Inference" title="Intent Inference">
+            <svg class="icon"><use href="#icon-target"/></svg>
+          </button>
+          <button class="nav-tab" id="tab-generation" data-title="Generation" title="Generation Reasoning">
+            <svg class="icon"><use href="#icon-sparkle"/></svg>
+          </button>
+          <button class="nav-tab" id="tab-improve" data-title="Improve" title="Self-Improve">
+            <svg class="icon"><use href="#icon-settings"/></svg>
+          </button>
+        </div>
+        <div class="panel-header-divider"></div>
+        <div class="panel-header-actions">
+          <button class="icon-btn" id="infographic-btn" title="Content Generation Spectrum">
+            <svg class="icon"><use href="#icon-layers"/></svg>
+          </button>
+          <button class="icon-btn" id="clear-btn" title="Clear Session">
+            <svg class="icon"><use href="#icon-delete"/></svg>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -115,6 +120,17 @@
             <svg class="icon icon-lg"><use href="#icon-sparkle"/></svg>
             <p>No generation data available</p>
             <p class="hint">Navigate to a generated page (?q= URL) to see reasoning</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SELF-IMPROVE VIEW ==================== -->
+      <div class="panel-view" id="view-improve">
+        <div class="improve-view-content" id="improve-content">
+          <div class="empty-state">
+            <svg class="icon icon-lg"><use href="#icon-settings"/></svg>
+            <p>No analysis data available</p>
+            <p class="hint">Run analysis to get improvement suggestions</p>
           </div>
         </div>
       </div>
@@ -212,18 +228,20 @@
 
       <!-- AI Hint & Generate Button -->
       <section class="panel-section generate-section" data-section="generate">
-        <button class="btn btn-hint" id="add-hint-btn" disabled>
-          <svg class="icon"><use href="#icon-sparkle"/></svg>
-          <span>Add AI Hint</span>
-        </button>
+        <div class="generate-row">
+          <p class="context-summary" id="context-summary">
+            No context available
+          </p>
+          <div class="generate-actions">
+            <button class="action-icon-btn" id="add-hint-btn" title="Add AI Hint" disabled>
+              <svg class="icon"><use href="#icon-sparkle"/></svg>
+            </button>
+            <button class="action-icon-btn primary" id="generate-btn" title="Generate Page">
+              <svg class="icon"><use href="#icon-play"/></svg>
+            </button>
+          </div>
+        </div>
         <div id="hint-status" class="hint-status"></div>
-        <button class="btn btn-primary" id="generate-btn">
-          <svg class="icon"><use href="#icon-play"/></svg>
-          <span>Generate Page</span>
-        </button>
-        <p class="context-summary" id="context-summary">
-          No context available
-        </p>
       </section>
 
       <!-- Example Scenarios -->

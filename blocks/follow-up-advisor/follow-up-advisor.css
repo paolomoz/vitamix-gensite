@@ -11,7 +11,7 @@
 
 /* ===== Section Container ===== */
 .section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
-  padding: var(--spacing-600) var(--horizontal-spacing);
+  padding: var(--spacing-300) var(--horizontal-spacing);
 }
 
 .follow-up-advisor-container {
@@ -38,18 +38,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-400);
+  margin-bottom: var(--spacing-200);
   flex-wrap: wrap;
-  gap: var(--spacing-200);
+  gap: var(--spacing-100);
 }
 
 .advisor-title {
-  font-family: var(--heading-font-family);
-  font-size: var(--heading-size-s);
-  font-weight: var(--weight-light);
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-s);
+  font-weight: var(--weight-medium);
   line-height: var(--line-height-s);
-  color: var(--color-white);
+  color: var(--color-gray-400);
   letter-spacing: 0.05em;
+  text-transform: uppercase;
   margin: 0;
 }
 
@@ -105,34 +106,10 @@
 
 /* ===== Shared Card Styles ===== */
 .advisor-card {
-  background: var(--color-white);
+  background: transparent;
   border: none;
-  border-radius: var(--rounding-m);
-  padding: var(--spacing-400);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0;
   text-align: left;
-  width: 100%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.advisor-card:hover {
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.2);
-  transform: translateY(-2px);
-}
-
-.advisor-card:focus {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.advisor-card:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.advisor-card:focus-visible {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
 }
 
 /* ===== Badge ===== */
@@ -141,12 +118,12 @@
   align-items: center;
   gap: var(--spacing-60);
   font-family: var(--body-font-family);
-  font-size: var(--body-size-xs);
+  font-size: 10px;
   font-weight: var(--weight-medium);
-  color: var(--color-red);
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: var(--spacing-200);
+  margin-bottom: var(--spacing-60);
 }
 
 .badge-star {
@@ -155,224 +132,83 @@
 
 /* ===== Primary Advisor Card ===== */
 .advisor-card-primary {
-  margin-bottom: var(--spacing-300);
+  margin-bottom: var(--spacing-200);
 }
 
 .advisor-card-primary .advisor-headline {
+  display: inline-block;
   font-family: var(--heading-font-family);
-  font-size: var(--heading-size-m);
+  font-size: var(--heading-size-s);
   font-weight: var(--weight-light);
   line-height: var(--line-height-s);
-  color: var(--color-charcoal);
-  margin: 0 0 var(--spacing-200) 0;
+  color: var(--color-white);
+  text-decoration: none;
+  margin: 0 0 var(--spacing-60) 0;
+  transition: color 0.15s ease;
+}
+
+.advisor-card-primary .advisor-headline:hover {
+  color: var(--color-red);
+  text-decoration: underline;
 }
 
 .advisor-card-primary .advisor-rationale {
   font-family: var(--body-font-family);
-  font-size: var(--body-size-m);
-  font-weight: var(--weight-regular);
-  line-height: var(--line-height-m);
-  color: var(--color-gray-900);
-  margin: 0 0 var(--spacing-300) 0;
-}
-
-/* ===== Why Section (Always Visible) ===== */
-.advisor-why {
-  border-top: 1px solid var(--color-gray-300);
-  padding-top: var(--spacing-200);
-}
-
-.why-header {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-medium);
-  color: var(--color-charcoal);
-  margin-bottom: var(--spacing-100);
-}
-
-.advisor-bullets {
-  margin: 0 0 0 var(--spacing-200);
-  padding: 0;
-  list-style: disc;
-}
-
-.advisor-bullets li {
-  font-family: var(--body-font-family);
   font-size: var(--body-size-s);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
-  color: var(--color-gray-900);
-  margin-bottom: var(--spacing-60);
-}
-
-.advisor-bullets li:last-child {
-  margin-bottom: 0;
+  color: var(--color-gray-500);
+  margin: 0;
 }
 
 /* ===== Secondary Cards Container ===== */
 .advisor-secondary-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-200);
-  margin-bottom: var(--spacing-400);
+  gap: var(--spacing-300);
 }
 
 /* ===== Secondary Advisor Card ===== */
-.advisor-card-secondary {
-  padding: var(--spacing-300);
-}
-
-.advisor-card-secondary .advisor-badge {
-  color: var(--color-gray-900);
-}
-
 .advisor-card-secondary .advisor-headline {
-  font-family: var(--heading-font-family);
-  font-size: var(--heading-size-s);
-  font-weight: var(--weight-light);
+  display: inline-block;
+  font-family: var(--body-font-family);
+  font-size: var(--body-size-m);
+  font-weight: var(--weight-medium);
   line-height: var(--line-height-s);
-  color: var(--color-charcoal);
-  margin: 0 0 var(--spacing-100) 0;
+  color: var(--color-white);
+  text-decoration: none;
+  margin: 0 0 var(--spacing-60) 0;
+  transition: color 0.15s ease;
+}
+
+.advisor-card-secondary .advisor-headline:hover {
+  color: var(--color-red);
+  text-decoration: underline;
 }
 
 .advisor-card-secondary .advisor-rationale {
   font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-regular);
-  line-height: var(--line-height-m);
-  color: var(--color-gray-900);
-  margin: 0;
-}
-
-.advisor-card-secondary .advisor-why {
-  margin-top: var(--spacing-200);
-}
-
-.advisor-card-secondary .advisor-rationale:last-child {
-  margin-bottom: 0;
-}
-
-/* ===== Gaps Section ===== */
-.advisor-gaps {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--color-gray-700);
-  border-radius: var(--rounding-m);
-  padding: var(--spacing-300);
-}
-
-.gaps-header {
-  margin-bottom: var(--spacing-200);
-}
-
-.gaps-header h4 {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-xs);
-  font-weight: var(--weight-medium);
-  color: var(--color-gray-400);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 var(--spacing-60) 0;
-}
-
-.gaps-header p {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-regular);
-  line-height: var(--line-height-m);
-  color: var(--color-gray-500);
-  margin: 0;
-}
-
-.gaps-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-100);
-}
-
-/* ===== Gap Chip ===== */
-.gap-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-60);
-  padding: var(--spacing-100) var(--spacing-200);
-  background: transparent;
-  border: 1px solid var(--color-gray-600);
-  border-radius: var(--rounding-s);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  max-width: 280px;
-}
-
-.gap-chip:hover {
-  border-color: var(--color-red);
-  background: rgba(200, 16, 46, 0.1);
-}
-
-.gap-chip:focus {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.gap-chip:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.gap-chip:focus-visible {
-  outline: var(--border-m) solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.gap-label {
-  font-family: var(--body-font-family);
-  font-size: var(--body-size-s);
-  font-weight: var(--weight-medium);
-  color: var(--color-white);
-}
-
-.gap-explanation {
-  font-family: var(--body-font-family);
   font-size: var(--body-size-xs);
   font-weight: var(--weight-regular);
   line-height: var(--line-height-m);
   color: var(--color-gray-500);
+  margin: 0;
 }
 
 /* ===== Responsive: Tablet ===== */
 @media (width < 900px) {
-  .follow-up-advisor-wrapper {
-    padding: var(--spacing-500) var(--spacing-400);
-  }
-
   .advisor-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .advisor-secondary-container {
-    gap: var(--spacing-100);
-  }
-
-  .advisor-card {
-    padding: var(--spacing-300);
-  }
-
-  .advisor-card-secondary {
-    padding: var(--spacing-200);
+    gap: var(--spacing-200);
   }
 }
 
 /* ===== Responsive: Mobile ===== */
 @media (width < 600px) {
-  .follow-up-advisor-wrapper {
-    padding: var(--spacing-400) var(--spacing-200);
-  }
-
-  .advisor-title {
-    font-size: var(--body-size-m);
-  }
-
   .journey-indicator {
     width: 100%;
     justify-content: space-between;
@@ -385,27 +221,10 @@
 
   .advisor-secondary-container {
     grid-template-columns: 1fr;
-    gap: var(--spacing-100);
+    gap: var(--spacing-200);
   }
 
   .advisor-card-primary .advisor-headline {
-    font-size: var(--heading-size-s);
-  }
-
-  .advisor-card-primary .advisor-rationale {
-    font-size: var(--body-size-s);
-  }
-
-  .advisor-gaps {
-    padding: var(--spacing-200);
-  }
-
-  .gaps-list {
-    flex-direction: column;
-  }
-
-  .gap-chip {
-    max-width: none;
-    width: 100%;
+    font-size: var(--body-size-m);
   }
 }

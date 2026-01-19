@@ -26,8 +26,6 @@
  * }
  */
 
-import { SessionContextManager } from '../../scripts/session-context.js';
-
 // ============================================
 // Utility Functions
 // ============================================
@@ -75,33 +73,6 @@ function parseAdvisorData(block) {
   }
 
   return null;
-}
-
-/**
- * Enhance gaps using client-side session context if server-provided gaps are empty
- * @param {Array} serverGaps - Gaps from server
- * @param {string} journeyStage - Current journey stage
- * @returns {Array}
- */
-function enhanceGapsWithSessionContext(serverGaps, journeyStage) {
-  // If server provided gaps, use them
-  if (serverGaps && serverGaps.length > 0) {
-    return serverGaps;
-  }
-
-  // Try to get gaps from session context (client-side)
-  try {
-    if (SessionContextManager && typeof SessionContextManager.getResearchGaps === 'function') {
-      const clientGaps = SessionContextManager.getResearchGaps(journeyStage);
-      if (clientGaps && clientGaps.length > 0) {
-        return clientGaps;
-      }
-    }
-  } catch (e) {
-    // Session context not available, continue without gaps
-  }
-
-  return [];
 }
 
 // ============================================
@@ -153,14 +124,13 @@ function createJourneyIndicator(stage) {
 }
 
 /**
- * Create a primary advisor card with full rationale (clickable)
+ * Create a primary advisor card with clickable headline
  * @param {Object} suggestion
  * @returns {HTMLElement}
  */
 function createPrimaryCard(suggestion) {
-  const card = document.createElement('button');
+  const card = document.createElement('div');
   card.className = 'advisor-card advisor-card-primary';
-  card.setAttribute('type', 'button');
 
   // Badge
   const badge = document.createElement('div');
@@ -168,10 +138,15 @@ function createPrimaryCard(suggestion) {
   badge.innerHTML = '<span class="badge-star">&#9733;</span> RECOMMENDED';
   card.appendChild(badge);
 
-  // Headline
-  const headline = document.createElement('h3');
+  // Clickable Headline
+  const headline = document.createElement('a');
   headline.className = 'advisor-headline';
   headline.textContent = suggestion.headline;
+  headline.href = '#';
+  headline.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateToQuery(suggestion.query);
+  });
   card.appendChild(headline);
 
   // Rationale
@@ -180,54 +155,27 @@ function createPrimaryCard(suggestion) {
   rationale.textContent = suggestion.rationale;
   card.appendChild(rationale);
 
-  // "Why I suggest this" section (always visible)
-  if (suggestion.whyBullets?.length > 0) {
-    const whySection = document.createElement('div');
-    whySection.className = 'advisor-why';
-
-    const whyHeader = document.createElement('div');
-    whyHeader.className = 'why-header';
-    whyHeader.textContent = 'Why I suggest this';
-    whySection.appendChild(whyHeader);
-
-    const bulletList = document.createElement('ul');
-    bulletList.className = 'advisor-bullets';
-    suggestion.whyBullets.forEach((bullet) => {
-      const li = document.createElement('li');
-      li.textContent = bullet;
-      bulletList.appendChild(li);
-    });
-    whySection.appendChild(bulletList);
-
-    card.appendChild(whySection);
-  }
-
-  // Click handler on entire card
-  card.addEventListener('click', () => navigateToQuery(suggestion.query));
-
   return card;
 }
 
 /**
- * Create a secondary advisor card with brief rationale
+ * Create a secondary advisor card with clickable headline
  * @param {Object} suggestion
  * @returns {HTMLElement}
  */
 function createSecondaryCard(suggestion) {
-  const card = document.createElement('button');
+  const card = document.createElement('div');
   card.className = 'advisor-card advisor-card-secondary';
-  card.setAttribute('type', 'button');
 
-  // Badge (ALSO CONSIDER instead of RECOMMENDED)
-  const badge = document.createElement('div');
-  badge.className = 'advisor-badge';
-  badge.textContent = 'ALSO CONSIDER';
-  card.appendChild(badge);
-
-  // Headline
-  const headline = document.createElement('h4');
+  // Clickable Headline
+  const headline = document.createElement('a');
   headline.className = 'advisor-headline';
   headline.textContent = suggestion.headline;
+  headline.href = '#';
+  headline.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateToQuery(suggestion.query);
+  });
   card.appendChild(headline);
 
   // Short rationale
@@ -236,77 +184,7 @@ function createSecondaryCard(suggestion) {
   rationale.textContent = suggestion.rationale;
   card.appendChild(rationale);
 
-  // "Why I suggest this" section (if whyBullets available)
-  if (suggestion.whyBullets?.length > 0) {
-    const whySection = document.createElement('div');
-    whySection.className = 'advisor-why';
-
-    const whyHeader = document.createElement('div');
-    whyHeader.className = 'why-header';
-    whyHeader.textContent = 'Why I suggest this';
-    whySection.appendChild(whyHeader);
-
-    const bulletList = document.createElement('ul');
-    bulletList.className = 'advisor-bullets';
-    suggestion.whyBullets.forEach((bullet) => {
-      const li = document.createElement('li');
-      li.textContent = bullet;
-      bulletList.appendChild(li);
-    });
-    whySection.appendChild(bulletList);
-
-    card.appendChild(whySection);
-  }
-
-  // Click handler on entire card
-  card.addEventListener('click', () => navigateToQuery(suggestion.query));
-
   return card;
-}
-
-/**
- * Create the gaps section
- * @param {Array} gaps
- * @returns {HTMLElement|null}
- */
-function createGapsSection(gaps) {
-  if (!gaps || gaps.length === 0) return null;
-
-  const section = document.createElement('div');
-  section.className = 'advisor-gaps';
-
-  const header = document.createElement('div');
-  header.className = 'gaps-header';
-  header.innerHTML = `
-    <h4>GAPS IN YOUR RESEARCH</h4>
-    <p>Most buyers also explore these before deciding:</p>
-  `.trim();
-  section.appendChild(header);
-
-  const gapsList = document.createElement('div');
-  gapsList.className = 'gaps-list';
-
-  gaps.forEach((gap) => {
-    const gapItem = document.createElement('button');
-    gapItem.className = 'gap-chip';
-    gapItem.setAttribute('type', 'button');
-
-    const gapLabel = document.createElement('span');
-    gapLabel.className = 'gap-label';
-    gapLabel.textContent = gap.label;
-    gapItem.appendChild(gapLabel);
-
-    const explanation = document.createElement('span');
-    explanation.className = 'gap-explanation';
-    explanation.textContent = gap.explanation;
-    gapItem.appendChild(explanation);
-
-    gapItem.addEventListener('click', () => navigateToQuery(gap.query));
-    gapsList.appendChild(gapItem);
-  });
-
-  section.appendChild(gapsList);
-  return section;
 }
 
 // ============================================
@@ -366,13 +244,4 @@ export default function decorate(block) {
     block.appendChild(secondaryContainer);
   }
 
-  // Gaps section - enhance with session context if needed
-  const enhancedGaps = enhanceGapsWithSessionContext(
-    advisorData.gaps,
-    advisorData.journeyStage || 'exploring',
-  );
-  const gapsSection = createGapsSection(enhancedGaps);
-  if (gapsSection) {
-    block.appendChild(gapsSection);
-  }
 }

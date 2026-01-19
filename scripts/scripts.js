@@ -398,6 +398,8 @@ async function renderGenerativePage() {
   });
 
   eventSource.addEventListener('generation-complete', (e) => {
+    // eslint-disable-next-line no-console
+    console.log('[Standard] DEBUG-HANDLER-400: generation-complete handler started');
     eventSource.close();
 
     // Update document title
@@ -1033,6 +1035,8 @@ async function renderVitamixRecommenderPage() {
   });
 
   eventSource.addEventListener('generation-complete', (e) => {
+    // eslint-disable-next-line no-console
+    console.log('[Recommender] DEBUG-HANDLER-1035: generation-complete handler started');
     eventSource.close();
     const data = JSON.parse(e.data);
     const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);

@@ -61,12 +61,12 @@
   padding: var(--spacing-300);
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease;
 }
 
 .advisor-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-gray-300);
 }
 
 .advisor-card .advisor-badge {

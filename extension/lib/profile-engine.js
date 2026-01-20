@@ -296,6 +296,95 @@ const INFERENCE_RULES = [
     },
     confidence: 0.08,
   },
+
+  // Professional/Commercial User Detection
+  {
+    id: 'professional_search',
+    conditions: (signals) => signals.some(s =>
+      s.type === 'search' && s.data?.query?.toLowerCase().match(/commercial|restaurant|professional|chef|industrial|batch/)
+    ),
+    infer: {
+      segments: ['professional', 'commercial_user'],
+      use_cases: ['commercial_kitchen', 'bulk_prep'],
+      price_sensitivity: 'low',
+    },
+    confidence: 0.20,
+  },
+  {
+    id: 'professional_page',
+    conditions: (signals) => signals.some(s =>
+      s.type === 'page_view' && (
+        s.data?.path?.includes('commercial') ||
+        s.data?.h1?.toLowerCase().includes('commercial') ||
+        s.data?.h1?.toLowerCase().includes('professional')
+      )
+    ),
+    infer: {
+      segments: ['professional', 'commercial_user'],
+      use_cases: ['commercial_kitchen'],
+    },
+    confidence: 0.15,
+  },
+  {
+    id: 'professional_specs',
+    conditions: (signals) => signals.some(s =>
+      (s.type === 'click' && s.data?.text?.toLowerCase().match(/continuous.*use|warranty|duty.*cycle|motor/)) ||
+      (s.category === 'specs' && signals.some(sp => sp.data?.query?.toLowerCase().match(/commercial|restaurant/)))
+    ),
+    infer: {
+      segments: ['professional'],
+      decision_style: 'specs_driven',
+      use_cases: ['continuous_use'],
+    },
+    confidence: 0.12,
+  },
+  {
+    id: 'professional_referrer',
+    conditions: (signals) => signals.some(s =>
+      s.type === 'referrer' && (
+        s.data?.domain?.includes('restaurant') ||
+        s.data?.domain?.includes('foodservice') ||
+        s.data?.domain?.includes('chef') ||
+        s.data?.searchQuery?.toLowerCase().match(/commercial|restaurant|professional/)
+      )
+    ),
+    infer: {
+      segments: ['professional', 'commercial_user'],
+      use_cases: ['commercial_kitchen'],
+    },
+    confidence: 0.18,
+  },
+
+  // Health/Fitness Enthusiast Detection
+  {
+    id: 'health_enthusiast_search',
+    conditions: (signals) => signals.some(s =>
+      s.type === 'search' && s.data?.query?.toLowerCase().match(/protein|fitness|workout|gym|health|acai|smoothie bowl/)
+    ),
+    infer: {
+      segments: ['health_conscious', 'fitness_enthusiast'],
+      use_cases: ['protein_shakes', 'smoothies'],
+    },
+    confidence: 0.15,
+  },
+  {
+    id: 'health_enthusiast_recipes',
+    conditions: (signals) => {
+      const healthRecipes = signals.filter(s =>
+        s.category === 'recipe' && (
+          s.data?.h1?.toLowerCase().match(/smoothie|protein|green|health|acai|bowl/) ||
+          s.data?.path?.match(/smoothie|protein|green|health|acai/)
+        )
+      );
+      return healthRecipes.length >= 2;
+    },
+    infer: {
+      segments: ['health_conscious'],
+      use_cases: ['smoothies', 'protein_shakes', 'frozen_desserts'],
+      content_engagement: 'high',
+    },
+    confidence: 0.12,
+  },
 ];
 
 /**

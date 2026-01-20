@@ -11,6 +11,7 @@ let currentSignals = [];
 let previousQueries = [];
 let selectedExample = null;
 let generationData = null;
+let previousConfidence = 0; // Track for animation
 
 // Self-Improve state
 let analysisResults = null;
@@ -114,6 +115,7 @@ function setupEventListeners() {
     await chrome.runtime.sendMessage({ type: 'CLEAR_SESSION' });
     selectedExample = null;
     generationData = null;
+    previousConfidence = 0; // Reset confidence tracking for animations
     // Reset generation view to empty state
     renderGenerationReasoning();
     // Switch back to inference view
@@ -346,9 +348,9 @@ function getExampleIconId(emoji) {
     '👶': 'user',
     '🎁': 'box',
     '🏥': 'user',
-    '💪': 'user',
+    '💪': 'target',
     '🌱': 'sparkle',
-    '👨‍🍳': 'edit',
+    '👨‍🍳': 'settings', // Professional chef
     '🔄': 'loading',
     '❓': 'chat',
   };
@@ -405,6 +407,7 @@ function renderProfile() {
   const container = document.getElementById('profile-content');
 
   if (!currentProfile || currentProfile.signals_count === 0) {
+    previousConfidence = 0;
     container.innerHTML = `
       <div class="empty-state">
         <svg class="icon icon-lg"><use href="#icon-user"/></svg>
@@ -416,28 +419,53 @@ function renderProfile() {
 
   const confidence = currentProfile.confidence_score;
   const confidencePercent = Math.round(confidence * 100);
+  const previousPercent = Math.round(previousConfidence * 100);
   const confidenceLevel = getConfidenceLevel(confidence);
   const confidenceClass = confidence >= 0.56 ? 'high' : confidence >= 0.31 ? 'medium' : 'low';
+  const confidenceChanged = confidencePercent !== previousPercent;
+  const confidenceIncreased = confidencePercent > previousPercent;
 
   container.innerHTML = `
     <div class="profile-card">
-      <div class="profile-header">
-        <div class="profile-confidence">
-          <div class="confidence-label">
-            <span>Confidence</span>
-            <span class="confidence-badge ${confidenceLevel.color}">${confidencePercent}%</span>
-          </div>
-          <div class="confidence-bar">
-            <div class="confidence-fill ${confidenceClass}" style="width: ${confidencePercent}%"></div>
-          </div>
+      <!-- Large Confidence Display for Demo -->
+      <div class="confidence-hero ${confidenceChanged ? 'confidence-changed' : ''} ${confidenceIncreased ? 'confidence-increased' : ''}">
+        <div class="confidence-hero-value ${confidenceClass}">
+          <span class="confidence-number">${confidencePercent}</span>
+          <span class="confidence-percent">%</span>
         </div>
+        <div class="confidence-hero-label">Confidence</div>
+        <div class="confidence-hero-bar">
+          <div class="confidence-fill ${confidenceClass}" style="width: ${confidencePercent}%"></div>
+        </div>
+        ${confidenceChanged && previousPercent > 0 ? `
+          <div class="confidence-change ${confidenceIncreased ? 'up' : 'down'}">
+            ${confidenceIncreased ? '↑' : '↓'} ${Math.abs(confidencePercent - previousPercent)}%
+          </div>
+        ` : ''}
       </div>
 
       ${renderProfileSection('Segments', currentProfile.segments, true)}
+      ${currentProfile.life_stage ? renderProfileField('Life Stage', currentProfile.life_stage) : ''}
       ${renderProfileSection('Use Cases', currentProfile.use_cases)}
       ${renderProductsSection()}
       ${renderAttributesSection()}
       ${renderJsonSection()}
+    </div>
+  `;
+
+  // Update previous confidence for next render
+  previousConfidence = confidence;
+}
+
+/**
+ * Render a single profile field (key: value)
+ */
+function renderProfileField(label, value) {
+  if (!value) return '';
+  return `
+    <div class="profile-section profile-field">
+      <span class="profile-field-label">${label}:</span>
+      <span class="profile-field-value">${formatLabel(value)}</span>
     </div>
   `;
 }

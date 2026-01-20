@@ -160,6 +160,85 @@ export const examples = [
     },
     syntheticQuery: "I have a Vitamix 5200 and I'm looking to upgrade to something with more modern features. I'm comparing the new X5 with a reconditioned A3500. I already have containers and accessories I'd like to keep using. I want good value but also want the smart features. What's the best upgrade path for me?",
   },
+
+  // USE CASE 4: THE PROFESSIONAL CHEF
+  {
+    id: 'professional-chef-short',
+    name: 'Professional Chef',
+    version: 'Short Journey',
+    icon: '👨‍🍳',
+    persona: 'Professional chef or restaurant owner researching commercial-grade blenders',
+    emotionalDriver: 'Needs reliability, power, and volume for commercial kitchen demands',
+    signals: [
+      { step: 1, action: 'Searches: "commercial blender restaurant"', signal: 'search: commercial blender restaurant', weight: 'Very High' },
+      { step: 2, action: 'Views Commercial landing page', signal: 'page_view: commercial', weight: 'High' },
+    ],
+    inferredProfile: {
+      segments: ['professional', 'commercial_user'],
+      use_cases: ['commercial_kitchen', 'bulk_prep'],
+      decision_style: 'efficiency_focused',
+      price_sensitivity: 'low',
+      confidence_score: 0.62,
+    },
+    syntheticQuery: "I need a commercial blender for my restaurant. What are my options?",
+  },
+
+  {
+    id: 'professional-chef-long',
+    name: 'Professional Chef',
+    version: 'Long Journey',
+    icon: '👨‍🍳',
+    persona: 'Professional chef or restaurant owner researching commercial-grade blenders',
+    emotionalDriver: 'Needs reliability, power, and volume for commercial kitchen demands',
+    signals: [
+      { step: 1, action: 'Arrives from restaurant industry publication', signal: 'referrer: restaurantbusiness.com/equipment', weight: 'High' },
+      { step: 2, action: 'Searches: "batch processing blender"', signal: 'search: batch processing blender', weight: 'Very High' },
+      { step: 3, action: 'Views Commercial Blenders category', signal: 'category_view: commercial-blenders', weight: 'High' },
+      { step: 4, action: 'Views Vita-Prep 3 product page (45 seconds)', signal: 'product_view: vita-prep-3, time: 45s', weight: 'High' },
+      { step: 5, action: 'Checks warranty information', signal: 'warranty_info_viewed: true', weight: 'High' },
+      { step: 6, action: 'Views "Continuous Use" specifications', signal: 'spec_view: continuous_use', weight: 'Very High' },
+      { step: 7, action: 'Compares Vita-Prep 3 vs Drink Machine Advance', signal: 'compare_tool: [Vita-Prep-3, Drink-Machine-Advance]', weight: 'Very High' },
+    ],
+    inferredProfile: {
+      segments: ['professional', 'commercial_user', 'premium_preference'],
+      use_cases: ['commercial_kitchen', 'bulk_prep', 'continuous_use', 'restaurant_service'],
+      products_considered: ['Vita-Prep 3', 'Drink Machine Advance'],
+      price_sensitivity: 'low',
+      decision_style: 'specs_driven',
+      purchase_readiness: 'medium_high',
+      brand_relationship: 'evaluating',
+      content_engagement: 'high',
+      confidence_score: 0.88,
+    },
+    syntheticQuery: "I'm a chef setting up a new restaurant kitchen. I need a blender that can handle continuous use for batch processing soups, sauces, and purees during service. I'm comparing the Vita-Prep 3 with the Drink Machine Advance. I need reliability, power, and commercial warranty coverage. What's the best choice for a professional kitchen?",
+  },
+
+  // USE CASE 5: THE HEALTH ENTHUSIAST
+  {
+    id: 'health-enthusiast',
+    name: 'Health Enthusiast',
+    version: 'Long Journey',
+    icon: '💪',
+    persona: 'Fitness-focused individual interested in nutrition and meal prep',
+    emotionalDriver: 'Wants to make protein shakes, smoothie bowls, and healthy meals',
+    signals: [
+      { step: 1, action: 'Searches: "protein shake blender"', signal: 'search: protein shake blender', weight: 'Very High' },
+      { step: 2, action: 'Views Smoothie Recipes page', signal: 'recipe_view: smoothies', weight: 'High' },
+      { step: 3, action: 'Views Acai Bowl recipe', signal: 'recipe_view: acai-bowl', weight: 'High' },
+      { step: 4, action: 'Views V1200 product page', signal: 'product_view: v1200', weight: 'Medium' },
+      { step: 5, action: 'Checks "Programs" feature details', signal: 'feature_view: programs', weight: 'Medium' },
+    ],
+    inferredProfile: {
+      segments: ['health_conscious', 'fitness_enthusiast'],
+      use_cases: ['smoothies', 'protein_shakes', 'frozen_desserts'],
+      products_considered: ['V1200'],
+      price_sensitivity: 'moderate',
+      decision_style: 'feature_focused',
+      content_engagement: 'high',
+      confidence_score: 0.72,
+    },
+    syntheticQuery: "I want a blender for making protein shakes and smoothie bowls. I've been looking at the V1200. Does it have preset programs for smoothies?",
+  },
 ];
 
 /**

@@ -874,23 +874,6 @@ async function renderVitamixRecommenderPage() {
   const generatedBlocks = [];
   const startTime = Date.now();
 
-  // Debug: Log ALL SSE events received (before specific handlers)
-  eventSource.onmessage = (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] SSE onmessage (unnamed event):', e.data?.slice?.(0, 100));
-  };
-
-  // Debug: Log EventSource state changes
-  eventSource.onopen = () => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] EventSource opened, readyState:', eventSource.readyState);
-  };
-
-  eventSource.onerror = (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] EventSource error, readyState:', eventSource.readyState, e);
-  };
-
   // Collect reasoning data for extension panel
   const reasoningSteps = [];
   const blockRationales = [];
@@ -1052,11 +1035,9 @@ async function renderVitamixRecommenderPage() {
   // Handle enhanced suggestions from background AI reasoning
   // These provide deeper, more insightful recommendations than instant templates
   eventSource.addEventListener('suggestion-enhancement', (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] RAW suggestion-enhancement event received, data length:', e.data?.length, 'readyState:', eventSource.readyState);
     const data = JSON.parse(e.data);
     // eslint-disable-next-line no-console
-    console.log('[Recommender] Suggestion enhancement parsed:', data.suggestions?.length, 'suggestions,', data.gaps?.length, 'gaps');
+    console.log('[Recommender] Suggestion enhancement received:', data.suggestions?.length, 'suggestions,', data.gaps?.length, 'gaps');
 
     // Find the follow-up-advisor block and update it
     const advisorBlock = content.querySelector('.follow-up-advisor');
@@ -1124,16 +1105,7 @@ async function renderVitamixRecommenderPage() {
     }
   });
 
-  // Debug: Track debug-stream-end marker event
-  eventSource.addEventListener('debug-stream-end', (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] DEBUG: stream-end marker received, data:', e.data, 'readyState:', eventSource.readyState);
-  });
-
   eventSource.addEventListener('generation-complete', (e) => {
-    // eslint-disable-next-line no-console
-    console.log('[Recommender] generation-complete event received, readyState:', eventSource.readyState);
-
     // Don't close immediately - wait for suggestion-enhancement event
     // Close after timeout if enhancement doesn't arrive
     const closeTimeout = setTimeout(() => {
@@ -1151,7 +1123,7 @@ async function renderVitamixRecommenderPage() {
     const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
 
     // eslint-disable-next-line no-console
-    console.log(`[Recommender] Complete in ${totalTime}s, waiting for enhancement (timeout: 20s), readyState:`, eventSource.readyState);
+    console.log(`[Recommender] Complete in ${totalTime}s`, data);
 
     // Update document title
     const h1 = content.querySelector('h1');

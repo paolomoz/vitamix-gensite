@@ -1032,8 +1032,93 @@ async function renderVitamixRecommenderPage() {
     }
   });
 
+  // Handle enhanced suggestions from background AI reasoning
+  // These provide deeper, more insightful recommendations than instant templates
+  eventSource.addEventListener('suggestion-enhancement', (e) => {
+    const data = JSON.parse(e.data);
+    // eslint-disable-next-line no-console
+    console.log('[Recommender] Suggestion enhancement received:', data.suggestions?.length, 'suggestions,', data.gaps?.length, 'gaps');
+
+    // Find the follow-up-advisor block and update it
+    const advisorBlock = content.querySelector('.follow-up-advisor');
+    if (advisorBlock && (data.suggestions?.length > 0 || data.gaps?.length > 0)) {
+      try {
+        // Get current data from the block - try parsing raw first, then with entity decoding
+        const currentDataAttr = advisorBlock.getAttribute('data-advisor-follow-up');
+        let currentData = {};
+        if (currentDataAttr) {
+          try {
+            currentData = JSON.parse(currentDataAttr);
+          } catch {
+            // Try with HTML entity decoding (for server-rendered HTML)
+            const decoded = currentDataAttr
+              .replace(/&quot;/g, '"')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&amp;/g, '&');
+            currentData = JSON.parse(decoded);
+          }
+        }
+
+        // Merge enhanced suggestions with existing data
+        // Enhanced suggestions replace the placeholders but keep the question
+        const enhancedData = {
+          ...currentData,
+          suggestions: data.suggestions || currentData.suggestions || [],
+          gaps: data.gaps || currentData.gaps || [],
+        };
+
+        // Update the block's data attribute (no escaping needed for setAttribute)
+        advisorBlock.setAttribute('data-advisor-follow-up', JSON.stringify(enhancedData));
+
+        // Trigger re-decoration of the block by re-importing and calling decorate
+        // This ensures the enhanced data is rendered
+        import('../blocks/follow-up-advisor/follow-up-advisor.js').then((module) => {
+          // Clear and redecorate
+          const blockContent = advisorBlock.closest('.block');
+          if (blockContent && module.default) {
+            // Mark as enhancing for CSS transitions
+            blockContent.classList.add('enhancing');
+            // Redecorate with new data
+            module.default(blockContent);
+            // Remove enhancing class after animation
+            setTimeout(() => blockContent.classList.remove('enhancing'), 400);
+            // eslint-disable-next-line no-console
+            console.log('[Recommender] Follow-up advisor enhanced with AI suggestions');
+          }
+
+          // Close connection and clear timeout now that enhancement is received
+          if (eventSource._closeTimeout) {
+            clearTimeout(eventSource._closeTimeout);
+          }
+          if (eventSource.readyState !== EventSource.CLOSED) {
+            eventSource.close();
+          }
+        }).catch((err) => {
+          // eslint-disable-next-line no-console
+          console.warn('[Recommender] Failed to enhance follow-up-advisor:', err);
+        });
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('[Recommender] Failed to parse enhancement data:', err);
+      }
+    }
+  });
+
   eventSource.addEventListener('generation-complete', (e) => {
-    eventSource.close();
+    // Don't close immediately - wait for suggestion-enhancement event
+    // Close after timeout if enhancement doesn't arrive
+    const closeTimeout = setTimeout(() => {
+      if (eventSource.readyState !== EventSource.CLOSED) {
+        eventSource.close();
+        // eslint-disable-next-line no-console
+        console.log('[Recommender] Closed connection (enhancement timeout)');
+      }
+    }, 20000);
+
+    // Store timeout so enhancement handler can clear it
+    eventSource._closeTimeout = closeTimeout;
+
     const data = JSON.parse(e.data);
     const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
 

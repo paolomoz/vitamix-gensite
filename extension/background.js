@@ -196,6 +196,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// Auto-hint configuration
+const AUTO_HINT_CONFIDENCE_THRESHOLD = 0.5; // 50% confidence
+let lastAutoHintUrl = null; // Prevent duplicate hints on same page
+
 /**
  * Handle signal from content script
  */
@@ -212,6 +216,74 @@ async function handleSignalMessage(signalData) {
 
   if (signal) {
     await addSignal(signal);
+
+    // Auto-trigger hint on page_view if confidence >= threshold
+    if (signal.type === 'page_view') {
+      await checkAndTriggerAutoHint(signalData.data?.url);
+    }
+  }
+}
+
+/**
+ * Notify panel of hint generation status
+ */
+function notifyHintStatus(status, message = null) {
+  try {
+    chrome.runtime.sendMessage({
+      type: 'HINT_STATUS',
+      status, // 'generating' | 'success' | 'error'
+      message,
+    });
+  } catch (e) {
+    // Panel might not be open
+  }
+}
+
+/**
+ * Check if we should auto-trigger a hint based on profile confidence
+ */
+async function checkAndTriggerAutoHint(pageUrl) {
+  const profile = profileEngine.getProfile();
+  const confidence = profile.confidence_score || 0;
+
+  console.log('[Background] Checking auto-hint: confidence =', confidence, '| threshold =', AUTO_HINT_CONFIDENCE_THRESHOLD);
+
+  // Only trigger if confidence meets threshold
+  if (confidence < AUTO_HINT_CONFIDENCE_THRESHOLD) {
+    console.log('[Background] Confidence below threshold, skipping auto-hint');
+    return;
+  }
+
+  // Prevent duplicate hints on the same page
+  if (pageUrl && pageUrl === lastAutoHintUrl) {
+    console.log('[Background] Already showed hint on this page, skipping');
+    return;
+  }
+
+  // Don't show hints on the POC site (aem.live) - only on vitamix.com
+  if (pageUrl && pageUrl.includes('aem.live')) {
+    console.log('[Background] Skipping auto-hint on POC site');
+    return;
+  }
+
+  console.log('[Background] Auto-triggering hint (confidence:', Math.round(confidence * 100) + '%)');
+  lastAutoHintUrl = pageUrl;
+
+  // Notify panel that hint generation is starting
+  notifyHintStatus('generating');
+
+  // Small delay to let the page fully render
+  await new Promise(resolve => setTimeout(resolve, 1500));
+
+  const result = await handleGenerateHint();
+  if (result.success) {
+    console.log('[Background] Auto-hint injected successfully');
+    notifyHintStatus('success', 'Hint added!');
+  } else {
+    console.log('[Background] Auto-hint failed:', result.error);
+    notifyHintStatus('error', result.error);
+    // Reset lastAutoHintUrl on failure so we can retry
+    lastAutoHintUrl = null;
   }
 }
 
@@ -233,6 +305,7 @@ async function handleClearSession() {
   profileEngine.reset();
   previousQueries = [];
   sessionStartTime = Date.now();
+  lastAutoHintUrl = null; // Reset so hints can show again
   await chrome.storage.local.remove(['profile', 'signals', 'previousQueries']);
   await notifyPanel();
 }

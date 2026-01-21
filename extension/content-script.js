@@ -540,35 +540,16 @@
   // ============================================
 
   /**
-   * Inject hint as full-width content section
+   * Inject hint as full-width content section right above the footer
    */
   function injectHint(hintData) {
-    const { injectionPoint, hint } = hintData;
+    const { hint } = hintData;
 
-    // Find injection target - prefer major section boundaries
-    let target = null;
-    if (injectionPoint && injectionPoint.selector) {
-      try {
-        target = document.querySelector(injectionPoint.selector);
-      } catch (e) {
-        console.log('[VitamixIntent] Invalid selector:', injectionPoint.selector);
-      }
-    }
+    // Always inject right above the footer
+    const footer = document.querySelector('footer, [role="contentinfo"], .footer, #footer');
 
-    // Fallback: find a good section boundary
-    if (!target) {
-      target = document.querySelector(
-        'main section, article section, [class*="section"], main > div, article > div'
-      );
-    }
-
-    // Last resort: first h2
-    if (!target) {
-      target = document.querySelector('main h2, article h2, h2');
-    }
-
-    if (!target) {
-      console.log('[VitamixIntent] Could not find injection target');
+    if (!footer) {
+      console.log('[VitamixIntent] Could not find footer for hint injection');
       return false;
     }
 
@@ -585,15 +566,8 @@
       </div>
     `;
 
-    // Insert based on position - for full-width, prefer after sections
-    const position = injectionPoint?.position || 'after';
-    const insertTarget = target.closest('section') || target;
-
-    if (position === 'before') {
-      insertTarget.parentNode.insertBefore(section, insertTarget);
-    } else {
-      insertTarget.parentNode.insertBefore(section, insertTarget.nextSibling);
-    }
+    // Insert right before the footer
+    footer.parentNode.insertBefore(section, footer);
 
     // Handle CTA click - open POC with query
     section.querySelector('.vitamix-ai-hint-cta').addEventListener('click', () => {

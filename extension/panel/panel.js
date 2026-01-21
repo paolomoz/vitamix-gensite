@@ -79,6 +79,11 @@ async function init() {
       };
       renderImproveView();
     }
+
+    // Hint generation status (for auto-triggered hints)
+    if (message.type === 'HINT_STATUS') {
+      handleHintStatusUpdate(message.status, message.message);
+    }
   });
 
   console.log('[Panel] Initialized');
@@ -252,7 +257,45 @@ async function handleAddHint() {
 function updateHintButton() {
   const btn = document.getElementById('add-hint-btn');
   // Enable only if we have signals (need context for hint generation)
-  btn.disabled = currentSignals.length < 1;
+  // But don't change disabled state if currently generating
+  if (!btn.classList.contains('generating')) {
+    btn.disabled = currentSignals.length < 1;
+  }
+}
+
+/**
+ * Handle hint status updates from background (for auto-triggered hints)
+ */
+function handleHintStatusUpdate(status, message) {
+  const btn = document.getElementById('add-hint-btn');
+  const statusEl = document.getElementById('hint-status');
+
+  if (status === 'generating') {
+    btn.disabled = true;
+    btn.classList.add('generating');
+    btn.innerHTML = '<svg class="icon icon-loading"><use href="#icon-loading"/></svg>';
+    statusEl.textContent = 'Generating hint...';
+    statusEl.className = 'hint-status hint-status-loading';
+  } else if (status === 'success') {
+    btn.classList.remove('generating');
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="icon"><use href="#icon-sparkle"/></svg>';
+    statusEl.textContent = message || 'Hint added!';
+    statusEl.className = 'hint-status hint-status-success';
+    // Clear status after 3 seconds
+    setTimeout(() => {
+      statusEl.textContent = '';
+      statusEl.className = 'hint-status';
+    }, 3000);
+    updateHintButton();
+  } else if (status === 'error') {
+    btn.classList.remove('generating');
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="icon"><use href="#icon-sparkle"/></svg>';
+    statusEl.textContent = message || 'Failed';
+    statusEl.className = 'hint-status hint-status-error';
+    updateHintButton();
+  }
 }
 
 /**

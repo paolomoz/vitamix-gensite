@@ -278,6 +278,11 @@
   }
 
   function handleClick(e) {
+    // Ignore synthetic/programmatic clicks (e.g., from video player initialization)
+    if (!e.isTrusted) {
+      return;
+    }
+
     // Find the nearest interactive element or use direct target
     const target = e.target.closest('a, button, [role="button"], [onclick], [data-action], input[type="submit"], [tabindex], img, video') || e.target;
 

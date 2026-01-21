@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "PagePoof",
+  "name": "AEM Generative Websites",
   "description": "Websites that watch, understand, and adapt in real-time. Intent inference and AI-powered personalization for Adobe Sneaks demo.",
   "version": "2.0.0",
   "icons": {

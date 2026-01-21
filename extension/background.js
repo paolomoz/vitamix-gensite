@@ -937,16 +937,25 @@ async function handleChatbotMessage(query, pageContext) {
       content: msg.content,
     }));
 
-    // Call support chat API
-    const response = await fetch(`${WORKER_API_URL}/support-chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query,
-        conversationHistory,
-        pageContext,
-      }),
-    });
+    // Call support chat API with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    let response;
+    try {
+      response = await fetch(`${WORKER_API_URL}/support-chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          conversationHistory,
+          pageContext,
+        }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -978,7 +987,11 @@ async function handleChatbotMessage(query, pageContext) {
     };
   } catch (error) {
     console.error('[Background] Chatbot message error:', error);
-    return { error: error.message };
+    // Provide user-friendly error messages
+    if (error.name === 'AbortError') {
+      return { error: 'Request timed out. Please try again.' };
+    }
+    return { error: error.message || 'Something went wrong. Please try again.' };
   }
 }
 

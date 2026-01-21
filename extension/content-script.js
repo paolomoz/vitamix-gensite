@@ -914,6 +914,9 @@
         addAssistantMessage(response);
       } else if (response && response.error) {
         showError(response.error);
+      } else {
+        // Fallback for unexpected response format
+        showError('Could not get a response. Please try again.');
       }
     }).catch((e) => {
       hideLoading();

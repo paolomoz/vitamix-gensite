@@ -124,7 +124,9 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
         data: { message: error.message || 'Generation failed' },
       });
     })
-    .finally(() => {
+    .finally(async () => {
+      // Small delay before closing to ensure all events are flushed to browser
+      await new Promise(resolve => setTimeout(resolve, 100));
       close();
     });
 
@@ -205,7 +207,9 @@ async function handleGenerateFromContext(
         data: { message: error.message || 'Generation failed' },
       });
     })
-    .finally(() => {
+    .finally(async () => {
+      // Small delay before closing to ensure all events are flushed to browser
+      await new Promise(resolve => setTimeout(resolve, 100));
       close();
     });
 

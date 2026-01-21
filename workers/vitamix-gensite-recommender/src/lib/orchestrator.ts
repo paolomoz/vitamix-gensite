@@ -1721,6 +1721,7 @@ async function generateEnhancedSuggestions(
   env: Env,
   preset?: string
 ): Promise<SuggestionEnhancementData> {
+  console.log('[generateEnhancedSuggestions] Starting with preset:', preset);
   const modelFactory = createModelFactory(env, preset);
 
   // Build context about what's been explored
@@ -1853,8 +1854,9 @@ Respond in JSON:
       { role: 'user', content: prompt },
     ];
 
-    // Use the same model factory as the rest of the pipeline for consistent speed
-    const response = await modelFactory.call('reasoning', messages, env);
+    // Use the content model (Cerebras) for fast enhancement generation
+    // The reasoning model (Claude Opus) is too slow and causes enhancement to timeout
+    const response = await modelFactory.call('content', messages, env);
     console.log('[Orchestrator] Enhanced suggestions generated in', response.duration, 'ms');
 
     // Parse JSON from response
@@ -2557,6 +2559,29 @@ export async function orchestrateFromContext(
     // ============================================
     ctx.ragContext = await getRAGContext(effectiveQuery, intent, env, sessionContext);
 
+    // Start background enhancement in parallel with content generation
+    // This provides deeper, more insightful suggestions via AI reasoning
+    console.log('[OrchestrateFromContext] Starting enhancement promise...');
+    const enhancementStartTime = Date.now();
+    const enhancementPromise = generateEnhancedSuggestions(
+      {
+        query: effectiveQuery,
+        intent: intent,
+        journeyStage: 'exploring', // Will be updated after reasoning completes
+        sessionContext,
+        generatedBlockTypes: [], // Will be populated after all blocks
+        ragContext: ctx.ragContext,
+      },
+      env,
+      preset
+    ).then(result => {
+      console.log('[OrchestrateFromContext] Enhancement completed in', Date.now() - enhancementStartTime, 'ms with', result.suggestions?.length, 'suggestions');
+      return result;
+    }).catch(err => {
+      console.error('[OrchestrateFromContext] Background enhancement failed after', Date.now() - enhancementStartTime, 'ms:', err);
+      return { suggestions: [], gaps: [] } as SuggestionEnhancementData;
+    });
+
     // ============================================
     // Stage 4: HERO-FIRST FAST PATH (with signal interpretation)
     // Start hero generation immediately while reasoning runs in parallel
@@ -2753,6 +2778,27 @@ export async function orchestrateFromContext(
         }),
       },
     });
+
+    // Wait for enhancement with a timeout (don't block forever)
+    // This allows the shimmer cards to be replaced with real suggestions
+    console.log('[OrchestrateFromContext] Waiting for enhancement...');
+    try {
+      const timeoutPromise = new Promise<SuggestionEnhancementData>((_, reject) =>
+        setTimeout(() => reject(new Error('Enhancement timeout')), 15000)
+      );
+      const enhancement = await Promise.race([enhancementPromise, timeoutPromise]);
+      console.log('[OrchestrateFromContext] Enhancement resolved:', enhancement.suggestions?.length, 'suggestions,', enhancement.gaps?.length, 'gaps');
+      if (enhancement.suggestions.length > 0 || enhancement.gaps.length > 0) {
+        console.log('[OrchestrateFromContext] Sending suggestion-enhancement event with', enhancement.suggestions.length, 'suggestions');
+        onEvent({
+          event: 'suggestion-enhancement',
+          data: enhancement,
+        });
+      }
+    } catch (enhancementError) {
+      console.log('[OrchestrateFromContext] Enhancement skipped (timeout or error):', enhancementError);
+    }
+    console.log('[OrchestrateFromContext] Enhancement handling complete');
 
     return {
       blocks,

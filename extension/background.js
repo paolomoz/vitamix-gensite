@@ -39,6 +39,10 @@ let previousQueries = [];
 // Track session start
 let sessionStartTime = Date.now();
 
+// Chatbot state
+let chatbotConversation = [];
+let chatbotOpen = false;
+
 /**
  * Initialize on install
  */
@@ -189,6 +193,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'EXECUTE_BATCH':
       handleExecuteBatch(message.improvements).then(sendResponse);
       return true;
+
+    // Chatbot handlers
+    case 'CHATBOT_MESSAGE':
+      handleChatbotMessage(message.query, message.pageContext).then(sendResponse);
+      return true;
+
+    case 'CHATBOT_RESET':
+      handleChatbotReset().then(sendResponse);
+      return true;
+
+    case 'CHATBOT_STATE_SAVE':
+      handleChatbotStateSave(message.chatbotOpen).then(sendResponse);
+      return true;
+
+    case 'CHATBOT_STATE_LOAD':
+      handleChatbotStateLoad().then(sendResponse);
+      return true;
+
+    case 'CHATBOT_GET_CONVERSATION':
+      sendResponse({ conversation: chatbotConversation });
+      return false;
 
     default:
       sendResponse({ error: 'Unknown message type' });
@@ -883,4 +908,133 @@ function notifyExecutionProgress(pageUrl, stage, blockIndex = null) {
   } catch (e) {
     // Panel might not be open
   }
+}
+
+// ============================================
+// Support Chatbot Handlers
+// ============================================
+
+/**
+ * Handle chatbot message - send to worker API
+ */
+async function handleChatbotMessage(query, pageContext) {
+  try {
+    // Add user message to conversation
+    chatbotConversation.push({
+      role: 'user',
+      content: query,
+      timestamp: Date.now(),
+    });
+
+    // Keep last 20 messages
+    if (chatbotConversation.length > 20) {
+      chatbotConversation = chatbotConversation.slice(-20);
+    }
+
+    // Build conversation history for API
+    const conversationHistory = chatbotConversation.slice(0, -1).map(msg => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
+    // Call support chat API
+    const response = await fetch(`${WORKER_API_URL}/support-chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query,
+        conversationHistory,
+        pageContext,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Background] Support chat API error:', errorText);
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Add assistant response to conversation
+    chatbotConversation.push({
+      role: 'assistant',
+      content: data.quickAnswer,
+      fullPageUrl: data.fullPageUrl || null,
+      relatedTopics: data.relatedTopics || [],
+      timestamp: Date.now(),
+    });
+
+    // Save conversation
+    await saveChatbotConversation();
+
+    // Notify content script of update
+    notifyChatbotUpdate();
+
+    return {
+      quickAnswer: data.quickAnswer,
+      fullPageUrl: data.fullPageUrl,
+      relatedTopics: data.relatedTopics,
+    };
+  } catch (error) {
+    console.error('[Background] Chatbot message error:', error);
+    return { error: error.message };
+  }
+}
+
+/**
+ * Reset chatbot conversation
+ */
+async function handleChatbotReset() {
+  chatbotConversation = [];
+  chatbotOpen = false;
+  await chrome.storage.local.remove(['chatbotConversation', 'chatbotOpen']);
+  notifyChatbotUpdate();
+  return { success: true };
+}
+
+/**
+ * Save chatbot open state
+ */
+async function handleChatbotStateSave(isOpen) {
+  chatbotOpen = isOpen;
+  await chrome.storage.local.set({ chatbotOpen });
+  return { success: true };
+}
+
+/**
+ * Load chatbot state
+ */
+async function handleChatbotStateLoad() {
+  try {
+    const data = await chrome.storage.local.get(['chatbotOpen', 'chatbotConversation']);
+    chatbotOpen = data.chatbotOpen || false;
+    chatbotConversation = data.chatbotConversation || [];
+    return { chatbotOpen };
+  } catch (e) {
+    console.error('[Background] Error loading chatbot state:', e);
+    return { chatbotOpen: false };
+  }
+}
+
+/**
+ * Save chatbot conversation to storage
+ */
+async function saveChatbotConversation() {
+  try {
+    await chrome.storage.local.set({ chatbotConversation });
+  } catch (e) {
+    console.error('[Background] Error saving chatbot conversation:', e);
+  }
+}
+
+/**
+ * Notify content script of chatbot updates
+ */
+function notifyChatbotUpdate() {
+  chrome.tabs.query({ url: ['*://www.vitamix.com/*', '*://vitamix.com/*'] }, (tabs) => {
+    tabs.forEach(tab => {
+      chrome.tabs.sendMessage(tab.id, { type: 'CHATBOT_CONVERSATION_UPDATED' }).catch(() => {});
+    });
+  });
 }

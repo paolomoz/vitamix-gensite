@@ -703,16 +703,431 @@
     setTimeout(checkForExistingData, 5000);
   }
 
+  // ============================================
+  // Support Chatbot UI
+  // ============================================
+
+  // Chatbot state
+  let chatbotOpen = false;
+  let chatbotOverlay = null;
+  let chatbotButton = null;
+
+  /**
+   * SVG Icons for chatbot
+   */
+  const CHATBOT_ICONS = {
+    chat: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/><path d="M7 9h10v2H7zm0-3h10v2H7z"/></svg>`,
+    reset: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>`,
+    close: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
+    send: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`,
+    support: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>`,
+    external: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`,
+  };
+
+  /**
+   * Inject the chatbot button (replaces vitamix.com chatbot)
+   */
+  function injectChatbotButton() {
+    // Skip if already injected
+    if (document.querySelector('.vitamix-chatbot-button')) return;
+
+    // Create the button
+    chatbotButton = document.createElement('button');
+    chatbotButton.className = 'vitamix-chatbot-button';
+    chatbotButton.setAttribute('aria-label', 'Open support chat');
+    chatbotButton.innerHTML = CHATBOT_ICONS.chat;
+
+    // Click handler
+    chatbotButton.addEventListener('click', handleChatbotButtonClick);
+
+    // Append to body
+    document.body.appendChild(chatbotButton);
+
+    console.log('[VitamixIntent] Chatbot button injected');
+
+    // Load saved state
+    loadChatbotState();
+  }
+
+  /**
+   * Handle chatbot button click
+   */
+  function handleChatbotButtonClick() {
+    if (chatbotOpen) {
+      // If open and clicking reset icon, show confirmation
+      if (chatbotButton.classList.contains('active')) {
+        if (confirm('Clear conversation and start over?')) {
+          resetChatbot();
+        }
+      }
+    } else {
+      openChatbot();
+    }
+  }
+
+  /**
+   * Open the chatbot overlay
+   */
+  function openChatbot() {
+    if (!chatbotOverlay) {
+      createChatbotOverlay();
+    }
+    chatbotOverlay.classList.add('open');
+    chatbotButton.classList.add('active');
+    chatbotButton.innerHTML = CHATBOT_ICONS.reset;
+    chatbotButton.setAttribute('aria-label', 'Reset conversation');
+    chatbotOpen = true;
+    saveChatbotState();
+
+    // Focus input
+    setTimeout(() => {
+      const input = chatbotOverlay.querySelector('.vitamix-chatbot-input');
+      if (input) input.focus();
+    }, 200);
+  }
+
+  /**
+   * Close the chatbot overlay
+   */
+  function closeChatbot() {
+    if (chatbotOverlay) {
+      chatbotOverlay.classList.remove('open');
+    }
+    chatbotButton.classList.remove('active');
+    chatbotButton.innerHTML = CHATBOT_ICONS.chat;
+    chatbotButton.setAttribute('aria-label', 'Open support chat');
+    chatbotOpen = false;
+    saveChatbotState();
+  }
+
+  /**
+   * Reset chatbot conversation
+   */
+  function resetChatbot() {
+    chrome.runtime.sendMessage({ type: 'CHATBOT_RESET' }).catch(() => {});
+    if (chatbotOverlay) {
+      const messagesContainer = chatbotOverlay.querySelector('.vitamix-chatbot-messages');
+      if (messagesContainer) {
+        messagesContainer.innerHTML = getEmptyStateHTML();
+      }
+    }
+    closeChatbot();
+  }
+
+  /**
+   * Create the chatbot overlay panel
+   */
+  function createChatbotOverlay() {
+    chatbotOverlay = document.createElement('div');
+    chatbotOverlay.className = 'vitamix-chatbot-overlay';
+    chatbotOverlay.innerHTML = `
+      <div class="vitamix-chatbot-header">
+        <div class="vitamix-chatbot-header-left">
+          <div class="vitamix-chatbot-logo">${CHATBOT_ICONS.support}</div>
+          <div>
+            <h2 class="vitamix-chatbot-title">Vitamix Support</h2>
+            <p class="vitamix-chatbot-subtitle">AI-powered assistance</p>
+          </div>
+        </div>
+        <button class="vitamix-chatbot-close" aria-label="Close chat">${CHATBOT_ICONS.close}</button>
+      </div>
+      <div class="vitamix-chatbot-messages">
+        ${getEmptyStateHTML()}
+      </div>
+      <div class="vitamix-chatbot-input-area">
+        <div class="vitamix-chatbot-input-wrapper">
+          <input type="text" class="vitamix-chatbot-input" placeholder="Ask about your Vitamix..." />
+          <button class="vitamix-chatbot-send" aria-label="Send message">${CHATBOT_ICONS.send}</button>
+        </div>
+      </div>
+    `;
+
+    // Event listeners
+    chatbotOverlay.querySelector('.vitamix-chatbot-close').addEventListener('click', closeChatbot);
+
+    const input = chatbotOverlay.querySelector('.vitamix-chatbot-input');
+    const sendButton = chatbotOverlay.querySelector('.vitamix-chatbot-send');
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+
+    document.body.appendChild(chatbotOverlay);
+
+    // Load existing conversation
+    loadConversation();
+  }
+
+  /**
+   * Get empty state HTML
+   */
+  function getEmptyStateHTML() {
+    return `
+      <div class="vitamix-chatbot-empty">
+        <svg class="vitamix-chatbot-empty-icon" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+        </svg>
+        <p class="vitamix-chatbot-empty-text">
+          Ask me anything about your Vitamix!<br/>
+          Cleaning, troubleshooting, recipes, and more.
+        </p>
+      </div>
+    `;
+  }
+
+  /**
+   * Send a message to the support chat
+   */
+  function sendMessage() {
+    const input = chatbotOverlay.querySelector('.vitamix-chatbot-input');
+    const query = input.value.trim();
+    if (!query) return;
+
+    // Clear input
+    input.value = '';
+
+    // Add user message to UI
+    addMessageToUI('user', query);
+
+    // Show loading state
+    showLoading();
+
+    // Get page context
+    const pageContext = {
+      url: window.location.href,
+      productViewed: extractProductFromPage(),
+    };
+
+    // Send to background for API call
+    chrome.runtime.sendMessage({
+      type: 'CHATBOT_MESSAGE',
+      query,
+      pageContext,
+    }).then((response) => {
+      hideLoading();
+      if (response && response.quickAnswer) {
+        addAssistantMessage(response);
+      } else if (response && response.error) {
+        showError(response.error);
+      }
+    }).catch((e) => {
+      hideLoading();
+      showError('Could not connect to support. Please try again.');
+      console.error('[VitamixIntent] Chatbot error:', e);
+    });
+  }
+
+  /**
+   * Extract product name from current page (if on product page)
+   */
+  function extractProductFromPage() {
+    const url = window.location.pathname;
+    // Product page URL patterns
+    if (url.includes('/shop/') || url.includes('/products/')) {
+      const h1 = document.querySelector('h1')?.textContent?.trim();
+      if (h1) return h1;
+    }
+    return null;
+  }
+
+  /**
+   * Add a message to the UI
+   */
+  function addMessageToUI(role, content, fullPageUrl = null, relatedTopics = null) {
+    const messagesContainer = chatbotOverlay.querySelector('.vitamix-chatbot-messages');
+
+    // Remove empty state if present
+    const emptyState = messagesContainer.querySelector('.vitamix-chatbot-empty');
+    if (emptyState) emptyState.remove();
+
+    const messageEl = document.createElement('div');
+    messageEl.className = `vitamix-chatbot-message ${role}`;
+
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    let extraContent = '';
+    if (fullPageUrl) {
+      extraContent += `
+        <a href="${fullPageUrl}" class="vitamix-chatbot-fullpage-link" target="_blank">
+          ${CHATBOT_ICONS.external}
+          See full guide
+        </a>
+      `;
+    }
+    if (relatedTopics && relatedTopics.length > 0) {
+      extraContent += `
+        <div class="vitamix-chatbot-topics">
+          ${relatedTopics.map(topic => `<button class="vitamix-chatbot-topic" data-query="${escapeHtml(topic)}">${escapeHtml(topic)}</button>`).join('')}
+        </div>
+      `;
+    }
+
+    messageEl.innerHTML = `
+      <div class="vitamix-chatbot-message-bubble">${escapeHtml(content)}</div>
+      ${extraContent}
+      <div class="vitamix-chatbot-message-time">${time}</div>
+    `;
+
+    // Add click handlers for topic buttons
+    messageEl.querySelectorAll('.vitamix-chatbot-topic').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = chatbotOverlay.querySelector('.vitamix-chatbot-input');
+        input.value = btn.dataset.query;
+        sendMessage();
+      });
+    });
+
+    messagesContainer.appendChild(messageEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  /**
+   * Add assistant message with optional extras
+   */
+  function addAssistantMessage(response) {
+    addMessageToUI('assistant', response.quickAnswer, response.fullPageUrl, response.relatedTopics);
+  }
+
+  /**
+   * Show loading indicator
+   */
+  function showLoading() {
+    const messagesContainer = chatbotOverlay.querySelector('.vitamix-chatbot-messages');
+
+    // Remove any existing loading
+    const existingLoading = messagesContainer.querySelector('.vitamix-chatbot-loading');
+    if (existingLoading) existingLoading.remove();
+
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'vitamix-chatbot-loading';
+    loadingEl.innerHTML = `
+      <div class="vitamix-chatbot-loading-dots">
+        <div class="vitamix-chatbot-loading-dot"></div>
+        <div class="vitamix-chatbot-loading-dot"></div>
+        <div class="vitamix-chatbot-loading-dot"></div>
+      </div>
+    `;
+    messagesContainer.appendChild(loadingEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  /**
+   * Hide loading indicator
+   */
+  function hideLoading() {
+    const messagesContainer = chatbotOverlay.querySelector('.vitamix-chatbot-messages');
+    const loadingEl = messagesContainer.querySelector('.vitamix-chatbot-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+
+  /**
+   * Show error message
+   */
+  function showError(message) {
+    const messagesContainer = chatbotOverlay.querySelector('.vitamix-chatbot-messages');
+    const errorEl = document.createElement('div');
+    errorEl.className = 'vitamix-chatbot-error';
+    errorEl.textContent = message;
+    messagesContainer.appendChild(errorEl);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => errorEl.remove(), 5000);
+  }
+
+  /**
+   * Escape HTML to prevent XSS
+   */
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
+   * Save chatbot state to background
+   */
+  function saveChatbotState() {
+    chrome.runtime.sendMessage({
+      type: 'CHATBOT_STATE_SAVE',
+      chatbotOpen,
+    }).catch(() => {});
+  }
+
+  /**
+   * Load chatbot state from background
+   */
+  function loadChatbotState() {
+    chrome.runtime.sendMessage({ type: 'CHATBOT_STATE_LOAD' }).then((state) => {
+      if (state && state.chatbotOpen) {
+        openChatbot();
+      }
+    }).catch(() => {});
+  }
+
+  /**
+   * Load conversation history
+   */
+  function loadConversation() {
+    chrome.runtime.sendMessage({ type: 'CHATBOT_GET_CONVERSATION' }).then((response) => {
+      if (response && response.conversation && response.conversation.length > 0) {
+        const messagesContainer = chatbotOverlay.querySelector('.vitamix-chatbot-messages');
+        messagesContainer.innerHTML = '';
+
+        response.conversation.forEach(msg => {
+          if (msg.role === 'user') {
+            addMessageToUI('user', msg.content);
+          } else {
+            addMessageToUI('assistant', msg.content, msg.fullPageUrl, msg.relatedTopics);
+          }
+        });
+      }
+    }).catch(() => {});
+  }
+
+  /**
+   * Listen for conversation updates from background
+   */
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'CHATBOT_CONVERSATION_UPDATED') {
+      if (chatbotOverlay && chatbotOpen) {
+        loadConversation();
+      }
+      sendResponse({ success: true });
+      return false;
+    }
+    return false;
+  });
+
+  /**
+   * Initialize chatbot on vitamix.com only
+   */
+  function initChatbot() {
+    const isVitamixCom = window.location.hostname.includes('vitamix.com');
+    if (!isVitamixCom) return;
+
+    // Wait a bit for the page to fully load and original chatbot to appear
+    setTimeout(() => {
+      injectChatbotButton();
+    }, 1000);
+  }
+
   // Initialize signal capture only (no panel auto-injection)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       init();
       captureQueryFromUrl();
       setupGenerationCapture();
+      initChatbot();
     });
   } else {
     init();
     captureQueryFromUrl();
     setupGenerationCapture();
+    initChatbot();
   }
 })();

@@ -15,10 +15,11 @@
  * NOTE: 'query' parameter is deprecated - use 'q' instead
  */
 
-import type { Env, SessionContext, SSEEvent, IntentClassification, ExtensionContext } from './types';
+import type { Env, SessionContext, SSEEvent, IntentClassification, ExtensionContext, SupportChatRequest } from './types';
 import { orchestrate, orchestrateFromContext } from './lib/orchestrator';
 import { persistAndPublish, buildPageHtml, unescapeHtml } from './lib/da-client';
 import { classifyCategory, generateSemanticSlug, buildCategorizedPath } from './lib/category-classifier';
+import { handleSupportChat } from './lib/support-chat';
 
 // Context storage key prefix
 const CONTEXT_PREFIX = 'ctx_';
@@ -80,11 +81,12 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
   const slug = url.searchParams.get('slug');
   const ctxParam = url.searchParams.get('ctx');
   const preset = url.searchParams.get('preset') || undefined;
+  const mode = url.searchParams.get('mode') || undefined;
 
   // Check if ctx is a stored context ID (full context mode)
   // Pass query to override context.query when explicit query is provided
   if (ctxParam && ctxParam.startsWith(CONTEXT_PREFIX)) {
-    return handleGenerateFromContext(ctxParam, slug, preset, env, query);
+    return handleGenerateFromContext(ctxParam, slug, preset, env, query, mode);
   }
 
   // Original query-based flow
@@ -115,7 +117,8 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
     env,
     write,
     sessionContext,
-    preset
+    preset,
+    mode
   )
     .catch((error) => {
       console.error('Orchestration error:', error);
@@ -144,13 +147,15 @@ async function handleGenerate(request: Request, env: Env): Promise<Response> {
 /**
  * Handle generation from stored full context (extension flow)
  * @param explicitQuery - Optional query from URL that overrides context.query
+ * @param mode - Optional mode (e.g., 'support' for support-focused pages)
  */
 async function handleGenerateFromContext(
   contextId: string,
   slug: string | null,
   preset: string | undefined,
   env: Env,
-  explicitQuery?: string | null
+  explicitQuery?: string | null,
+  mode?: string
 ): Promise<Response> {
   // Fetch context from KV
   if (!env.SESSIONS) {
@@ -198,7 +203,8 @@ async function handleGenerateFromContext(
     effectiveSlug,
     env,
     write,
-    preset
+    preset,
+    mode
   )
     .catch((error) => {
       console.error('Context orchestration error:', error);
@@ -591,6 +597,34 @@ function handleOptions(): Response {
   });
 }
 
+/**
+ * Handle support chat endpoint
+ */
+async function handleSupportChatEndpoint(request: Request, env: Env): Promise<Response> {
+  try {
+    const body: SupportChatRequest = await request.json();
+
+    if (!body.query || !body.query.trim()) {
+      return new Response(
+        JSON.stringify({ error: 'Missing query parameter' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    const response = await handleSupportChat(body, env);
+
+    return new Response(JSON.stringify(response), {
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  } catch (error) {
+    console.error('[SupportChat] Endpoint error:', error);
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
+      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+    );
+  }
+}
+
 // ============================================
 // Utility Functions
 // ============================================
@@ -684,6 +718,11 @@ export default {
       case '/api/persist':
         if (request.method === 'POST') {
           return handlePersist(request, env);
+        }
+        return new Response('Method not allowed', { status: 405 });
+      case '/support-chat':
+        if (request.method === 'POST') {
+          return handleSupportChatEndpoint(request, env);
         }
         return new Response('Method not allowed', { status: 405 });
       case '/health':

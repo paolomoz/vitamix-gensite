@@ -44,6 +44,11 @@ binding = "AI"
 binding = "VECTORIZE"
 index_name = "vitamix-gensite-content"
 
+# Vectorize for support content (create with: wrangler vectorize create vitamix-support-content --dimensions=768 --metric=cosine)
+[[vectorize]]
+binding = "SUPPORT_VECTORIZE"
+index_name = "vitamix-support-content"
+
 # KV for session persistence (create with: wrangler kv:namespace create SESSIONS)
 [[kv_namespaces]]
 binding = "SESSIONS"

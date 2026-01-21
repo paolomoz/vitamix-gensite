@@ -114,6 +114,42 @@ function isTooSimilarToQuery(suggestionQuery: string, originalQuery: string): bo
 }
 
 // ============================================
+// Support Mode Filtering
+// ============================================
+
+/**
+ * Block types to EXCLUDE when in support mode.
+ * These are marketing/conversion-focused blocks that shouldn't appear
+ * in support pages (from chatbot).
+ */
+const SUPPORT_MODE_EXCLUDED_BLOCKS = new Set([
+  'product-cards',
+  'product-recommendation',
+  'best-pick',
+  'comparison-table',
+  'recipe-cards',
+  'budget-breakdown',
+  'testimonials',
+]);
+
+/**
+ * Block types that are REQUIRED for support mode.
+ * These help solve the user's problem.
+ */
+const SUPPORT_MODE_REQUIRED_BLOCKS = new Set([
+  'hero',          // Still need a hero
+  'quick-answer',  // Direct answer
+  'faq',           // Common questions
+]);
+
+/**
+ * Filter blocks for support mode - remove marketing/conversion blocks.
+ */
+function filterBlocksForSupportMode(blocks: BlockSelection[]): BlockSelection[] {
+  return blocks.filter(block => !SUPPORT_MODE_EXCLUDED_BLOCKS.has(block.type));
+}
+
+// ============================================
 // Intent Classification
 // ============================================
 
@@ -2032,7 +2068,8 @@ export async function orchestrate(
   env: Env,
   onEvent: SSECallback,
   sessionContext?: SessionContext,
-  preset?: string
+  preset?: string,
+  mode?: string
 ): Promise<{
   blocks: GeneratedBlock[];
   reasoning: ReasoningResult;
@@ -2112,6 +2149,12 @@ export async function orchestrate(
 
     // Now wait for reasoning to complete
     ctx.reasoningResult = await reasoningPromise;
+
+    // Apply support mode filtering if enabled
+    if (mode === 'support') {
+      console.log('[Orchestrator] Support mode enabled - filtering out marketing blocks');
+      ctx.reasoningResult.selectedBlocks = filterBlocksForSupportMode(ctx.reasoningResult.selectedBlocks);
+    }
 
     // Stream reasoning steps
     const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);
@@ -2442,7 +2485,8 @@ export async function orchestrateFromContext(
   slug: string,
   env: Env,
   onEvent: SSECallback,
-  preset?: string
+  preset?: string,
+  mode?: string
 ): Promise<{
   blocks: GeneratedBlock[];
   reasoning: ReasoningResult;
@@ -2641,6 +2685,12 @@ export async function orchestrateFromContext(
 
     // Now wait for reasoning to complete
     ctx.reasoningResult = await reasoningPromise;
+
+    // Apply support mode filtering if enabled
+    if (mode === 'support') {
+      console.log('[Orchestrator] Support mode enabled - filtering out marketing blocks');
+      ctx.reasoningResult.selectedBlocks = filterBlocksForSupportMode(ctx.reasoningResult.selectedBlocks);
+    }
 
     // Stream reasoning steps
     const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);

@@ -622,6 +622,7 @@ export interface Env {
   // Cloudflare Bindings
   AI: Ai;
   VECTORIZE?: VectorizeIndex;
+  SUPPORT_VECTORIZE?: VectorizeIndex;
   SESSIONS?: KVNamespace;
   HERO_IMAGES?: R2Bucket;
 
@@ -742,3 +743,58 @@ export interface AdvisorFollowUp {
 // ============================================
 
 export type ContentType = 'recipes' | 'reviews' | 'specs' | 'warranty' | 'comparison' | 'accessories';
+
+// ============================================
+// Support Chat Types
+// ============================================
+
+/**
+ * Request payload for support chat endpoint
+ */
+export interface SupportChatRequest {
+  /** User's support question */
+  query: string;
+  /** Previous messages in the conversation */
+  conversationHistory?: Array<{ role: string; content: string }>;
+  /** Context from the current page */
+  pageContext?: {
+    url: string;
+    productViewed?: string;
+  };
+}
+
+/**
+ * Response from support chat endpoint
+ */
+export interface SupportChatResponse {
+  /** Quick inline answer (max ~300 tokens) */
+  quickAnswer: string;
+  /** URL to full support page (only for complex issues) */
+  fullPageUrl?: string;
+  /** Suggested follow-up topics */
+  relatedTopics?: string[];
+}
+
+/**
+ * Support intent classification
+ */
+export interface SupportIntent {
+  /** Category of support issue */
+  category: 'cleaning' | 'troubleshooting' | 'warranty' | 'operation' | 'assembly' | 'recipes' | 'safety' | 'general';
+  /** Specific product if identified */
+  product?: string;
+  /** Whether the issue is complex (needs full page) */
+  isComplex: boolean;
+  /** Confidence score */
+  confidence: number;
+}
+
+/**
+ * Vectorize metadata for support content
+ */
+export interface SupportContentMetadata {
+  content_type: 'manual' | 'troubleshooting' | 'warranty' | 'safety';
+  product_series: string;
+  models: string[];
+  section_title: string;
+}

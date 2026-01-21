@@ -37,7 +37,7 @@
         "*://main--vitamix-gensite--paolomoz.aem.live/*"
       ],
       "js": ["content-script.js"],
-      "css": ["hint-styles.css"],
+      "css": ["hint-styles.css", "chatbot-styles.css"],
       "run_at": "document_idle"
     }
   ],

@@ -1,0 +1,563 @@
+/**
+ * Vitamix Support Chatbot Styles
+ * Adobe Spectrum Dark Theme for chatbot overlay on vitamix.com
+ *
+ * Replaces the existing vitamix.com chatbot (question-mark button at bottom-left)
+ */
+
+/* ========================================
+   Adobe Spectrum Color Tokens (Dark Theme)
+   ======================================== */
+
+:root {
+  /* Backgrounds */
+  --spectrum-gray-25: rgb(17, 17, 17);
+  --spectrum-gray-50: rgb(27, 27, 27);
+  --spectrum-gray-75: rgb(34, 34, 34);
+  --spectrum-gray-100: rgb(44, 44, 44);
+  --spectrum-gray-200: rgb(50, 50, 50);
+  --spectrum-gray-300: rgb(57, 57, 57);
+  --spectrum-gray-400: rgb(68, 68, 68);
+  --spectrum-gray-500: rgb(109, 109, 109);
+  --spectrum-gray-700: rgb(175, 175, 175);
+  --spectrum-gray-900: rgb(227, 227, 227);
+  --spectrum-gray-1000: rgb(255, 255, 255);
+
+  /* Accent */
+  --spectrum-blue-900: rgb(86, 129, 255);
+  --spectrum-blue-1000: rgb(105, 149, 254);
+
+  /* Semantic */
+  --spectrum-green-900: rgb(45, 157, 120);
+  --spectrum-red-900: rgb(215, 50, 32);
+
+  /* Vitamix Brand Accent */
+  --vitamix-red: #c8102e;
+  --vitamix-red-dark: #a01e2a;
+
+  /* Spacing */
+  --spectrum-spacing-75: 4px;
+  --spectrum-spacing-100: 8px;
+  --spectrum-spacing-200: 12px;
+  --spectrum-spacing-300: 16px;
+  --spectrum-spacing-400: 24px;
+  --spectrum-spacing-500: 32px;
+
+  /* Border Radius */
+  --spectrum-corner-radius-75: 4px;
+  --spectrum-corner-radius-100: 8px;
+  --spectrum-corner-radius-200: 10px;
+
+  /* Animation */
+  --spectrum-animation-duration-100: 130ms;
+  --spectrum-animation-duration-200: 160ms;
+  --spectrum-animation-ease-in-out: cubic-bezier(0.45, 0, 0.4, 1);
+}
+
+/* ========================================
+   Hide Original Vitamix Chatbot
+   ======================================== */
+
+/* Hide the existing vitamix.com chatbot button */
+#ada-button-frame,
+[id*="ada-button"],
+[class*="ada-chat"],
+.chat-button,
+.chat-widget-button,
+#livechat-compact-container,
+[data-testid="chat-widget"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ========================================
+   Chatbot Toggle Button
+   ======================================== */
+
+.vitamix-chatbot-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--spectrum-gray-75);
+  border: 1px solid var(--spectrum-gray-300);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483646;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all var(--spectrum-animation-duration-200) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-button:hover {
+  background: var(--spectrum-gray-100);
+  border-color: var(--spectrum-gray-400);
+  transform: scale(1.05);
+}
+
+.vitamix-chatbot-button:active {
+  transform: scale(0.98);
+}
+
+.vitamix-chatbot-button svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--spectrum-gray-900);
+  transition: transform var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+/* Active state - show reset icon */
+.vitamix-chatbot-button.active {
+  background: var(--vitamix-red);
+  border-color: var(--vitamix-red-dark);
+}
+
+.vitamix-chatbot-button.active:hover {
+  background: var(--vitamix-red-dark);
+}
+
+.vitamix-chatbot-button.active svg {
+  fill: var(--spectrum-gray-1000);
+}
+
+/* ========================================
+   Chatbot Overlay Panel
+   ======================================== */
+
+.vitamix-chatbot-overlay {
+  position: fixed;
+  bottom: 88px;
+  left: 20px;
+  width: 380px;
+  max-height: calc(100vh - 120px);
+  background: var(--spectrum-gray-50);
+  border: 1px solid var(--spectrum-gray-300);
+  border-radius: var(--spectrum-corner-radius-200);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 2147483645;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Entry animation */
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  transition: all var(--spectrum-animation-duration-200) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-overlay.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* ========================================
+   Chatbot Header
+   ======================================== */
+
+.vitamix-chatbot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spectrum-spacing-300);
+  background: var(--spectrum-gray-75);
+  border-bottom: 1px solid var(--spectrum-gray-300);
+}
+
+.vitamix-chatbot-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spectrum-spacing-200);
+}
+
+.vitamix-chatbot-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--vitamix-red);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vitamix-chatbot-logo svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--spectrum-gray-1000);
+}
+
+.vitamix-chatbot-title {
+  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--spectrum-gray-900);
+  margin: 0;
+}
+
+.vitamix-chatbot-subtitle {
+  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--spectrum-gray-500);
+  margin: 2px 0 0 0;
+}
+
+.vitamix-chatbot-close {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--spectrum-corner-radius-75);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-close:hover {
+  background: var(--spectrum-gray-200);
+}
+
+.vitamix-chatbot-close svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--spectrum-gray-700);
+}
+
+/* ========================================
+   Conversation Thread
+   ======================================== */
+
+.vitamix-chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spectrum-spacing-300);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spectrum-spacing-200);
+  min-height: 200px;
+  max-height: 400px;
+}
+
+/* Scrollbar styling */
+.vitamix-chatbot-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vitamix-chatbot-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vitamix-chatbot-messages::-webkit-scrollbar-thumb {
+  background: var(--spectrum-gray-400);
+  border-radius: 3px;
+}
+
+.vitamix-chatbot-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--spectrum-gray-500);
+}
+
+/* Empty state */
+.vitamix-chatbot-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spectrum-spacing-500);
+  text-align: center;
+  color: var(--spectrum-gray-500);
+}
+
+.vitamix-chatbot-empty-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--spectrum-spacing-200);
+  fill: var(--spectrum-gray-400);
+}
+
+.vitamix-chatbot-empty-text {
+  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ========================================
+   Message Bubbles
+   ======================================== */
+
+.vitamix-chatbot-message {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  animation: vitamix-message-in 0.2s var(--spectrum-animation-ease-in-out);
+}
+
+@keyframes vitamix-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vitamix-chatbot-message.user {
+  align-self: flex-end;
+}
+
+.vitamix-chatbot-message.assistant {
+  align-self: flex-start;
+}
+
+.vitamix-chatbot-message-bubble {
+  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+  border-radius: var(--spectrum-corner-radius-100);
+  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.vitamix-chatbot-message.user .vitamix-chatbot-message-bubble {
+  background: var(--spectrum-blue-900);
+  color: var(--spectrum-gray-1000);
+  border-bottom-right-radius: var(--spectrum-corner-radius-75);
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble {
+  background: var(--spectrum-gray-100);
+  color: var(--spectrum-gray-900);
+  border-bottom-left-radius: var(--spectrum-corner-radius-75);
+}
+
+.vitamix-chatbot-message-time {
+  font-size: 10px;
+  color: var(--spectrum-gray-500);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.vitamix-chatbot-message.user .vitamix-chatbot-message-time {
+  text-align: right;
+}
+
+/* ========================================
+   Full Page Link
+   ======================================== */
+
+.vitamix-chatbot-fullpage-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--spectrum-spacing-100);
+  padding: var(--spectrum-spacing-100) var(--spectrum-spacing-200);
+  background: var(--spectrum-gray-200);
+  border-radius: var(--spectrum-corner-radius-75);
+  color: var(--spectrum-blue-900);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-fullpage-link:hover {
+  background: var(--spectrum-gray-300);
+  color: var(--spectrum-blue-1000);
+}
+
+.vitamix-chatbot-fullpage-link svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* ========================================
+   Related Topics
+   ======================================== */
+
+.vitamix-chatbot-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spectrum-spacing-75);
+  margin-top: var(--spectrum-spacing-100);
+}
+
+.vitamix-chatbot-topic {
+  padding: 4px 10px;
+  background: var(--spectrum-gray-200);
+  border: 1px solid var(--spectrum-gray-300);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--spectrum-gray-700);
+  cursor: pointer;
+  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-topic:hover {
+  background: var(--spectrum-gray-300);
+  border-color: var(--spectrum-gray-400);
+  color: var(--spectrum-gray-900);
+}
+
+/* ========================================
+   Loading State
+   ======================================== */
+
+.vitamix-chatbot-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--spectrum-spacing-100);
+  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+  background: var(--spectrum-gray-100);
+  border-radius: var(--spectrum-corner-radius-100);
+  max-width: 85%;
+  align-self: flex-start;
+}
+
+.vitamix-chatbot-loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.vitamix-chatbot-loading-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--spectrum-gray-500);
+  border-radius: 50%;
+  animation: vitamix-loading-bounce 1.4s infinite ease-in-out both;
+}
+
+.vitamix-chatbot-loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.vitamix-chatbot-loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes vitamix-loading-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   Input Area
+   ======================================== */
+
+.vitamix-chatbot-input-area {
+  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+  background: var(--spectrum-gray-75);
+  border-top: 1px solid var(--spectrum-gray-300);
+}
+
+.vitamix-chatbot-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spectrum-spacing-100);
+  background: var(--spectrum-gray-100);
+  border: 1px solid var(--spectrum-gray-300);
+  border-radius: var(--spectrum-corner-radius-100);
+  padding: var(--spectrum-spacing-75);
+  transition: border-color var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-input-wrapper:focus-within {
+  border-color: var(--spectrum-blue-900);
+}
+
+.vitamix-chatbot-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-size: 13px;
+  color: var(--spectrum-gray-900);
+  padding: var(--spectrum-spacing-75) var(--spectrum-spacing-100);
+}
+
+.vitamix-chatbot-input::placeholder {
+  color: var(--spectrum-gray-500);
+}
+
+.vitamix-chatbot-send {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--spectrum-corner-radius-75);
+  background: var(--vitamix-red);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+}
+
+.vitamix-chatbot-send:hover {
+  background: var(--vitamix-red-dark);
+}
+
+.vitamix-chatbot-send:disabled {
+  background: var(--spectrum-gray-400);
+  cursor: not-allowed;
+}
+
+.vitamix-chatbot-send svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--spectrum-gray-1000);
+}
+
+/* ========================================
+   Error State
+   ======================================== */
+
+.vitamix-chatbot-error {
+  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
+  background: rgba(215, 50, 32, 0.15);
+  border: 1px solid var(--spectrum-red-900);
+  border-radius: var(--spectrum-corner-radius-100);
+  color: var(--spectrum-red-900);
+  font-size: 12px;
+  margin: var(--spectrum-spacing-100);
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 480px) {
+  .vitamix-chatbot-overlay {
+    left: 10px;
+    right: 10px;
+    width: auto;
+    bottom: 80px;
+  }
+
+  .vitamix-chatbot-button {
+    left: 10px;
+    bottom: 10px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .vitamix-chatbot-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}

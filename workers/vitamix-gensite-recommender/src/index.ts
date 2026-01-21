@@ -598,6 +598,130 @@ function handleOptions(): Response {
 }
 
 /**
+ * Support content chunk structure from scraper
+ */
+interface SupportChunk {
+  id: string;
+  content: string;
+  metadata: {
+    content_type: string;
+    product_series: string;
+    models: string[];
+    section_title: string;
+    manual_name: string;
+    chunk_index: number;
+    total_chunks: number;
+  };
+}
+
+/**
+ * Handle support content embedding and indexing
+ */
+async function handleEmbedSupport(request: Request, env: Env): Promise<Response> {
+  try {
+    const body = await request.json() as { chunks: SupportChunk[] };
+    const { chunks } = body;
+
+    if (!chunks?.length) {
+      return new Response(
+        JSON.stringify({ error: 'No chunks provided' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    if (!env.SUPPORT_VECTORIZE) {
+      return new Response(
+        JSON.stringify({ error: 'SUPPORT_VECTORIZE not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    if (!env.AI) {
+      return new Response(
+        JSON.stringify({ error: 'AI binding not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    const BATCH_SIZE = 50; // Process 50 chunks at a time
+    const results = {
+      processed: 0,
+      batches: 0,
+      errors: [] as string[],
+    };
+
+    // Process in batches
+    for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+      const batch = chunks.slice(i, i + BATCH_SIZE);
+
+      try {
+        // Create searchable text for each chunk
+        const texts = batch.map(chunk => {
+          const parts = [
+            chunk.content,
+            `Product: ${chunk.metadata.product_series}`,
+            `Models: ${chunk.metadata.models.join(', ')}`,
+            `Section: ${chunk.metadata.section_title}`,
+            `Type: ${chunk.metadata.content_type}`,
+          ];
+          return parts.join('. ');
+        });
+
+        // Generate embeddings
+        const embeddingResult = await env.AI.run('@cf/baai/bge-base-en-v1.5', {
+          text: texts,
+        }) as { data: number[][] };
+
+        if (!embeddingResult.data || embeddingResult.data.length !== batch.length) {
+          throw new Error('Embedding count mismatch');
+        }
+
+        // Create vectors
+        const vectors: VectorizeVector[] = batch.map((chunk, idx) => ({
+          id: chunk.id,
+          values: embeddingResult.data[idx],
+          metadata: {
+            content: chunk.content.slice(0, 2000), // Vectorize metadata limit
+            content_type: chunk.metadata.content_type,
+            product_series: chunk.metadata.product_series,
+            models: chunk.metadata.models.join(','),
+            section_title: chunk.metadata.section_title,
+            manual_name: chunk.metadata.manual_name,
+            indexed_at: new Date().toISOString(),
+          },
+        }));
+
+        // Upsert to Vectorize
+        await env.SUPPORT_VECTORIZE.upsert(vectors);
+
+        results.processed += batch.length;
+        results.batches++;
+
+        console.log(`[EmbedSupport] Batch ${results.batches}: ${batch.length} chunks indexed`);
+      } catch (error) {
+        const errMsg = error instanceof Error ? error.message : 'Unknown error';
+        results.errors.push(`Batch ${results.batches + 1}: ${errMsg}`);
+        console.error(`[EmbedSupport] Batch ${results.batches + 1} failed:`, error);
+      }
+    }
+
+    return new Response(JSON.stringify({
+      success: results.errors.length === 0,
+      ...results,
+      totalChunks: chunks.length,
+    }), {
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  } catch (error) {
+    console.error('[EmbedSupport] Error:', error);
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
+      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+    );
+  }
+}
+
+/**
  * Handle support chat endpoint
  */
 async function handleSupportChatEndpoint(request: Request, env: Env): Promise<Response> {
@@ -723,6 +847,11 @@ export default {
       case '/support-chat':
         if (request.method === 'POST') {
           return handleSupportChatEndpoint(request, env);
+        }
+        return new Response('Method not allowed', { status: 405 });
+      case '/embed-support':
+        if (request.method === 'POST') {
+          return handleEmbedSupport(request, env);
         }
         return new Response('Method not allowed', { status: 405 });
       case '/health':

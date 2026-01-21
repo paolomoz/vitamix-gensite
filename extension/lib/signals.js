@@ -85,6 +85,9 @@ export const PRODUCT_MAPPINGS = {
   'explorian-e310': 'E310',
   'e310': 'E310',
   'x5': 'X5',
+  'x4': 'X4',
+  'x3': 'X3',
+  'x2': 'X2',
   'venturist-v1200': 'V1200',
   'venturist-v1200i': 'V1200i',
   'v1200': 'V1200',
@@ -153,14 +156,21 @@ export function classifyClick(data) {
 export function extractProductName(data) {
   const { path = '', title = '', h1 = '' } = data;
 
-  // Try URL path
-  const pathMatch = path.match(/\/shop\/(?:blenders\/|accessories\/)?([^/?]+)/);
+  // Try URL path - matches both /shop/ and /products/ URLs
+  const pathMatch = path.match(/\/(?:shop\/(?:blenders\/|accessories\/)?|products\/)([^/?]+)/);
   if (pathMatch) {
     const slug = pathMatch[1].toLowerCase();
+    // Exact match
     if (PRODUCT_MAPPINGS[slug]) {
       return PRODUCT_MAPPINGS[slug];
     }
-    // Convert slug to title case
+    // Partial match - check if slug contains a known product name
+    for (const [key, name] of Object.entries(PRODUCT_MAPPINGS)) {
+      if (slug.includes(key)) {
+        return name;
+      }
+    }
+    // Convert slug to title case as fallback
     return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 

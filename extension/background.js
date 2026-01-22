@@ -215,6 +215,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ conversation: chatbotConversation });
       return false;
 
+    case 'TOGGLE_CHATBOT':
+      handleToggleChatbot().then(sendResponse);
+      return true;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return false;
@@ -1004,6 +1008,27 @@ async function handleChatbotReset() {
   await chrome.storage.local.remove(['chatbotConversation', 'chatbotOpen']);
   notifyChatbotUpdate();
   return { success: true };
+}
+
+/**
+ * Toggle chatbot visibility on the active tab
+ */
+async function handleToggleChatbot() {
+  try {
+    // Get the active tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+    if (!tab || !tab.id) {
+      return { success: false, error: 'No active tab' };
+    }
+
+    // Send toggle message to content script
+    const response = await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_CHATBOT_VISIBILITY' });
+    return { success: true, visible: response?.visible ?? true };
+  } catch (error) {
+    console.error('[Background] Toggle chatbot error:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 /**

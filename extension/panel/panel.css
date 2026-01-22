@@ -821,6 +821,17 @@ svg.icon-loading {
   cursor: not-allowed;
 }
 
+.action-icon-btn.active {
+  background: var(--spectrum-green-900);
+  border-color: var(--spectrum-green-900);
+  color: var(--spectrum-gray-1000);
+}
+
+.action-icon-btn.active:hover:not(:disabled) {
+  background: var(--spectrum-green-1000);
+  border-color: var(--spectrum-green-1000);
+}
+
 .action-icon-btn .icon {
   width: 14px;
   height: 14px;

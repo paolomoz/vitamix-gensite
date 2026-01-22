@@ -138,6 +138,11 @@ function setupEventListeners() {
     handleAddHint();
   });
 
+  // Toggle Chatbot button
+  document.getElementById('toggle-chatbot-btn').addEventListener('click', () => {
+    handleToggleChatbot();
+  });
+
   // Query input keyboard shortcut
   const queryInput = document.getElementById('query-input');
   queryInput.addEventListener('keydown', (e) => {
@@ -248,6 +253,25 @@ async function handleAddHint() {
     btn.disabled = false;
     btn.innerHTML = '<svg class="icon"><use href="#icon-sparkle"/></svg>';
     updateHintButton();
+  }
+}
+
+/**
+ * Handle toggle chatbot visibility on vitamix.com
+ */
+async function handleToggleChatbot() {
+  const btn = document.getElementById('toggle-chatbot-btn');
+
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'TOGGLE_CHATBOT' });
+
+    if (response.success) {
+      // Update button appearance based on chatbot visibility
+      btn.classList.toggle('active', response.visible);
+      btn.title = response.visible ? 'Hide Chatbot' : 'Show Chatbot';
+    }
+  } catch (error) {
+    console.error('[Panel] Toggle chatbot error:', error);
   }
 }
 

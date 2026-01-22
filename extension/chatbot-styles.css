@@ -1,64 +1,67 @@
 /**
  * Vitamix Support Chatbot Styles
- * Adobe Spectrum Dark Theme for chatbot overlay on vitamix.com
+ * Modern, premium light theme aligned with vitamix.com design system
  *
  * Replaces the existing vitamix.com chatbot (question-mark button at bottom-left)
  */
 
 /* ========================================
-   Adobe Spectrum Color Tokens (Dark Theme)
+   Vitamix Design Tokens
    ======================================== */
 
 :root {
-  /* Backgrounds */
-  --spectrum-gray-25: rgb(17, 17, 17);
-  --spectrum-gray-50: rgb(27, 27, 27);
-  --spectrum-gray-75: rgb(34, 34, 34);
-  --spectrum-gray-100: rgb(44, 44, 44);
-  --spectrum-gray-200: rgb(50, 50, 50);
-  --spectrum-gray-300: rgb(57, 57, 57);
-  --spectrum-gray-400: rgb(68, 68, 68);
-  --spectrum-gray-500: rgb(109, 109, 109);
-  --spectrum-gray-700: rgb(175, 175, 175);
-  --spectrum-gray-900: rgb(227, 227, 227);
-  --spectrum-gray-1000: rgb(255, 255, 255);
+  /* Brand Colors */
+  --vmx-red: #c8102e;
+  --vmx-red-dark: #a01e2a;
+  --vmx-red-light: #e8354f;
+  --vmx-charcoal: #333f48;
+  --vmx-gray: #40596b;
 
-  /* Accent */
-  --spectrum-blue-900: rgb(86, 129, 255);
-  --spectrum-blue-1000: rgb(105, 149, 254);
+  /* Neutrals */
+  --vmx-white: #fff;
+  --vmx-cream: #faf9f7;
+  --vmx-off-white: #f5f4f1;
+  --vmx-border: #e8e6e1;
+  --vmx-border-light: #f0eeea;
+  --vmx-muted: #5c6670;
+  --vmx-subtle: #8c939a;
 
-  /* Semantic */
-  --spectrum-green-900: rgb(45, 157, 120);
-  --spectrum-red-900: rgb(215, 50, 32);
-
-  /* Vitamix Brand Accent */
-  --vitamix-red: #c8102e;
-  --vitamix-red-dark: #a01e2a;
+  /* Typography */
+  --vmx-font-heading: 'Sentinel A', 'Sentinel B', Georgia, 'Times New Roman', serif;
+  --vmx-font-body: 'Gotham Narrow', 'Helvetica Neue', Arial, sans-serif;
 
   /* Spacing */
-  --spectrum-spacing-75: 4px;
-  --spectrum-spacing-100: 8px;
-  --spectrum-spacing-200: 12px;
-  --spectrum-spacing-300: 16px;
-  --spectrum-spacing-400: 24px;
-  --spectrum-spacing-500: 32px;
+  --vmx-space-xs: 4px;
+  --vmx-space-sm: 8px;
+  --vmx-space-md: 12px;
+  --vmx-space-lg: 16px;
+  --vmx-space-xl: 24px;
+  --vmx-space-2xl: 32px;
 
   /* Border Radius */
-  --spectrum-corner-radius-75: 4px;
-  --spectrum-corner-radius-100: 8px;
-  --spectrum-corner-radius-200: 10px;
+  --vmx-radius-sm: 2px;
+  --vmx-radius-md: 4px;
+  --vmx-radius-lg: 6px;
+  --vmx-radius-xl: 8px;
+  --vmx-radius-full: 9999px;
+
+  /* Shadows */
+  --vmx-shadow-sm: 0 2px 8px rgba(51, 63, 72, 0.08);
+  --vmx-shadow-md: 0 4px 20px rgba(51, 63, 72, 0.12);
+  --vmx-shadow-lg: 0 12px 48px rgba(51, 63, 72, 0.16);
+  --vmx-shadow-button: 0 4px 16px rgba(200, 16, 46, 0.25);
 
   /* Animation */
-  --spectrum-animation-duration-100: 130ms;
-  --spectrum-animation-duration-200: 160ms;
-  --spectrum-animation-ease-in-out: cubic-bezier(0.45, 0, 0.4, 1);
+  --vmx-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --vmx-ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --vmx-duration: 0.2s;
+  --vmx-duration-slow: 0.35s;
 }
 
 /* ========================================
    Hide Original Vitamix Chatbot
    ======================================== */
 
-/* Hide the existing vitamix.com chatbot button */
 #ada-button-frame,
 [id*="ada-button"],
 [class*="ada-chat"],
@@ -78,51 +81,55 @@
 
 .vitamix-chatbot-button {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: var(--vmx-space-xl);
+  left: var(--vmx-space-xl);
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  background: var(--spectrum-gray-75);
-  border: 1px solid var(--spectrum-gray-300);
+  border-radius: var(--vmx-radius-lg);
+  background: linear-gradient(135deg, var(--vmx-charcoal) 0%, #2a343c 100%);
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2147483646;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  transition: all var(--spectrum-animation-duration-200) var(--spectrum-animation-ease-in-out);
+  box-shadow: var(--vmx-shadow-md);
+  transition: all var(--vmx-duration) var(--vmx-ease);
 }
 
 .vitamix-chatbot-button:hover {
-  background: var(--spectrum-gray-100);
-  border-color: var(--spectrum-gray-400);
-  transform: scale(1.05);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--vmx-shadow-lg);
+}
+
+.vitamix-chatbot-button:focus-visible {
+  outline: 2px solid var(--vmx-red);
+  outline-offset: 3px;
 }
 
 .vitamix-chatbot-button:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 .vitamix-chatbot-button svg {
   width: 24px;
   height: 24px;
-  fill: var(--spectrum-gray-900);
-  transition: transform var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+  fill: var(--vmx-white);
+  transition: transform var(--vmx-duration) var(--vmx-ease);
 }
 
-/* Active state - show reset icon */
+.vitamix-chatbot-button:hover svg {
+  transform: scale(1.05);
+}
+
+/* Active state - reset button */
 .vitamix-chatbot-button.active {
-  background: var(--vitamix-red);
-  border-color: var(--vitamix-red-dark);
+  background: linear-gradient(135deg, var(--vmx-red) 0%, var(--vmx-red-dark) 100%);
+  box-shadow: var(--vmx-shadow-button);
 }
 
 .vitamix-chatbot-button.active:hover {
-  background: var(--vitamix-red-dark);
-}
-
-.vitamix-chatbot-button.active svg {
-  fill: var(--spectrum-gray-1000);
+  background: linear-gradient(135deg, var(--vmx-red-light) 0%, var(--vmx-red) 100%);
 }
 
 /* ========================================
@@ -131,14 +138,14 @@
 
 .vitamix-chatbot-overlay {
   position: fixed;
-  top: 20px;
-  bottom: 88px;
-  left: 20px;
-  width: 420px;
-  background: var(--spectrum-gray-50);
-  border: 1px solid var(--spectrum-gray-300);
-  border-radius: var(--spectrum-corner-radius-200);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  top: var(--vmx-space-xl);
+  bottom: 96px;
+  left: var(--vmx-space-xl);
+  width: 400px;
+  background: var(--vmx-white);
+  border: 1px solid var(--vmx-border-light);
+  border-radius: var(--vmx-radius-xl);
+  box-shadow: var(--vmx-shadow-lg);
   z-index: 2147483645;
   display: flex;
   flex-direction: column;
@@ -146,9 +153,9 @@
 
   /* Entry animation */
   opacity: 0;
-  transform: translateY(20px) scale(0.95);
+  transform: translateY(12px) scale(0.98);
   pointer-events: none;
-  transition: all var(--spectrum-animation-duration-200) var(--spectrum-animation-ease-in-out);
+  transition: all var(--vmx-duration-slow) var(--vmx-ease);
 }
 
 .vitamix-chatbot-overlay.open {
@@ -165,70 +172,85 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spectrum-spacing-300);
-  background: var(--spectrum-gray-75);
-  border-bottom: 1px solid var(--spectrum-gray-300);
+  padding: var(--vmx-space-lg) var(--vmx-space-xl);
+  background: var(--vmx-white);
+  border-bottom: 1px solid var(--vmx-border-light);
 }
 
 .vitamix-chatbot-header-left {
   display: flex;
   align-items: center;
-  gap: var(--spectrum-spacing-200);
+  gap: var(--vmx-space-md);
 }
 
 .vitamix-chatbot-logo {
-  width: 28px;
-  height: 28px;
-  background: var(--vitamix-red);
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--vmx-red) 0%, var(--vmx-red-dark) 100%);
+  border-radius: var(--vmx-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--vmx-shadow-sm);
 }
 
 .vitamix-chatbot-logo svg {
-  width: 18px;
-  height: 18px;
-  fill: var(--spectrum-gray-1000);
+  width: 22px;
+  height: 22px;
+  fill: var(--vmx-white);
 }
 
 .vitamix-chatbot-title {
-  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--spectrum-gray-900);
+  font-family: var(--vmx-font-heading);
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--vmx-charcoal);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .vitamix-chatbot-subtitle {
-  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-family: var(--vmx-font-body);
   font-size: 11px;
-  font-weight: 400;
-  color: var(--spectrum-gray-500);
-  margin: 2px 0 0 0;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vmx-red);
+  margin: 3px 0 0 0;
+  opacity: 0.9;
 }
 
 .vitamix-chatbot-close {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--spectrum-corner-radius-75);
-  background: transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--vmx-radius-md);
+  background: var(--vmx-off-white);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+  transition: all var(--vmx-duration) var(--vmx-ease);
 }
 
 .vitamix-chatbot-close:hover {
-  background: var(--spectrum-gray-200);
+  background: var(--vmx-charcoal);
+}
+
+.vitamix-chatbot-close:focus-visible {
+  outline: 2px solid var(--vmx-red);
+  outline-offset: 2px;
 }
 
 .vitamix-chatbot-close svg {
   width: 16px;
   height: 16px;
-  fill: var(--spectrum-gray-700);
+  fill: var(--vmx-muted);
+  transition: fill var(--vmx-duration) var(--vmx-ease);
+}
+
+.vitamix-chatbot-close:hover svg {
+  fill: var(--vmx-white);
 }
 
 /* ========================================
@@ -238,11 +260,12 @@
 .vitamix-chatbot-messages {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spectrum-spacing-300);
+  padding: var(--vmx-space-xl);
   display: flex;
   flex-direction: column;
-  gap: var(--spectrum-spacing-300);
+  gap: var(--vmx-space-lg);
   min-height: 0;
+  background: linear-gradient(180deg, var(--vmx-cream) 0%, var(--vmx-off-white) 100%);
 }
 
 /* Scrollbar styling */
@@ -255,12 +278,12 @@
 }
 
 .vitamix-chatbot-messages::-webkit-scrollbar-thumb {
-  background: var(--spectrum-gray-400);
-  border-radius: 3px;
+  background: var(--vmx-border);
+  border-radius: var(--vmx-radius-full);
 }
 
 .vitamix-chatbot-messages::-webkit-scrollbar-thumb:hover {
-  background: var(--spectrum-gray-500);
+  background: var(--vmx-subtle);
 }
 
 /* Empty state */
@@ -269,23 +292,34 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spectrum-spacing-500);
+  padding: var(--vmx-space-2xl) var(--vmx-space-xl);
   text-align: center;
-  color: var(--spectrum-gray-500);
+  flex: 1;
 }
 
 .vitamix-chatbot-empty-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: var(--spectrum-spacing-200);
-  fill: var(--spectrum-gray-400);
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--vmx-space-lg);
+  padding: var(--vmx-space-lg);
+  background: var(--vmx-white);
+  border-radius: var(--vmx-radius-lg);
+  box-shadow: var(--vmx-shadow-sm);
+  fill: var(--vmx-subtle);
 }
 
 .vitamix-chatbot-empty-text {
-  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-  font-size: 13px;
-  line-height: 1.5;
+  font-family: var(--vmx-font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--vmx-muted);
   margin: 0;
+}
+
+.vitamix-chatbot-empty-text br {
+  display: block;
+  margin-top: var(--vmx-space-xs);
+  content: '';
 }
 
 /* ========================================
@@ -296,10 +330,10 @@
   display: flex;
   flex-direction: column;
   max-width: 85%;
-  animation: vitamix-message-in 0.2s var(--spectrum-animation-ease-in-out);
+  animation: vmx-message-in var(--vmx-duration-slow) var(--vmx-ease);
 }
 
-@keyframes vitamix-message-in {
+@keyframes vmx-message-in {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -319,33 +353,34 @@
 }
 
 .vitamix-chatbot-message-bubble {
-  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
-  border-radius: var(--spectrum-corner-radius-100);
-  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-  font-size: 13px;
-  line-height: 1.5;
+  padding: var(--vmx-space-md) var(--vmx-space-lg);
+  font-family: var(--vmx-font-body);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .vitamix-chatbot-message.user .vitamix-chatbot-message-bubble {
-  background: var(--spectrum-blue-900);
-  color: var(--spectrum-gray-1000);
-  border-bottom-right-radius: var(--spectrum-corner-radius-75);
+  background: linear-gradient(135deg, var(--vmx-charcoal) 0%, #2a343c 100%);
+  color: var(--vmx-white);
+  border-radius: var(--vmx-radius-lg) var(--vmx-radius-lg) var(--vmx-radius-sm) var(--vmx-radius-lg);
+  box-shadow: var(--vmx-shadow-sm);
 }
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble {
-  background: var(--spectrum-gray-100);
-  color: var(--spectrum-gray-900);
-  border-bottom-left-radius: var(--spectrum-corner-radius-75);
+  background: var(--vmx-white);
+  color: var(--vmx-charcoal);
+  border-radius: var(--vmx-radius-lg) var(--vmx-radius-lg) var(--vmx-radius-lg) var(--vmx-radius-sm);
+  box-shadow: var(--vmx-shadow-sm);
 }
 
 /* Formatted content in assistant messages */
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble strong {
-  font-weight: 600;
-  color: var(--spectrum-gray-1000);
+  font-weight: 500;
+  color: var(--vmx-charcoal);
 }
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble p {
-  margin: 0 0 var(--spectrum-spacing-200) 0;
+  margin: 0 0 var(--vmx-space-md) 0;
 }
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble p:last-child {
@@ -353,10 +388,12 @@
 }
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble h4 {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--spectrum-gray-1000);
-  margin: var(--spectrum-spacing-200) 0 var(--spectrum-spacing-100) 0;
+  font-family: var(--vmx-font-heading);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--vmx-charcoal);
+  margin: var(--vmx-space-lg) 0 var(--vmx-space-sm) 0;
+  letter-spacing: -0.01em;
 }
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble h4:first-child {
@@ -365,12 +402,12 @@
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble ul,
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble ol {
-  margin: var(--spectrum-spacing-100) 0;
-  padding-left: var(--spectrum-spacing-300);
+  margin: var(--vmx-space-sm) 0;
+  padding-left: var(--vmx-space-xl);
 }
 
 .vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble li {
-  margin-bottom: var(--spectrum-spacing-75);
+  margin-bottom: var(--vmx-space-xs);
   line-height: 1.5;
 }
 
@@ -379,10 +416,14 @@
 }
 
 .vitamix-chatbot-message-time {
+  font-family: var(--vmx-font-body);
   font-size: 10px;
-  color: var(--spectrum-gray-500);
-  margin-top: 4px;
-  padding: 0 4px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vmx-subtle);
+  margin-top: var(--vmx-space-sm);
+  padding: 0 var(--vmx-space-xs);
 }
 
 .vitamix-chatbot-message.user .vitamix-chatbot-message-time {
@@ -396,26 +437,35 @@
 .vitamix-chatbot-fullpage-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: var(--spectrum-spacing-100);
-  padding: var(--spectrum-spacing-100) var(--spectrum-spacing-200);
-  background: var(--spectrum-gray-200);
-  border-radius: var(--spectrum-corner-radius-75);
-  color: var(--spectrum-blue-900);
+  gap: var(--vmx-space-sm);
+  margin-top: var(--vmx-space-md);
+  padding: var(--vmx-space-sm) var(--vmx-space-md);
+  background: var(--vmx-off-white);
+  border: 1px solid var(--vmx-border);
+  border-radius: var(--vmx-radius-md);
+  color: var(--vmx-charcoal);
+  font-family: var(--vmx-font-body);
   font-size: 12px;
   font-weight: 500;
   text-decoration: none;
-  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+  transition: all var(--vmx-duration) var(--vmx-ease);
 }
 
 .vitamix-chatbot-fullpage-link:hover {
-  background: var(--spectrum-gray-300);
-  color: var(--spectrum-blue-1000);
+  background: var(--vmx-charcoal);
+  border-color: var(--vmx-charcoal);
+  color: var(--vmx-white);
+  transform: translateY(-1px);
+}
+
+.vitamix-chatbot-fullpage-link:focus-visible {
+  outline: 2px solid var(--vmx-red);
+  outline-offset: 2px;
 }
 
 .vitamix-chatbot-fullpage-link svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   fill: currentColor;
 }
 
@@ -426,25 +476,34 @@
 .vitamix-chatbot-topics {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spectrum-spacing-75);
-  margin-top: var(--spectrum-spacing-100);
+  gap: var(--vmx-space-sm);
+  margin-top: var(--vmx-space-md);
 }
 
 .vitamix-chatbot-topic {
-  padding: 4px 10px;
-  background: var(--spectrum-gray-200);
-  border: 1px solid var(--spectrum-gray-300);
-  border-radius: 12px;
-  font-size: 11px;
-  color: var(--spectrum-gray-700);
+  padding: var(--vmx-space-sm) var(--vmx-space-md);
+  background: var(--vmx-white);
+  border: 1px solid var(--vmx-border);
+  border-radius: var(--vmx-radius-lg);
+  font-family: var(--vmx-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vmx-muted);
   cursor: pointer;
-  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+  transition: all var(--vmx-duration) var(--vmx-ease);
 }
 
 .vitamix-chatbot-topic:hover {
-  background: var(--spectrum-gray-300);
-  border-color: var(--spectrum-gray-400);
-  color: var(--spectrum-gray-900);
+  background: var(--vmx-red);
+  border-color: var(--vmx-red);
+  color: var(--vmx-white);
+  transform: translateY(-1px);
+  box-shadow: var(--vmx-shadow-sm);
+}
+
+.vitamix-chatbot-topic:focus-visible {
+  outline: 2px solid var(--vmx-red);
+  outline-offset: 2px;
 }
 
 /* ========================================
@@ -454,25 +513,27 @@
 .vitamix-chatbot-loading {
   display: flex;
   align-items: center;
-  gap: var(--spectrum-spacing-100);
-  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
-  background: var(--spectrum-gray-100);
-  border-radius: var(--spectrum-corner-radius-100);
+  gap: var(--vmx-space-sm);
+  padding: var(--vmx-space-lg);
+  background: var(--vmx-white);
+  border-radius: var(--vmx-radius-lg) var(--vmx-radius-lg) var(--vmx-radius-lg) var(--vmx-radius-sm);
+  box-shadow: var(--vmx-shadow-sm);
   max-width: 85%;
   align-self: flex-start;
+  animation: vmx-message-in var(--vmx-duration-slow) var(--vmx-ease);
 }
 
 .vitamix-chatbot-loading-dots {
   display: flex;
-  gap: 4px;
+  gap: var(--vmx-space-sm);
 }
 
 .vitamix-chatbot-loading-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--spectrum-gray-500);
-  border-radius: 50%;
-  animation: vitamix-loading-bounce 1.4s infinite ease-in-out both;
+  width: 8px;
+  height: 8px;
+  background: var(--vmx-red);
+  border-radius: var(--vmx-radius-full);
+  animation: vmx-loading-pulse 1.4s infinite ease-in-out both;
 }
 
 .vitamix-chatbot-loading-dot:nth-child(1) {
@@ -483,10 +544,10 @@
   animation-delay: -0.16s;
 }
 
-@keyframes vitamix-loading-bounce {
+@keyframes vmx-loading-pulse {
   0%, 80%, 100% {
-    transform: scale(0.6);
-    opacity: 0.4;
+    transform: scale(0.5);
+    opacity: 0.3;
   }
   40% {
     transform: scale(1);
@@ -499,24 +560,24 @@
    ======================================== */
 
 .vitamix-chatbot-input-area {
-  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
-  background: var(--spectrum-gray-75);
-  border-top: 1px solid var(--spectrum-gray-300);
+  padding: var(--vmx-space-lg) var(--vmx-space-xl) var(--vmx-space-xl);
+  background: var(--vmx-white);
+  border-top: 1px solid var(--vmx-border-light);
 }
 
 .vitamix-chatbot-input-wrapper {
   display: flex;
-  align-items: center;
-  gap: var(--spectrum-spacing-100);
-  background: var(--spectrum-gray-100);
-  border: 1px solid var(--spectrum-gray-300);
-  border-radius: var(--spectrum-corner-radius-100);
-  padding: var(--spectrum-spacing-75);
-  transition: border-color var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+  align-items: stretch;
+  background: var(--vmx-off-white);
+  border: 1px solid var(--vmx-border);
+  border-radius: var(--vmx-radius-lg);
+  overflow: hidden;
+  transition: all var(--vmx-duration) var(--vmx-ease);
 }
 
 .vitamix-chatbot-input-wrapper:focus-within {
-  border-color: var(--spectrum-blue-900);
+  border-color: var(--vmx-charcoal);
+  box-shadow: 0 0 0 3px rgba(51, 63, 72, 0.1);
 }
 
 .vitamix-chatbot-input {
@@ -524,42 +585,63 @@
   background: transparent;
   border: none;
   outline: none;
-  font-family: adobe-clean, "Adobe Clean", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-  font-size: 13px;
-  color: var(--spectrum-gray-900);
-  padding: var(--spectrum-spacing-75) var(--spectrum-spacing-100);
+  font-family: var(--vmx-font-body);
+  font-size: 14px;
+  color: var(--vmx-charcoal);
+  padding: var(--vmx-space-md) var(--vmx-space-lg);
 }
 
 .vitamix-chatbot-input::placeholder {
-  color: var(--spectrum-gray-500);
+  color: var(--vmx-subtle);
+}
+
+.vitamix-chatbot-input:focus {
+  outline: none;
 }
 
 .vitamix-chatbot-send {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--spectrum-corner-radius-75);
-  background: var(--vitamix-red);
+  width: 48px;
+  min-width: 48px;
+  margin: var(--vmx-space-xs);
+  background: linear-gradient(135deg, var(--vmx-charcoal) 0%, #2a343c 100%);
   border: none;
+  border-radius: var(--vmx-radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--spectrum-animation-duration-100) var(--spectrum-animation-ease-in-out);
+  transition: all var(--vmx-duration) var(--vmx-ease);
 }
 
 .vitamix-chatbot-send:hover {
-  background: var(--vitamix-red-dark);
+  background: linear-gradient(135deg, var(--vmx-red) 0%, var(--vmx-red-dark) 100%);
+  transform: scale(1.02);
+}
+
+.vitamix-chatbot-send:focus-visible {
+  outline: 2px solid var(--vmx-red);
+  outline-offset: 2px;
+}
+
+.vitamix-chatbot-send:active {
+  transform: scale(0.96);
 }
 
 .vitamix-chatbot-send:disabled {
-  background: var(--spectrum-gray-400);
+  background: var(--vmx-border);
   cursor: not-allowed;
+  transform: none;
 }
 
 .vitamix-chatbot-send svg {
-  width: 16px;
-  height: 16px;
-  fill: var(--spectrum-gray-1000);
+  width: 18px;
+  height: 18px;
+  fill: var(--vmx-white);
+  transition: transform var(--vmx-duration) var(--vmx-ease);
+}
+
+.vitamix-chatbot-send:hover svg {
+  transform: translateX(2px);
 }
 
 /* ========================================
@@ -567,13 +649,15 @@
    ======================================== */
 
 .vitamix-chatbot-error {
-  padding: var(--spectrum-spacing-200) var(--spectrum-spacing-300);
-  background: rgba(215, 50, 32, 0.15);
-  border: 1px solid var(--spectrum-red-900);
-  border-radius: var(--spectrum-corner-radius-100);
-  color: var(--spectrum-red-900);
-  font-size: 12px;
-  margin: var(--spectrum-spacing-100);
+  padding: var(--vmx-space-md) var(--vmx-space-lg);
+  background: linear-gradient(135deg, #fef2f2 0%, #fee8e8 100%);
+  border-radius: var(--vmx-radius-md);
+  border-left: 3px solid var(--vmx-red);
+  color: var(--vmx-red-dark);
+  font-family: var(--vmx-font-body);
+  font-size: 13px;
+  margin: var(--vmx-space-sm);
+  animation: vmx-message-in var(--vmx-duration-slow) var(--vmx-ease);
 }
 
 /* ========================================
@@ -582,29 +666,80 @@
 
 @media (max-width: 480px) {
   .vitamix-chatbot-overlay {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 70px;
-    width: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    border: none;
+    border-radius: 0;
   }
 
   .vitamix-chatbot-button {
-    left: 10px;
-    bottom: 10px;
-    width: 48px;
-    height: 48px;
+    left: var(--vmx-space-lg);
+    bottom: var(--vmx-space-lg);
+    width: 52px;
+    height: 52px;
   }
 
   .vitamix-chatbot-button svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .vitamix-chatbot-header {
+    padding: var(--vmx-space-md) var(--vmx-space-lg);
+  }
+
+  .vitamix-chatbot-messages {
+    padding: var(--vmx-space-lg);
+  }
+
+  .vitamix-chatbot-input-area {
+    padding: var(--vmx-space-md) var(--vmx-space-lg) var(--vmx-space-lg);
   }
 }
 
 @media (max-width: 500px) {
   .vitamix-chatbot-overlay {
     width: auto;
-    right: 20px;
+    right: 0;
+    left: 0;
+  }
+}
+
+/* ========================================
+   Reduced Motion Support
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .vitamix-chatbot-button,
+  .vitamix-chatbot-overlay,
+  .vitamix-chatbot-close,
+  .vitamix-chatbot-fullpage-link,
+  .vitamix-chatbot-topic,
+  .vitamix-chatbot-send,
+  .vitamix-chatbot-input-wrapper {
+    transition: none;
+  }
+
+  .vitamix-chatbot-message,
+  .vitamix-chatbot-loading,
+  .vitamix-chatbot-error {
+    animation: none;
+  }
+
+  .vitamix-chatbot-loading-dot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .vitamix-chatbot-loading-dot:nth-child(2) {
+    opacity: 0.6;
+  }
+
+  .vitamix-chatbot-loading-dot:nth-child(3) {
+    opacity: 0.3;
   }
 }

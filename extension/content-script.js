@@ -711,6 +711,7 @@
   let chatbotOpen = false;
   let chatbotOverlay = null;
   let chatbotButton = null;
+  let chatbotHidden = false;
 
   /**
    * SVG Icons for chatbot
@@ -1084,7 +1085,14 @@
     });
 
     messagesContainer.appendChild(messageEl);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Scroll behavior: user messages scroll to bottom, assistant messages scroll to show the start
+    if (role === 'user') {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } else {
+      // Scroll to show the beginning of the assistant message
+      messageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   /**
@@ -1201,6 +1209,23 @@
       sendResponse({ success: true });
       return false;
     }
+
+    if (message.type === 'TOGGLE_CHATBOT_VISIBILITY') {
+      chatbotHidden = !chatbotHidden;
+      if (chatbotButton) {
+        chatbotButton.style.display = chatbotHidden ? 'none' : 'flex';
+      }
+      if (chatbotOverlay) {
+        chatbotOverlay.style.display = chatbotHidden ? 'none' : 'flex';
+        if (chatbotHidden) {
+          chatbotOverlay.classList.remove('open');
+          chatbotOpen = false;
+        }
+      }
+      sendResponse({ visible: !chatbotHidden });
+      return false;
+    }
+
     return false;
   });
 

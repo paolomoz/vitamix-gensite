@@ -41,6 +41,7 @@ import {
   getProductsByUseCase,
   getAllReviews,
   getFAQsForQuery,
+  hasRelevantFAQs,
   getSafetyGuidelines,
   getCleaningGuidelines,
   getAllergenGuidelines,
@@ -147,6 +148,25 @@ const SUPPORT_MODE_REQUIRED_BLOCKS = new Set([
  */
 function filterBlocksForSupportMode(blocks: BlockSelection[]): BlockSelection[] {
   return blocks.filter(block => !SUPPORT_MODE_EXCLUDED_BLOCKS.has(block.type));
+}
+
+/**
+ * Filter out FAQ block when no FAQs are sufficiently relevant to the query.
+ * This prevents showing generic support FAQs for unrelated queries like
+ * "baby food settings" getting warranty/troubleshooting FAQs.
+ */
+function filterIrrelevantFAQBlock(blocks: BlockSelection[], query: string): BlockSelection[] {
+  const hasFAQBlock = blocks.some(b => b.type === 'faq');
+  if (!hasFAQBlock) return blocks;
+
+  // Check if there are FAQs with sufficient relevance
+  if (hasRelevantFAQs(query)) {
+    return blocks; // Keep FAQ block
+  }
+
+  // Remove FAQ block - no relevant FAQs for this query
+  console.log('[Orchestrator] Removing FAQ block - no FAQs with sufficient relevance for query:', query);
+  return blocks.filter(b => b.type !== 'faq');
 }
 
 // ============================================
@@ -854,35 +874,6 @@ Generate a simple, direct answer for yes/no or quick confirmation questions. Str
 </div>
 <div>
   <div>With its variable speed control and powerful motor, Vitamix is the perfect choice for handling a variety of tasks, including blending cooked proteins to the perfect consistency.</div>
-</div>`,
-
-    'support-triage': `
-## HTML Template (help frustrated customers):
-Generate empathetic support content. Structure:
-- Row 1: Issue type identified
-- Row 2: Empathy message (acknowledge their frustration)
-- Row 3: Resolution path/warranty info
-- Row 4: Primary CTA (warranty claim link)
-- Row 5: Secondary CTA (contact support link)
-- Row 6 (optional): Troubleshooting steps
-
-<div>
-  <div>Container Issue</div>
-</div>
-<div>
-  <div>I understand how frustrating this must be, especially after investing in a quality blender. Let's get this resolved for you.</div>
-</div>
-<div>
-  <div>Container blade issues are typically covered under your Vitamix warranty. Check your model's warranty period in the product context below - you may be eligible for a free replacement.</div>
-</div>
-<div>
-  <div><a href="https://www.vitamix.com/support/warranty">Start Warranty Claim</a></div>
-</div>
-<div>
-  <div><a href="https://www.vitamix.com/contact">Chat with Support</a></div>
-</div>
-<div>
-  <div><ol><li>Check that the container is properly seated on the base</li><li>Inspect the blade assembly for visible damage</li><li>Try running with just water to test</li></ol></div>
 </div>`,
 
     'budget-breakdown': `
@@ -2312,6 +2303,9 @@ export async function orchestrate(
       ctx.reasoningResult.selectedBlocks = filterBlocksForSupportMode(ctx.reasoningResult.selectedBlocks);
     }
 
+    // Filter out FAQ block if no relevant FAQs exist for this query
+    ctx.reasoningResult.selectedBlocks = filterIrrelevantFAQBlock(ctx.reasoningResult.selectedBlocks, query);
+
     // Stream reasoning steps
     const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);
     for (const step of reasoningDisplay.steps) {
@@ -2847,6 +2841,9 @@ export async function orchestrateFromContext(
       console.log('[Orchestrator] Support mode enabled - filtering out marketing blocks');
       ctx.reasoningResult.selectedBlocks = filterBlocksForSupportMode(ctx.reasoningResult.selectedBlocks);
     }
+
+    // Filter out FAQ block if no relevant FAQs exist for this query
+    ctx.reasoningResult.selectedBlocks = filterIrrelevantFAQBlock(ctx.reasoningResult.selectedBlocks, ctx.query);
 
     // Stream reasoning steps
     const reasoningDisplay = formatReasoningForDisplay(ctx.reasoningResult.reasoning);

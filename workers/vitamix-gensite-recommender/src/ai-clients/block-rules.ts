@@ -145,14 +145,14 @@ export const BLOCK_RULES: BlockRule[] = [
       { type: 'keyword', value: '\\brepair\\b' },
       { type: 'intent', intentType: 'support' },
     ],
-    requires: ['support-triage', 'faq'],
+    requires: ['troubleshooting-steps', 'faq'],
     excludes: ['product-recommendation', 'best-pick', 'product-cards', 'comparison-table'],
     enhances: [],
     sequenceHints: [
-      { block: 'support-triage', position: 'early' },
+      { block: 'troubleshooting-steps', position: 'early' },
       { block: 'faq', position: 'middle' },
     ],
-    contentGuidance: 'Lead with empathy. Prioritize resolution over sales. Never recommend products to frustrated customers.',
+    contentGuidance: 'Lead with empathy and reassurance. Provide step-by-step resolution. Never recommend products to frustrated customers.',
     priority: 100, // Highest priority - support always wins
   },
   {

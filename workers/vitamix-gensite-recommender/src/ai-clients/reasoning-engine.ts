@@ -94,7 +94,6 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 | faq | Common questions - for support |
 | follow-up | Suggestion chips for next actions (always include at end) |
 | quick-answer | Simple direct answer - for yes/no questions or quick confirmations |
-| support-triage | Help frustrated customers - for product issues/warranty |
 | budget-breakdown | Price/value transparency - for budget-conscious users |
 | accessibility-specs | Physical/ergonomic specs - for mobility/accessibility concerns |
 | empathy-hero | Warm, acknowledging hero - for medical/emotional situations |
@@ -105,7 +104,7 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 | allergen-safety | Cross-contamination protocols - for allergy-concerned users |
 | best-pick | Prominent "Best Pick" callout with visual emphasis - ALWAYS use before comparison-table |
 | technique-spotlight | Pro blending techniques with speed/time guidance - for operation/settings questions |
-| troubleshooting-steps | Step-by-step problem resolution - for fixing issues (distinct from support-triage) |
+| troubleshooting-steps | Step-by-step problem resolution - for fixing issues and helping frustrated customers |
 
 ## Block Selection Guidelines
 
@@ -121,10 +120,10 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 
 ### 1. Support/Frustrated Customer Detection
 Keywords: "problem", "broken", "frustrated", "warranty", "return", "issue", "not working", "third container"
-- ALWAYS lead with support-triage block
+- ALWAYS lead with troubleshooting-steps block with empathetic tone
 - NEVER show product recommendations to frustrated customers
 - Prioritize empathy and resolution over sales
-- Block sequence: support-triage, faq, follow-up
+- Block sequence: hero (reassuring), troubleshooting-steps, faq, follow-up
 
 ### 2. Simple Yes/No or Quick Questions
 Keywords: "can vitamix", "will it", "does it", "is it worth", "should I", "can I"
@@ -258,7 +257,7 @@ Detection: Query asks HOW TO FIX a problem (distinct from support-triage which h
 - Block sequence: hero (reassuring), troubleshooting-steps, faq, follow-up
 - Content guidance: Reassure them most issues are easily fixed. Lead with the most common solution.
 
-NOTE: Troubleshooting is for "how do I fix X?" questions. Support-triage is for frustrated customers seeking warranty help or returns.
+NOTE: Use troubleshooting-steps for both "how do I fix X?" questions AND frustrated customers seeking help. Lead with empathy and reassurance.
 
 ### 17. Technique & Operation Settings Queries
 Keywords: "how do I", "technique", "tips", "settings", "speed", "proper way", "best way", "method", "layer", "tamper", "program", "time", "minutes"
@@ -1385,7 +1384,7 @@ function getFallbackReasoningResult(
     price: ['hero', 'budget-breakdown', 'product-cards', 'follow-up'],
     recommendation: ['product-recommendation', 'follow-up'],
     // New intent types
-    support: ['support-triage', 'faq', 'follow-up'],
+    support: ['hero', 'troubleshooting-steps', 'faq', 'follow-up'],
     partnership: ['hero', 'feature-highlights', 'testimonials', 'follow-up'],
     gift: ['hero', 'product-recommendation', 'product-cards', 'follow-up'],
     medical: ['empathy-hero', 'accessibility-specs', 'product-recommendation', 'follow-up'],

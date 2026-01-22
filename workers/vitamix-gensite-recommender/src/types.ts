@@ -340,7 +340,6 @@ export type BlockType =
   | 'text'
   // New blocks for improved user experience
   | 'quick-answer'        // Simple direct answer for quick questions
-  | 'support-triage'      // Help frustrated customers
   | 'budget-breakdown'    // Price/value transparency
   | 'accessibility-specs' // Physical/ergonomic specs
   | 'empathy-hero'        // Warm, acknowledging hero variant

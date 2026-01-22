@@ -104,6 +104,8 @@ CRITICAL - Your reasoning will be shown directly to users. Write like you're tal
 | noise-context | Real-world noise comparisons - for noise-sensitive users |
 | allergen-safety | Cross-contamination protocols - for allergy-concerned users |
 | best-pick | Prominent "Best Pick" callout with visual emphasis - ALWAYS use before comparison-table |
+| technique-spotlight | Pro blending techniques with speed/time guidance - for operation/settings questions |
+| troubleshooting-steps | Step-by-step problem resolution - for fixing issues (distinct from support-triage) |
 
 ## Block Selection Guidelines
 
@@ -237,6 +239,35 @@ Detection: Query asks for recipes, cooking ideas, or specific food items to make
 - Content guidance: Focus on inspiring them with what they can create, not on selling products
 
 IMPORTANT: This rule takes priority over generic discovery/comparison flows when recipe keywords are present.
+
+### 15. Cleaning & Maintenance Queries
+Keywords: "clean", "wash", "maintenance", "care", "residue", "stain", "self-clean", "dishwasher", "sanitize"
+Detection: Query asks about cleaning, maintaining, or caring for the blender
+- Lead with troubleshooting-steps block showing step-by-step cleaning instructions
+- Include faq for common cleaning questions
+- DO NOT show product recommendations - they already own a blender
+- Block sequence: hero, troubleshooting-steps, faq, follow-up
+- Content guidance: Practical, step-by-step. Mention self-cleaning (drop of soap + warm water + 60 seconds on high).
+
+### 16. Troubleshooting & Problem Resolution
+Keywords: "fix", "error", "burning", "smell", "won't", "doesn't", "troubleshoot", "stuck", "jammed", "overheating", "not blending", "stopped working"
+Detection: Query asks HOW TO FIX a problem (distinct from support-triage which handles warranty/returns)
+- Lead with troubleshooting-steps showing the fix
+- Include faq for related questions
+- DO NOT show product recommendations - focus on solving their problem
+- Block sequence: hero (reassuring), troubleshooting-steps, faq, follow-up
+- Content guidance: Reassure them most issues are easily fixed. Lead with the most common solution.
+
+NOTE: Troubleshooting is for "how do I fix X?" questions. Support-triage is for frustrated customers seeking warranty help or returns.
+
+### 17. Technique & Operation Settings Queries
+Keywords: "how do I", "technique", "tips", "settings", "speed", "proper way", "best way", "method", "layer", "tamper", "program", "time", "minutes"
+Detection: Query asks for operational guidance, technique tips, or recommended settings
+- Lead with technique-spotlight block showing visual techniques with speed/time guidance
+- Include faq for related operational questions
+- Can include recipe-cards if the technique is food-specific (e.g., "settings for making baby food")
+- Block sequence: hero, technique-spotlight, faq, recipe-cards (optional), follow-up
+- Content guidance: Specific and actionable. Include exact speeds, times, and pro tips.
 
 ## Product Selection (CRITICAL)
 
@@ -1359,6 +1390,10 @@ function getFallbackReasoningResult(
     gift: ['hero', 'product-recommendation', 'product-cards', 'follow-up'],
     medical: ['empathy-hero', 'accessibility-specs', 'product-recommendation', 'follow-up'],
     accessibility: ['empathy-hero', 'accessibility-specs', 'product-recommendation', 'follow-up'],
+    // Operational guidance intent types
+    cleaning: ['hero', 'troubleshooting-steps', 'faq', 'follow-up'],
+    troubleshooting: ['hero', 'troubleshooting-steps', 'faq', 'follow-up'],
+    technique: ['hero', 'technique-spotlight', 'faq', 'follow-up'],
   };
 
   const blocks = blocksByIntent[intent.intentType] || blocksByIntent.discovery;

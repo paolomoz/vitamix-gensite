@@ -131,10 +131,10 @@
 
 .vitamix-chatbot-overlay {
   position: fixed;
+  top: 20px;
   bottom: 88px;
   left: 20px;
-  width: 380px;
-  max-height: calc(100vh - 120px);
+  width: 420px;
   background: var(--spectrum-gray-50);
   border: 1px solid var(--spectrum-gray-300);
   border-radius: var(--spectrum-corner-radius-200);
@@ -241,9 +241,8 @@
   padding: var(--spectrum-spacing-300);
   display: flex;
   flex-direction: column;
-  gap: var(--spectrum-spacing-200);
-  min-height: 200px;
-  max-height: 400px;
+  gap: var(--spectrum-spacing-300);
+  min-height: 0;
 }
 
 /* Scrollbar styling */
@@ -337,6 +336,46 @@
   background: var(--spectrum-gray-100);
   color: var(--spectrum-gray-900);
   border-bottom-left-radius: var(--spectrum-corner-radius-75);
+}
+
+/* Formatted content in assistant messages */
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble strong {
+  font-weight: 600;
+  color: var(--spectrum-gray-1000);
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble p {
+  margin: 0 0 var(--spectrum-spacing-200) 0;
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--spectrum-gray-1000);
+  margin: var(--spectrum-spacing-200) 0 var(--spectrum-spacing-100) 0;
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble h4:first-child {
+  margin-top: 0;
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble ul,
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble ol {
+  margin: var(--spectrum-spacing-100) 0;
+  padding-left: var(--spectrum-spacing-300);
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble li {
+  margin-bottom: var(--spectrum-spacing-75);
+  line-height: 1.5;
+}
+
+.vitamix-chatbot-message.assistant .vitamix-chatbot-message-bubble li:last-child {
+  margin-bottom: 0;
 }
 
 .vitamix-chatbot-message-time {
@@ -543,10 +582,11 @@
 
 @media (max-width: 480px) {
   .vitamix-chatbot-overlay {
+    top: 10px;
     left: 10px;
     right: 10px;
+    bottom: 70px;
     width: auto;
-    bottom: 80px;
   }
 
   .vitamix-chatbot-button {
@@ -559,5 +599,12 @@
   .vitamix-chatbot-button svg {
     width: 20px;
     height: 20px;
+  }
+}
+
+@media (max-width: 500px) {
+  .vitamix-chatbot-overlay {
+    width: auto;
+    right: 20px;
   }
 }

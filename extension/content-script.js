@@ -939,6 +939,101 @@
   }
 
   /**
+   * Format markdown-style text to HTML for assistant messages
+   */
+  function formatMarkdown(text) {
+    // Escape HTML first to prevent XSS
+    let html = escapeHtml(text);
+
+    // Convert **bold** to <strong>
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+    // Split into lines for processing
+    const lines = html.split('\n');
+    const result = [];
+    let inList = false;
+    let listType = null;
+    let currentParagraph = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      // Check for numbered list (1. 2. 3. etc)
+      const numberedMatch = line.match(/^(\d+)\.\s+(.+)$/);
+      // Check for bullet list (- or *)
+      const bulletMatch = line.match(/^[-*]\s+(.+)$/);
+
+      if (numberedMatch) {
+        // Flush current paragraph
+        if (currentParagraph.length > 0) {
+          result.push(`<p>${currentParagraph.join(' ')}</p>`);
+          currentParagraph = [];
+        }
+        // Start or continue ordered list
+        if (!inList || listType !== 'ol') {
+          if (inList) result.push(`</${listType}>`);
+          result.push('<ol>');
+          inList = true;
+          listType = 'ol';
+        }
+        result.push(`<li>${numberedMatch[2]}</li>`);
+      } else if (bulletMatch) {
+        // Flush current paragraph
+        if (currentParagraph.length > 0) {
+          result.push(`<p>${currentParagraph.join(' ')}</p>`);
+          currentParagraph = [];
+        }
+        // Start or continue unordered list
+        if (!inList || listType !== 'ul') {
+          if (inList) result.push(`</${listType}>`);
+          result.push('<ul>');
+          inList = true;
+          listType = 'ul';
+        }
+        result.push(`<li>${bulletMatch[1]}</li>`);
+      } else if (line === '') {
+        // Empty line - end list and paragraph
+        if (inList) {
+          result.push(`</${listType}>`);
+          inList = false;
+          listType = null;
+        }
+        if (currentParagraph.length > 0) {
+          result.push(`<p>${currentParagraph.join(' ')}</p>`);
+          currentParagraph = [];
+        }
+      } else {
+        // Regular text line
+        if (inList) {
+          result.push(`</${listType}>`);
+          inList = false;
+          listType = null;
+        }
+        // Check if line ends with colon (likely a heading)
+        if (line.endsWith(':') && line.length < 60) {
+          if (currentParagraph.length > 0) {
+            result.push(`<p>${currentParagraph.join(' ')}</p>`);
+            currentParagraph = [];
+          }
+          result.push(`<h4>${line}</h4>`);
+        } else {
+          currentParagraph.push(line);
+        }
+      }
+    }
+
+    // Flush remaining content
+    if (inList) {
+      result.push(`</${listType}>`);
+    }
+    if (currentParagraph.length > 0) {
+      result.push(`<p>${currentParagraph.join(' ')}</p>`);
+    }
+
+    return result.join('');
+  }
+
+  /**
    * Add a message to the UI
    */
   function addMessageToUI(role, content, fullPageUrl = null, relatedTopics = null) {
@@ -970,8 +1065,11 @@
       `;
     }
 
+    // Format assistant messages with markdown, escape user messages
+    const formattedContent = role === 'assistant' ? formatMarkdown(content) : escapeHtml(content);
+
     messageEl.innerHTML = `
-      <div class="vitamix-chatbot-message-bubble">${escapeHtml(content)}</div>
+      <div class="vitamix-chatbot-message-bubble">${formattedContent}</div>
       ${extraContent}
       <div class="vitamix-chatbot-message-time">${time}</div>
     `;

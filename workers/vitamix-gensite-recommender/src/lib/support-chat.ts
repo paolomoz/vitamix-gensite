@@ -305,7 +305,7 @@ function shouldOfferFullPage(intent: SupportIntent, relevantContent: string[]): 
  */
 function buildFullPageUrl(query: string): string {
   const encodedQuery = encodeURIComponent(query);
-  return `${POC_BASE_URL}/?q=${encodedQuery}&mode=support`;
+  return `${POC_BASE_URL}/?q=${encodedQuery}&mode=support&preset=all-cerebras`;
 }
 
 /**

@@ -18,6 +18,9 @@ let analysisResults = null;
 let analysisLoading = false;
 let executionState = {}; // { [pageUrl]: { status: 'pending'|'executing'|'complete'|'error', message: string } }
 
+// Insights state
+let insightsData = null;
+
 /**
  * Initialize panel
  */
@@ -100,6 +103,11 @@ function setupEventListeners() {
     switchView('improve');
     // Fetch analysis data when switching to improve tab
     fetchAnalysisData();
+  });
+
+  document.getElementById('tab-insights').addEventListener('click', () => {
+    switchView('insights');
+    loadInsightsData();
   });
 
   // Section toggles (within each view)
@@ -1343,6 +1351,558 @@ function formatRelativeTime(timestamp) {
   if (hours > 0) return `${hours}h ago`;
   if (minutes > 0) return `${minutes}m ago`;
   return 'Just now';
+}
+
+// ========================================
+// Insights Tab - Mock Data & Render Functions
+// ========================================
+
+/**
+ * Mock insights data
+ * Realistic data based on existing analytics patterns
+ */
+const mockInsightsData = {
+  kpis: {
+    engagement: { value: 78, trend: '+5.2%', trendUp: true },
+    effectiveness: { value: 72, trend: '+3.8%', trendUp: true },
+    conversion: { value: 14.2, trend: '+1.4%', trendUp: true },
+    trust: { value: 81, trend: '+2.1%', trendUp: true },
+  },
+
+  contentPerformance: {
+    segments: ['New Parent', 'Health', 'Gift Buyer', 'Upgrader'],
+    blocks: ['recipe-cards', 'product-compare', 'product-hero', 'faq', 'troubleshooting'],
+    scores: [
+      [76, 92, 58, 71], // recipe-cards
+      [62, 71, 88, 85], // product-compare
+      [84, 79, 65, 91], // product-hero
+      [81, 64, 72, 79], // faq
+      [45, 52, 38, 89], // troubleshooting
+    ],
+  },
+
+  journey: {
+    stages: [
+      { name: 'Exploring', pct: 52, conversion: 4.2, color: 'blue' },
+      { name: 'Comparing', pct: 33, conversion: 18.7, color: 'warning' },
+      { name: 'Deciding', pct: 15, conversion: 42.3, color: 'success' },
+    ],
+    topTriggers: [
+      'Product comparison pages',
+      'Recipe success stories',
+      'Warranty information',
+    ],
+  },
+
+  contentGaps: [
+    { topic: 'Noise level comparisons', queries: 89, satisfaction: 42, opportunity: 'high' },
+    { topic: 'Container size guide', queries: 76, satisfaction: 51, opportunity: 'high' },
+    { topic: 'Competitor comparisons', queries: 124, satisfaction: 38, opportunity: 'medium' },
+    { topic: 'Cleaning & maintenance', queries: 45, satisfaction: 67, opportunity: 'low' },
+  ],
+
+  opportunities: [
+    {
+      title: 'Enhance baby food content',
+      segment: 'New Parent',
+      impact: 'high',
+      effort: 'medium',
+      lift: '+15% engagement',
+      rationale: 'New parents show 3x higher engagement with recipe content but convert at lower rates',
+    },
+    {
+      title: 'Add gift registry CTA',
+      segment: 'Gift Buyer',
+      impact: 'high',
+      effort: 'low',
+      lift: '+22% conversion',
+      rationale: 'Gift buyers often abandon due to lack of registry integration',
+    },
+    {
+      title: 'Create upgrade calculator',
+      segment: 'Upgrader',
+      impact: 'medium',
+      effort: 'medium',
+      lift: '+8% conversion',
+      rationale: 'Existing owners need clearer differentiation between models',
+    },
+    {
+      title: 'Add noise level comparisons',
+      segment: 'Health',
+      impact: 'medium',
+      effort: 'low',
+      lift: '+12% satisfaction',
+      rationale: 'Top content gap identified in search queries',
+    },
+  ],
+
+  chatbotIssues: [
+    {
+      issue: 'Blender making loud grinding noise',
+      frequency: 187,
+      coverage: 'moderate',
+      satisfaction: 48,
+      status: 'needs-improvement',
+      insight: 'Users report unusual sounds but troubleshooting steps lack audio/video examples to diagnose issue type',
+      suggestion: 'Add audio clips of normal vs problem sounds with corresponding fixes',
+    },
+    {
+      issue: 'How do I check my warranty status?',
+      frequency: 156,
+      coverage: 'excellent',
+      satisfaction: 89,
+      status: 'good',
+      insight: 'Warranty lookup and registration process is clear and well-documented',
+      suggestion: null,
+    },
+    {
+      issue: 'Motor overheating and shutting off',
+      frequency: 134,
+      coverage: 'poor',
+      satisfaction: 35,
+      status: 'needs-improvement',
+      insight: 'Thermal protection info exists but users need clearer guidance on load limits and cool-down times',
+      suggestion: 'Create interactive load calculator and add specific cool-down time recommendations by model',
+    },
+    {
+      issue: 'Blade assembly not spinning properly',
+      frequency: 121,
+      coverage: 'good',
+      satisfaction: 74,
+      status: 'good',
+      insight: 'Drive socket and blade seating troubleshooting guides are helpful',
+      suggestion: null,
+    },
+    {
+      issue: 'Container leaking from bottom',
+      frequency: 108,
+      coverage: 'moderate',
+      satisfaction: 51,
+      status: 'needs-improvement',
+      insight: 'Seal replacement info available but users struggle to identify if leak is seal vs crack',
+      suggestion: 'Add visual diagnostic guide to differentiate seal wear from container damage',
+    },
+    {
+      issue: 'Error code E31 on display',
+      frequency: 94,
+      coverage: 'poor',
+      satisfaction: 38,
+      status: 'needs-improvement',
+      insight: 'Error codes are documented but explanations are too technical for most users',
+      suggestion: 'Rewrite error code guide in plain language with step-by-step resolution paths',
+    },
+    {
+      issue: 'How to order replacement parts',
+      frequency: 89,
+      coverage: 'excellent',
+      satisfaction: 86,
+      status: 'good',
+      insight: 'Parts ordering process and compatibility guides work well',
+      suggestion: null,
+    },
+    {
+      issue: 'Blender not starting at all',
+      frequency: 76,
+      coverage: 'good',
+      satisfaction: 71,
+      status: 'good',
+      insight: 'Power and safety interlock troubleshooting is comprehensive',
+      suggestion: null,
+    },
+    {
+      issue: 'How to send unit in for repair',
+      frequency: 67,
+      coverage: 'moderate',
+      satisfaction: 54,
+      status: 'needs-improvement',
+      insight: 'Repair process is documented but users want shipping label generation and tracking integration',
+      suggestion: 'Add self-service shipping label generator and real-time repair status tracker',
+    },
+    {
+      issue: 'Tamper stuck in container',
+      frequency: 52,
+      coverage: 'good',
+      satisfaction: 82,
+      status: 'good',
+      insight: 'Tamper removal techniques and safety info are well-covered',
+      suggestion: null,
+    },
+  ],
+};
+
+/**
+ * Load insights data (simulated delay for demo)
+ */
+function loadInsightsData() {
+  const container = document.getElementById('insights-content');
+  if (!container) return;
+
+  // If we already have data, just render
+  if (insightsData) {
+    renderInsightsView();
+    return;
+  }
+
+  // Show loading state
+  container.innerHTML = `
+    <div class="insights-loading">
+      <svg class="icon icon-loading"><use href="#icon-loading"/></svg>
+      <p>Loading insights...</p>
+    </div>
+  `;
+
+  // Simulate API delay
+  setTimeout(() => {
+    insightsData = mockInsightsData;
+    renderInsightsView();
+  }, 800);
+}
+
+/**
+ * Main render function for Insights view
+ */
+function renderInsightsView() {
+  const container = document.getElementById('insights-content');
+  if (!container || !insightsData) return;
+
+  container.innerHTML = `
+    <div class="insights-dashboard">
+      ${renderInsightsKPIs()}
+      ${renderPerformanceMatrix()}
+      ${renderJourneyFunnel()}
+      ${renderContentGaps()}
+      ${renderOpportunities()}
+      ${renderChatbotIssues()}
+    </div>
+  `;
+
+  // Add collapsible section behavior
+  container.querySelectorAll('.insights-section-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const section = header.closest('.insights-section');
+      section.classList.toggle('collapsed');
+    });
+  });
+}
+
+/**
+ * Render KPI hero section
+ */
+function renderInsightsKPIs() {
+  const { kpis } = insightsData;
+
+  const kpiCards = [
+    { key: 'engagement', label: 'Engagement', suffix: '%' },
+    { key: 'effectiveness', label: 'Content Effectiveness', suffix: '%' },
+    { key: 'conversion', label: 'Conversion Rate', suffix: '%' },
+    { key: 'trust', label: 'Customer Trust', suffix: '%' },
+  ];
+
+  return `
+    <div class="insights-kpi-hero">
+      ${kpiCards.map(({ key, label, suffix }) => {
+        const kpi = kpis[key];
+        const colorClass = kpi.value >= 70 ? 'high' : kpi.value >= 50 ? 'medium' : 'low';
+        return `
+          <div class="insights-kpi-card">
+            <div class="kpi-value ${colorClass}">${kpi.value}${suffix}</div>
+            <div class="kpi-label">${label}</div>
+            <div class="kpi-trend ${kpi.trendUp ? 'up' : 'down'}">${kpi.trend}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/**
+ * Render content performance matrix (heatmap)
+ */
+function renderPerformanceMatrix() {
+  const { contentPerformance } = insightsData;
+  const { segments, blocks, scores } = contentPerformance;
+
+  const getScoreClass = (score) => {
+    if (score >= 80) return 'score-high';
+    if (score >= 60) return 'score-medium';
+    if (score >= 40) return 'score-low';
+    return 'score-very-low';
+  };
+
+  return `
+    <div class="insights-section" data-section="matrix">
+      <div class="insights-section-header">
+        <div class="insights-section-title">
+          <svg class="icon"><use href="#icon-box"/></svg>
+          <span>Content Performance Matrix</span>
+        </div>
+        <button class="section-toggle">
+          <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
+        </button>
+      </div>
+      <div class="insights-section-content">
+        <p class="insights-section-hint">Block type effectiveness by user segment (engagement score 0-100)</p>
+        <div class="performance-matrix">
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th class="matrix-corner"></th>
+                ${segments.map(seg => `<th class="matrix-header">${seg}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${blocks.map((block, i) => `
+                <tr>
+                  <td class="matrix-row-label">${block}</td>
+                  ${scores[i].map(score => `
+                    <td class="matrix-cell ${getScoreClass(score)}">${score}</td>
+                  `).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render journey funnel visualization
+ */
+function renderJourneyFunnel() {
+  const { journey } = insightsData;
+
+  return `
+    <div class="insights-section" data-section="journey">
+      <div class="insights-section-header">
+        <div class="insights-section-title">
+          <svg class="icon"><use href="#icon-user"/></svg>
+          <span>Journey Intelligence</span>
+        </div>
+        <button class="section-toggle">
+          <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
+        </button>
+      </div>
+      <div class="insights-section-content">
+        <div class="journey-funnel">
+          ${journey.stages.map(stage => `
+            <div class="funnel-stage" style="flex: ${stage.pct}">
+              <div class="funnel-bar funnel-${stage.color}">
+                <span class="funnel-pct">${stage.pct}%</span>
+              </div>
+              <div class="funnel-label">${stage.name}</div>
+              <div class="funnel-conversion">${stage.conversion}% convert</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="journey-triggers">
+          <div class="triggers-title">Top Conversion Triggers</div>
+          <ul class="triggers-list">
+            ${journey.topTriggers.map(trigger => `<li>${trigger}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render content gaps section
+ */
+function renderContentGaps() {
+  const { contentGaps } = insightsData;
+
+  const opportunityClass = (opp) => {
+    if (opp === 'high') return 'opportunity-high';
+    if (opp === 'medium') return 'opportunity-medium';
+    return 'opportunity-low';
+  };
+
+  return `
+    <div class="insights-section" data-section="gaps">
+      <div class="insights-section-header">
+        <div class="insights-section-title">
+          <svg class="icon"><use href="#icon-target"/></svg>
+          <span>Content Gaps</span>
+        </div>
+        <button class="section-toggle">
+          <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
+        </button>
+      </div>
+      <div class="insights-section-content">
+        <p class="insights-section-hint">Topics where current content underperforms user expectations</p>
+        <div class="content-gaps-list">
+          ${contentGaps.map(gap => `
+            <div class="gap-item">
+              <div class="gap-header">
+                <span class="gap-topic">${gap.topic}</span>
+                <span class="gap-opportunity ${opportunityClass(gap.opportunity)}">${gap.opportunity}</span>
+              </div>
+              <div class="gap-metrics">
+                <span class="gap-metric"><strong>${gap.queries}</strong> queries/week</span>
+                <span class="gap-metric"><strong>${gap.satisfaction}%</strong> satisfaction</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render opportunities board
+ */
+function renderOpportunities() {
+  const { opportunities } = insightsData;
+
+  return `
+    <div class="insights-section" data-section="opportunities">
+      <div class="insights-section-header">
+        <div class="insights-section-title">
+          <svg class="icon"><use href="#icon-sparkle"/></svg>
+          <span>Opportunities</span>
+        </div>
+        <button class="section-toggle">
+          <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
+        </button>
+      </div>
+      <div class="insights-section-content">
+        <p class="insights-section-hint">Actionable recommendations sorted by impact/effort ratio</p>
+        <div class="opportunities-board">
+          ${opportunities.map((opp, i) => `
+            <div class="opportunity-card">
+              <div class="opportunity-header">
+                <span class="opportunity-rank">#${i + 1}</span>
+                <span class="opportunity-title">${opp.title}</span>
+              </div>
+              <div class="opportunity-badges">
+                <span class="segment-badge">${opp.segment}</span>
+                <span class="metric-badge impact-${opp.impact}">Impact: ${opp.impact}</span>
+                <span class="metric-badge effort-${opp.effort}">Effort: ${opp.effort}</span>
+              </div>
+              <div class="opportunity-lift">${opp.lift}</div>
+              <div class="opportunity-rationale">${opp.rationale}</div>
+              <button class="insight-action-btn" title="Generate content with AI">
+                <svg class="icon"><use href="#icon-sparkle"/></svg>
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render chatbot issues section
+ * Shows top issues from chatbot conversations with coverage and satisfaction
+ */
+function renderChatbotIssues() {
+  const { chatbotIssues } = insightsData;
+
+  // Separate good vs needs improvement
+  const goodIssues = chatbotIssues.filter(i => i.status === 'good');
+  const needsImprovementIssues = chatbotIssues.filter(i => i.status === 'needs-improvement');
+
+  const getCoverageClass = (coverage) => {
+    if (coverage === 'excellent') return 'coverage-excellent';
+    if (coverage === 'good') return 'coverage-good';
+    if (coverage === 'moderate') return 'coverage-moderate';
+    return 'coverage-poor';
+  };
+
+  const getSatisfactionClass = (score) => {
+    if (score >= 80) return 'satisfaction-high';
+    if (score >= 60) return 'satisfaction-medium';
+    return 'satisfaction-low';
+  };
+
+  const renderIssueCard = (issue) => `
+    <div class="chatbot-issue-card ${issue.status}">
+      <div class="issue-header">
+        <span class="issue-question">"${issue.issue}"</span>
+        <span class="issue-frequency">${issue.frequency} asks/week</span>
+      </div>
+      <div class="issue-metrics">
+        <div class="issue-metric">
+          <span class="metric-label">Coverage</span>
+          <span class="metric-value ${getCoverageClass(issue.coverage)}">${issue.coverage}</span>
+        </div>
+        <div class="issue-metric">
+          <span class="metric-label">Satisfaction</span>
+          <span class="metric-value ${getSatisfactionClass(issue.satisfaction)}">${issue.satisfaction}%</span>
+        </div>
+      </div>
+      <div class="issue-insight">${issue.insight}</div>
+      ${issue.suggestion ? `
+        <div class="issue-suggestion">
+          <svg class="icon"><use href="#icon-sparkle"/></svg>
+          <span>${issue.suggestion}</span>
+          <button class="insight-action-btn" title="Fix with AI">
+            <svg class="icon"><use href="#icon-play"/></svg>
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  return `
+    <div class="insights-section" data-section="chatbot-issues">
+      <div class="insights-section-header">
+        <div class="insights-section-title">
+          <svg class="icon"><use href="#icon-chatbot"/></svg>
+          <span>Chatbot Issues Analysis</span>
+        </div>
+        <button class="section-toggle">
+          <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
+        </button>
+      </div>
+      <div class="insights-section-content">
+        <p class="insights-section-hint">Top questions from chatbot conversations and how well they're addressed</p>
+
+        <div class="chatbot-summary">
+          <div class="summary-stat good">
+            <span class="stat-value">${goodIssues.length}</span>
+            <span class="stat-label">Well Covered</span>
+          </div>
+          <div class="summary-stat needs-improvement">
+            <span class="stat-value">${needsImprovementIssues.length}</span>
+            <span class="stat-label">Needs Work</span>
+          </div>
+          <div class="summary-stat neutral">
+            <span class="stat-value">${Math.round(chatbotIssues.reduce((sum, i) => sum + i.satisfaction, 0) / chatbotIssues.length)}%</span>
+            <span class="stat-label">Avg Satisfaction</span>
+          </div>
+        </div>
+
+        ${needsImprovementIssues.length > 0 ? `
+          <div class="issues-group">
+            <div class="issues-group-header needs-improvement">
+              <svg class="icon"><use href="#icon-target"/></svg>
+              <span>Needs Improvement</span>
+            </div>
+            <div class="issues-list">
+              ${needsImprovementIssues.map(renderIssueCard).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        ${goodIssues.length > 0 ? `
+          <div class="issues-group">
+            <div class="issues-group-header good">
+              <svg class="icon"><use href="#icon-sparkle"/></svg>
+              <span>Well Covered</span>
+            </div>
+            <div class="issues-list">
+              ${goodIssues.map(renderIssueCard).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
 }
 
 // Update context summary when query input changes

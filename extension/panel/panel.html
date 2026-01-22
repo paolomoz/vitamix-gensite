@@ -89,6 +89,9 @@
       <path d="M2 10l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M2 14l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+    <symbol id="icon-chart" viewBox="0 0 18 18">
+      <path d="M3 14h2V8H3v6zm4 0h2V4H7v10zm4 0h2V6h-2v8zm4 0h2v-4h-2v4z" fill="currentColor"/>
+    </symbol>
   </svg>
 
   <div class="panel">
@@ -107,6 +110,9 @@
           </button>
           <button class="nav-tab" id="tab-improve" data-title="Improve" title="Self-Improve">
             <svg class="icon"><use href="#icon-settings"/></svg>
+          </button>
+          <button class="nav-tab" id="tab-insights" data-title="Insights" title="Brand Insights">
+            <svg class="icon"><use href="#icon-chart"/></svg>
           </button>
         </div>
         <div class="panel-header-divider"></div>
@@ -141,6 +147,16 @@
             <svg class="icon icon-lg"><use href="#icon-settings"/></svg>
             <p>No analysis data available</p>
             <p class="hint">Run analysis to get improvement suggestions</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== INSIGHTS VIEW ==================== -->
+      <div class="panel-view" id="view-insights">
+        <div class="insights-view-content" id="insights-content">
+          <div class="empty-state">
+            <svg class="icon icon-lg"><use href="#icon-chart"/></svg>
+            <p>Loading insights...</p>
           </div>
         </div>
       </div>

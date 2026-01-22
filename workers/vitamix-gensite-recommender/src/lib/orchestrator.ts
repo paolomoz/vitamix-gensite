@@ -1173,6 +1173,88 @@ OUTPUT THIS EXACT STRUCTURE (replace placeholders with actual values from contex
 </div>
 
 REMEMBER: The rationale must explain WHY this specific product is best for their query. NO IMAGES.`,
+
+    'technique-spotlight': `
+## HTML Template (50/50 split: image | technique guidance)
+
+Generate step-by-step technique guidance with specific settings. Structure:
+- Row 1: Image (use a relevant hero image if available, or omit if none)
+- Row 2: **Bold title** for the technique
+- Row 3: Description (detailed explanation, 50+ characters)
+- Row 4-7: Tips/steps (short actionable items, can use • for bullet separation)
+- Row 8 (optional): Link to learn more
+
+CRITICAL: Include SPECIFIC settings like speed numbers, times, and temperatures.
+DO NOT output vague advice like "blend until smooth" - give exact guidance.
+
+Example output for baby food:
+<div>
+  <div><picture><img src="HERO_IMAGE_URL_IF_AVAILABLE" alt="Technique image"></picture></div>
+</div>
+<div>
+  <div><strong>Making Perfect Baby Food Purees</strong></div>
+</div>
+<div>
+  <div>Create smooth, nutritious purees your baby will love. Start with steamed or roasted vegetables, then blend to the perfect consistency using these proven settings.</div>
+</div>
+<div>
+  <div>Start on speed 1 • Slowly increase to speed 5-6 • Blend for 30-45 seconds</div>
+</div>
+<div>
+  <div>For thinner purees, add breast milk, formula, or cooking water 1 tablespoon at a time</div>
+</div>
+<div>
+  <div>Use the tamper to push ingredients toward the blades without stopping</div>
+</div>
+<div>
+  <div>Self-clean immediately: warm water + drop of soap on high for 60 seconds</div>
+</div>
+
+IMPORTANT: Tips can either be bullet-separated ("Step 1 • Step 2 • Step 3") or individual rows.
+The block JS will parse both formats correctly.`,
+
+    'troubleshooting-steps': `
+## HTML Template (step-by-step problem resolution)
+
+Generate clear troubleshooting steps to fix common issues. Structure:
+- Row 1: Issue title (what problem we're solving)
+- Row 2: Reassuring message (most issues are easy to fix)
+- Rows 3+: Numbered steps to resolve the issue
+- Final row (optional): When to contact support
+
+CRITICAL: Lead with the MOST COMMON fix. Be specific and actionable.
+DO NOT be vague - give exact steps the user can follow right now.
+
+Example output for cleaning issues:
+<div>
+  <div><strong>How to Deep Clean Your Vitamix</strong></div>
+</div>
+<div>
+  <div>Most residue and odors can be removed in just a few minutes. Here's the proven method:</div>
+</div>
+<div>
+  <div>1. Fill container halfway with warm (not hot) water</div>
+</div>
+<div>
+  <div>2. Add one drop of dish soap</div>
+</div>
+<div>
+  <div>3. Secure lid with plug in place</div>
+</div>
+<div>
+  <div>4. Start on speed 1, gradually increase to speed 10</div>
+</div>
+<div>
+  <div>5. Run for 60 seconds, then rinse thoroughly</div>
+</div>
+<div>
+  <div>For stubborn residue: Fill with warm water + 1 cup white vinegar, let soak 4 hours, then run self-clean cycle.</div>
+</div>
+<div>
+  <div>Still having issues? <a href="https://www.vitamix.com/support">Contact Vitamix Support</a> - your warranty may cover replacement parts.</div>
+</div>
+
+IMPORTANT: Each step should be its own row for proper formatting.`,
   };
 
   return templates[blockType] || '';
@@ -1331,6 +1413,80 @@ ${containers.map(c => `- ${c.size}: ${c.bestFor}`).join('\n')}
   } else if (['accessibility-specs'].includes(block.type)) {
     // For accessibility specs, provide multiple products with details for comparison
     dataContext = `\n\n## Products for Accessibility Comparison (USE THESE EXACT URLs):\n${buildProductContext(ragContext.relevantProducts.slice(0, 4))}`;
+  } else if (block.type === 'technique-spotlight') {
+    // For technique-spotlight, provide cleaning guidelines, FAQs, and use-case context
+    const cleaning = getCleaningGuidelines();
+    const relevantFAQs = getFAQsForQuery(block.contentGuidance || query || '');
+
+    // Try to get a hero image for the technique
+    const heroSelection = await selectHeroImageSemantic(
+      query || '',
+      intent?.intentType,
+      intent?.entities?.useCases,
+      env
+    );
+
+    dataContext = `
+## User's Question: "${block.contentGuidance || query}"
+
+## Hero Image (optional, USE THIS EXACT URL if including an image):
+${heroSelection.url}
+
+## Self-Cleaning Method (for reference):
+${cleaning.selfClean.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+## Key Operating Tips:
+- Start on the lowest speed setting and gradually increase
+- Use the tamper to push ingredients toward the blades (only with lid in place)
+- For thick mixtures, use Variable Speed and pulse
+- Hot soup programs run for approximately 5-6 minutes
+- Smoothie programs typically run for 45-60 seconds
+- Self-clean after each use: warm water + drop of soap, 60 seconds on high
+
+## Relevant FAQs (for additional context):
+${relevantFAQs.slice(0, 3).map(f => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')}
+
+## Use Cases Mentioned:
+${ragContext.relevantUseCases.map(uc => `- ${uc.name}: ${uc.description}`).join('\n')}
+
+CRITICAL: Generate SPECIFIC settings guidance with exact speeds, times, and techniques.
+The user asked for "settings" - give them actual numbers they can use.`;
+  } else if (block.type === 'troubleshooting-steps') {
+    // For troubleshooting, provide cleaning guidelines, safety info, and FAQs
+    const cleaning = getCleaningGuidelines();
+    const safety = getSafetyGuidelines();
+    const relevantFAQs = getFAQsForQuery(block.contentGuidance || query || '');
+
+    dataContext = `
+## User's Problem: "${block.contentGuidance || query}"
+
+## Self-Cleaning Method (OFFICIAL VITAMIX - use for cleaning issues):
+${cleaning.selfClean.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+## Deep Cleaning Method (for stubborn residue):
+${cleaning.deepClean.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+## Safety Tips:
+${cleaning.safetyTips.map(t => `- ${t.tip}`).join('\n')}
+
+## Common Issues and Solutions:
+- Leaking from bottom: Usually worn blade seal - covered under warranty
+- Burning smell: Motor overworked - let cool 45 mins, blend smaller batches
+- Won't start: Check container is properly seated, interlock engaged
+- Not blending well: Check blade assembly, try smaller batches with more liquid
+- Stuck ingredients: Use tamper (with lid on) or stop and scrape sides
+- Cloudy container: Blend warm water with baking soda for 60 seconds
+
+## Relevant FAQs:
+${relevantFAQs.slice(0, 4).map(f => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')}
+
+## Warranty Information:
+Vitamix warranty covers motor, blade assembly, container, lid, and all components.
+Support URL: https://www.vitamix.com/support
+Warranty URL: https://www.vitamix.com/support/warranty
+
+CRITICAL: Lead with the most likely fix. Be specific and actionable.
+Reassure them that most issues are easily resolved.`;
   }
 
   // Add article context for commercial/B2B queries (if articles are available)

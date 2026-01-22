@@ -839,6 +839,46 @@ export function getFAQsForQuery(query: string): FAQ[] {
     .map(s => s.faq);
 }
 
+/**
+ * Check if there are FAQs with sufficient relevance for a query.
+ * Used to decide whether to include the FAQ block at all.
+ *
+ * Minimum threshold of 3 requires either:
+ * - At least one keyword match (2 points) + one word in question (1 point)
+ * - Multiple keyword matches (2 + 2 = 4 points)
+ *
+ * This prevents showing generic FAQs for unrelated queries like
+ * "baby food settings" returning warranty/troubleshooting FAQs.
+ */
+export function hasRelevantFAQs(query: string, minScore = 3): boolean {
+  const lowerQuery = query.toLowerCase();
+
+  for (const faq of faqs) {
+    let score = 0;
+
+    // Check if query contains any FAQ keywords
+    for (const keyword of faq.keywords) {
+      if (lowerQuery.includes(keyword.toLowerCase())) {
+        score += 2;
+      }
+    }
+
+    // Check if question or answer contains query words
+    const queryWords = lowerQuery.split(/\s+/).filter(w => w.length > 3);
+    for (const word of queryWords) {
+      if (faq.question.toLowerCase().includes(word)) score += 1;
+      if (faq.answer.toLowerCase().includes(word)) score += 0.5;
+    }
+
+    // Return early if any FAQ meets threshold
+    if (score >= minScore) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // ============================================
 // Build RAG Context
 // ============================================
@@ -1394,6 +1434,7 @@ export default {
   getAllFAQs,
   getFAQsByCategory,
   getFAQsForQuery,
+  hasRelevantFAQs,
 
   // Safety Guidelines
   getSafetyGuidelines,

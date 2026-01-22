@@ -1,112 +1,129 @@
 /**
- * Troubleshooting Steps Block Styles
+ * Troubleshooting Steps Block
  *
- * Vertical timeline with numbered steps.
- * Uses Vitamix design tokens.
+ * Numbered step-by-step instructions matching Vitamix.com design.
+ * Features header with eyebrow + title, and clean numbered steps.
  */
 
+/* ===== Container ===== */
 .troubleshooting-steps {
   padding: var(--spacing-700) var(--spacing-300);
   max-width: 900px;
   margin: 0 auto;
 }
 
+/* ===== Header Section ===== */
+.troubleshooting-header {
+  text-align: center;
+  margin-bottom: var(--spacing-700);
+}
+
+.troubleshooting-eyebrow {
+  margin: 0 0 var(--spacing-60);
+  color: var(--color-red);
+  font-family: var(--sans-serif-font-family);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--letter-spacing-m);
+  text-transform: uppercase;
+  line-height: var(--line-height-m);
+}
+
+.troubleshooting-title {
+  margin: 0;
+  color: var(--color-charcoal);
+  font-family: var(--serif-font-family);
+  font-size: var(--font-size-900);
+  font-weight: var(--weight-light);
+  line-height: var(--line-height-s);
+}
+
+/* ===== Steps Container ===== */
 .troubleshooting-timeline {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-400);
 }
 
-/* Individual step */
+/* ===== Individual Step ===== */
 .troubleshooting-step {
   display: flex;
+  align-items: flex-start;
   gap: var(--spacing-400);
-  min-height: 120px;
 }
 
-/* Step indicator (number + line) */
-.step-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: var(--spacing-700);
-}
-
+/* Step number badge */
 .step-number {
-  width: var(--spacing-700);
-  height: var(--spacing-700);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   background: var(--color-red);
   color: var(--color-white);
-  border-radius: var(--radius-full);
+  font-family: var(--sans-serif-font-family);
   font-size: var(--font-size-200);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
-.step-line {
-  flex: 1;
-  width: var(--border-m);
-  background: var(--color-gray-400);
-  min-height: var(--spacing-600);
-  margin-top: var(--spacing-60);
-}
-
-/* Step content */
+/* Step content area */
 .step-content {
   flex: 1;
-  padding-bottom: var(--spacing-600);
+  padding-top: var(--spacing-60);
 }
 
 .step-title {
-  font-size: var(--font-size-200);
-  font-weight: var(--weight-semibold);
-  color: var(--color-dark-charcoal);
   margin: 0 0 var(--spacing-60);
+  color: var(--color-charcoal);
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-200);
+  font-weight: var(--weight-medium);
   line-height: var(--line-height-m);
 }
 
 .step-instructions {
-  font-size: var(--font-size-100);
-  color: var(--color-gray-900);
-  line-height: var(--line-height-xl);
   margin: 0;
+  color: var(--color-charcoal);
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-xl);
 }
 
-/* Safety note - uses brand warning colors */
+/* ===== Safety Note ===== */
 .step-safety-note {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-60);
-  margin-top: var(--spacing-100);
-  padding: var(--spacing-100) var(--spacing-300);
+  gap: var(--spacing-80);
+  margin-top: var(--spacing-200);
+  padding: var(--spacing-200) var(--spacing-300);
   background: var(--color-gray-200);
   border-radius: var(--rounding-m);
-  border-left: var(--spacing-40) solid var(--color-red);
+  border-left: 3px solid var(--color-red);
 }
 
 .step-safety-note svg {
-  width: var(--spacing-200);
-  height: var(--spacing-200);
+  width: 20px;
+  height: 20px;
   color: var(--color-red);
   flex-shrink: 0;
-  margin-top: var(--spacing-20);
+  margin-top: 2px;
 }
 
 .step-safety-note span {
-  font-size: var(--font-size-80);
   color: var(--color-charcoal);
+  font-family: var(--sans-serif-font-family);
+  font-size: var(--font-size-80);
   line-height: var(--line-height-l);
 }
 
-/* Step image */
+/* ===== Step Image ===== */
 .step-image {
-  margin-top: var(--spacing-100);
-  border-radius: var(--rounding-m);
+  margin-top: var(--spacing-200);
+  border-radius: var(--rounding-l);
   overflow: hidden;
-  background: var(--color-gray-200);
 }
 
 .step-image picture,
@@ -115,29 +132,33 @@
   width: 100%;
   max-width: 400px;
   height: auto;
+  border-radius: var(--rounding-l);
 }
 
-/* Completed state (for interactive use) */
-.troubleshooting-step.completed .step-number {
-  background: var(--color-avocado);
-}
+/* ===== Section Variants ===== */
 
-.troubleshooting-step.completed .step-line {
-  background: var(--color-avocado);
-}
-
-/* Active state */
-.troubleshooting-step.active .step-number {
-  box-shadow: 0 0 0 var(--spacing-40) var(--overlay-charcoal);
-}
-
-/* Section variants */
-.section.highlight .troubleshooting-steps {
+/* Highlight/Light section (cream background) */
+.section.highlight .troubleshooting-steps,
+.section.light .troubleshooting-steps {
   background: transparent;
 }
 
+/* Dark section */
 .section.dark .troubleshooting-steps {
   background: transparent;
+}
+
+.section.dark .troubleshooting-eyebrow {
+  color: var(--color-gray-500);
+}
+
+.section.dark .troubleshooting-title {
+  color: var(--color-white);
+}
+
+.section.dark .step-number {
+  background: var(--color-white);
+  color: var(--color-red);
 }
 
 .section.dark .step-title {
@@ -146,15 +167,6 @@
 
 .section.dark .step-instructions {
   color: var(--overlay-light);
-}
-
-.section.dark .step-number {
-  background: var(--color-white);
-  color: var(--color-red);
-}
-
-.section.dark .step-line {
-  background: var(--overlay-charcoal);
 }
 
 .section.dark .step-safety-note {
@@ -170,39 +182,58 @@
   color: var(--overlay-light);
 }
 
-/* Responsive */
+/* ===== Completed State (interactive) ===== */
+.troubleshooting-step.completed .step-number {
+  background: var(--color-asparagus);
+}
+
+/* ===== Active State ===== */
+.troubleshooting-step.active .step-number {
+  box-shadow: 0 0 0 3px var(--overlay-charcoal);
+}
+
+/* ===== Responsive ===== */
 @media (width < 600px) {
   .troubleshooting-steps {
     padding: var(--spacing-600) var(--spacing-100);
   }
 
-  .troubleshooting-step {
-    gap: var(--spacing-100);
+  .troubleshooting-header {
+    margin-bottom: var(--spacing-600);
   }
 
-  .step-indicator {
-    width: 36px;
+  .troubleshooting-title {
+    font-size: var(--font-size-700);
+  }
+
+  .troubleshooting-timeline {
+    gap: var(--spacing-400);
+  }
+
+  .troubleshooting-step {
+    gap: var(--spacing-200);
   }
 
   .step-number {
     width: 36px;
     height: 36px;
+    min-width: 36px;
     font-size: var(--font-size-100);
   }
 
+  .step-content {
+    padding-top: var(--spacing-40);
+  }
+
   .step-title {
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-100);
   }
 
   .step-instructions {
     font-size: var(--font-size-80);
   }
 
-  .step-content {
-    padding-bottom: var(--spacing-400);
-  }
-
   .step-safety-note {
-    padding: var(--spacing-60) var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-200);
   }
 }

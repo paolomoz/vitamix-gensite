@@ -1207,45 +1207,50 @@ The block JS will parse both formats correctly.`,
     'troubleshooting-steps': `
 ## HTML Template (step-by-step problem resolution)
 
-Generate clear troubleshooting steps to fix common issues. Structure:
-- Row 1: Issue title (what problem we're solving)
-- Row 2: Reassuring message (most issues are easy to fix)
-- Rows 3+: Numbered steps to resolve the issue
-- Final row (optional): When to contact support
+Generate a table with troubleshooting steps. REQUIRED FORMAT:
+- Row 1: eyebrow | SHORT CATEGORY (e.g., "TROUBLESHOOTING GUIDE")
+- Row 2: title | Clear title describing the fix
+- Rows 3+: step number | step title | detailed instructions | (optional) safety:warning text
 
-CRITICAL: Lead with the MOST COMMON fix. Be specific and actionable.
-DO NOT be vague - give exact steps the user can follow right now.
+CRITICAL RULES:
+1. Each numbered step needs: number | short title | detailed instructions
+2. Lead with the MOST COMMON fix first
+3. Be SPECIFIC - give exact steps the user can follow right now
+4. Keep step titles SHORT (2-4 words), put details in instructions
+5. Add safety notes for steps involving unplugging, heat, or blades
 
-Example output for cleaning issues:
+Example output for burning smell:
 <div>
-  <div><strong>How to Deep Clean Your Vitamix</strong></div>
+  <div>eyebrow</div>
+  <div>TROUBLESHOOTING GUIDE</div>
 </div>
 <div>
-  <div>Most residue and odors can be removed in just a few minutes. Here's the proven method:</div>
+  <div>title</div>
+  <div>How to Fix a Burning Smell</div>
 </div>
 <div>
-  <div>1. Fill container halfway with warm (not hot) water</div>
+  <div>1</div>
+  <div>Stop and Cool Down</div>
+  <div>Turn off your Vitamix immediately and unplug it. Let the motor cool for at least 45 minutes before using again.</div>
+  <div>safety:Always unplug before any troubleshooting</div>
 </div>
 <div>
-  <div>2. Add one drop of dish soap</div>
+  <div>2</div>
+  <div>Check for Blockages</div>
+  <div>Remove the container and inspect the blade assembly for trapped food or debris. Clean any residue from the blade area.</div>
 </div>
 <div>
-  <div>3. Secure lid with plug in place</div>
+  <div>3</div>
+  <div>Run Self-Clean Cycle</div>
+  <div>Fill container halfway with warm water, add a drop of dish soap, secure the lid, and blend on high for 60 seconds.</div>
 </div>
 <div>
-  <div>4. Start on speed 1, gradually increase to speed 10</div>
-</div>
-<div>
-  <div>5. Run for 60 seconds, then rinse thoroughly</div>
-</div>
-<div>
-  <div>For stubborn residue: Fill with warm water + 1 cup white vinegar, let soak 4 hours, then run self-clean cycle.</div>
-</div>
-<div>
-  <div>Still having issues? <a href="https://www.vitamix.com/support">Contact Vitamix Support</a> - your warranty may cover replacement parts.</div>
+  <div>4</div>
+  <div>Test with Light Load</div>
+  <div>Try blending a small amount of water. If burning smell persists, contact Vitamix Support as your warranty may cover repairs.</div>
 </div>
 
-IMPORTANT: Each step should be its own row for proper formatting.`,
+IMPORTANT: Use this exact table structure with 3-4 columns per step row.`,
   };
 
   return templates[blockType] || '';

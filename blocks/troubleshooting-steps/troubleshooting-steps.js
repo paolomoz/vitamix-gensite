@@ -1,35 +1,53 @@
 /**
  * Troubleshooting Steps Block
  *
- * Numbered step-by-step instructions with optional illustrations.
- * Vertical timeline layout with images.
+ * Numbered step-by-step instructions with optional header and illustrations.
+ * Matches Vitamix.com design: eyebrow + title header, clean numbered steps.
  *
- * Content Model (DA Table - each row is a step with cells):
- * | Troubleshooting Steps                                            |
- * |------------------------------------------------------------------|
- * | 1 | Unplug your Vitamix | Always disconnect power... | safety:.. |
- * | 2 | Check for trapped ingredients | Remove the container...      |
+ * Content Model (DA Table):
+ * | Troubleshooting Steps                                                |
+ * |----------------------------------------------------------------------|
+ * | eyebrow | STEP-BY-STEP GUIDE                                         |
+ * | title   | Cleaning Your Vitamix                                      |
+ * | 1       | Unplug your Vitamix | Always disconnect power... | safety:.|
+ * | 2       | Check for trapped ingredients | Remove the container...    |
  */
 export default function decorate(block) {
   const rows = [...block.children];
   if (rows.length === 0) return;
 
+  let eyebrow = '';
+  let title = '';
   const steps = [];
 
   rows.forEach((row) => {
     const cells = [...row.children];
     if (cells.length === 0) return;
 
+    const firstCell = cells[0]?.textContent?.trim().toLowerCase() || '';
+    const secondCell = cells[1]?.textContent?.trim() || '';
+
+    // Check for header rows
+    if (firstCell === 'eyebrow' && secondCell) {
+      eyebrow = secondCell;
+      return;
+    }
+
+    if (firstCell === 'title' && secondCell) {
+      title = secondCell;
+      return;
+    }
+
     // Table row format: | number | title | instructions | safety? |
     const numberText = cells[0]?.textContent?.trim() || '';
-    const title = cells[1]?.textContent?.trim() || '';
+    const stepTitle = cells[1]?.textContent?.trim() || '';
     const instructions = cells[2]?.textContent?.trim() || '';
     const safetyCell = cells[3]?.textContent?.trim() || '';
 
-    if (/^\d{1,2}$/.test(numberText) && title) {
+    if (/^\d{1,2}$/.test(numberText) && stepTitle) {
       steps.push({
         number: parseInt(numberText, 10),
-        title,
+        title: stepTitle,
         instructions,
         safetyNote: safetyCell.replace(/^safety[:\s]*/i, ''),
       });
@@ -38,76 +56,41 @@ export default function decorate(block) {
 
   if (steps.length === 0) return;
 
-  // Build steps timeline
-  const timeline = document.createElement('div');
-  timeline.className = 'troubleshooting-timeline';
+  // Build header if eyebrow or title exists
+  let headerHTML = '';
+  if (eyebrow || title) {
+    headerHTML = `
+      <div class="troubleshooting-header">
+        ${eyebrow ? `<p class="troubleshooting-eyebrow">${eyebrow}</p>` : ''}
+        ${title ? `<h2 class="troubleshooting-title">${title}</h2>` : ''}
+      </div>
+    `;
+  }
 
-  steps.forEach((step, index) => {
-    const stepEl = document.createElement('div');
-    stepEl.className = 'troubleshooting-step';
+  // Build steps
+  const stepsHTML = steps.map((step) => `
+    <div class="troubleshooting-step">
+      <span class="step-number">${step.number}</span>
+      <div class="step-content">
+        <h3 class="step-title">${step.title}</h3>
+        ${step.instructions ? `<p class="step-instructions">${step.instructions}</p>` : ''}
+        ${step.safetyNote ? `
+          <div class="step-safety-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <span>${step.safetyNote}</span>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
 
-    // Step indicator (number with line)
-    const indicator = document.createElement('div');
-    indicator.className = 'step-indicator';
-
-    const number = document.createElement('span');
-    number.className = 'step-number';
-    number.textContent = step.number;
-    indicator.appendChild(number);
-
-    // Add connecting line (except for last step)
-    if (index < steps.length - 1) {
-      const line = document.createElement('span');
-      line.className = 'step-line';
-      indicator.appendChild(line);
-    }
-
-    stepEl.appendChild(indicator);
-
-    // Step content
-    const content = document.createElement('div');
-    content.className = 'step-content';
-
-    // Title
-    const title = document.createElement('h3');
-    title.className = 'step-title';
-    title.textContent = step.title;
-    content.appendChild(title);
-
-    // Instructions
-    if (step.instructions) {
-      const instructions = document.createElement('p');
-      instructions.className = 'step-instructions';
-      instructions.textContent = step.instructions;
-      content.appendChild(instructions);
-    }
-
-    // Safety note
-    if (step.safetyNote) {
-      const safetyNote = document.createElement('div');
-      safetyNote.className = 'step-safety-note';
-      safetyNote.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        <span>${step.safetyNote}</span>
-      `;
-      content.appendChild(safetyNote);
-    }
-
-    // Image (if present)
-    if (step.image) {
-      const imageWrapper = document.createElement('div');
-      imageWrapper.className = 'step-image';
-      imageWrapper.appendChild(step.image);
-      content.appendChild(imageWrapper);
-    }
-
-    stepEl.appendChild(content);
-    timeline.appendChild(stepEl);
-  });
-
-  // Clear and append
-  block.textContent = '';
-  block.appendChild(timeline);
+  // Render block
+  block.innerHTML = `
+    ${headerHTML}
+    <div class="troubleshooting-timeline">
+      ${stepsHTML}
+    </div>
+  `;
 }

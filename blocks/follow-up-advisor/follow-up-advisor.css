@@ -9,6 +9,10 @@
  * - Borders: rounding-m for cards
  */
 
+ .section.follow-up-advisor-container {
+  display: none;
+ }
+
 /* ===== Section Container ===== */
 .section[class*="follow-up-advisor-container"] > div[class*="-wrapper"] {
   padding: var(--spacing-400) var(--horizontal-spacing);

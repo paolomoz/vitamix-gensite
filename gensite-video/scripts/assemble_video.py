@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 from moviepy import (
     ImageClip,
     AudioFileClip,
+    CompositeAudioClip,
     concatenate_videoclips,
     CompositeVideoClip,
     vfx,
@@ -60,8 +61,8 @@ def _draw_centered_text(draw, text, y, font, fill, width):
     draw.text((x, y), text, font=font, fill=fill)
 
 
-def make_card_image(lines, output_path):
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=(18, 18, 28))
+def make_card_image(lines, output_path, bg_color=(18, 18, 28)):
+    img = Image.new("RGB", (WIDTH, HEIGHT), color=bg_color)
     draw = ImageDraw.Draw(img)
 
     fonts = []
@@ -90,9 +91,10 @@ def generate_title_card():
     make_card_image(
         [
             ("Generative Websites", 72, (255, 255, 255), True),
-            ("1:1 Personalization at Web Scale", 44, (180, 180, 200), False),
+            ("1:1 Personalization at Web Scale", 44, (255, 230, 230), False),
         ],
         path,
+        bg_color=(235, 16, 0),
     )
     return path
 
@@ -136,6 +138,45 @@ def make_section_clip(section_name):
     return clip
 
 
+def load_background_music(duration, title_dur=3.0, outro_dur=3.0):
+    """Load and prepare background music with volume envelope.
+
+    Volume envelope:
+    - Title card: full volume
+    - Sections: 15% volume (subtle bed under dialogue)
+    - Outro card: full volume, then fade out over last 1.5s
+    """
+    bgm_path = AUDIO_DIR / "bgm.mp3"
+    if not bgm_path.exists():
+        print("  No bgm.mp3 found — skipping background music")
+        return None
+
+    from moviepy import concatenate_audioclips
+    from moviepy.audio.fx import MultiplyVolume, AudioFadeOut
+
+    music = AudioFileClip(str(bgm_path))
+
+    # Loop if shorter than video
+    if music.duration < duration:
+        loops = int(duration / music.duration) + 1
+        music = concatenate_audioclips([music] * loops)
+    music = music.subclipped(0, duration)
+
+    # Split into three zones with different volume levels
+    section_start = title_dur
+    outro_start = duration - outro_dur
+
+    title_seg = music.subclipped(0, section_start)
+    body_seg = music.subclipped(section_start, outro_start).with_effects(
+        [MultiplyVolume(0.15)]
+    )
+    outro_seg = music.subclipped(outro_start, duration).with_effects(
+        [AudioFadeOut(1.5)]
+    )
+
+    return concatenate_audioclips([title_seg, body_seg, outro_seg])
+
+
 def main():
     print("=" * 60)
     print("  Video Assembler — Generative Websites")
@@ -171,6 +212,16 @@ def main():
 
     print(f"\n  Concatenating {len(clips)} clips with {CROSSFADE}s crossfade...")
     final = concatenate_videoclips(clips, padding=-CROSSFADE, method="compose")
+
+    # Layer background music
+    bgm = load_background_music(final.duration)
+    if bgm is not None:
+        print("  Mixing background music...")
+        original_audio = final.audio
+        if original_audio is not None:
+            final = final.with_audio(CompositeAudioClip([original_audio, bgm]))
+        else:
+            final = final.with_audio(bgm)
 
     output_path = OUTPUT_DIR / "generative-websites.mp4"
     print(f"  Exporting to: {output_path}")

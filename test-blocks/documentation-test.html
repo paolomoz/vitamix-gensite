@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative Websites — Documentation</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/blocks/documentation/documentation.css">
+  <style>
+    body {
+      display: block !important;
+      margin: 0;
+      padding: 0;
+      background: var(--color-white);
+    }
+  </style>
+  <script type="module">
+    import decorate from '/blocks/documentation/documentation.js';
+    const block = document.querySelector('.documentation');
+    if (block) decorate(block);
+  </script>
+</head>
+<body class="appear">
+  <main>
+    <div class="documentation">
+      <div>Generative Websites</div>
+      <div>1:1 Personalization at Web Scale</div>
+    </div>
+  </main>
+</body>
+</html>

@@ -53,19 +53,19 @@ const MODEL_PRESETS: Record<string, ModelPreset> = {
     },
     content: {
       provider: 'cerebras',
-      model: 'llama-3.3-70b',  // Clean output, no thinking artifacts
-      maxTokens: 1024,
+      model: 'gpt-oss-120b',   // llama-3.3-70b deprecated 2026-02-16, using gpt-oss-120b
+      maxTokens: 4096,
       temperature: 0.8,
     },
     classification: {
       provider: 'cerebras',
-      model: 'llama-3.1-8b',   // Fastest for simple categorization
+      model: 'llama3.1-8b',    // Fastest for simple categorization
       maxTokens: 200,
       temperature: 0.3,
     },
     validation: {
       provider: 'cerebras',
-      model: 'llama-3.1-8b',   // Fastest for simple validation
+      model: 'llama3.1-8b',    // Fastest for simple validation
       maxTokens: 150,
       temperature: 0.2,
     },

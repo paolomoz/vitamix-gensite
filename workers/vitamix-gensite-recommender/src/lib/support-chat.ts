@@ -100,7 +100,7 @@ Respond with JSON only:
           'Authorization': `Bearer ${cerebrasKey}`,
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b',
+          model: 'llama3.1-8b',
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 150,
           temperature: 0,

@@ -1256,4 +1256,397 @@
     setupGenerationCapture();
     initChatbot();
   }
+
+  // ============================================================
+  // Demo Controller — keyboard shortcuts for Summit Sneaks demo
+  // Option+1-6: Jump to acts, Option+0: HUD, Option+S: Simulation
+  // ============================================================
+
+  const DEMO_SITE = 'https://main--vitamix-gensite--paolomoz.aem.live';
+  const VITAMIX_ASCENT_URL = 'https://www.vitamix.com/us/en_us/shop/ascent-x-series-blenders';
+
+  const ACT2_QUERY = 'I need something quiet for morning smoothies — I have a newborn, kitchen is next to the nursery, and my older kid is obsessed with protein shakes.';
+  const ACT3_QUERY = 'frozen margaritas for 30 people at a house party, and I don\'t want to clean it after, show me some models';
+  const ACT3_HERO = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev/hero-images/hero-margarita-party.jpg';
+
+  // Use localhost if we're on localhost, otherwise use aem.live
+  function getDemoBase() {
+    if (window.location.hostname === 'localhost') {
+      return window.location.origin;
+    }
+    return DEMO_SITE;
+  }
+
+  const ACTS = [
+    null,
+    { key: '1', label: 'Act 1 — Title Slide' },
+    { key: '2', label: 'Act 2 — Query Wow (→ to type)' },
+    { key: '3', label: 'Act 3 — Iliza (→ to type)' },
+    { key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true },
+    { key: '5', label: 'Act 5 — Marketer Dashboard', path: '/demo/dashboard' },
+    { key: '6', label: 'Act 6 — Simulation', path: '/demo/simulation' },
+  ];
+
+  let demoHudVisible = false;
+  let demoHudEl = null;
+  var pendingQueryAct = null; // 2 or 3 — waiting for → to trigger typing
+
+  function createDemoHUD() {
+    const hud = document.createElement('div');
+    hud.id = 'demo-hud';
+    hud.style.cssText = 'position:fixed;bottom:20px;right:20px;background:rgba(0,0,0,0.88);color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;padding:16px 20px;border-radius:12px;z-index:99999;display:none;min-width:280px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,0.3);line-height:1.6;';
+    hud.innerHTML = '<div style="font-weight:700;font-size:14px;margin-bottom:8px;color:#ff4d4d;">PagePoof Demo Controller</div>'
+      + ACTS.filter(Boolean).map(function(act) {
+        return '<div style="display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u2325' + act.key + '</span><span>' + act.label + '</span></div>';
+      }).join('')
+      + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;font-size:11px;color:#888;margin-bottom:4px;">→ starts typing (Acts 2-3) or advances (Act 4):</div>'
+      + '<div style="font-size:11px;color:#666;padding-left:8px;">Scroll → X4 → X5 → Recipes → Scroll categories → Soups → Recipes → Smoothies → Open search → Type → Submit</div>'
+      + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u23250</span><span>Toggle this HUD</span></div>'
+      + '<div style="display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u2325S</span><span>Start simulation (Act 6)</span></div>';
+    document.body.appendChild(hud);
+    return hud;
+  }
+
+  function showDemoToast(text) {
+    var toast = document.getElementById('demo-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'demo-toast';
+      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;font-weight:600;padding:10px 24px;border-radius:8px;z-index:99999;backdrop-filter:blur(10px);transition:opacity 0.3s;pointer-events:none;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = text;
+    toast.style.opacity = '1';
+    toast.style.display = 'block';
+    setTimeout(function() {
+      toast.style.opacity = '0';
+      setTimeout(function() { toast.style.display = 'none'; }, 300);
+    }, 1500);
+  }
+
+  function demoTypeQuery(input, query) {
+    input.value = '';
+    input.focus();
+    var i = 0;
+    function typeNext() {
+      if (i >= query.length) return;
+      input.value += query[i];
+      var ch = query[i];
+      i++;
+      // Base speed ~45ms per char (real typing pace)
+      var delay = 35 + Math.random() * 25;
+      // Pause longer after punctuation
+      if (ch === ',' || ch === '.' || ch === '—' || ch === ':') delay += 150 + Math.random() * 100;
+      else if (ch === ' ') delay += 10 + Math.random() * 30;
+      // Occasional micro-hesitation mid-word
+      else if (Math.random() < 0.08) delay += 80 + Math.random() * 60;
+      setTimeout(typeNext, delay);
+    }
+    typeNext();
+  }
+
+  function findQueryInput() {
+    return document.querySelector('#vitamix-form input')
+      || document.querySelector('#cerebras-form input')
+      || document.querySelector('.query-form input[type="text"]')
+      || document.querySelector('main input[type="text"]')
+      || document.querySelector('main textarea');
+  }
+
+  function demoPrefillQuery(query) {
+    var input = findQueryInput();
+    if (input) {
+      demoTypeQuery(input, query);
+    } else {
+      setTimeout(function() {
+        var retryInput = findQueryInput();
+        if (retryInput) demoTypeQuery(retryInput, query);
+        else console.warn('[Demo] Could not find query input');
+      }, 2000);
+    }
+  }
+
+  function demoGoToAct(actNum) {
+    var act = ACTS[actNum];
+    if (!act) return;
+    var base = getDemoBase();
+
+    if (act.external) {
+      window.open(act.url, '_blank');
+      showDemoToast(act.label);
+      return;
+    }
+
+    if (actNum === 1) {
+      showDemoToast(act.label);
+      // Title slide — always on localhost
+      window.location.href = 'http://localhost:3000/demo/titles/';
+      return;
+    }
+
+    // Acts 2 & 3: navigate silently, wait for → to trigger typing
+    if (actNum === 2 || actNum === 3) {
+      pendingQueryAct = actNum;
+      if (window.location.pathname !== '/' || window.location.search) {
+        // Navigate to home — typing will be triggered by → after arrival
+        window.location.href = base + '/?demo-pending=' + actNum;
+      }
+      // If already on home, just wait for → to trigger typing
+      return;
+    }
+
+    // Acts 5, 6 — always use localhost (mock pages only exist locally)
+    showDemoToast(act.label);
+    if (act.path) {
+      window.location.href = 'http://localhost:3000' + act.path;
+    }
+  }
+
+  // Check for demo-pending param on page load (act 2/3 arrived, waiting for →)
+  var pendingParam = new URLSearchParams(window.location.search).get('demo-pending');
+  if (pendingParam) {
+    window.history.replaceState({}, '', '/');
+    pendingQueryAct = parseInt(pendingParam, 10);
+  }
+
+  // Legacy: still support demo-prefill for direct links
+  var prefillParam = new URLSearchParams(window.location.search).get('demo-prefill');
+  if (prefillParam) {
+    window.history.replaceState({}, '', '/');
+    var prefillText = prefillParam === 'iliza' ? ACT3_QUERY : ACT2_QUERY;
+    setTimeout(function() { demoPrefillQuery(prefillText); }, 2000);
+  }
+
+  // ---- Act 4 sub-steps (advance with → arrow key) ----
+  var VITAMIX_BASE = 'https://www.vitamix.com/us/en_us';
+  var act4Steps = [
+    // Step 0: ⌥4 opens Ascent X Series (handled by demoGoToAct)
+    {
+      label: 'Scroll to products',
+      action: function() {
+        var cards = document.querySelector('.product-items, .products-grid, .category-products');
+        if (cards) cards.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        else window.scrollBy({ top: 600, behavior: 'smooth' });
+      },
+    },
+    {
+      label: 'Click Ascent X4',
+      action: function() {
+        var link = document.querySelector('a[href*="ascent-x4" i], a[href*="x4" i]');
+        if (link) { link.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function() { link.click(); }, 400); }
+        else { console.warn('[Demo] X4 link not found, navigating'); window.location.href = VITAMIX_BASE + '/products/ascent-x4'; }
+      },
+    },
+    {
+      label: 'Click Ascent X5',
+      action: function() {
+        var link = document.querySelector('a[href*="ascent-x5" i], a[href*="x5" i]');
+        if (link) { link.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function() { link.click(); }, 400); }
+        else { console.warn('[Demo] X5 link not found, navigating'); window.location.href = VITAMIX_BASE + '/products/ascent-x5'; }
+      },
+    },
+    {
+      label: 'Click Recipes',
+      action: function() {
+        var link = document.querySelector('a[href*="/recipes" i]:not([href*="recipe-"])');
+        if (link) { link.click(); }
+        else { console.warn('[Demo] Recipes link not found, navigating'); window.location.href = VITAMIX_BASE + '/recipes'; }
+      },
+    },
+    {
+      label: 'Scroll to categories',
+      action: function() {
+        var categories = document.querySelector('.recipe-categories, .category-list, .categories, [class*="categor"]');
+        if (categories) categories.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        else window.scrollBy({ top: 500, behavior: 'smooth' });
+      },
+    },
+    {
+      label: 'Click Soups',
+      action: function() {
+        var link = document.querySelector('a[href*="soup" i]');
+        if (link) { link.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function() { link.click(); }, 400); }
+        else { console.warn('[Demo] Soups link not found, navigating'); window.location.href = VITAMIX_BASE + '/recipes/soups'; }
+      },
+    },
+    {
+      label: 'Click back to Recipes',
+      action: function() {
+        var link = document.querySelector('a[href*="/recipes" i]:not([href*="recipe-"])');
+        if (link) { link.click(); }
+        else { window.history.back(); }
+      },
+    },
+    {
+      label: 'Click Smoothies',
+      action: function() {
+        var link = document.querySelector('a[href*="smoothie" i]');
+        if (link) { link.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function() { link.click(); }, 400); }
+        else { console.warn('[Demo] Smoothies link not found, navigating'); window.location.href = VITAMIX_BASE + '/recipes/smoothies-and-beverages'; }
+      },
+    },
+    {
+      label: 'Open search',
+      action: function() {
+        // Click the search icon in the header to reveal the search input
+        var searchBtn = document.querySelector('a[href*="search"], button[aria-label*="search" i], .search-icon, [data-action="search"], a.search, .header-search');
+        if (searchBtn) {
+          searchBtn.click();
+          console.log('[Demo] Clicked search button');
+        } else {
+          console.warn('[Demo] Could not find search button — trying to scroll to search');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      },
+    },
+    {
+      label: 'Type "kids recipes"',
+      action: function() {
+        // Try all common search input selectors
+        var searchInput = document.querySelector('#search, input[type="search"], input[name="q"], input[name="search"], .search-input input, [placeholder*="search" i], [placeholder*="Search" i]');
+        if (searchInput) {
+          searchInput.focus();
+          demoTypeQuery(searchInput, 'kids recipes');
+        } else {
+          console.warn('[Demo] Could not find search input');
+        }
+      },
+    },
+    {
+      label: 'Submit search',
+      action: function() {
+        var searchInput = document.querySelector('#search, input[type="search"], input[name="q"], input[name="search"], .search-input input, [placeholder*="search" i]');
+        if (searchInput) {
+          // Simulate Enter key to submit
+          searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, bubbles: true }));
+          searchInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, bubbles: true }));
+          searchInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, bubbles: true }));
+          // Also try form submit as fallback
+          if (searchInput.form) {
+            setTimeout(function() { searchInput.form.submit(); }, 200);
+          }
+        } else {
+          window.location.href = VITAMIX_BASE + '/search#702queryparam=kids%20recipes';
+        }
+      },
+    },
+  ];
+
+  var act4StepIndex = -1;
+  var act4Active = false;
+
+  function advanceAct4() {
+    act4StepIndex++;
+    if (act4StepIndex >= act4Steps.length) {
+      showDemoToast('Act 4 — sequence complete');
+      act4Active = false;
+      return;
+    }
+    var step = act4Steps[act4StepIndex];
+    showDemoToast('Act 4.' + (act4StepIndex + 1) + ' — ' + step.label);
+    step.action();
+  }
+
+  // Persist act4 state across page navigations via sessionStorage
+  function saveAct4State() {
+    sessionStorage.setItem('demo-act4-step', act4StepIndex);
+    sessionStorage.setItem('demo-act4-active', act4Active ? '1' : '0');
+  }
+
+  function restoreAct4State() {
+    var saved = sessionStorage.getItem('demo-act4-active');
+    if (saved === '1') {
+      act4Active = true;
+      act4StepIndex = parseInt(sessionStorage.getItem('demo-act4-step') || '-1', 10);
+    }
+  }
+
+  restoreAct4State();
+
+  document.addEventListener('keydown', function(e) {
+    // Right arrow: trigger pending query typing (Act 2/3) or advance Act 4 sub-steps
+    if (e.code === 'ArrowRight' && !e.altKey && !e.metaKey && !e.ctrlKey) {
+      if (pendingQueryAct) {
+        e.preventDefault();
+        var query = pendingQueryAct === 3 ? ACT3_QUERY : ACT2_QUERY;
+        if (pendingQueryAct === 3) {
+          sessionStorage.setItem('demo-hero-override', ACT3_HERO);
+        }
+        pendingQueryAct = null;
+        demoPrefillQuery(query);
+        return;
+      }
+      if (act4Active) {
+        e.preventDefault();
+        advanceAct4();
+        saveAct4State();
+        return;
+      }
+    }
+
+    if (!e.altKey) return;
+
+    var digit = e.code && e.code.startsWith('Digit') ? parseInt(e.code.replace('Digit', ''), 10) : -1;
+
+    if (digit === 0) {
+      e.preventDefault();
+      if (!demoHudEl) demoHudEl = createDemoHUD();
+      demoHudVisible = !demoHudVisible;
+      demoHudEl.style.display = demoHudVisible ? 'block' : 'none';
+      return;
+    }
+
+    if (digit >= 1 && digit <= 6) {
+      e.preventDefault();
+      // Reset states when switching acts
+      pendingQueryAct = null;
+      if (digit === 4) {
+        act4StepIndex = -1;
+        act4Active = true;
+        saveAct4State();
+      } else {
+        act4Active = false;
+        saveAct4State();
+      }
+      demoGoToAct(digit);
+      return;
+    }
+
+    if (e.code === 'KeyS') {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('demo-start-simulation'));
+      showDemoToast('Simulation started');
+    }
+  });
+
+  // Subtle indicator dot — shows demo controller is active
+  var dot = document.createElement('div');
+  dot.id = 'demo-dot';
+  dot.style.cssText = 'position:fixed;bottom:8px;left:8px;width:6px;height:6px;border-radius:50%;background:#ff4d4d;opacity:0.35;z-index:99999;pointer-events:none;';
+  document.body.appendChild(dot);
+
+  // Hero image override: swap the hero image when Act 3 page generates
+  var heroOverrideUrl = sessionStorage.getItem('demo-hero-override');
+  if (heroOverrideUrl) {
+    sessionStorage.removeItem('demo-hero-override');
+    var observer = new MutationObserver(function() {
+      var heroImg = document.querySelector('.hero img, .product-hero img, .hero picture img');
+      if (heroImg) {
+        heroImg.src = heroOverrideUrl;
+        heroImg.removeAttribute('srcset');
+        // Also fix <source> elements in <picture>
+        var picture = heroImg.closest('picture');
+        if (picture) {
+          picture.querySelectorAll('source').forEach(function(s) { s.remove(); });
+        }
+        observer.disconnect();
+        console.log('[Demo] Hero image overridden for Act 3');
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Stop watching after 30s
+    setTimeout(function() { observer.disconnect(); }, 30000);
+  }
+
+  console.log('[Demo] Controller ready — Option+0 for HUD');
 })();

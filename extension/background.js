@@ -219,6 +219,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleToggleChatbot().then(sendResponse);
       return true;
 
+    case 'OPEN_PANEL_TAB':
+      chrome.tabs.create({ url: chrome.runtime.getURL('panel/panel.html?demo=insights') });
+      sendResponse({ success: true });
+      return false;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return false;

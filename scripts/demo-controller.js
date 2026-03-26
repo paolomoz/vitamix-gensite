@@ -25,8 +25,7 @@ const ACTS = [
   {
     key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true,
   },
-  { key: '5', label: 'Act 5 — Marketer Dashboard', url: `${SITE_BASE}/demo/dashboard` },
-  { key: '6', label: 'Act 6 — Simulation', url: `${SITE_BASE}/demo/simulation` },
+  { key: '5', label: 'Act 5 — Brand Insights (ext panel)' },
 ];
 
 let hudVisible = false;
@@ -68,10 +67,6 @@ function createHUD() {
     <div style="border-top: 1px solid rgba(255,255,255,0.15); margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; gap: 16px;">
       <span style="opacity: 0.6;">⌥0</span>
       <span>Toggle this HUD</span>
-    </div>
-    <div style="display: flex; justify-content: space-between; gap: 16px;">
-      <span style="opacity: 0.6;">⌥S</span>
-      <span>Start simulation (Act 6)</span>
     </div>
   `;
   document.body.appendChild(hud);
@@ -171,13 +166,26 @@ function goToAct(actNum) {
     return;
   }
 
-  showToast(act.label);
-
-  if (window.location.href.startsWith(act.url)) {
+  // Act 5: open extension panel as full tab (requires extension context)
+  if (actNum === 5) {
+    showToast(act.label);
+    try {
+      chrome.runtime.sendMessage({ type: 'OPEN_PANEL_TAB' });
+    } catch (e) {
+      // Fallback if not running in extension context
+      // eslint-disable-next-line no-console
+      console.warn('[Demo] Extension not available for Act 5');
+    }
     return;
   }
 
-  window.location.href = act.url;
+  showToast(act.label);
+
+  if (act.url && window.location.href.startsWith(act.url)) {
+    return;
+  }
+
+  if (act.url) window.location.href = act.url;
 }
 
 /**
@@ -213,19 +221,12 @@ function handleKeydown(e) {
     return;
   }
 
-  // Option+1-6: Navigate to act
-  if (digit >= 1 && digit <= 6) {
+  // Option+1-5: Navigate to act
+  if (digit >= 1 && digit <= 5) {
     e.preventDefault();
     pendingQueryAct = null; // reset when switching acts
     goToAct(digit);
     return;
-  }
-
-  // Option+S: Start simulation (Act 6 only)
-  if (e.code === 'KeyS') {
-    e.preventDefault();
-    window.dispatchEvent(new CustomEvent('demo-start-simulation'));
-    showToast('Simulation started');
   }
 }
 

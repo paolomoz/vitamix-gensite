@@ -8,6 +8,9 @@
 
   console.log('[VitamixIntent] Content script loaded');
 
+  // Demo Act 4 query — used when hint CTA is clicked during Act 4 browsing
+  var ACT4_QUERY = 'Looking to buy a Vitamix blender - can you compare X5 vs X4 and others if you think they make sense to look into. I have a family of 4 - my older son is into smoothies and my younger son doesn\'t like veggies - but when I make soups he likes them - even if they are green looking';
+
   // Track page load time
   const pageLoadTime = Date.now();
   let scrollDepthMax = 0;
@@ -570,12 +573,20 @@
     footer.parentNode.insertBefore(section, footer);
 
     // Handle CTA click - open POC with query
+    // When Act 4 demo is active, navigate directly with ?q= to bypass context storage
     section.querySelector('.vitamix-ai-hint-cta').addEventListener('click', () => {
-      console.log('[VitamixIntent] Hint CTA clicked, query:', hint.query);
-      chrome.runtime.sendMessage({
-        type: 'HINT_CLICKED',
-        query: hint.query,
-      });
+      var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
+      if (demoActive) {
+        console.log('[VitamixIntent] Hint CTA clicked (Act 4 override), navigating with ?q=');
+        var pocBase = 'https://main--vitamix-gensite--paolomoz.aem.live';
+        window.open(pocBase + '/?q=' + encodeURIComponent(ACT4_QUERY), '_blank');
+      } else {
+        console.log('[VitamixIntent] Hint CTA clicked, query:', hint.query);
+        chrome.runtime.sendMessage({
+          type: 'HINT_CLICKED',
+          query: hint.query,
+        });
+      }
     });
 
     // Handle dismiss
@@ -1283,8 +1294,7 @@
     { key: '2', label: 'Act 2 — Query Wow (→ to type)' },
     { key: '3', label: 'Act 3 — Iliza (→ to type)' },
     { key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true },
-    { key: '5', label: 'Act 5 — Marketer Dashboard', path: '/demo/dashboard' },
-    { key: '6', label: 'Act 6 — Simulation', path: '/demo/simulation' },
+    { key: '5', label: 'Act 5 — Brand Insights (full tab)', panelTab: true },
   ];
 
   let demoHudVisible = false;
@@ -1301,8 +1311,7 @@
       }).join('')
       + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;font-size:11px;color:#888;margin-bottom:4px;">→ starts typing (Acts 2-3) or advances (Act 4):</div>'
       + '<div style="font-size:11px;color:#666;padding-left:8px;">Scroll → X4 → X5 → Recipes → Scroll categories → Soups → Recipes → Smoothies → Open search → Type → Submit</div>'
-      + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u23250</span><span>Toggle this HUD</span></div>'
-      + '<div style="display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u2325S</span><span>Start simulation (Act 6)</span></div>';
+      + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u23250</span><span>Toggle this HUD</span></div>';
     document.body.appendChild(hud);
     return hud;
   }
@@ -1395,10 +1404,11 @@
       return;
     }
 
-    // Acts 5, 6 — always use localhost (mock pages only exist locally)
-    showDemoToast(act.label);
-    if (act.path) {
-      window.location.href = 'http://localhost:3000' + act.path;
+    // Act 5: open extension panel as full tab
+    if (act.panelTab) {
+      showDemoToast(act.label);
+      chrome.runtime.sendMessage({ type: 'OPEN_PANEL_TAB' });
+      return;
     }
   }
 
@@ -1563,11 +1573,13 @@
 
   restoreAct4State();
 
+  // Use capture phase so demo controller intercepts before page handlers (e.g. Vitamix carousels)
   document.addEventListener('keydown', function(e) {
     // Right arrow: trigger pending query typing (Act 2/3) or advance Act 4 sub-steps
     if (e.code === 'ArrowRight' && !e.altKey && !e.metaKey && !e.ctrlKey) {
       if (pendingQueryAct) {
         e.preventDefault();
+        e.stopPropagation();
         var query = pendingQueryAct === 3 ? ACT3_QUERY : ACT2_QUERY;
         if (pendingQueryAct === 3) {
           sessionStorage.setItem('demo-hero-override', ACT3_HERO);
@@ -1578,6 +1590,7 @@
       }
       if (act4Active) {
         e.preventDefault();
+        e.stopPropagation();
         advanceAct4();
         saveAct4State();
         return;
@@ -1596,7 +1609,7 @@
       return;
     }
 
-    if (digit >= 1 && digit <= 6) {
+    if (digit >= 1 && digit <= 5) {
       e.preventDefault();
       // Reset states when switching acts
       pendingQueryAct = null;
@@ -1611,13 +1624,7 @@
       demoGoToAct(digit);
       return;
     }
-
-    if (e.code === 'KeyS') {
-      e.preventDefault();
-      window.dispatchEvent(new CustomEvent('demo-start-simulation'));
-      showDemoToast('Simulation started');
-    }
-  });
+  }, true); // capture phase
 
   // Subtle indicator dot — shows demo controller is active
   var dot = document.createElement('div');

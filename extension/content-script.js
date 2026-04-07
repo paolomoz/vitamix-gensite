@@ -1288,13 +1288,16 @@
     return DEMO_SITE;
   }
 
+  const DASHBOARD_URL = 'http://localhost:3000/demo/dashboard';
+
   const ACTS = [
     null,
     { key: '1', label: 'Act 1 — Title Slide' },
     { key: '2', label: 'Act 2 — Query Wow (→ to type)' },
     { key: '3', label: 'Act 3 — Iliza (→ to type)' },
     { key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true },
-    { key: '5', label: 'Act 5 — Brand Insights (full tab)', panelTab: true },
+    { key: '5', label: 'Act 5 — Content Intelligence', url: DASHBOARD_URL, dashboard: true },
+    { key: '6', label: 'Act 6 — Gaps & Opportunities', url: DASHBOARD_URL, dashboard: true, dashboardView: 'dd-act6' },
   ];
 
   let demoHudVisible = false;
@@ -1404,10 +1407,19 @@
       return;
     }
 
-    // Act 5: open extension panel as full tab
-    if (act.panelTab) {
-      showDemoToast(act.label);
-      chrome.runtime.sendMessage({ type: 'OPEN_PANEL_TAB' });
+    // Acts 5-6: dashboard views
+    if (act.dashboard) {
+      var onDashboard = window.location.pathname.startsWith('/demo/dashboard');
+      if (onDashboard) {
+        // Already on dashboard — switch view via custom event
+        var viewId = act.dashboardView || 'dd-act5';
+        window.dispatchEvent(new CustomEvent('demo-dashboard-view', { detail: viewId }));
+      } else {
+        // Navigate to dashboard, with optional view param
+        var url = DASHBOARD_URL;
+        if (act.dashboardView) url += '?view=' + act.dashboardView;
+        window.location.href = url;
+      }
       return;
     }
   }
@@ -1609,7 +1621,7 @@
       return;
     }
 
-    if (digit >= 1 && digit <= 5) {
+    if (digit >= 1 && digit <= 6) {
       e.preventDefault();
       // Reset states when switching acts
       pendingQueryAct = null;

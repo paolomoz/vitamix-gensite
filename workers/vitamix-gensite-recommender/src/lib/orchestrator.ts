@@ -822,11 +822,14 @@ THEN THE COMPARISON TABLE:
   <div>2.0 HP</div>
 </div>
 <!-- Add more spec rows as needed -->
+
+REQUIRED LAST ROW - YOU MUST ALWAYS INCLUDE THIS:
 <div>
   <div><strong>Best For</strong></div>
-  <div>[Use case this product excels at]</div>
-  <div>[Use case this product excels at]</div>
-</div>`,
+  <div>[Specific use case this product excels at, e.g. "Ascent® X5"]</div>
+  <div>[Specific use case this product excels at]</div>
+</div>
+The "Best For" row MUST be the last row. Do NOT omit it. Do NOT rename it to "Note" or "Verdict".`,
 
     'product-recommendation': `
 ## HTML Template - Generate ONE primary product recommendation.

@@ -826,6 +826,13 @@ main .section.accent {
   padding: var(--spacing-section-md, 5rem) 0;
 }
 
+/* Warm section - alternating background for visual rhythm (Brand Secondary: Neutral Warm) */
+main .section.warm {
+  background-color: var(--color-neutral-warm);
+  margin: 0;
+  padding: 40px 0;
+}
+
 main .section.accent h2 {
   color: var(--color-brand-dark, #1a1a1a);
   font-weight: 300;

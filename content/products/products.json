@@ -1622,9 +1622,11 @@
         "weight": "12 lbs"
       },
       "images": {
-        "primary": "",
+        "primary": "https://www.vitamix.com/us/en_us/products/media_2351fcf55647dca9d1976174ed6b735689038d06.jpg?width=2000&format=webply&optimize=medium",
         "gallery": [],
-        "remoteUrls": []
+        "remoteUrls": [
+          "https://www.vitamix.com/us/en_us/products/media_2351fcf55647dca9d1976174ed6b735689038d06.jpg?width=2000&format=webply&optimize=medium"
+        ]
       },
       "crawledAt": "2026-04-08T00:00:00.000Z",
       "sourceUrl": "https://www.vitamix.com/us/en_us/products/vx1",

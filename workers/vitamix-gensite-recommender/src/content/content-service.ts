@@ -981,6 +981,7 @@ function extractProductModels(query: string): string[] {
     /\bexplorian\b/gi,
     /\blegacy\b/gi,
     /\bfamily\s*pack\b/gi,
+    /\bvx1\b/gi,
   ];
 
   for (const pattern of modelPatterns) {

@@ -590,7 +590,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-color: var(--shadow-200, rgba(0 0 0 / 20%));
+  background-color: rgba(51 63 72 / 45%);
   transition: background 0.3s;
 }
 
@@ -616,7 +616,7 @@
 }
 
 .cards.overlay > ul > li:hover::after {
-  background-color: var(--shadow-300, rgba(0 0 0 / 30%));
+  background-color: rgba(51 63 72 / 55%);
 }
 
 @media (width >= 800px) {

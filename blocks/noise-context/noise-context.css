@@ -93,27 +93,27 @@
   z-index: 1;
 }
 
-/* Quiet - Green (Success) */
+/* Quiet - Pistachio (brand secondary) */
 .scale-segment.quiet {
-  background: var(--color-success-bg-strong);
-  color: var(--color-success-text);
+  background: var(--color-pistachio);
+  color: var(--color-white);
 }
 
-/* Moderate - Amber (Warning) */
+/* Moderate - Mustard (brand secondary) */
 .scale-segment.moderate {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-mustard);
+  color: var(--color-charcoal);
 }
 
-/* Loud - Orange/Red transition */
+/* Loud - Ginger (brand secondary) */
 .scale-segment.loud {
-  background: var(--color-error-bg-strong);
-  color: var(--color-error-dark);
+  background: var(--color-ginger);
+  color: var(--color-white);
 }
 
-/* Very Loud - Red (Error) */
+/* Very Loud - Vitamix Red (brand primary) */
 .scale-segment.very-loud {
-  background: var(--color-error);
+  background: var(--color-red);
   color: var(--color-white);
 }
 
@@ -156,19 +156,19 @@
 
 /* Level-specific border colors */
 .noise-comparison.quiet {
-  border-left-color: var(--color-success);
+  border-left-color: var(--color-pistachio);
 }
 
 .noise-comparison.moderate {
-  border-left-color: var(--color-warning);
+  border-left-color: var(--color-mustard);
 }
 
 .noise-comparison.loud {
-  border-left-color: var(--color-error-light);
+  border-left-color: var(--color-ginger);
 }
 
 .noise-comparison.very-loud {
-  border-left-color: var(--color-error);
+  border-left-color: var(--color-red);
 }
 
 .comparison-item {
@@ -188,19 +188,19 @@
 
 /* Color-coded dB display */
 .noise-comparison.quiet .comparison-db {
-  color: var(--color-success-dark);
+  color: var(--color-pistachio);
 }
 
 .noise-comparison.moderate .comparison-db {
-  color: var(--color-warning-dark);
+  color: var(--color-mustard);
 }
 
 .noise-comparison.loud .comparison-db {
-  color: var(--color-error-dark);
+  color: var(--color-ginger);
 }
 
 .noise-comparison.very-loud .comparison-db {
-  color: var(--color-error);
+  color: var(--color-red);
 }
 
 .comparison-context {

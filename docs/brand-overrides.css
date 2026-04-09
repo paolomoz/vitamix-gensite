@@ -1,0 +1,143 @@
+/* docs/brand-overrides.css
+   Brand corrections: official Vitamix guidelines → EDS token overrides
+   Source: https://my.corebook.io/vitamixguidelines
+*/
+
+:root {
+  /* === PRIMARY PALETTE (official) === */
+  /* --color-red: #c8102e; already correct in styles.css */
+  /* --color-charcoal: #333f48; already correct (= Vitamix Navy) */
+
+  /* Vitamix Gray - official brand gray, missing from EDS */
+  --color-vitamix-gray: #a2aaad;
+
+  /* === SECONDARY PALETTE (missing from EDS) === */
+  --color-neutral-cool: #dce0e7;
+  --color-neutral-warm: #f6ece4;
+  --color-mustard: #ddb247;
+  --color-ginger: #cd7e59;
+  --color-blueberry: #a2b2bd;
+  --color-pistachio: #7b997c;
+
+  /* === WEBSITE PALETTE (corrections) === */
+  --color-web-neutral-1: #f5f5f5;
+  --color-web-neutral-2: #e0e1e3;
+  --color-web-offer-green: #5e7d61;
+  --color-web-links: #1b68b4;
+  --color-web-banner-purple: #8c1356;
+
+  /* === TYPOGRAPHY FIXES === */
+  --weight-bold: 700;  /* was 500, should be true bold */
+
+  /* === EYEBROW COLOR FIX === */
+  --color-eyebrow: var(--color-red);  /* official: Vitamix Red, not madder */
+}
+
+/* Fix vitamix.css conflicting red */
+.vitamix-primary { color: #c8102e; }
+
+/* === SHOWCASE-SPECIFIC STYLES === */
+
+/* Block section labels in the catalog */
+.block-showcase-label {
+  font-family: var(--sans-serif-font-family, 'gotham-narrow', sans-serif);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-red);
+  padding: 12px 0 4px;
+  border-bottom: 1px solid var(--color-red);
+  margin: 80px auto 32px;
+  max-width: 1200px;
+}
+
+.block-showcase-label:first-of-type {
+  margin-top: 0;
+}
+
+/* Warm neutral section backgrounds (from brand secondary palette) */
+.section.warm-bg {
+  background-color: var(--color-neutral-warm);
+}
+
+.section.cool-bg {
+  background-color: var(--color-neutral-cool);
+}
+
+/* Dark section using official Navy */
+.section.dark-bg {
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+.section.dark-bg h1,
+.section.dark-bg h2,
+.section.dark-bg h3,
+.section.dark-bg h4,
+.section.dark-bg p {
+  color: var(--color-white);
+}
+.section.dark-bg .eyebrow,
+.section.dark-bg .best-pick-eyebrow,
+.section.dark-bg .product-recommendation-eyebrow {
+  color: var(--color-neutral-warm);
+}
+
+/* Link color fix: use official web links blue */
+.section a:not(.button) {
+  color: var(--color-web-links);
+}
+.section.dark-bg a:not(.button) {
+  color: var(--color-blueberry);
+}
+
+/* Button consistency: square corners per brand pattern */
+.button {
+  border-radius: 0;
+}
+.button.primary {
+  background-color: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-white);
+}
+.button.primary:hover {
+  background-color: #a01e2a;
+  border-color: #a01e2a;
+}
+.button.secondary {
+  background-color: transparent;
+  border: 2px solid var(--color-charcoal);
+  color: var(--color-charcoal);
+}
+.button.secondary:hover {
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+/* Eyebrow text: Gotham Medium, ALL CAPS, Vitamix Red */
+.eyebrow,
+.best-pick-eyebrow,
+.product-recommendation-eyebrow,
+.troubleshooting-eyebrow,
+.allergen-eyebrow,
+.use-case-eyebrow {
+  font-family: var(--sans-serif-font-family, 'gotham-narrow', sans-serif);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-red);
+  font-size: var(--font-size-40, 13px);
+}
+
+/* Headings: ensure Sentinel serif */
+h1, h2, h3 {
+  font-family: var(--heading-font-family, 'sentinel', Georgia, serif);
+}
+h1 { font-weight: 300; }
+h2 { font-weight: 300; }
+h3 { font-weight: 400; }
+
+/* Body: ensure Gotham Narrow */
+body, p, li, td, th, input, button, select, textarea {
+  font-family: var(--body-font-family, 'gotham-narrow', sans-serif);
+}

@@ -597,19 +597,13 @@
       }
     });
 
-    // Handle CTA click - navigate to POC with ?q= so landing page consumes prefetch
+    // Handle CTA click - navigate to POC
+    // TODO: DEMO WORKAROUND — hardcoded URL to avoid hint.query containing stale/wrong context.
+    // Proper fix: regenerate hint query on session clear, or use short intent + ?ctx= signals.
     ctaButton.addEventListener('click', () => {
-      var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
-      var clickQuery = demoActive ? ACT4_QUERY : (hint.query || '');
-      if (!clickQuery) return;
-      // Start prefetch now if hover didn't trigger it (e.g. touch device)
-      if (!hintPrefetchStarted) {
-        chrome.runtime.sendMessage({ type: 'PREFETCH_START', query: clickQuery, preset: 'all-cerebras' });
-        console.log('[VitamixIntent] Prefetch started on click (no hover) for hint:', clickQuery.substring(0, 50));
-      }
-      var pocBase = (window.location.hostname === 'localhost') ? window.location.origin : 'https://main--vitamix-gensite--paolomoz.aem.live';
-      console.log('[VitamixIntent] Hint CTA clicked, navigating with ?q=', clickQuery);
-      window.location.href = pocBase + '/?q=' + encodeURIComponent(clickQuery);
+      var demoUrl = 'http://localhost:3000/?q=Looking%20to%20buy%20a%20Vitamix%20blender%20-%20can%20you%20compare%20X5%20vs%20X4%20and%20others%20if%20you%20think%20they%20make%20sense%20to%20look%20into.%20I%20have%20a%20family%20of%204%20-%20my%20older%20son%20is%20into%20smoothies%20and%20my%20younger%20son%20does%27t%20like%20veggies%20-%20but%20when%20I%20make%20soups%20he%20likes%20them%20-%20even%20if%20they%20are%20green%20looking&preset=all-cerebras';
+      console.log('[VitamixIntent] Hint CTA clicked, navigating to hardcoded demo URL');
+      window.location.href = demoUrl;
     });
 
     // Handle dismiss
@@ -1294,6 +1288,7 @@
       script.textContent = 'window.__extensionPrefetch = ' + JSON.stringify({
         query: response.query,
         slug: response.slug,
+        ctxId: response.ctxId,
         events: response.events,
         headStart: response.headStart,
       }) + ';'
@@ -1330,7 +1325,7 @@
   const DEMO_SITE = 'https://main--vitamix-gensite--paolomoz.aem.live';
   const VITAMIX_ASCENT_URL = 'https://www.vitamix.com/us/en_us/shop/ascent-x-series-blenders';
 
-  const ACT2_QUERY = 'I need something quiet for morning smoothies — I have a newborn, kitchen is next to the nursery, and my older kid is obsessed with protein shakes.';
+  const ACT2_QUERY = 'I\'m a personal trainer and I need a blender that can handle making 15-20 protein shakes a day for my clients. curious how models compare for heavy daily use. Cleanup speed matters a lot since I\'m making them back to back between sessions';
   const ACT3_QUERY = 'frozen margaritas for 30 people at a house party, and I don\'t want to clean it after, show me some models';
   const ACT3_HERO = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev/hero-images/hero-margarita-party.jpg';
 

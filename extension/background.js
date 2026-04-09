@@ -242,6 +242,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handlePrefetchGet(message.query).then(sendResponse);
       return true;
 
+    case 'PREFETCH_PEEK':
+      // Read prefetch ctxId without consuming it
+      sendResponse(activePrefetch ? { ctxId: activePrefetch.ctxId, query: activePrefetch.query } : null);
+      return false;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return false;
@@ -1123,15 +1128,46 @@ async function handlePrefetchStart(query, preset = 'all-cerebras') {
     .substring(0, 80)
     + '-' + Math.abs(Date.now()).toString(36).slice(0, 6);
 
-  const sseUrl = `${WORKER_API_URL}/generate?q=${encodeURIComponent(query)}`
-    + `&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}`
-    + '&ctx=%7B%7D';
+  // Store full extension context so the generation is personalized
+  let ctxId = null;
+  try {
+    const context = {
+      signals: profileEngine.getSignals(),
+      query,
+      previousQueries,
+      profile: profileEngine.getProfile(),
+      timestamp: Date.now(),
+    };
+    const storeResp = await fetch(`${WORKER_API_URL}/store-context`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(context),
+    });
+    if (storeResp.ok) {
+      const storeData = await storeResp.json();
+      ctxId = storeData.id;
+    }
+  } catch (e) {
+    console.log('[Background] Prefetch context store failed, using bare query:', e.message);
+  }
+
+  // Build SSE URL — use ?ctx= if context was stored, otherwise fall back to ?q=
+  let sseUrl;
+  if (ctxId) {
+    sseUrl = `${WORKER_API_URL}/generate?ctx=${encodeURIComponent(ctxId)}`
+      + `&q=${encodeURIComponent(query)}`
+      + `&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}`;
+  } else {
+    sseUrl = `${WORKER_API_URL}/generate?q=${encodeURIComponent(query)}`
+      + `&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}`
+      + '&ctx=%7B%7D';
+  }
 
   const bufferedEvents = [];
   let resolveComplete;
   const completionPromise = new Promise((resolve) => { resolveComplete = resolve; });
   const prefetch = {
-    query, slug, preset, bufferedEvents, startTime: Date.now(), aborted: false, completionPromise,
+    query, slug, preset, ctxId, bufferedEvents, startTime: Date.now(), aborted: false, completionPromise,
   };
   activePrefetch = prefetch;
 
@@ -1194,6 +1230,7 @@ async function handlePrefetchGet(query) {
     found: true,
     query: prefetch.query,
     slug: prefetch.slug,
+    ctxId: prefetch.ctxId,
     events: prefetch.bufferedEvents,
     headStart: Date.now() - prefetch.startTime,
   };

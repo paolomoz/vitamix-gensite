@@ -140,6 +140,27 @@ export default function decorate(block) {
     }
   }
 
+  // Fallback: check "Value Proposition" row for "Top Features" (indicates premium/recommended)
+  if (recommendedProductIdx === -1) {
+    for (const row of rows.slice(1)) {
+      const firstCell = row.children[0];
+      const firstCellText = firstCell ? firstCell.textContent.trim().toLowerCase() : '';
+      if (firstCellText.startsWith('value proposition')) {
+        [...row.children].forEach((cell, idx) => {
+          if (idx > 0 && cell.textContent.toLowerCase().includes('top features')) {
+            recommendedProductIdx = idx;
+          }
+        });
+        break;
+      }
+    }
+  }
+
+  // Final fallback: first product column (worker places top recommendation first)
+  if (recommendedProductIdx === -1 && productCount > 1) {
+    recommendedProductIdx = 1;
+  }
+
   // Apply recommended styling to header if found
   if (recommendedProductIdx > 0 && thead.children[0]) {
     const headerCells = thead.children[0].children;

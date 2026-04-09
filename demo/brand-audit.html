@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitamix Brand Alignment Audit — Before / After</title>
+  <link rel="stylesheet" href="https://use.typekit.net/bnk0jfg.css">
+  <style>
+    /* ===== Brand Tokens (from corebook.io guidelines) ===== */
+    :root {
+      /* Primary Palette */
+      --vtx-red: #c8102e;
+      --vtx-gray: #a2aaad;
+      --vtx-navy: #333f48;
+      --vtx-white: #ffffff;
+
+      /* Secondary Palette */
+      --vtx-neutral-cool: #dce0e7;
+      --vtx-neutral-warm: #f6ece4;
+      --vtx-mustard: #ddb247;
+      --vtx-ginger: #cd7e59;
+      --vtx-blueberry: #a2b2bd;
+      --vtx-pistachio: #7b997c;
+
+      /* Web Palette */
+      --vtx-web-neutral1: #f5f5f5;
+      --vtx-web-offer: #5e7d61;
+      --vtx-web-neutral2: #e0e1e3;
+      --vtx-web-neutral3: #a2aaad;
+      --vtx-web-neutral4: #333f48;
+      --vtx-web-links: #1b68b4;
+
+      /* Typography */
+      --font-heading: 'sentinel', georgia, serif;
+      --font-body: 'gotham-narrow', helvetica, sans-serif;
+
+      /* Spacing */
+      --sp-xs: 4px;
+      --sp-s: 8px;
+      --sp-m: 16px;
+      --sp-l: 24px;
+      --sp-xl: 32px;
+      --sp-2xl: 48px;
+      --sp-3xl: 64px;
+      --sp-4xl: 80px;
+    }
+
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      font-weight: 400;
+      color: var(--vtx-navy);
+      background: var(--vtx-web-neutral1);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { display: block; max-width: 100%; }
+
+    /* ===== Page Header ===== */
+    .page-header {
+      background: var(--vtx-navy);
+      color: var(--vtx-white);
+      padding: var(--sp-3xl) var(--sp-xl);
+      text-align: center;
+    }
+    .page-header h1 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 42px;
+      line-height: 1.15;
+      margin-bottom: var(--sp-m);
+    }
+    .page-header p {
+      font-size: 16px;
+      color: var(--vtx-blueberry);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ===== Issue Section ===== */
+    .issue {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--sp-3xl) var(--sp-xl);
+      border-bottom: 1px solid var(--vtx-web-neutral2);
+    }
+    .issue:last-of-type { border-bottom: none; }
+
+    .issue-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-s);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--vtx-red);
+      margin-bottom: var(--sp-s);
+    }
+    .issue-label .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: var(--vtx-red);
+      color: var(--vtx-white);
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .issue h2 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 30px;
+      line-height: 1.2;
+      color: var(--vtx-navy);
+      margin-bottom: var(--sp-s);
+    }
+
+    .issue-desc {
+      font-size: 15px;
+      color: #666;
+      max-width: 700px;
+      margin-bottom: var(--sp-xl);
+      line-height: 1.6;
+    }
+
+    /* ===== Before / After Grid ===== */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-l);
+    }
+
+    .compare-panel {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--vtx-web-neutral2);
+    }
+
+    .compare-panel-label {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-s);
+      padding: var(--sp-s) var(--sp-m);
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .compare-panel.before .compare-panel-label {
+      background: var(--vtx-web-neutral2);
+      color: #666;
+    }
+    .compare-panel.after .compare-panel-label {
+      background: var(--vtx-pistachio);
+      color: var(--vtx-white);
+    }
+
+    .compare-panel-body {
+      padding: var(--sp-xl);
+      background: var(--vtx-white);
+      min-height: 200px;
+    }
+
+    /* ===== Issue #1: Section Backgrounds ===== */
+    .demo-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .demo-section {
+      padding: var(--sp-xl) var(--sp-l);
+      text-align: center;
+    }
+    .demo-section h3 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 22px;
+      margin-bottom: var(--sp-s);
+    }
+    .demo-section p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Before: all white */
+    .before .demo-section { background: var(--vtx-white); }
+    .before .demo-section + .demo-section { border-top: 1px solid #eee; }
+
+    /* After: alternating warm/cool */
+    .after .s-white { background: var(--vtx-white); }
+    .after .s-warm { background: var(--vtx-neutral-warm); }
+    .after .s-cool { background: var(--vtx-web-neutral1); }
+    .after .s-navy { background: var(--vtx-navy); color: var(--vtx-white); }
+    .after .s-navy p { color: var(--vtx-blueberry); }
+
+    /* ===== Issue #2: Feature Blocks ===== */
+    .feature-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-m);
+      text-align: center;
+    }
+    .feature-card h4 {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: var(--sp-xs);
+    }
+    .feature-card p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Before: text only, no visual weight */
+    .before .feature-card {
+      padding: var(--sp-m);
+      border: 1px solid #eee;
+    }
+
+    /* After: icon + warm bg + brand borders */
+    .after .feature-card {
+      padding: var(--sp-l) var(--sp-m);
+      background: var(--vtx-web-neutral1);
+      border-top: 3px solid var(--vtx-red);
+      border-radius: 0 0 5px 5px;
+    }
+    .after .feature-card .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto var(--sp-m);
+      background: var(--vtx-neutral-warm);
+      border-radius: 50%;
+      color: var(--vtx-navy);
+    }
+    .after .feature-card .icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    /* ===== Issue #3: Eyebrow Text ===== */
+    .eyebrow-demo {
+      text-align: center;
+      padding: var(--sp-xl);
+    }
+
+    .before .eyebrow-demo .eyebrow {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      color: #999;
+      margin-bottom: var(--sp-s);
+    }
+
+    .after .eyebrow-demo .eyebrow {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--vtx-red);
+      margin-bottom: var(--sp-s);
+    }
+
+    .eyebrow-demo h3 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 28px;
+      line-height: 1.2;
+      color: var(--vtx-navy);
+    }
+    .eyebrow-demo p {
+      font-size: 15px;
+      color: #666;
+      margin-top: var(--sp-s);
+    }
+
+    /* ===== Issue #4: Noise Scale Colors ===== */
+    .noise-bar {
+      display: flex;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: var(--sp-m);
+    }
+    .noise-seg {
+      flex: 1;
+      padding: var(--sp-s) var(--sp-m);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Before: generic traffic-light */
+    .before .ns-quiet { background: #4caf50; color: white; }
+    .before .ns-mod { background: #ffc107; color: #333; }
+    .before .ns-loud { background: #ff9800; color: white; }
+    .before .ns-vloud { background: #f44336; color: white; }
+
+    /* After: brand palette */
+    .after .ns-quiet { background: var(--vtx-pistachio); color: white; }
+    .after .ns-mod { background: var(--vtx-mustard); color: var(--vtx-navy); }
+    .after .ns-loud { background: var(--vtx-ginger); color: white; }
+    .after .ns-vloud { background: var(--vtx-red); color: white; }
+
+    .noise-items { display: flex; flex-direction: column; gap: var(--sp-s); }
+    .noise-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--sp-s) var(--sp-m);
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .noise-item .db { font-weight: 500; }
+
+    .before .noise-item .db { color: #333; }
+    .after .noise-item .db.quiet { color: var(--vtx-pistachio); }
+    .after .noise-item .db.mod { color: var(--vtx-mustard); }
+    .after .noise-item .db.loud { color: var(--vtx-ginger); }
+    .after .noise-item .db.vloud { color: var(--vtx-red); }
+
+    /* ===== Issue #5: Category / Overlay Cards ===== */
+    .cat-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-s);
+    }
+    .cat-card {
+      padding: var(--sp-xl) var(--sp-m);
+      border-radius: 5px;
+      text-align: center;
+      color: white;
+    }
+    .cat-card h4 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 18px;
+      margin-bottom: var(--sp-xs);
+    }
+    .cat-card p {
+      font-size: 12px;
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+
+    /* Before: off-brand dark teal/greens */
+    .before .cc-1 { background: #2d5a5a; }
+    .before .cc-2 { background: #3a6b5e; }
+    .before .cc-3 { background: #4a6f5a; }
+
+    /* After: brand secondary palette */
+    .after .cc-1 { background: var(--vtx-navy); }
+    .after .cc-2 { background: var(--vtx-pistachio); }
+    .after .cc-3 { background: var(--vtx-ginger); }
+
+    /* ===== Issue #6: Product Card CTA ===== */
+    .product-demo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: var(--sp-m);
+    }
+    .product-demo .prod-img {
+      width: 140px;
+      height: 105px;
+      background: var(--vtx-web-neutral1);
+      border-radius: 5px;
+      margin-bottom: var(--sp-m);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--vtx-gray);
+      font-size: 12px;
+    }
+    .product-demo h4 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 20px;
+      margin-bottom: var(--sp-xs);
+    }
+    .product-demo .price {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: var(--sp-m);
+    }
+    .product-demo .cta {
+      display: inline-block;
+      padding: 14px 28px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border: 1px solid var(--vtx-navy);
+      color: var(--vtx-navy);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .product-demo .cta:hover {
+      background: var(--vtx-navy);
+      color: white;
+    }
+
+    /* ===== Issue #7: Comparison Table ===== */
+    .comp-table-demo { overflow-x: auto; }
+    .comp-table-demo table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .comp-table-demo th {
+      padding: var(--sp-m) var(--sp-s);
+      text-align: center;
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 18px;
+    }
+    .comp-table-demo td {
+      padding: var(--sp-s) var(--sp-m);
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    .comp-table-demo td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: #666;
+    }
+
+    /* Before: plain */
+    .before .comp-table-demo th {
+      border-bottom: 1px solid #ccc;
+      color: var(--vtx-navy);
+    }
+
+    /* After: brand-styled header */
+    .after .comp-table-demo th {
+      border-bottom: 2px solid var(--vtx-navy);
+      color: var(--vtx-navy);
+    }
+    .after .comp-table-demo th.highlight {
+      background: var(--vtx-neutral-warm);
+      border-bottom-color: var(--vtx-red);
+      position: relative;
+    }
+    .after .comp-table-demo th.highlight::before {
+      content: 'TOP PICK';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--vtx-red);
+      color: white;
+      font-family: var(--font-body);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      padding: 2px 10px;
+      border-radius: 2px;
+    }
+    .after .comp-table-demo td.highlight {
+      background: rgba(246, 236, 228, 0.4);
+    }
+    .after .comp-table-demo .best-for {
+      background: var(--vtx-pistachio);
+      color: white;
+      padding: var(--sp-s) var(--sp-m);
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      margin-top: var(--sp-m);
+    }
+
+    /* ===== Issue #8: Follow-up Questions ===== */
+    .followup-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-s);
+    }
+    .followup-chip {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: var(--sp-s);
+      padding: var(--sp-m) var(--sp-m);
+      font-size: 13px;
+      line-height: 1.4;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      flex: 1 1 calc(50% - var(--sp-s));
+      min-width: 200px;
+    }
+    .followup-chip strong {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .followup-chip small {
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .followup-chip .chip-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Before: heavy red borders */
+    .before .followup-chip {
+      background: white;
+      border: 2px solid var(--vtx-red);
+      color: var(--vtx-navy);
+    }
+    .before .followup-chip .chip-icon {
+      background: var(--vtx-red);
+      color: white;
+    }
+
+    /* After: subtle warm treatment */
+    .after .followup-section {
+      background: var(--vtx-navy);
+      padding: var(--sp-xl);
+      border-radius: 5px;
+    }
+    .after .followup-section .fu-header {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 20px;
+      color: var(--vtx-white);
+      margin-bottom: var(--sp-m);
+    }
+    .after .followup-chip {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.85);
+    }
+    .after .followup-chip:hover {
+      border-color: var(--vtx-red);
+      color: var(--vtx-white);
+    }
+    .after .followup-chip strong {
+      color: var(--vtx-white);
+    }
+    .after .followup-chip small {
+      color: var(--vtx-blueberry);
+    }
+    .after .followup-chip .chip-icon {
+      background: rgba(255,255,255,0.1);
+      color: var(--vtx-blueberry);
+    }
+
+    /* ===== Issue #9: Secondary Palette Accents ===== */
+    .palette-demo {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--sp-s);
+      margin-bottom: var(--sp-m);
+    }
+    .palette-swatch {
+      aspect-ratio: 1;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .palette-swatch.light { color: var(--vtx-navy); }
+    .palette-swatch.dark { color: white; }
+
+    .accent-examples {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-m);
+    }
+    .accent-example {
+      padding: var(--sp-l) var(--sp-m);
+      border-radius: 5px;
+      text-align: center;
+    }
+    .accent-example h4 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 18px;
+      margin-bottom: var(--sp-xs);
+    }
+    .accent-example p {
+      font-size: 12px;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+    .ae-warm { background: var(--vtx-neutral-warm); color: var(--vtx-navy); }
+    .ae-pistachio { background: var(--vtx-pistachio); color: white; }
+    .ae-mustard { background: var(--vtx-mustard); color: var(--vtx-navy); }
+
+    /* ===== Issue #10: Vortex Element ===== */
+    .vortex-demo { text-align: center; }
+    .vortex-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-m);
+      padding: var(--sp-m) 0;
+    }
+    .vortex-divider .line {
+      flex: 1;
+      height: 1px;
+      background: var(--vtx-web-neutral2);
+    }
+    .vortex-divider svg {
+      width: 28px;
+      height: 28px;
+      opacity: 0.2;
+    }
+
+    .before .section-divider {
+      height: 1px;
+      background: #eee;
+      margin: var(--sp-xl) 0;
+    }
+
+    /* ===== Summary Table ===== */
+    .summary {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--sp-3xl) var(--sp-xl);
+    }
+    .summary h2 {
+      font-family: var(--font-heading);
+      font-weight: 300;
+      font-size: 30px;
+      color: var(--vtx-navy);
+      margin-bottom: var(--sp-xl);
+      text-align: center;
+    }
+    .summary table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .summary th {
+      text-align: left;
+      padding: var(--sp-s) var(--sp-m);
+      background: var(--vtx-navy);
+      color: white;
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .summary td {
+      padding: var(--sp-s) var(--sp-m);
+      border-bottom: 1px solid var(--vtx-web-neutral2);
+      vertical-align: top;
+    }
+    .summary tr:hover td { background: rgba(246,236,228,0.3); }
+    .impact-high { color: var(--vtx-red); font-weight: 500; }
+    .impact-med { color: var(--vtx-mustard); font-weight: 500; }
+    .impact-low { color: var(--vtx-pistachio); font-weight: 500; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 800px) {
+      .compare { grid-template-columns: 1fr; }
+      .feature-row { grid-template-columns: 1fr; }
+      .cat-cards { grid-template-columns: 1fr; }
+      .accent-examples { grid-template-columns: 1fr; }
+      .palette-demo { grid-template-columns: repeat(3, 1fr); }
+      .followup-chip { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== Page Header ===== -->
+<header class="page-header">
+  <h1>Vitamix Brand Alignment Audit</h1>
+  <p>Before / After comparison of 10 identified issues. Each pair shows the current state (left) and the brand-aligned treatment (right).</p>
+</header>
+
+<!-- ===== ISSUE 1: Section Backgrounds ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">1</span> Section Rhythm &amp; Backgrounds</div>
+  <h2>Too Many Consecutive White Sections</h2>
+  <p class="issue-desc">The brand's warm neutral (#f6ece4) and cool neutral (#f5f5f5) should alternate to create visual rhythm. Currently all sections are white, making the page feel flat and monotone.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body" style="padding: 0;">
+        <div class="demo-sections">
+          <div class="demo-section"><h3>Quiet Power for Fast Blends</h3><p>Features that deliver smooth results with minimal noise.</p></div>
+          <div class="demo-section"><h3>Quiet Blenders Perfect for Smoothies</h3><p>Choose from three top-rated blenders.</p></div>
+          <div class="demo-section"><h3>Kid-Approved Smoothies</h3><p>Delicious, nutritious, and easy to blend.</p></div>
+          <div class="demo-section"><h3>What would help you next?</h3><p>Follow-up questions and suggestions.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body" style="padding: 0;">
+        <div class="demo-sections">
+          <div class="demo-section s-white"><h3>Quiet Power for Fast Blends</h3><p>Features that deliver smooth results with minimal noise.</p></div>
+          <div class="demo-section s-warm"><h3>Quiet Blenders Perfect for Smoothies</h3><p>Choose from three top-rated blenders.</p></div>
+          <div class="demo-section s-cool"><h3>Kid-Approved Smoothies</h3><p>Delicious, nutritious, and easy to blend.</p></div>
+          <div class="demo-section s-navy"><h3>What would help you next?</h3><p>Follow-up questions and suggestions.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 2: Feature Blocks ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">2</span> Feature Blocks</div>
+  <h2>Flat, Text-Only Feature Sections</h2>
+  <p class="issue-desc">Feature rows lack visual weight — no icons, no brand color accents. They read like a generic spec sheet, not a premium brand experience. Adding icons, warm backgrounds, and red top borders creates hierarchy.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="feature-row">
+          <div class="feature-card">
+            <h4>Quiet Motor</h4>
+            <p>Compact motor runs quieter than larger blenders.</p>
+          </div>
+          <div class="feature-card">
+            <h4>Self-Cleaning Program</h4>
+            <p>Add water and soap, blend 60 seconds, rinse.</p>
+          </div>
+          <div class="feature-card">
+            <h4>Variable Speed</h4>
+            <p>Fine-tune texture from silky smooth to chunky.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body">
+        <div class="feature-row">
+          <div class="feature-card">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none" stroke-linecap="round"/><path d="M8 14s1.5 2 4 2 4-2 4-2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h4>Quiet Motor</h4>
+            <p>Compact motor runs quieter than larger blenders.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M12 3v18M8 7l4-4 4 4M6 21h12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h4>Self-Cleaning Program</h4>
+            <p>Add water and soap, blend 60 seconds, rinse.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="none"/></svg>
+            </div>
+            <h4>Variable Speed</h4>
+            <p>Fine-tune texture from silky smooth to chunky.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 3: Eyebrow Text ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">3</span> Eyebrow Text Styling</div>
+  <h2>Inconsistent Eyebrow Treatment</h2>
+  <p class="issue-desc">Brand guidelines specify: GOTHAM MEDIUM, all caps, Vitamix Red or white, with wide letter-spacing. Current eyebrows use serif font, lowercase, and gray — losing the established brand pattern.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="eyebrow-demo">
+          <div class="eyebrow">Troubleshooting Guide</div>
+          <h3>Cleaning Your Vitamix</h3>
+          <p>Step-by-step care instructions.</p>
+        </div>
+        <hr style="border:none;border-top:1px solid #eee;margin:var(--sp-l) 0;">
+        <div class="eyebrow-demo">
+          <div class="eyebrow">Our top pick</div>
+          <h3>Ascent&reg; X5</h3>
+          <p>Best for busy households.</p>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body">
+        <div class="eyebrow-demo">
+          <div class="eyebrow">TROUBLESHOOTING GUIDE</div>
+          <h3>Cleaning Your Vitamix</h3>
+          <p>Step-by-step care instructions.</p>
+        </div>
+        <hr style="border:none;border-top:1px solid #eee;margin:var(--sp-l) 0;">
+        <div class="eyebrow-demo">
+          <div class="eyebrow">OUR TOP PICK</div>
+          <h3>Ascent&reg; X5</h3>
+          <p>Best for busy households.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 4: Noise Scale Colors ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">4</span> Noise Visualization Colors</div>
+  <h2>Off-Brand Color Scale</h2>
+  <p class="issue-desc">The noise comparison uses generic traffic-light colors (Material green/yellow/red). Should use brand secondary palette: Pistachio, Mustard, Ginger, and Vitamix Red to stay on-brand.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="noise-bar">
+          <div class="noise-seg ns-quiet">Quiet</div>
+          <div class="noise-seg ns-mod">Moderate</div>
+          <div class="noise-seg ns-loud">Loud</div>
+          <div class="noise-seg ns-vloud">Very Loud</div>
+        </div>
+        <div class="noise-items">
+          <div class="noise-item"><span>Normal conversation</span> <span class="db">60 dB</span></div>
+          <div class="noise-item"><span>Vacuum cleaner</span> <span class="db">75 dB</span></div>
+          <div class="noise-item"><span>Vitamix (low speed)</span> <span class="db">78 dB</span></div>
+          <div class="noise-item"><span>Vitamix (high speed)</span> <span class="db">88 dB</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body">
+        <div class="noise-bar">
+          <div class="noise-seg ns-quiet">Quiet</div>
+          <div class="noise-seg ns-mod">Moderate</div>
+          <div class="noise-seg ns-loud">Loud</div>
+          <div class="noise-seg ns-vloud">Very Loud</div>
+        </div>
+        <div class="noise-items">
+          <div class="noise-item"><span>Normal conversation</span> <span class="db quiet">60 dB</span></div>
+          <div class="noise-item"><span>Vacuum cleaner</span> <span class="db mod">75 dB</span></div>
+          <div class="noise-item"><span>Vitamix (low speed)</span> <span class="db loud">78 dB</span></div>
+          <div class="noise-item"><span>Vitamix (high speed)</span> <span class="db vloud">88 dB</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 5: Category Cards ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">5</span> Category / Overlay Cards</div>
+  <h2>Off-Brand Overlay Colors</h2>
+  <p class="issue-desc">Category cards use dark teal/green overlays that don't match any brand color. Should use Navy, Pistachio, or Ginger from the secondary palette for a cohesive feel.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="cat-cards">
+          <div class="cat-card cc-1">
+            <h4>Frozen Cocktails</h4>
+            <p>Blend smooth, slushy margaritas and frozen martinis in seconds.</p>
+          </div>
+          <div class="cat-card cc-2">
+            <h4>Party Drinks</h4>
+            <p>Rapidly prepare large batches of icy beverages for events.</p>
+          </div>
+          <div class="cat-card cc-3">
+            <h4>Frozen Desserts</h4>
+            <p>Create silky sorbets, frozen yogurts, and dessert smoothies.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body">
+        <div class="cat-cards">
+          <div class="cat-card cc-1">
+            <h4>Frozen Cocktails</h4>
+            <p>Blend smooth, slushy margaritas and frozen martinis in seconds.</p>
+          </div>
+          <div class="cat-card cc-2">
+            <h4>Party Drinks</h4>
+            <p>Rapidly prepare large batches of icy beverages for events.</p>
+          </div>
+          <div class="cat-card cc-3">
+            <h4>Frozen Desserts</h4>
+            <p>Create silky sorbets, frozen yogurts, and dessert smoothies.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 6: Product Card CTAs ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">6</span> Product Card CTAs</div>
+  <h2>Repetitive, Off-Voice Button Text</h2>
+  <p class="issue-desc">"PERFECT FOR YOUR SMOOTHIES" on every card is repetitive and doesn't match Vitamix voice (witty, discerning, considered). CTAs should vary and feel more intentional. The button style itself is correct — outlined, uppercase, Gotham Narrow.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body" style="display:flex;gap:var(--sp-m);">
+        <div class="product-demo">
+          <div class="prod-img">Product</div>
+          <h4>Propel&reg; 750</h4>
+          <div class="price">$479.95</div>
+          <a class="cta" href="#">PERFECT FOR YOUR SMOOTHIES</a>
+        </div>
+        <div class="product-demo">
+          <div class="prod-img">Product</div>
+          <h4>Ascent&reg; X2</h4>
+          <div class="price">$499.95</div>
+          <a class="cta" href="#">PERFECT FOR YOUR SMOOTHIES</a>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body" style="display:flex;gap:var(--sp-m);">
+        <div class="product-demo">
+          <div class="prod-img">Product</div>
+          <h4>Propel&reg; 750</h4>
+          <div class="price">$479.95</div>
+          <a class="cta" href="#">EXPLORE THE PROPEL</a>
+        </div>
+        <div class="product-demo">
+          <div class="prod-img">Product</div>
+          <h4>Ascent&reg; X2</h4>
+          <div class="price">$499.95</div>
+          <a class="cta" href="#">DISCOVER THE ASCENT</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 7: Comparison Table ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">7</span> Comparison Table Styling</div>
+  <h2>Plain Table Lacks Brand Treatment</h2>
+  <p class="issue-desc">The comparison table is functional but generic. Adding a "Top Pick" highlight column with warm neutral background, brand-colored header borders, and a Pistachio callout strip elevates it to match the premium brand.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="comp-table-demo">
+          <table>
+            <thead>
+              <tr><th></th><th>Ascent&reg; X5</th><th>Ascent&reg; X4</th><th>Ascent X3</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Price</td><td>$699.95</td><td>$649.95</td><td>$599.95</td></tr>
+              <tr><td>Hot Soup</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+              <tr><td>Programs</td><td>10</td><td>5</td><td>3</td></tr>
+              <tr><td>Warranty</td><td>10-year</td><td>10-year</td><td>10-year</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body">
+        <div class="comp-table-demo">
+          <table>
+            <thead>
+              <tr><th></th><th class="highlight">Ascent&reg; X5</th><th>Ascent&reg; X4</th><th>Ascent X3</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Price</td><td class="highlight">$699.95</td><td>$649.95</td><td>$599.95</td></tr>
+              <tr><td>Hot Soup</td><td class="highlight">Yes</td><td>Yes</td><td>No</td></tr>
+              <tr><td>Programs</td><td class="highlight">10</td><td>5</td><td>3</td></tr>
+              <tr><td>Warranty</td><td class="highlight">10-year</td><td>10-year</td><td>10-year</td></tr>
+            </tbody>
+          </table>
+          <div class="best-for">Best for hiding veggies in soups</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 8: Follow-up Questions ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">8</span> Follow-up Questions Section</div>
+  <h2>Heavy Red Borders Feel Disconnected</h2>
+  <p class="issue-desc">The red-bordered cards on white background feel like a separate design system. Moving them into a navy section with subtle outlined chips matches the existing follow-up block pattern and creates a proper page ending.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="followup-chips">
+          <div class="followup-chip">
+            <div class="chip-icon">A</div>
+            <div><strong>Which quiet blender fits your morning routine?</strong><small>Comparing the two quietest commercial models.</small></div>
+          </div>
+          <div class="followup-chip">
+            <div class="chip-icon">B</div>
+            <div><strong>Try a quick Cherry Almond Protein Smoothie</strong><small>A ready-to-make protein-rich recipe.</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body" style="padding:0;">
+        <div class="followup-section">
+          <div class="fu-header">What would help you next?</div>
+          <div class="followup-chips">
+            <div class="followup-chip">
+              <div class="chip-icon">A</div>
+              <div><strong>Which quiet blender fits your morning routine?</strong><small>Comparing the two quietest commercial models.</small></div>
+            </div>
+            <div class="followup-chip">
+              <div class="chip-icon">B</div>
+              <div><strong>Try a quick Cherry Almond Protein Smoothie</strong><small>A ready-to-make protein-rich recipe.</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 9: Secondary Palette Usage ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">9</span> Secondary Palette</div>
+  <h2>Missing Warm &amp; Food-Inspired Accents</h2>
+  <p class="issue-desc">The brand's secondary palette (Neutral Warm, Mustard, Ginger, Pistachio, Blueberry) is completely absent. These colors add warmth, evoke ingredients, and differentiate Vitamix from generic tech aesthetics.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before — Only these colors appear</div>
+      <div class="compare-panel-body">
+        <div class="palette-demo">
+          <div class="palette-swatch dark" style="background:var(--vtx-red);">Red</div>
+          <div class="palette-swatch dark" style="background:var(--vtx-navy);">Navy</div>
+          <div class="palette-swatch light" style="background:var(--vtx-white);border:1px solid #eee;">White</div>
+          <div class="palette-swatch light" style="background:#fafafa;border:1px solid #eee;">Gray-100</div>
+          <div class="palette-swatch light" style="background:#e9e9e9;">Gray-300</div>
+          <div class="palette-swatch light" style="background:#666;color:white;">Gray-900</div>
+        </div>
+        <p style="font-size:13px;color:#666;text-align:center;">Cold, monotone. Missing the brand's food-inspired warmth.</p>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After — Full secondary palette available</div>
+      <div class="compare-panel-body">
+        <div class="palette-demo">
+          <div class="palette-swatch light" style="background:var(--vtx-neutral-warm);">Warm</div>
+          <div class="palette-swatch light" style="background:var(--vtx-neutral-cool);">Cool</div>
+          <div class="palette-swatch light" style="background:var(--vtx-mustard);">Mustard</div>
+          <div class="palette-swatch dark" style="background:var(--vtx-ginger);">Ginger</div>
+          <div class="palette-swatch dark" style="background:var(--vtx-pistachio);">Pistachio</div>
+          <div class="palette-swatch light" style="background:var(--vtx-blueberry);">Blueberry</div>
+        </div>
+        <div class="accent-examples">
+          <div class="accent-example ae-warm">
+            <h4>Recipe Sections</h4>
+            <p>Warm backgrounds for food content.</p>
+          </div>
+          <div class="accent-example ae-pistachio">
+            <h4>Tips &amp; Guides</h4>
+            <p>Pistachio for helpful content.</p>
+          </div>
+          <div class="accent-example ae-mustard">
+            <h4>Highlights</h4>
+            <p>Mustard for callouts and badges.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ISSUE 10: Vortex Element ===== -->
+<section class="issue">
+  <div class="issue-label"><span class="num">10</span> Vortex Brand Element</div>
+  <h2>No Vortex Element Used</h2>
+  <p class="issue-desc">The Vortex is a key supplemental brand graphic per the brand guidelines. Used subtly as section dividers or watermarks, it reinforces brand recognition without being overbearing.</p>
+  <div class="compare">
+    <div class="compare-panel before">
+      <div class="compare-panel-label">Before</div>
+      <div class="compare-panel-body">
+        <div class="vortex-demo">
+          <p style="font-size:14px;color:#666;margin-bottom:var(--sp-m);">End of product section</p>
+          <div class="section-divider"></div>
+          <p style="font-size:14px;color:#666;margin-top:var(--sp-m);">Start of recipe section</p>
+          <p style="font-size:12px;color:#999;margin-top:var(--sp-xl);">Plain line divider — no brand identity</p>
+        </div>
+      </div>
+    </div>
+    <div class="compare-panel after">
+      <div class="compare-panel-label">After</div>
+      <div class="compare-panel-body">
+        <div class="vortex-demo">
+          <p style="font-size:14px;color:#666;margin-bottom:var(--sp-m);">End of product section</p>
+          <div class="vortex-divider">
+            <div class="line"></div>
+            <svg viewBox="0 0 100 100" fill="var(--vtx-navy)">
+              <path d="M50 5C50 5 85 25 85 50C85 75 50 95 50 95C50 95 15 75 15 50C15 25 50 5 50 5Z"/>
+              <path d="M50 15C50 15 75 30 75 50C75 70 50 85 50 85C50 85 25 70 25 50C25 30 50 15 50 15Z" fill="none" stroke="var(--vtx-navy)" stroke-width="1" opacity="0.3"/>
+            </svg>
+            <div class="line"></div>
+          </div>
+          <p style="font-size:14px;color:#666;margin-top:var(--sp-m);">Start of recipe section</p>
+          <p style="font-size:12px;color:#999;margin-top:var(--sp-xl);">Vortex divider — subtle brand reinforcement</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Summary Decision Table ===== -->
+<section class="summary">
+  <h2>Impact &amp; Effort Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Issue</th>
+        <th>Visual Impact</th>
+        <th>Effort</th>
+        <th>Scope</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Section backgrounds &amp; rhythm</td>
+        <td class="impact-high">High</td>
+        <td>Low — CSS-only section class changes</td>
+        <td>Global (all generated pages)</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Feature block visual weight</td>
+        <td class="impact-high">High</td>
+        <td>Medium — CSS + icon generation in worker</td>
+        <td>cards.grid variant</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Eyebrow text consistency</td>
+        <td class="impact-med">Medium</td>
+        <td>Low — CSS fix in styles.css</td>
+        <td>Global (.eyebrow class)</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Noise scale brand colors</td>
+        <td class="impact-med">Medium</td>
+        <td>Low — CSS token swap</td>
+        <td>noise-context block</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Category card overlay colors</td>
+        <td class="impact-med">Medium</td>
+        <td>Low — CSS + worker prompt tweak</td>
+        <td>cards.overlay variant</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Product card CTA text</td>
+        <td class="impact-med">Medium</td>
+        <td>Medium — Worker prompt refinement</td>
+        <td>product-cards block + worker</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Comparison table styling</td>
+        <td class="impact-med">Medium</td>
+        <td>Medium — CSS + JS highlight logic</td>
+        <td>comparison-table block</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Follow-up questions style</td>
+        <td class="impact-low">Low</td>
+        <td>Low — Already close, minor CSS tweaks</td>
+        <td>follow-up block (already navy bg)</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Secondary palette tokens</td>
+        <td class="impact-high">High</td>
+        <td>Low — Add tokens to styles.css</td>
+        <td>Global (enables other fixes)</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Vortex brand element</td>
+        <td class="impact-low">Low</td>
+        <td>Medium — New CSS component + SVG asset</td>
+        <td>Optional decorative element</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+</body>
+</html>

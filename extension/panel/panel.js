@@ -89,6 +89,30 @@ async function init() {
     }
   });
 
+  // Demo mode: auto-switch to Insights tab and enable → scrolling
+  const demoParam = new URLSearchParams(window.location.search).get('demo');
+  if (demoParam === 'insights') {
+    switchView('insights');
+    loadInsightsData();
+
+    // Scroll targets for → key: Content Gaps, then Opportunities
+    const demoScrollTargets = ['gaps', 'opportunities'];
+    let demoScrollIndex = -1;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'ArrowRight' && !e.altKey && !e.metaKey && !e.ctrlKey) {
+        demoScrollIndex++;
+        if (demoScrollIndex < demoScrollTargets.length) {
+          e.preventDefault();
+          const section = document.querySelector(`[data-section="${demoScrollTargets[demoScrollIndex]}"]`);
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+    });
+  }
+
   console.log('[Panel] Initialized');
 }
 
@@ -1435,99 +1459,6 @@ const mockInsightsData = {
       rationale: 'Top content gap identified in search queries',
     },
   ],
-
-  chatbotIssues: [
-    {
-      issue: 'Blender making loud grinding noise',
-      frequency: 187,
-      coverage: 'moderate',
-      satisfaction: 48,
-      status: 'needs-improvement',
-      insight: 'Users report unusual sounds but troubleshooting steps lack audio/video examples to diagnose issue type',
-      suggestion: 'Add audio clips of normal vs problem sounds with corresponding fixes',
-    },
-    {
-      issue: 'How do I check my warranty status?',
-      frequency: 156,
-      coverage: 'excellent',
-      satisfaction: 89,
-      status: 'good',
-      insight: 'Warranty lookup and registration process is clear and well-documented',
-      suggestion: null,
-    },
-    {
-      issue: 'Motor overheating and shutting off',
-      frequency: 134,
-      coverage: 'poor',
-      satisfaction: 35,
-      status: 'needs-improvement',
-      insight: 'Thermal protection info exists but users need clearer guidance on load limits and cool-down times',
-      suggestion: 'Create interactive load calculator and add specific cool-down time recommendations by model',
-    },
-    {
-      issue: 'Blade assembly not spinning properly',
-      frequency: 121,
-      coverage: 'good',
-      satisfaction: 74,
-      status: 'good',
-      insight: 'Drive socket and blade seating troubleshooting guides are helpful',
-      suggestion: null,
-    },
-    {
-      issue: 'Container leaking from bottom',
-      frequency: 108,
-      coverage: 'moderate',
-      satisfaction: 51,
-      status: 'needs-improvement',
-      insight: 'Seal replacement info available but users struggle to identify if leak is seal vs crack',
-      suggestion: 'Add visual diagnostic guide to differentiate seal wear from container damage',
-    },
-    {
-      issue: 'Error code E31 on display',
-      frequency: 94,
-      coverage: 'poor',
-      satisfaction: 38,
-      status: 'needs-improvement',
-      insight: 'Error codes are documented but explanations are too technical for most users',
-      suggestion: 'Rewrite error code guide in plain language with step-by-step resolution paths',
-    },
-    {
-      issue: 'How to order replacement parts',
-      frequency: 89,
-      coverage: 'excellent',
-      satisfaction: 86,
-      status: 'good',
-      insight: 'Parts ordering process and compatibility guides work well',
-      suggestion: null,
-    },
-    {
-      issue: 'Blender not starting at all',
-      frequency: 76,
-      coverage: 'good',
-      satisfaction: 71,
-      status: 'good',
-      insight: 'Power and safety interlock troubleshooting is comprehensive',
-      suggestion: null,
-    },
-    {
-      issue: 'How to send unit in for repair',
-      frequency: 67,
-      coverage: 'moderate',
-      satisfaction: 54,
-      status: 'needs-improvement',
-      insight: 'Repair process is documented but users want shipping label generation and tracking integration',
-      suggestion: 'Add self-service shipping label generator and real-time repair status tracker',
-    },
-    {
-      issue: 'Tamper stuck in container',
-      frequency: 52,
-      coverage: 'good',
-      satisfaction: 82,
-      status: 'good',
-      insight: 'Tamper removal techniques and safety info are well-covered',
-      suggestion: null,
-    },
-  ],
 };
 
 /**
@@ -1572,7 +1503,6 @@ function renderInsightsView() {
       ${renderJourneyFunnel()}
       ${renderContentGaps()}
       ${renderOpportunities()}
-      ${renderChatbotIssues()}
     </div>
   `;
 
@@ -1790,116 +1720,6 @@ function renderOpportunities() {
             </div>
           `).join('')}
         </div>
-      </div>
-    </div>
-  `;
-}
-
-/**
- * Render chatbot issues section
- * Shows top issues from chatbot conversations with coverage and satisfaction
- */
-function renderChatbotIssues() {
-  const { chatbotIssues } = insightsData;
-
-  // Separate good vs needs improvement
-  const goodIssues = chatbotIssues.filter(i => i.status === 'good');
-  const needsImprovementIssues = chatbotIssues.filter(i => i.status === 'needs-improvement');
-
-  const getCoverageClass = (coverage) => {
-    if (coverage === 'excellent') return 'coverage-excellent';
-    if (coverage === 'good') return 'coverage-good';
-    if (coverage === 'moderate') return 'coverage-moderate';
-    return 'coverage-poor';
-  };
-
-  const getSatisfactionClass = (score) => {
-    if (score >= 80) return 'satisfaction-high';
-    if (score >= 60) return 'satisfaction-medium';
-    return 'satisfaction-low';
-  };
-
-  const renderIssueCard = (issue) => `
-    <div class="chatbot-issue-card ${issue.status}">
-      <div class="issue-header">
-        <span class="issue-question">"${issue.issue}"</span>
-        <span class="issue-frequency">${issue.frequency} asks/week</span>
-      </div>
-      <div class="issue-metrics">
-        <div class="issue-metric">
-          <span class="metric-label">Coverage</span>
-          <span class="metric-value ${getCoverageClass(issue.coverage)}">${issue.coverage}</span>
-        </div>
-        <div class="issue-metric">
-          <span class="metric-label">Satisfaction</span>
-          <span class="metric-value ${getSatisfactionClass(issue.satisfaction)}">${issue.satisfaction}%</span>
-        </div>
-      </div>
-      <div class="issue-insight">${issue.insight}</div>
-      ${issue.suggestion ? `
-        <div class="issue-suggestion">
-          <svg class="icon"><use href="#icon-sparkle"/></svg>
-          <span>${issue.suggestion}</span>
-          <button class="insight-action-btn" title="Fix with AI">
-            <svg class="icon"><use href="#icon-play"/></svg>
-          </button>
-        </div>
-      ` : ''}
-    </div>
-  `;
-
-  return `
-    <div class="insights-section" data-section="chatbot-issues">
-      <div class="insights-section-header">
-        <div class="insights-section-title">
-          <svg class="icon"><use href="#icon-chatbot"/></svg>
-          <span>Chatbot Issues Analysis</span>
-        </div>
-        <button class="section-toggle">
-          <svg class="icon icon-sm"><use href="#icon-chevron-down"/></svg>
-        </button>
-      </div>
-      <div class="insights-section-content">
-        <p class="insights-section-hint">Top questions from chatbot conversations and how well they're addressed</p>
-
-        <div class="chatbot-summary">
-          <div class="summary-stat good">
-            <span class="stat-value">${goodIssues.length}</span>
-            <span class="stat-label">Well Covered</span>
-          </div>
-          <div class="summary-stat needs-improvement">
-            <span class="stat-value">${needsImprovementIssues.length}</span>
-            <span class="stat-label">Needs Work</span>
-          </div>
-          <div class="summary-stat neutral">
-            <span class="stat-value">${Math.round(chatbotIssues.reduce((sum, i) => sum + i.satisfaction, 0) / chatbotIssues.length)}%</span>
-            <span class="stat-label">Avg Satisfaction</span>
-          </div>
-        </div>
-
-        ${needsImprovementIssues.length > 0 ? `
-          <div class="issues-group">
-            <div class="issues-group-header needs-improvement">
-              <svg class="icon"><use href="#icon-target"/></svg>
-              <span>Needs Improvement</span>
-            </div>
-            <div class="issues-list">
-              ${needsImprovementIssues.map(renderIssueCard).join('')}
-            </div>
-          </div>
-        ` : ''}
-
-        ${goodIssues.length > 0 ? `
-          <div class="issues-group">
-            <div class="issues-group-header good">
-              <svg class="icon"><use href="#icon-sparkle"/></svg>
-              <span>Well Covered</span>
-            </div>
-            <div class="issues-list">
-              ${goodIssues.map(renderIssueCard).join('')}
-            </div>
-          </div>
-        ` : ''}
       </div>
     </div>
   `;

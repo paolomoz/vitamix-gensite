@@ -47,6 +47,19 @@
   --color-dark-charcoal: #262626;
   --color-star-gold: #ffd700;
 
+  /* Brand Secondary Palette (from corebook.io guidelines) */
+  --color-neutral-cool: #dce0e7;
+  --color-neutral-warm: #f6ece4;
+  --color-mustard: #ddb247;
+  --color-ginger: #cd7e59;
+  --color-blueberry: #a2b2bd;
+  --color-pistachio: #7b997c;
+
+  /* Web Palette (from corebook.io guidelines) */
+  --color-web-neutral: #f5f5f5;
+  --color-web-offer: #5e7d61;
+  --color-web-links: #1b68b4;
+
   /* Shadows */
   --shadow-100: rgba(0 0 0 / 7%);
   --shadow-200: rgba(0 0 0 / 33.3%);
@@ -811,6 +824,13 @@ main .section.accent {
   border-bottom: 3px solid var(--color-brand-red, #c41230);
   margin: 0;
   padding: var(--spacing-section-md, 5rem) 0;
+}
+
+/* Warm section - alternating background for visual rhythm (Brand Secondary: Neutral Warm) */
+main .section.warm {
+  background-color: var(--color-neutral-warm);
+  margin: 0;
+  padding: 40px 0;
 }
 
 main .section.accent h2 {

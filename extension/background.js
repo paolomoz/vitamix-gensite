@@ -6,8 +6,18 @@
 import { ProfileEngine, DEFAULT_PROFILE } from './lib/profile-engine.js';
 import { createSignal, getWeightLabel } from './lib/signals.js';
 
-// POC site base URL
-const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
+// POC site base URL (default; overridden to localhost when active tab is local)
+const POC_BASE_URL_DEFAULT = 'https://main--vitamix-gensite--paolomoz.aem.live';
+
+function getPocBaseUrl(activeTab) {
+  if (activeTab?.url) {
+    try {
+      const tabUrl = new URL(activeTab.url);
+      if (tabUrl.hostname === 'localhost') return tabUrl.origin;
+    } catch { /* ignore */ }
+  }
+  return POC_BASE_URL_DEFAULT;
+}
 
 // Worker API URL for context storage
 const WORKER_API_URL = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev';
@@ -219,6 +229,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleToggleChatbot().then(sendResponse);
       return true;
 
+    case 'OPEN_PANEL_TAB':
+      chrome.tabs.create({ url: chrome.runtime.getURL('panel/panel.html?demo=insights') });
+      sendResponse({ success: true });
+      return false;
+
+    case 'PREFETCH_START':
+      handlePrefetchStart(message.query, message.preset).then(sendResponse);
+      return true;
+
+    case 'PREFETCH_GET':
+      sendResponse(handlePrefetchGet(message.query));
+      return false;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return false;
@@ -396,8 +419,9 @@ async function handleGeneratePageInternal(query, preset = 'all-cerebras', addToH
     const { id } = await response.json();
 
     // Navigate to POC site with context ID (same tab for seamless experience)
-    const url = `${POC_BASE_URL}/?ctx=${id}&preset=${preset}`;
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const pocBase = getPocBaseUrl(activeTab);
+    const url = `${pocBase}/?ctx=${id}&preset=${preset}`;
     if (activeTab) {
       await chrome.tabs.update(activeTab.id, { url });
     } else {
@@ -810,11 +834,10 @@ async function handleExecuteImprovement(improvement, pageUrl) {
     // Generate page with SSE streaming
     notifyExecutionProgress(pageUrl, 'Generating improved page...');
 
-    const generateUrl = `${POC_BASE_URL}/?ctx=${contextId}&preset=all-cerebras`;
-
     // For now, just navigate to the generated page
     // The SSE streaming happens in the browser, and page auto-persists
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const generateUrl = `${getPocBaseUrl(activeTab)}/?ctx=${contextId}&preset=all-cerebras`;
     if (activeTab) {
       await chrome.tabs.update(activeTab.id, { url: generateUrl });
     }
@@ -1075,4 +1098,95 @@ function notifyChatbotUpdate() {
       chrome.tabs.sendMessage(tab.id, { type: 'CHATBOT_CONVERSATION_UPDATED' }).catch(() => {});
     });
   });
+}
+
+// --- SSE Prefetch (hover pre-warm for hint CTA) ---
+
+let activePrefetch = null;
+
+/**
+ * Start prefetching SSE events for a query via the worker.
+ * The background service worker survives page navigation, so buffered
+ * events can be picked up by the POC page after the user clicks the hint.
+ */
+async function handlePrefetchStart(query, preset = 'all-cerebras') {
+  // Cancel any existing prefetch
+  if (activePrefetch) {
+    activePrefetch.aborted = true;
+    activePrefetch = null;
+  }
+
+  const slug = query.toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .substring(0, 80)
+    + '-' + Math.abs(Date.now()).toString(36).slice(0, 6);
+
+  const sseUrl = `${WORKER_API_URL}/generate?q=${encodeURIComponent(query)}`
+    + `&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}`
+    + '&ctx=%7B%7D';
+
+  const bufferedEvents = [];
+  const prefetch = { query, slug, preset, bufferedEvents, startTime: Date.now(), aborted: false };
+  activePrefetch = prefetch;
+
+  console.log(`[Background] Prefetch started for: "${query.substring(0, 50)}..."`);
+
+  // Use fetch with streaming to read SSE events in the service worker
+  // (EventSource is not available in service workers)
+  try {
+    const response = await fetch(sseUrl);
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      if (prefetch.aborted) break;
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // keep incomplete line
+
+      let currentEvent = null;
+      for (const line of lines) {
+        if (line.startsWith('event: ')) {
+          currentEvent = line.substring(7).trim();
+        } else if (line.startsWith('data: ') && currentEvent) {
+          bufferedEvents.push({ type: currentEvent, data: line.substring(6) });
+          currentEvent = null;
+        } else if (line === '') {
+          currentEvent = null;
+        }
+      }
+    }
+  } catch (err) {
+    console.log('[Background] Prefetch stream ended:', err.message);
+  }
+
+  console.log(`[Background] Prefetch buffered ${bufferedEvents.length} events`);
+  return { success: true, events: bufferedEvents.length };
+}
+
+/**
+ * Get buffered prefetch events for a query.
+ * Called by the POC page content script after navigation.
+ */
+function handlePrefetchGet(query) {
+  if (!activePrefetch) {
+    return { found: false };
+  }
+  // Match by query or return whatever is active (for demo simplicity)
+  const prefetch = activePrefetch;
+  activePrefetch = null; // consume it
+  console.log(`[Background] Prefetch consumed: ${prefetch.bufferedEvents.length} events, ${Date.now() - prefetch.startTime}ms head start`);
+  return {
+    found: true,
+    query: prefetch.query,
+    slug: prefetch.slug,
+    events: prefetch.bufferedEvents,
+    headStart: Date.now() - prefetch.startTime,
+  };
 }

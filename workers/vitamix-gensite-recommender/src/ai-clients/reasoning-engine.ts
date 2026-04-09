@@ -534,8 +534,7 @@ function detectComparisonQuery(query: string): boolean {
     /\bventurist\b/gi,
     /\b5200\b/gi,
     /\bvitamix\s*one\b/gi,
-    /\bs55\b/gi,
-    /\bs50\b/gi,
+    /\bvx1\b/gi,
   ];
 
   const modelMatches = modelPatterns.filter((pattern) => pattern.test(lowerQuery));
@@ -567,8 +566,7 @@ function getComparisonDetails(query: string): string {
     [/\bventurist\b/gi, 'Venturist'],
     [/\b5200\b/gi, '5200'],
     [/\bvitamix\s*one\b/gi, 'Vitamix ONE'],
-    [/\bs55\b/gi, 'S55'],
-    [/\bs50\b/gi, 'S50'],
+    [/\bvx1\b/gi, 'VX1'],
   ];
 
   for (const [pattern, name] of modelPatterns) {

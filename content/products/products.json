@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-01-21T17:04:33.823Z",
   "source": "https://www.vitamix.com",
-  "count": 35,
+  "count": 36,
   "products": [
     {
       "id": "quick-and-quiet",
@@ -1582,6 +1582,54 @@
       },
       "crawledAt": "2025-01-15T00:00:00.000Z",
       "sourceUrl": "https://www.vitamix.com/us/en_us/products/5-speed-immersion-blender-complete-bundle",
+      "contentHash": ""
+    },
+    {
+      "id": "vx1",
+      "sku": "VX1",
+      "name": "VX1",
+      "series": "vx1",
+      "url": "https://www.vitamix.com/us/en_us/products/vx1",
+      "price": 379.95,
+      "originalPrice": null,
+      "availability": "in-stock",
+      "description": "Full-power Vitamix performance at our most accessible price. The VX1 features a 2.2 peak HP motor and 64-ounce container for everything from smoothies to hot soups to frozen desserts — all with simple variable speed control and no extra frills.",
+      "tagline": "Full Vitamix power at our most accessible price",
+      "features": [
+        "2.2 peak HP motor",
+        "Variable Speed Control (1-10)",
+        "Pulse feature",
+        "64-ounce container",
+        "Tamper included",
+        "Self-cleaning (manual method)"
+      ],
+      "bestFor": [
+        "Smoothies",
+        "Soups",
+        "Frozen Desserts",
+        "Nut Butters",
+        "Sauces",
+        "Purees",
+        "Budget-conscious buyers",
+        "First-time Vitamix owners"
+      ],
+      "warranty": "5-Year Full Warranty",
+      "specs": {
+        "watts": 1500,
+        "capacity": "64 oz",
+        "programs": 0,
+        "dimensions": "9.75 x 7.75 x 17 in",
+        "weight": "12 lbs"
+      },
+      "images": {
+        "primary": "https://www.vitamix.com/us/en_us/products/media_2351fcf55647dca9d1976174ed6b735689038d06.jpg?width=2000&format=webply&optimize=medium",
+        "gallery": [],
+        "remoteUrls": [
+          "https://www.vitamix.com/us/en_us/products/media_2351fcf55647dca9d1976174ed6b735689038d06.jpg?width=2000&format=webply&optimize=medium"
+        ]
+      },
+      "crawledAt": "2026-04-08T00:00:00.000Z",
+      "sourceUrl": "https://www.vitamix.com/us/en_us/products/vx1",
       "contentHash": ""
     }
   ]

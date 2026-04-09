@@ -1,0 +1,45 @@
+/**
+ * Section Divider Block - Vortex Brand Element
+ *
+ * Subtle divider using the Vitamix vortex shape between sections.
+ * Per brand guidelines: vortex is supplemental, not a logo replacement.
+ * Grey preferred on white/light backgrounds.
+ */
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-300);
+  padding: var(--spacing-200) var(--spacing-400);
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+}
+
+.section-divider .divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-gray-300);
+}
+
+.section-divider .vortex-mark {
+  width: 28px;
+  height: 28px;
+  opacity: 0.2;
+  flex-shrink: 0;
+}
+
+.section-divider .vortex-mark svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--color-charcoal);
+}
+
+/* Dark section variant */
+.section.dark .section-divider .divider-line {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.section.dark .section-divider .vortex-mark svg {
+  fill: var(--color-white);
+}

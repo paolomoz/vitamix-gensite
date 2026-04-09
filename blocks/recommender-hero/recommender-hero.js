@@ -19,6 +19,15 @@
  * @param {Event} event - Submit event
  * @param {HTMLFormElement} form - The form element
  */
+/**
+ * Get the preset based on current AI mode setting
+ * @returns {string} preset value
+ */
+function getPreset() {
+  const aiMode = sessionStorage.getItem('ai-mode') || 'speed';
+  return aiMode === 'speed' ? 'all-cerebras' : 'production';
+}
+
 function handleSubmit(event, form) {
   event.preventDefault();
 
@@ -36,18 +45,19 @@ function handleSubmit(event, form) {
   submitButton.classList.add('loading');
   submitButton.textContent = 'Finding your match...';
 
-  // Get AI mode from sessionStorage (set by header speed/quality toggle)
-  // Default to 'speed' for faster results
-  const aiMode = sessionStorage.getItem('ai-mode') || 'speed';
+  const preset = getPreset();
 
-  // Determine preset based on AI mode:
-  // - quality: preset=production (Claude for reasoning, Cerebras for content)
-  // - speed: preset=all-cerebras (Cerebras for everything, faster)
-  const preset = aiMode === 'speed' ? 'all-cerebras' : 'production';
+  // Start prefetch if not already running (in case hover didn't fire)
+  import('../../scripts/prefetch.js').then((mod) => {
+    mod.startPrefetch(query, preset);
+  }).catch(() => { /* prefetch is optional */ });
 
-  // Navigate with q parameter and preset
+  // SPA navigation: pushState + trigger in-place render
   const url = `/?q=${encodeURIComponent(query)}&preset=${preset}`;
-  window.location.href = url;
+  window.history.pushState({}, '', url);
+  window.dispatchEvent(new CustomEvent('prefetch-navigate', {
+    detail: { query, preset },
+  }));
 }
 
 /**
@@ -138,6 +148,18 @@ export default function decorate(block) {
   // Set up form submission
   form.addEventListener('submit', (event) => handleSubmit(event, form));
 
+  // Pre-warm SSE on submit button hover (if query is typed)
+  const submitButton = form.querySelector('button[type="submit"]');
+  submitButton.addEventListener('mouseenter', () => {
+    const textarea2 = form.querySelector('textarea');
+    const query = textarea2.value.trim();
+    if (query) {
+      import('../../scripts/prefetch.js').then((mod) => {
+        mod.startPrefetch(query, getPreset());
+      }).catch(() => { /* prefetch is optional */ });
+    }
+  });
+
   // Submit on Enter key (without Shift)
   const textarea = form.querySelector('textarea');
   textarea.addEventListener('keydown', (event) => {
@@ -149,7 +171,7 @@ export default function decorate(block) {
 
   // Focus textarea after a short delay
   setTimeout(() => {
-    const textarea = form.querySelector('textarea');
-    textarea.focus();
+    const textarea2 = form.querySelector('textarea');
+    textarea2.focus();
   }, 100);
 }

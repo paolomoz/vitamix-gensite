@@ -155,7 +155,12 @@ function navigateToQuery(query) {
   const currentUrl = new URL(window.location.href);
   currentUrl.searchParams.delete('query');
   currentUrl.searchParams.set('q', query);
-  window.location.href = currentUrl.toString();
+
+  // SPA navigation: pushState + trigger in-place render if prefetch module is available
+  window.history.pushState({}, '', currentUrl.toString());
+  window.dispatchEvent(new CustomEvent('prefetch-navigate', {
+    detail: { query, preset: currentUrl.searchParams.get('preset') || 'production' },
+  }));
 }
 
 /**
@@ -209,6 +214,13 @@ function createAdvisorCard(suggestion, isPrimary = false) {
   card.addEventListener('click', (e) => {
     e.preventDefault();
     navigateToQuery(suggestion.query);
+  });
+
+  // Pre-warm SSE on hover for faster page generation
+  card.addEventListener('mouseenter', () => {
+    import('../../scripts/prefetch.js').then((mod) => {
+      mod.startPrefetch(suggestion.query);
+    }).catch(() => { /* prefetch is optional */ });
   });
 
   // Icon

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "AEM Generative Websites",
+  "name": "Project Page Turner",
   "description": "Websites that watch, understand, and adapt in real-time. Intent inference and AI-powered personalization for Adobe Sneaks demo.",
   "version": "2.0.0",
   "icons": {
@@ -23,7 +23,8 @@
     "*://www.vitamix.com/*",
     "*://vitamix.com/*",
     "*://main--vitamix-gensite--paolomoz.aem.live/*",
-    "*://*.aem.live/*"
+    "*://*.aem.live/*",
+    "http://localhost:3000/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -34,7 +35,8 @@
       "matches": [
         "*://www.vitamix.com/*",
         "*://vitamix.com/*",
-        "*://main--vitamix-gensite--paolomoz.aem.live/*"
+        "*://main--vitamix-gensite--paolomoz.aem.live/*",
+        "http://localhost:3000/*"
       ],
       "js": ["content-script.js"],
       "css": ["hint-styles.css", "chatbot-styles.css"],
@@ -52,7 +54,8 @@
       "matches": [
         "*://www.vitamix.com/*",
         "*://vitamix.com/*",
-        "*://main--vitamix-gensite--paolomoz.aem.live/*"
+        "*://main--vitamix-gensite--paolomoz.aem.live/*",
+        "http://localhost:3000/*"
       ]
     }
   ],

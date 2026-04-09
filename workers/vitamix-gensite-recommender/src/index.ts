@@ -440,33 +440,34 @@ Return ONLY valid JSON:
   }
 }`;
 
-    // Call Claude for hint generation
-    const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
+    // Call Cerebras for hint generation (fast, cost-effective)
+    const cerebrasKey = env.CEREBRAS_API_KEY || env.CEREBRAS_KEY;
+    const cerebrasResponse = await fetch('https://api.cerebras.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        Authorization: `Bearer ${cerebrasKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
+        model: 'gpt-oss-120b',
+        max_tokens: 1024,
+        temperature: 0.7,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
 
-    if (!anthropicResponse.ok) {
-      const errorText = await anthropicResponse.text();
-      console.error('[GenerateHint] Anthropic API error:', errorText);
-      throw new Error(`Anthropic API error: ${anthropicResponse.status}`);
+    if (!cerebrasResponse.ok) {
+      const errorText = await cerebrasResponse.text();
+      console.error('[GenerateHint] Cerebras API error:', errorText);
+      throw new Error(`Cerebras API error: ${cerebrasResponse.status}`);
     }
 
-    const completion = await anthropicResponse.json() as {
-      content: Array<{ type: string; text: string }>;
+    const completion = await cerebrasResponse.json() as {
+      choices: Array<{ message: { content: string } }>;
     };
 
     // Parse JSON from response
-    const responseText = completion.content[0]?.text || '';
+    const responseText = completion.choices[0]?.message?.content || '';
     console.log('[GenerateHint] Raw response:', responseText);
 
     // Extract JSON from response (in case it includes markdown)

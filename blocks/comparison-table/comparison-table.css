@@ -174,12 +174,12 @@
 /* ===== Recommended Column Highlight ===== */
 .comparison-table-grid th.recommended-column,
 .comparison-table-grid td.recommended-column {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-warm);
   position: relative;
 }
 
 .comparison-table-grid th.recommended-column {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-warm);
 }
 
 .comparison-table-grid th.recommended-column::before {
@@ -223,7 +223,8 @@
 
 .comparison-table-recommendation-cell {
   padding: var(--spacing-200) var(--spacing-300);
-  background: var(--color-charcoal);
+  background: var(--color-pistachio);
+  color: var(--color-white);
   text-align: center;
 }
 

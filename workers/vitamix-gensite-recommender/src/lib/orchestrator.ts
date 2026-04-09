@@ -517,12 +517,19 @@ YOU MUST OUTPUT THIS HEADER FIRST - IT IS REQUIRED:
 
 THEN output 3-4 use case cards:
 <div class="use-case-card">
-  <div class="use-case-icon">🥤</div>
+  <div class="use-case-icon"><img src="/icons/ICON_NAME.svg" alt="Icon description" loading="lazy"></div>
   <div class="use-case-content">
     <h4 class="use-case-title">Use Case Name</h4>
     <p class="use-case-description">Brief description of this use case.</p>
   </div>
 </div>
+
+AVAILABLE ICONS (pick the most relevant for each card):
+- smoothie.svg, soup.svg, frozen.svg, dessert.svg, drinks.svg (food types)
+- blend.svg, pulse.svg, chop.svg, puree.svg, mix.svg, grind.svg (actions)
+- breakfast.svg, lunch.svg, dinner.svg (meal times)
+- fruit.svg, vegetable.svg, protein.svg, dairy.svg, nuts.svg (ingredients)
+- timer.svg, self-cleaning.svg, noise.svg, speed.svg, power.svg (features)
 
 CRITICAL: The header element MUST be the first thing in your output. Do not skip it.`,
 
@@ -584,13 +591,13 @@ CRITICAL RULES:
 - If a product has "Match Rationale" in context, add data-match-rationale attribute to the card
 - If a product is marked as "PRIMARY RECOMMENDATION", add data-is-primary="true" attribute
 
-CTA TEXT GUIDELINES (pick the most relevant):
-- If product is best for smoothies: "Perfect for Your Smoothies"
-- If product is best for soups: "Great for Hot Soups"
-- If product is best for families: "Ideal for Family Meals"
-- For premium products: "Explore the [Product Name]"
-- Generic fallback: "See Why It's Right for You"
-NEVER use generic CTAs like "View Details", "Learn More", or "Shop Now"
+CTA TEXT GUIDELINES - vary the text per product, never repeat the same CTA:
+- Primary recommendation: "Explore the [Product Name]"
+- Runner-up: "Discover the [Product Name]"
+- Budget option: "See the [Product Name]"
+- If product excels at user's specific need: "Built for [User's Need]" (e.g., "Built for Quiet Mornings")
+- NEVER repeat the same CTA text across multiple cards
+- NEVER use generic CTAs like "View Details", "Learn More", "Shop Now", or "Perfect for Your Smoothies"
 
 THEN output 3-4 product cards (each card is a ROW with two CELLS - image cell and content cell):
 <div class="product-card" data-match-rationale="MATCH_RATIONALE_FROM_CONTEXT" data-is-primary="true_or_false">
@@ -622,23 +629,25 @@ YOU MUST OUTPUT THIS HEADER FIRST - IT IS REQUIRED:
 THEN output 3-4 feature rows like this:
 <div>
   <div>
+    <picture><img src="/icons/ICON_NAME.svg" alt="Feature icon" loading="lazy"></picture>
+  </div>
+  <div>
     <h3>Feature Name</h3>
     <p>Description of this feature and its benefits.</p>
   </div>
 </div>
-<div>
-  <div>
-    <h3>Another Feature</h3>
-    <p>Another benefit description.</p>
-  </div>
-</div>
+
+AVAILABLE ICONS (pick the most relevant for each feature):
+- motor.svg, noise.svg, self-cleaning.svg, speed.svg, power.svg (product features)
+- capacity.svg, warranty.svg, blender.svg, timer.svg (specs)
+- smoothie.svg, soup.svg, frozen.svg (use cases)
 
 SPECIAL GUIDANCE FOR FAMILY/KIDS QUERIES:
 If the user mentions kids, family, picky eaters, or hiding vegetables, ALWAYS include these features:
-1. Hot Soup Program - Highlight how it creates silky-smooth soups that hide vegetables completely. Kids can't detect spinach, kale, or other greens when blended to perfection.
-2. Self-Cleaning - Emphasize the 60-second cleanup for busy parents.
-3. Variable Speed Control - Explain how it lets you get the exact texture kids prefer - no chunks!
-4. Smoothie Capabilities - For kids who love fruity drinks, mention how you can sneak spinach into berry smoothies.
+1. Hot Soup Program (icon: soup.svg) - Highlight how it creates silky-smooth soups that hide vegetables completely. Kids can't detect spinach, kale, or other greens when blended to perfection.
+2. Self-Cleaning (icon: self-cleaning.svg) - Emphasize the 60-second cleanup for busy parents.
+3. Variable Speed Control (icon: speed.svg) - Explain how it lets you get the exact texture kids prefer - no chunks!
+4. Smoothie Capabilities (icon: smoothie.svg) - For kids who love fruity drinks, mention how you can sneak spinach into berry smoothies.
 
 CRITICAL: The header element MUST be the first thing in your output. Do not skip it.`,
 
@@ -813,11 +822,14 @@ THEN THE COMPARISON TABLE:
   <div>2.0 HP</div>
 </div>
 <!-- Add more spec rows as needed -->
+
+REQUIRED LAST ROW - YOU MUST ALWAYS INCLUDE THIS:
 <div>
   <div><strong>Best For</strong></div>
-  <div>[Use case this product excels at]</div>
-  <div>[Use case this product excels at]</div>
-</div>`,
+  <div>[Specific use case this product excels at, e.g. "Ascent® X5"]</div>
+  <div>[Specific use case this product excels at]</div>
+</div>
+The "Best For" row MUST be the last row. Do NOT omit it. Do NOT rename it to "Note" or "Verdict".`,
 
     'product-recommendation': `
 ## HTML Template - Generate ONE primary product recommendation.
@@ -1630,10 +1642,12 @@ function wrapBlockHTML(
 
 function getSectionStyle(blockType: string): string {
   const darkBlocks = ['hero', 'product-hero', 'product-recommendation', 'best-pick'];
-  const highlightBlocks = ['reasoning', 'reasoning-user', 'testimonials', 'recipe-cards'];
+  const highlightBlocks = ['reasoning', 'reasoning-user', 'testimonials'];
+  const warmBlocks = ['recipe-cards', 'noise-context', 'faq'];
 
   if (darkBlocks.includes(blockType)) return 'dark';
   if (highlightBlocks.includes(blockType)) return 'highlight';
+  if (warmBlocks.includes(blockType)) return 'warm';
   return 'default';
 }
 

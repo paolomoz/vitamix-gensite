@@ -130,11 +130,9 @@
   border-top-color: transparent;
 }
 
-/* Image container - knockout style with gray background */
+/* Image container */
 .feature-highlight-image {
-  border-radius: var(--rounding-m);
   padding: var(--spacing-300) 0;
-  background-color: var(--color-gray-200);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,9 +150,14 @@
   transition: transform 0.4s;
 }
 
-/* Image hover - lift up effect */
+/* Image hover - lift up effect + invert on dark fill */
 .feature-highlight-card:hover .feature-highlight-image img {
   transform: translateY(-0.5ch);
+  filter: invert(1);
+}
+
+.section.dark .feature-highlight-card:hover .feature-highlight-image img {
+  filter: invert(0);
 }
 
 /* Content area */
@@ -208,6 +211,10 @@
 .section.dark .feature-highlight-card {
   background-color: var(--color-dark-charcoal);
   border-color: var(--color-gray-700);
+}
+
+.section.dark .feature-highlight-image img {
+  filter: invert(1);
 }
 
 .section.dark .feature-highlight-card::after {

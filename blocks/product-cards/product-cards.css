@@ -279,6 +279,7 @@
   margin: 0 0 var(--spacing-200);
 }
 
+
 /* ===== Rating ===== */
 .product-card .product-rating {
   display: flex;
@@ -300,6 +301,7 @@
 
 /* ===== Price ===== */
 .product-card .product-price {
+  margin-top: auto;
   margin-bottom: var(--spacing-200);
 }
 

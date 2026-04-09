@@ -21,7 +21,7 @@ main .section.best-pick-container > .best-pick-wrapper {
 /* Block wrapper */
 .best-pick {
   background-color: var(--color-charcoal);
-  padding: var(--spacing-800) var(--spacing-400);
+  padding: var(--spacing-400) var(--spacing-400);
   text-align: center;
 }
 
@@ -145,7 +145,7 @@ main .section.best-pick-container > .best-pick-wrapper {
 /* Desktop Styles */
 @media (width >= 900px) {
   .best-pick {
-    padding: var(--spacing-900) var(--spacing-400);
+    padding: var(--spacing-400) var(--spacing-400);
   }
 
   .best-pick-headline {
@@ -160,7 +160,7 @@ main .section.best-pick-container > .best-pick-wrapper {
 /* Tablet Styles */
 @media (width >= 600px) and (width < 900px) {
   .best-pick {
-    padding: var(--spacing-800) var(--spacing-300);
+    padding: var(--spacing-400) var(--spacing-300);
   }
 
   .best-pick-headline {
@@ -171,7 +171,7 @@ main .section.best-pick-container > .best-pick-wrapper {
 /* Mobile Styles */
 @media (width < 600px) {
   .best-pick {
-    padding: var(--spacing-700) var(--spacing-200);
+    padding: var(--spacing-300) var(--spacing-200);
   }
 
   .best-pick-headline {

@@ -57,6 +57,7 @@
 /* ===== Table Grid ===== */
 .comparison-table-grid {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-family: var(--body-font-family);
   font-size: var(--body-size-m);
@@ -202,8 +203,12 @@
   background: var(--color-red);
 }
 
-/* Recommended ribbon badge */
+/* Recommended ribbon badge - positioned at top so product name stays aligned */
 .recommended-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: block;
   background: var(--color-red);
   color: var(--color-white);
@@ -213,7 +218,11 @@
   letter-spacing: var(--letter-spacing-m);
   text-transform: uppercase;
   padding: var(--spacing-60) var(--spacing-100);
-  margin-top: var(--spacing-100);
+}
+
+/* Add top padding to recommended header to make room for the ribbon */
+.comparison-table-grid th.recommended-column {
+  padding-top: calc(var(--spacing-300) + 20px);
 }
 
 /* ===== Recommendation Banner (tfoot) ===== */

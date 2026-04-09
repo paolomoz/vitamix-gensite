@@ -6,8 +6,18 @@
 import { ProfileEngine, DEFAULT_PROFILE } from './lib/profile-engine.js';
 import { createSignal, getWeightLabel } from './lib/signals.js';
 
-// POC site base URL
-const POC_BASE_URL = 'https://main--vitamix-gensite--paolomoz.aem.live';
+// POC site base URL (default; overridden to localhost when active tab is local)
+const POC_BASE_URL_DEFAULT = 'https://main--vitamix-gensite--paolomoz.aem.live';
+
+function getPocBaseUrl(activeTab) {
+  if (activeTab?.url) {
+    try {
+      const tabUrl = new URL(activeTab.url);
+      if (tabUrl.hostname === 'localhost') return tabUrl.origin;
+    } catch { /* ignore */ }
+  }
+  return POC_BASE_URL_DEFAULT;
+}
 
 // Worker API URL for context storage
 const WORKER_API_URL = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev';
@@ -409,8 +419,9 @@ async function handleGeneratePageInternal(query, preset = 'all-cerebras', addToH
     const { id } = await response.json();
 
     // Navigate to POC site with context ID (same tab for seamless experience)
-    const url = `${POC_BASE_URL}/?ctx=${id}&preset=${preset}`;
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const pocBase = getPocBaseUrl(activeTab);
+    const url = `${pocBase}/?ctx=${id}&preset=${preset}`;
     if (activeTab) {
       await chrome.tabs.update(activeTab.id, { url });
     } else {
@@ -823,11 +834,10 @@ async function handleExecuteImprovement(improvement, pageUrl) {
     // Generate page with SSE streaming
     notifyExecutionProgress(pageUrl, 'Generating improved page...');
 
-    const generateUrl = `${POC_BASE_URL}/?ctx=${contextId}&preset=all-cerebras`;
-
     // For now, just navigate to the generated page
     // The SSE streaming happens in the browser, and page auto-persists
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const generateUrl = `${getPocBaseUrl(activeTab)}/?ctx=${contextId}&preset=all-cerebras`;
     if (activeTab) {
       await chrome.tabs.update(activeTab.id, { url: generateUrl });
     }

@@ -586,7 +586,7 @@
       var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
       if (demoActive) {
         console.log('[VitamixIntent] Hint CTA clicked (Act 4 override), navigating with ?q=');
-        var pocBase = 'http://localhost:3000';
+        var pocBase = (window.location.hostname === 'localhost') ? window.location.origin : 'https://main--vitamix-gensite--paolomoz.aem.live';
         window.location.href = pocBase + '/?q=' + encodeURIComponent(ACT4_QUERY);
       } else {
         console.log('[VitamixIntent] Hint CTA clicked, query:', hint.query);
@@ -1268,7 +1268,7 @@
   function deliverPrefetchedEvents() {
     const url = new URL(window.location.href);
     const isPocSite = url.hostname.includes('aem.live') || url.hostname === 'localhost';
-    const query = url.searchParams.get('q') || url.searchParams.get('query');
+    const query = url.searchParams.get('q') || url.searchParams.get('query') || url.searchParams.get('ctx');
     if (!isPocSite || !query) return;
 
     chrome.runtime.sendMessage({ type: 'PREFETCH_GET', query: query }, (response) => {

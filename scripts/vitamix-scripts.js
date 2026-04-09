@@ -16,6 +16,7 @@ import {
   loadCSS,
 } from './aem.js';
 import { SessionContextManager } from './session-context.js';
+import { startPrefetch } from './prefetch.js';
 
 // Vitamix recommender worker URL
 const VITAMIX_WORKER_URL = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev';
@@ -395,9 +396,23 @@ function setupQueryForm() {
     startGeneration(query);
   });
 
+  // Pre-warm SSE on submit button hover (if query is already typed)
+  const submitBtn = form.querySelector('button[type="submit"], button:not([type])');
+  if (submitBtn) {
+    submitBtn.addEventListener('mouseenter', function() {
+      const query = input.value.trim();
+      if (query) startPrefetch(query);
+    });
+  }
+
   document.querySelectorAll('.suggestion-chip').forEach(function(chip) {
     chip.addEventListener('click', function() {
       startGeneration(chip.dataset.query || chip.textContent);
+    });
+    // Pre-warm SSE on hover — query is known from chip text
+    chip.addEventListener('mouseenter', function() {
+      const query = chip.dataset.query || chip.textContent.trim();
+      if (query) startPrefetch(query);
     });
   });
 }
@@ -448,6 +463,21 @@ function setupFollowUpHandlers() {
       e.preventDefault();
       const hint = exploreLink.dataset.generationHint;
       if (hint) startGeneration(hint);
+    }
+  }, true);
+
+  // Pre-warm SSE on hover for follow-up chips and explore links
+  document.addEventListener('mouseenter', function(e) {
+    const followUpChip = e.target.closest('.follow-up-chip');
+    if (followUpChip) {
+      const query = followUpChip.dataset.query || followUpChip.textContent.trim();
+      if (query) startPrefetch(query);
+      return;
+    }
+    const exploreLink = e.target.closest('a[data-cta-type="explore"]');
+    if (exploreLink) {
+      const hint = exploreLink.dataset.generationHint;
+      if (hint) startPrefetch(hint);
     }
   }, true);
 }

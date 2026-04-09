@@ -78,6 +78,9 @@ import { isExperimentRequest, initExperiment } from './experiment.js';
 // Session context for query history
 import { SessionContextManager } from './session-context.js';
 
+// SSE prefetch for hover-to-generate optimization
+import { consumePrefetch, attachLinkPrefetch } from './prefetch.js';
+
 // Analytics tracker
 import { getAnalyticsTracker } from './analytics-tracker.js';
 
@@ -857,19 +860,37 @@ async function renderVitamixRecommenderPage() {
   const heroSkeleton = document.getElementById('hero-skeleton');
   const content = main.querySelector('#generation-content');
 
-  // Build stream URL based on mode
-  let streamUrl;
-  if (isFullContextMode) {
-    // Full context mode: pass context ID to worker (it will fetch from KV)
-    // If explicit query provided via q=, pass it to override context.query
-    const queryParam = query ? `&q=${encodeURIComponent(query)}` : '';
-    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?ctx=${encodeURIComponent(ctxId)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}${queryParam}`;
-  } else {
-    // Query mode: pass query with optional session context
-    const contextParam = SessionContextManager.buildEncodedContextParam();
-    streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?q=${encodeURIComponent(query)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}&ctx=${contextParam}`;
+  // Check for prefetched SSE connection (hover pre-warm from same page)
+  const prefetch = query ? consumePrefetch(query) : null;
+
+  // Check for extension-delivered prefetch (cross-origin, via background script)
+  // eslint-disable-next-line no-underscore-dangle
+  const extPrefetch = window.__extensionPrefetch || null;
+  if (extPrefetch) {
+    // eslint-disable-next-line no-underscore-dangle
+    delete window.__extensionPrefetch;
   }
-  const eventSource = new EventSource(streamUrl);
+
+  let eventSource;
+  if (prefetch) {
+    // Reuse the pre-warmed EventSource — already streaming
+    eventSource = prefetch.eventSource;
+    // eslint-disable-next-line no-console
+    console.log(`[Recommender] Using prefetched connection: ${prefetch.bufferedEvents.length} events buffered, ${Date.now() - prefetch.startTime}ms head start`);
+  } else {
+    // Open a fresh SSE connection
+    let streamUrl;
+    if (isFullContextMode) {
+      const queryParam = query
+        ? `&q=${encodeURIComponent(query)}` : '';
+      streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?ctx=${encodeURIComponent(ctxId)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}${queryParam}`;
+    } else {
+      const contextParam = SessionContextManager
+        .buildEncodedContextParam();
+      streamUrl = `${VITAMIX_RECOMMENDER_URL}/generate?q=${encodeURIComponent(query)}&slug=${encodeURIComponent(slug)}&preset=${encodeURIComponent(preset)}&ctx=${contextParam}`;
+    }
+    eventSource = new EventSource(streamUrl);
+  }
   let blockCount = 0;
   const generatedBlocks = [];
   const startTime = Date.now();
@@ -979,6 +1000,11 @@ async function renderVitamixRecommenderPage() {
       section.style.transition = 'opacity 0.2s ease-out';
       section.style.opacity = '1';
     }
+
+    // Attach hover prefetch to any ?q= links in the new block
+    section.querySelectorAll('a[href*="?q="]').forEach((link) => {
+      attachLinkPrefetch(link);
+    });
   });
 
   eventSource.addEventListener('block-rationale', (e) => {
@@ -1237,6 +1263,41 @@ async function renderVitamixRecommenderPage() {
       }
     }
   };
+
+  // Replay buffered events from hover prefetch (same-page SPA)
+  if (prefetch && prefetch.bufferedEvents.length > 0) {
+    // eslint-disable-next-line no-console
+    console.log(`[Recommender] Replaying ${prefetch.bufferedEvents.length} prefetched events`);
+    prefetch.bufferedEvents.forEach((buffered) => {
+      const syntheticEvent = new MessageEvent(buffered.type, { data: buffered.data });
+      eventSource.dispatchEvent(syntheticEvent);
+    });
+  }
+
+  // Replay buffered events from extension prefetch (cross-origin navigation)
+  // The extension content script may deliver events before or after this runs
+  function replayExtensionEvents(data) {
+    if (!data || !data.events || data.events.length === 0) return;
+    // eslint-disable-next-line no-console
+    console.log(`[Recommender] Replaying ${data.events.length} extension-prefetched events (${data.headStart}ms head start)`);
+    data.events.forEach((buffered) => {
+      eventSource.dispatchEvent(
+        new MessageEvent(buffered.type, { data: buffered.data }),
+      );
+    });
+  }
+
+  if (extPrefetch) {
+    replayExtensionEvents(extPrefetch);
+  } else {
+    // Extension data may arrive after renderer starts — listen for it
+    window.addEventListener('extension-prefetch-ready', () => {
+      // eslint-disable-next-line no-underscore-dangle
+      replayExtensionEvents(window.__extensionPrefetch);
+      // eslint-disable-next-line no-underscore-dangle
+      delete window.__extensionPrefetch;
+    }, { once: true });
+  }
 }
 
 /**
@@ -1488,6 +1549,16 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
+/**
+ * Attach hover-to-prefetch on all ?q= links currently in the DOM.
+ * Called after page load and after new blocks are rendered.
+ */
+function attachPrefetchToAILinks() {
+  document.querySelectorAll('a[href*="?q="]').forEach((link) => {
+    attachLinkPrefetch(link);
+  });
+}
+
 async function loadPage() {
   // Check if this is a Cerebras request (?cerebras=query) - handled by cerebras-scripts.js
   if (isCerebrasRequest()) {
@@ -1542,6 +1613,30 @@ async function loadPage() {
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
+
+  // Attach hover prefetch to all AI-generated links (?q= links)
+  attachPrefetchToAILinks();
 }
 
 loadPage();
+
+/**
+ * Handle SPA-style navigation from prefetch link clicks.
+ * Instead of a full page reload, transforms the current page in-place.
+ */
+window.addEventListener('prefetch-navigate', async (e) => {
+  const { query } = e.detail;
+  if (!query) return;
+
+  // Ensure page is set up for recommender mode
+  document.body.classList.add('vitamix-recommender-mode');
+
+  // Header/footer already loaded — just re-render main content
+  await renderVitamixRecommenderPage();
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Attach prefetch to any new ?q= links in the rendered content
+  attachPrefetchToAILinks();
+});

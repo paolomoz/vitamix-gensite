@@ -18,7 +18,7 @@ const MODEL_PRESETS: Record<string, ModelPreset> = {
   production: {
     reasoning: {
       provider: 'anthropic',
-      model: 'claude-opus-4-5-20251101',
+      model: 'claude-opus-4-6-20250514',
       maxTokens: 4096,
       temperature: 0.7,
     },

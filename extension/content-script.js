@@ -572,14 +572,22 @@
     // Insert right before the footer
     footer.parentNode.insertBefore(section, footer);
 
-    // Handle CTA click - open POC with query
+    // Start prefetching immediately — we already know the query
+    var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
+    var prefetchQuery = demoActive ? ACT4_QUERY : (hint.query || '');
+    if (prefetchQuery) {
+      chrome.runtime.sendMessage({ type: 'PREFETCH_START', query: prefetchQuery, preset: 'all-cerebras' });
+      console.log('[VitamixIntent] Prefetch started immediately for hint:', prefetchQuery.substring(0, 50));
+    }
+
+    // Handle CTA click - navigate to POC with query
     // When Act 4 demo is active, navigate directly with ?q= to bypass context storage
     section.querySelector('.vitamix-ai-hint-cta').addEventListener('click', () => {
       var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
       if (demoActive) {
         console.log('[VitamixIntent] Hint CTA clicked (Act 4 override), navigating with ?q=');
-        var pocBase = 'https://main--vitamix-gensite--paolomoz.aem.live';
-        window.open(pocBase + '/?q=' + encodeURIComponent(ACT4_QUERY), '_blank');
+        var pocBase = 'http://localhost:3000';
+        window.location.href = pocBase + '/?q=' + encodeURIComponent(ACT4_QUERY);
       } else {
         console.log('[VitamixIntent] Hint CTA clicked, query:', hint.query);
         chrome.runtime.sendMessage({
@@ -1253,17 +1261,46 @@
     }, 1000);
   }
 
+  /**
+   * On POC site with ?q= param, check if the background has prefetched SSE events
+   * and inject them into the page so scripts.js can use them
+   */
+  function deliverPrefetchedEvents() {
+    const url = new URL(window.location.href);
+    const isPocSite = url.hostname.includes('aem.live') || url.hostname === 'localhost';
+    const query = url.searchParams.get('q') || url.searchParams.get('query');
+    if (!isPocSite || !query) return;
+
+    chrome.runtime.sendMessage({ type: 'PREFETCH_GET', query: query }, (response) => {
+      if (chrome.runtime.lastError || !response || !response.found) return;
+      console.log('[VitamixIntent] Delivering ' + response.events.length + ' prefetched events to page (' + response.headStart + 'ms head start)');
+      // Inject into page world via a script tag (content script is isolated)
+      var script = document.createElement('script');
+      script.textContent = 'window.__extensionPrefetch = ' + JSON.stringify({
+        query: response.query,
+        slug: response.slug,
+        events: response.events,
+        headStart: response.headStart,
+      }) + ';'
+        + 'window.dispatchEvent(new CustomEvent("extension-prefetch-ready"));';
+      document.documentElement.appendChild(script);
+      script.remove();
+    });
+  }
+
   // Initialize signal capture only (no panel auto-injection)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       init();
       captureQueryFromUrl();
+      deliverPrefetchedEvents();
       setupGenerationCapture();
       initChatbot();
     });
   } else {
     init();
     captureQueryFromUrl();
+    deliverPrefetchedEvents();
     setupGenerationCapture();
     initChatbot();
   }

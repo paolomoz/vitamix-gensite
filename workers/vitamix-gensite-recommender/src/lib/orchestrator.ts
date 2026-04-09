@@ -1044,41 +1044,6 @@ Generate raw technical data for spec-focused users. Structure:
   <div>Full coverage, includes shipping</div>
 </div>`,
 
-    'noise-context': `
-## HTML Template (real-world noise comparisons):
-Generate honest noise comparisons. Structure:
-- Row 1: Title
-- Rows 2+: Item/model | dB level | Comparison context
-
-<div>
-  <div>Real-World Noise Comparison</div>
-</div>
-<div>
-  <div>Normal conversation</div>
-  <div>60 dB</div>
-  <div>Easy to talk over</div>
-</div>
-<div>
-  <div>Vacuum cleaner</div>
-  <div>75 dB</div>
-  <div>Noticeable but brief</div>
-</div>
-<div>
-  <div>Vitamix (low speed)</div>
-  <div>78 dB</div>
-  <div>Like a loud vacuum</div>
-</div>
-<div>
-  <div>Vitamix (high speed)</div>
-  <div>88 dB</div>
-  <div>Like a motorcycle at 25ft</div>
-</div>
-<div>
-  <div>Vitamix ONE (quietest)</div>
-  <div>82 dB</div>
-  <div>Noticeably quieter</div>
-</div>`,
-
     'allergen-safety': `
 ## HTML Template - CRITICAL: USE ONLY OFFICIAL VITAMIX CONTENT PROVIDED
 
@@ -1369,7 +1334,7 @@ CRITICAL: Generate FAQs that are SPECIFIC to the products above. Each FAQ must m
       ...verifiedReviews.slice(0, 1),
     ].slice(0, 4);
     dataContext = `\n\n## Real Testimonials (USE THESE EXACT QUOTES - do not invent):\n${buildTestimonialContext(selectedReviews)}`;
-  } else if (['engineering-specs', 'noise-context'].includes(block.type)) {
+  } else if (block.type === 'engineering-specs') {
     // For technical specs, provide detailed product info
     const mainProduct = ragContext.relevantProducts[0];
     if (mainProduct) {
@@ -1643,7 +1608,7 @@ function wrapBlockHTML(
 function getSectionStyle(blockType: string): string {
   const darkBlocks = ['hero', 'product-hero', 'product-recommendation', 'best-pick'];
   const highlightBlocks = ['reasoning', 'reasoning-user', 'testimonials'];
-  const warmBlocks = ['recipe-cards', 'noise-context', 'faq'];
+  const warmBlocks = ['recipe-cards', 'faq'];
 
   if (darkBlocks.includes(blockType)) return 'dark';
   if (highlightBlocks.includes(blockType)) return 'highlight';

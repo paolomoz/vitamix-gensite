@@ -348,7 +348,6 @@ export type BlockType =
   | 'sustainability-info' // Environmental responsibility
   | 'smart-features'      // Connected/app capabilities
   | 'engineering-specs'   // Deep technical specifications
-  | 'noise-context'       // Real-world noise comparisons
   | 'allergen-safety'     // Cross-contamination protocols
   // Phase 3 blocks - operational guidance
   | 'technique-spotlight' // Pro blending techniques with visual guides

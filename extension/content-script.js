@@ -572,29 +572,44 @@
     // Insert right before the footer
     footer.parentNode.insertBefore(section, footer);
 
-    // Start prefetching immediately — we already know the query
-    var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
-    var prefetchQuery = demoActive ? ACT4_QUERY : (hint.query || '');
-    if (prefetchQuery) {
-      chrome.runtime.sendMessage({ type: 'PREFETCH_START', query: prefetchQuery, preset: 'all-cerebras' });
-      console.log('[VitamixIntent] Prefetch started immediately for hint:', prefetchQuery.substring(0, 50));
-    }
+    // Prefetch on hover (not immediately) — start SSE stream when user shows intent
+    var hintPrefetchTimer = null;
+    var hintPrefetchStarted = false;
+    var ctaButton = section.querySelector('.vitamix-ai-hint-cta');
 
-    // Handle CTA click - navigate to POC with query
-    // When Act 4 demo is active, navigate directly with ?q= to bypass context storage
-    section.querySelector('.vitamix-ai-hint-cta').addEventListener('click', () => {
-      var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
-      if (demoActive) {
-        console.log('[VitamixIntent] Hint CTA clicked (Act 4 override), navigating with ?q=');
-        var pocBase = (window.location.hostname === 'localhost') ? window.location.origin : 'https://main--vitamix-gensite--paolomoz.aem.live';
-        window.location.href = pocBase + '/?q=' + encodeURIComponent(ACT4_QUERY);
-      } else {
-        console.log('[VitamixIntent] Hint CTA clicked, query:', hint.query);
-        chrome.runtime.sendMessage({
-          type: 'HINT_CLICKED',
-          query: hint.query,
-        });
+    ctaButton.addEventListener('mouseenter', () => {
+      if (hintPrefetchStarted) return;
+      hintPrefetchTimer = setTimeout(() => {
+        var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
+        var prefetchQuery = demoActive ? ACT4_QUERY : (hint.query || '');
+        if (prefetchQuery) {
+          hintPrefetchStarted = true;
+          chrome.runtime.sendMessage({ type: 'PREFETCH_START', query: prefetchQuery, preset: 'all-cerebras' });
+          console.log('[VitamixIntent] Prefetch started on hover for hint:', prefetchQuery.substring(0, 50));
+        }
+      }, 150);
+    });
+
+    ctaButton.addEventListener('mouseleave', () => {
+      if (hintPrefetchTimer) {
+        clearTimeout(hintPrefetchTimer);
+        hintPrefetchTimer = null;
       }
+    });
+
+    // Handle CTA click - navigate to POC with ?q= so landing page consumes prefetch
+    ctaButton.addEventListener('click', () => {
+      var demoActive = sessionStorage.getItem('demo-act4-active') === '1';
+      var clickQuery = demoActive ? ACT4_QUERY : (hint.query || '');
+      if (!clickQuery) return;
+      // Start prefetch now if hover didn't trigger it (e.g. touch device)
+      if (!hintPrefetchStarted) {
+        chrome.runtime.sendMessage({ type: 'PREFETCH_START', query: clickQuery, preset: 'all-cerebras' });
+        console.log('[VitamixIntent] Prefetch started on click (no hover) for hint:', clickQuery.substring(0, 50));
+      }
+      var pocBase = (window.location.hostname === 'localhost') ? window.location.origin : 'https://main--vitamix-gensite--paolomoz.aem.live';
+      console.log('[VitamixIntent] Hint CTA clicked, navigating with ?q=', clickQuery);
+      window.location.href = pocBase + '/?q=' + encodeURIComponent(clickQuery);
     });
 
     // Handle dismiss
@@ -1289,18 +1304,20 @@
   }
 
   // Initialize signal capture only (no panel auto-injection)
+  // Deliver prefetched events ASAP — this is time-critical on the POC site
+  // (scripts.js waits up to 500ms for extension-prefetch-ready before opening a fresh SSE)
+  deliverPrefetchedEvents();
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       init();
       captureQueryFromUrl();
-      deliverPrefetchedEvents();
       setupGenerationCapture();
       initChatbot();
     });
   } else {
     init();
     captureQueryFromUrl();
-    deliverPrefetchedEvents();
     setupGenerationCapture();
     initChatbot();
   }

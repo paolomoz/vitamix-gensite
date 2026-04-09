@@ -880,7 +880,7 @@ async function renderVitamixRecommenderPage() {
       const timer = setTimeout(() => {
         window.removeEventListener('extension-prefetch-ready', handler);
         resolve(null);
-      }, 200);
+      }, 500);
     });
   }
   if (extPrefetch) {

@@ -239,8 +239,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
 
     case 'PREFETCH_GET':
-      sendResponse(handlePrefetchGet(message.query));
-      return false;
+      handlePrefetchGet(message.query).then(sendResponse);
+      return true;
 
     default:
       sendResponse({ error: 'Unknown message type' });
@@ -1128,7 +1128,11 @@ async function handlePrefetchStart(query, preset = 'all-cerebras') {
     + '&ctx=%7B%7D';
 
   const bufferedEvents = [];
-  const prefetch = { query, slug, preset, bufferedEvents, startTime: Date.now(), aborted: false };
+  let resolveComplete;
+  const completionPromise = new Promise((resolve) => { resolveComplete = resolve; });
+  const prefetch = {
+    query, slug, preset, bufferedEvents, startTime: Date.now(), aborted: false, completionPromise,
+  };
   activePrefetch = prefetch;
 
   console.log(`[Background] Prefetch started for: "${query.substring(0, 50)}..."`);
@@ -1166,6 +1170,7 @@ async function handlePrefetchStart(query, preset = 'all-cerebras') {
     console.log('[Background] Prefetch stream ended:', err.message);
   }
 
+  resolveComplete();
   console.log(`[Background] Prefetch buffered ${bufferedEvents.length} events`);
   return { success: true, events: bufferedEvents.length };
 }
@@ -1173,13 +1178,16 @@ async function handlePrefetchStart(query, preset = 'all-cerebras') {
 /**
  * Get buffered prefetch events for a query.
  * Called by the POC page content script after navigation.
+ * Waits for the stream to complete before returning, so partial prefetch
+ * doesn't cause duplicate blocks on the landing page.
  */
-function handlePrefetchGet(query) {
+async function handlePrefetchGet(query) {
   if (!activePrefetch) {
     return { found: false };
   }
-  // Match by query or return whatever is active (for demo simplicity)
   const prefetch = activePrefetch;
+  // Wait for the SSE stream to finish (no-op if already complete)
+  await prefetch.completionPromise;
   activePrefetch = null; // consume it
   console.log(`[Background] Prefetch consumed: ${prefetch.bufferedEvents.length} events, ${Date.now() - prefetch.startTime}ms head start`);
   return {

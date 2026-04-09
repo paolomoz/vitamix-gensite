@@ -864,8 +864,25 @@ async function renderVitamixRecommenderPage() {
   const prefetch = query ? consumePrefetch(query) : null;
 
   // Check for extension-delivered prefetch (cross-origin, via background script)
+  // The content script runs at document_idle, so it may not have delivered yet.
+  // Wait a short window to give it a chance before falling through to a new SSE.
   // eslint-disable-next-line no-underscore-dangle
-  const extPrefetch = window.__extensionPrefetch || null;
+  let extPrefetch = window.__extensionPrefetch || null;
+  if (!extPrefetch) {
+    // eslint-disable-next-line no-loop-func
+    extPrefetch = await new Promise((resolve) => {
+      const handler = () => {
+        clearTimeout(timer);
+        // eslint-disable-next-line no-underscore-dangle
+        resolve(window.__extensionPrefetch || null);
+      };
+      window.addEventListener('extension-prefetch-ready', handler, { once: true });
+      const timer = setTimeout(() => {
+        window.removeEventListener('extension-prefetch-ready', handler);
+        resolve(null);
+      }, 200);
+    });
+  }
   if (extPrefetch) {
     // eslint-disable-next-line no-underscore-dangle
     delete window.__extensionPrefetch;
@@ -1304,15 +1321,6 @@ async function renderVitamixRecommenderPage() {
   if (useExtPrefetch) {
     // Replay all buffered events after a microtask to ensure listeners are ready
     Promise.resolve().then(() => replayExtensionEvents(extPrefetch));
-  } else if (!prefetch) {
-    // Extension data may arrive after renderer starts — listen for it
-    window.addEventListener('extension-prefetch-ready', () => {
-      // eslint-disable-next-line no-underscore-dangle
-      const data = window.__extensionPrefetch;
-      if (data) replayExtensionEvents(data);
-      // eslint-disable-next-line no-underscore-dangle
-      delete window.__extensionPrefetch;
-    }, { once: true });
   }
 }
 

@@ -180,7 +180,7 @@ IMPORTANT: Check for special intent types FIRST:
 - "gift": User is buying for someone else (birthday, wedding, christmas, "for my mom")
 - "medical": User mentions health conditions (dysphagia, stroke, medical diet)
 - "accessibility": User mentions physical limitations (arthritis, grip, heavy, mobility)
-- "partnership": User asks about affiliate programs, B2B, bulk orders, commercial use
+- "partnership": User asks about affiliate programs or bulk orders
 
 Output JSON only:
 {
@@ -193,7 +193,7 @@ Output JSON only:
     "priceRange": "budget|mid|premium|null"
   },
   "journeyStage": "exploring|comparing|deciding",
-  "userMode": "quick|research|gift|support|commercial"
+  "userMode": "quick|research|gift|support"
 }`;
 
 async function classifyIntent(

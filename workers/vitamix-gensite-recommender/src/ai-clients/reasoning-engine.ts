@@ -265,23 +265,12 @@ Detection: Query asks for operational guidance, technique tips, or recommended s
 
 You MUST select products from the catalog provided below. Do NOT rely on pre-filtered products.
 
-### Commercial vs Consumer Decision Tree
-
-| User Context Signals | Product Selection |
-|---------------------|-------------------|
-| "bar", "cocktail bar", "juice bar", "smoothie bar" | Commercial products (Drink Machine Advance, The Quiet One, Vita-Prep) |
-| "restaurant", "cafe", "hotel", "catering", "food service" | Commercial products |
-| "for my business", "high volume", "professional kitchen" | Commercial products |
-| "home", "family", "personal", "kitchen", "apartment" | Consumer products (Ascent, Explorian, Venturist) |
-| Ambiguous (no clear home/commercial signal) | Include BOTH or ask clarifying question |
-
 ### Selection Rules
 
 1. **Always select 3-5 products** that best match the user's context
 2. **Mark ONE product as isPrimary=true** - your top recommendation
 3. **Provide rationale** for each selection explaining why it fits
-4. **Set contextType** to 'commercial', 'consumer', or 'either'
-5. **NEVER filter out commercial products for queries mentioning bars, restaurants, or businesses**
+4. **Set contextType** to 'consumer'
 
 ### Product Catalog Reference
 The full product catalog will be provided in the prompt. Use product IDs exactly as shown.
@@ -593,7 +582,7 @@ function buildReasoningPrompt(
   // Build compact product catalog for LLM product selection
   const compactCatalog = buildCompactProductCatalog();
   const catalogSection = compactCatalog
-    .map(p => `- ${p.id}: ${p.name} (${p.series}) | $${p.price || 'N/A'} | ${p.isCommercial ? 'COMMERCIAL' : 'Consumer'} | Best for: ${p.bestFor.join(', ') || 'general use'}`)
+    .map(p => `- ${p.id}: ${p.name} (${p.series}) | $${p.price || 'N/A'} | Best for: ${p.bestFor.join(', ') || 'general use'}`)
     .join('\n');
 
   const productContext = ragContext.relevantProducts

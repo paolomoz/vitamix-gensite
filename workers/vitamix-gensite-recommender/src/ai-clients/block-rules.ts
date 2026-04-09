@@ -392,30 +392,6 @@ export const BLOCK_RULES: BlockRule[] = [
     priority: 55,
   },
   {
-    id: 'commercial-b2b',
-    name: 'Commercial/B2B Interest',
-    category: 'context',
-    triggers: [
-      { type: 'keyword', value: '\\brestaurant\\b' },
-      { type: 'keyword', value: '\\bbusiness\\b' },
-      { type: 'keyword', value: '\\bcommercial\\b' },
-      { type: 'keyword', value: '\\bbulk\\b' },
-      { type: 'keyword', value: '\\bb2b\\b' },
-      { type: 'keyword', value: '\\bprofessional kitchen\\b' },
-      { type: 'keyword', value: '\\bbar\\b' },
-      { type: 'keyword', value: '\\bcafe\\b' },
-      { type: 'keyword', value: '\\bjuice bar\\b' },
-    ],
-    requires: ['specs-table'],
-    excludes: ['engineering-specs'], // Prevent redundant spec blocks
-    enhances: ['comparison-table'],
-    sequenceHints: [
-      { block: 'specs-table', position: 'middle' },
-    ],
-    contentGuidance: 'Focus on durability, warranty, volume capacity. Mention commercial support contact.',
-    priority: 70,
-  },
-  {
     id: 'cleaning',
     name: 'Cleaning & Maintenance',
     category: 'context',

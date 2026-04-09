@@ -172,7 +172,6 @@ export interface CompactProduct {
   name: string;
   series: string;
   price: number | null;
-  isCommercial: boolean;
   bestFor: string[];
   category: string;
 }
@@ -188,10 +187,8 @@ export function buildCompactProductCatalog(): CompactProduct[] {
     name: p.name,
     series: p.series || '',
     price: p.price ?? null,
-    isCommercial: p.isCommercial || false,
     bestFor: (p.bestFor || []).slice(0, 5),
-    category: p.series?.toLowerCase().includes('commercial') ? 'commercial' :
-              p.series?.toLowerCase().includes('reconditioned') ? 'reconditioned' : 'consumer',
+    category: p.series?.toLowerCase().includes('reconditioned') ? 'reconditioned' : 'consumer',
   }));
 }
 
@@ -556,34 +553,6 @@ export function searchArticles(query: string, maxResults = 5): Article[] {
     .map(s => s.article);
 }
 
-// Keywords that indicate a commercial/B2B query
-const COMMERCIAL_KEYWORDS = [
-  'commercial', 'business', 'restaurant', 'cafe', 'cafes', 'b2b',
-  'professional', 'volume', 'tco', 'roi', 'foodservice', 'food service',
-  'hotel', 'hotels', 'juice bar', 'juice bars', 'smoothie bar', 'chain',
-  'franchise', 'quick service', 'qsr', 'fine dining', 'catering',
-  'wholesale', 'bulk', 'industrial', 'enterprise', 'corporate',
-  'durability', 'warranty', 'cost of ownership', 'investment',
-];
-
-/**
- * Check if a query appears to be commercial/B2B focused.
- */
-export function isCommercialQuery(query: string): boolean {
-  const lowerQuery = query.toLowerCase();
-  return COMMERCIAL_KEYWORDS.some(kw => lowerQuery.includes(kw));
-}
-
-/**
- * Get articles relevant to a commercial query.
- * Returns empty array for non-commercial queries.
- */
-export function getArticlesForCommercialQuery(query: string, maxResults = 3): Article[] {
-  if (!isCommercialQuery(query)) {
-    return [];
-  }
-  return searchArticles(query, maxResults);
-}
 
 // ============================================
 // Review Queries
@@ -1111,22 +1080,6 @@ export function buildRAGContext(
   // Dedupe and limit products
   relevantProducts = [...new Map(relevantProducts.map(p => [p.id, p])).values()];
 
-  // NOTE: Commercial vs consumer product filtering is now handled by the LLM
-  // in the reasoning engine. The LLM receives the full product catalog and
-  // selects products based on user context (e.g., "cocktail bar" -> commercial).
-  // This replaces the previous hardcoded keyword-based filtering.
-  //
-  // For RAG context, we still prioritize commercial products for commercial queries
-  // to give the LLM relevant options, but we don't filter them out entirely.
-  if (isCommercialQuery(query)) {
-    // For commercial queries, prioritize commercial products in RAG results
-    relevantProducts.sort((a, b) => {
-      const aCommercial = (a.isCommercial || a.series?.toLowerCase() === 'commercial') ? 1 : 0;
-      const bCommercial = (b.isCommercial || b.series?.toLowerCase() === 'commercial') ? 1 : 0;
-      return bCommercial - aCommercial;
-    });
-  }
-
   // CRITICAL: Filter out reconditioned/refurbished products for gift queries
   // Reconditioned products are inappropriate for gift-giving
   if (intent === 'gift') {
@@ -1348,8 +1301,7 @@ export function buildRAGContext(
 
   relevantRecipes = relevantRecipes.slice(0, maxRecipes);
 
-  // Get relevant articles for commercial/B2B queries
-  const relevantArticles = getArticlesForCommercialQuery(query, 3);
+  const relevantArticles = searchArticles(query, 3);
 
   return {
     relevantProducts,
@@ -1397,14 +1349,12 @@ export default {
   getContainersForProduct,
   searchAccessories,
 
-  // Articles (Commercial B2B Content)
+  // Articles
   getAllArticles,
   getArticleById,
   getArticlesByCategory,
   getArticleCategories,
   searchArticles,
-  isCommercialQuery,
-  getArticlesForCommercialQuery,
 
   // Reviews
   getAllReviews,

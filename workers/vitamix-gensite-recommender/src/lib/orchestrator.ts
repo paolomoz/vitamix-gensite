@@ -1508,6 +1508,9 @@ Rationale: ${block.rationale}`,
     const response = await modelFactory.call('content', messages, env);
     let html = wrapBlockHTML(block.type, response.content, block.variant, heroComposition, primaryProduct?.name);
 
+    // Fix double-protocol URLs the LLM sometimes produces (e.g. "httpshttps://")
+    html = html.replace(/https?:?\/?\/?\s*https?:\/\//g, 'https://');
+
     // Safety check: detect apology/refusal text that shouldn't be rendered
     const apologyPatterns = [
       /I'm sorry/i,

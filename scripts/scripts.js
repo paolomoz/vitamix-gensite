@@ -15,6 +15,14 @@ import {
   loadCSS,
 } from './aem.js';
 
+// Demo shortcut: ?clear=1 wipes sessionStorage (previous query context) on arrival
+if (new URLSearchParams(window.location.search).has('clear')) {
+  sessionStorage.clear();
+  const url = new URL(window.location.href);
+  url.searchParams.delete('clear');
+  window.history.replaceState({}, '', url.toString());
+}
+
 /**
  * Parses `document.cookie` into key-value map.
  * @returns {Object} Object representing all cookies as key-value pairs

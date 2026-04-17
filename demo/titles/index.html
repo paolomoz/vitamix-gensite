@@ -176,23 +176,27 @@
   }
 
   .hero-title {
-    font-size: 48px;
-    font-weight: 800;
+    font-family: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    font-size: 60px;
+    font-weight: 400;
     color: var(--gray-900);
-    line-height: 56px;
-    max-width: 800px;
-    margin: 0 auto 16px;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 880px;
+    margin: 0 auto 20px;
     opacity: 0;
     transform: translateY(-8px);
     animation: fade-in 500ms 400ms ease forwards;
   }
 
   .hero-subtitle {
-    font-size: 18px;
+    font-family: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+    font-style: italic;
+    font-size: 20px;
     font-weight: 400;
     color: var(--gray-600);
-    line-height: 28px;
-    max-width: 640px;
+    line-height: 30px;
+    max-width: 680px;
     margin: 0 auto;
     opacity: 0;
     animation: fade-in 400ms 600ms ease forwards;
@@ -240,12 +244,32 @@
     background: var(--gray-25);
   }
 
+  .card-kicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .card-kicker::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+
   .card-title {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--gray-900);
-    line-height: 24px;
+    line-height: 26px;
     margin-bottom: 6px;
+    letter-spacing: -0.01em;
   }
 
   .card-desc {
@@ -253,6 +277,30 @@
     font-weight: 400;
     color: var(--gray-600);
     line-height: 20px;
+  }
+
+  /* ── Outro line ── */
+  .outro {
+    margin-top: 32px;
+    font-family: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--gray-600);
+    opacity: 0;
+    animation: fade-in 500ms 1500ms ease forwards;
+  }
+
+  .outro-arrow {
+    display: inline-block;
+    margin-left: 6px;
+    color: var(--accent);
+    font-style: normal;
+    animation: arrow-nudge 2s 2s ease-in-out infinite;
+  }
+
+  @keyframes arrow-nudge {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
   }
 
   /* ── Branding ── */
@@ -335,32 +383,37 @@
           Project Page Turner
         </div>
         <h1 class="hero-title">Past, present and future of websites.</h1>
-        <p class="hero-subtitle">Everyone gets the same page. Marketing builds persona variants, but you're limited to the personas you imagined. What if the page imagined itself?</p>
+        <p class="hero-subtitle">Everyone gets the same page. Marketing builds persona variants — but only for the personas you imagined. What if the page imagined itself?</p>
       </div>
 
       <div class="cards">
         <div class="card">
           <img class="card-img" src="card-same-page.png" alt="Everyone gets the same page">
           <div class="card-body">
-            <div class="card-title">Everyone Gets the Same Page</div>
-            <div class="card-desc">Different people, different needs — one static experience for all.</div>
+            <div class="card-kicker">Act I · The Past</div>
+            <div class="card-title">One Page, For Everyone</div>
+            <div class="card-desc">One site. Millions of visitors. The same experience for all.</div>
           </div>
         </div>
         <div class="card">
           <img class="card-img" src="card-manual-fix.png" alt="The manual fix">
           <div class="card-body">
-            <div class="card-title">The Manual Fix</div>
-            <div class="card-desc">Maybe 5, maybe 10 variants. Months of work. Still guessing.</div>
+            <div class="card-kicker">Act II · The Present</div>
+            <div class="card-title">The Workaround</div>
+            <div class="card-desc">Teams hand-build variants. Months of work, and still just guessing.</div>
           </div>
         </div>
         <div class="card">
           <img class="card-img" src="card-imagination-gap.png" alt="The imagination gap">
           <div class="card-body">
+            <div class="card-kicker">Act III · The Limit</div>
             <div class="card-title">The Imagination Gap</div>
-            <div class="card-desc">If you didn't think of it, it doesn't exist.</div>
+            <div class="card-desc">If you didn't think of it, it never exists.</div>
           </div>
         </div>
       </div>
+
+      <div class="outro">Something has to change.<span class="outro-arrow">→</span></div>
 
       <div class="branding">Adobe Sneaks 2026</div>
     </div>

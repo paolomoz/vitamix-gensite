@@ -771,6 +771,7 @@ IMPORTANT:
 - ONLY compare Vitamix products to each other - we do not have competitor data.
 - If user mentions a competitor brand (Blendtec, Ninja, etc.), compare 2-3 Vitamix models instead and note that competitor specs are not available.
 - IF productSelectionRationale is provided in context, START with a comparison-rationale div (see below).
+- ONLY generate comparison rows for attributes that are present in the product data provided. NEVER create rows with empty cells or placeholder text. If a spec (e.g. lid type, noise level, blade type) is not in the product data, do NOT include a row for it.
 
 SPECIAL GUIDANCE FOR FAMILY/KIDS QUERIES:
 If the user mentions kids, family, picky eaters, or hiding vegetables:
@@ -1473,6 +1474,12 @@ Reassure them that most issues are easily resolved.`;
   // Get HTML template for the block type
   const htmlTemplate = getBlockTemplate(block.type);
 
+  // Find the primary/best-pick product so all blocks stay consistent
+  const primaryProduct = ragContext.relevantProducts.find(p => p.isPrimaryMatch);
+  const primaryProductDirective = primaryProduct
+    ? `\n8. CONSISTENCY: The recommended "best pick" product is "${primaryProduct.name}". All blocks must be consistent — if this block highlights or recommends a single product, it MUST be "${primaryProduct.name}". Do not contradict this across blocks.`
+    : '';
+
   const systemPrompt = `Generate HTML content for a "${block.type}" block.
 Content guidance: ${block.contentGuidance}
 
@@ -1483,7 +1490,7 @@ IMPORTANT RULES:
 4. Do NOT include <html>, <head>, or <body> tags - just the block content
 5. Populate the template with real data from the context provided
 6. CRITICAL: If a specific product mentioned in the guidance is NOT in the Available Products list below, DO NOT apologize or explain - instead, silently pick the BEST AVAILABLE product from the list that matches the user's needs. Never output apology text or meta-commentary.
-7. You MUST always output valid HTML. Never output conversational text like "I'm sorry" or "I can't".
+7. You MUST always output valid HTML. Never output conversational text like "I'm sorry" or "I can't".${primaryProductDirective}
 ${htmlTemplate}
 ${dataContext}`;
 
@@ -1499,7 +1506,7 @@ Rationale: ${block.rationale}`,
 
   try {
     const response = await modelFactory.call('content', messages, env);
-    let html = wrapBlockHTML(block.type, response.content, block.variant, heroComposition);
+    let html = wrapBlockHTML(block.type, response.content, block.variant, heroComposition, primaryProduct?.name);
 
     // Safety check: detect apology/refusal text that shouldn't be rendered
     const apologyPatterns = [
@@ -1565,7 +1572,8 @@ function wrapBlockHTML(
   type: string,
   content: string,
   variant?: string,
-  heroComposition?: GeneratedBlock['heroComposition']
+  heroComposition?: GeneratedBlock['heroComposition'],
+  primaryProductName?: string
 ): string {
   // Extract just the inner content if wrapped in tags
   let html = content.trim();
@@ -1592,7 +1600,11 @@ function wrapBlockHTML(
   // If content doesn't start with the block div, wrap it
   if (!html.startsWith(`<div class="${type}`)) {
     const variantClass = variant ? ` ${variant}` : '';
-    html = `<div class="${type}${variantClass}">\n${html}\n</div>`;
+    // For comparison-table, set data-recommended so frontend highlights the correct best pick
+    const dataAttrs = (type === 'comparison-table' && primaryProductName)
+      ? ` data-recommended="${primaryProductName.replace(/[®™]/g, '').trim()}"`
+      : '';
+    html = `<div class="${type}${variantClass}"${dataAttrs}>\n${html}\n</div>`;
   } else if (type === 'hero' && variant) {
     // For hero blocks, the LLM might have generated its own class attribute.
     // We need to replace it with our computed variant based on image aspect ratio.

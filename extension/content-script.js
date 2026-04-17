@@ -601,7 +601,7 @@
     // TODO: DEMO WORKAROUND — hardcoded URL to avoid hint.query containing stale/wrong context.
     // Proper fix: regenerate hint query on session clear, or use short intent + ?ctx= signals.
     ctaButton.addEventListener('click', () => {
-      var demoUrl = 'http://localhost:3000/?q=Looking%20to%20buy%20a%20Vitamix%20blender%20-%20can%20you%20compare%20X5%20vs%20X4%20and%20others%20if%20you%20think%20they%20make%20sense%20to%20look%20into.%20I%20have%20a%20family%20of%204%20-%20my%20older%20son%20is%20into%20smoothies%20and%20my%20younger%20son%20does%27t%20like%20veggies%20-%20but%20when%20I%20make%20soups%20he%20likes%20them%20-%20even%20if%20they%20are%20green%20looking&preset=all-cerebras';
+      var demoUrl = 'http://localhost:3000/?q=Looking%20to%20buy%20a%20Vitamix%20blender%20-%20can%20you%20compare%20X5%20vs%20X4%20and%20others%20if%20you%20think%20they%20make%20sense%20to%20look%20into.%20I%20have%20a%20family%20of%204%20-%20my%20older%20son%20is%20into%20smoothies%20and%20my%20younger%20son%20does%27t%20like%20veggies%20-%20but%20when%20I%20make%20soups%20he%20likes%20them%20-%20even%20if%20they%20are%20green%20looking&preset=all-cerebras&clear=1';
       console.log('[VitamixIntent] Hint CTA clicked, navigating to hardcoded demo URL');
       window.location.href = demoUrl;
     });
@@ -1325,8 +1325,8 @@
   const DEMO_SITE = 'https://main--vitamix-gensite--paolomoz.aem.live';
   const VITAMIX_ASCENT_URL = 'https://www.vitamix.com/us/en_us/shop/ascent-x-series-blenders';
 
-  const ACT2_QUERY = 'I\'m a personal trainer and I need a blender that can handle making 15-20 protein shakes a day for my clients. curious how models compare for heavy daily use. Cleanup speed matters a lot since I\'m making them back to back between sessions';
-  const ACT3_QUERY = 'frozen margaritas for 30 people at a house party, and I don\'t want to clean it after, show me some models';
+  const ACT2_QUERY = 'I\'m a personal trainer and I need a blender that can handle making 15-20 protein shakes a day for my clients. curious how models compare for heavy daily use. Cleanup speed matters a lot';
+  const ACT3_QUERY = 'frozen margaritas for 30 people at a house party, show me some models';
   const ACT3_HERO = 'https://vitamix-gensite-recommender.paolo-moz.workers.dev/hero-images/hero-margarita-party.jpg';
 
   // Use localhost if we're on localhost, otherwise use aem.live
@@ -1338,6 +1338,7 @@
   }
 
   const DASHBOARD_URL = 'http://localhost:3000/demo/dashboard';
+  const DASHBOARD2_URL = 'http://localhost:3000/demo/dashboard2';
 
   const ACTS = [
     null,
@@ -1345,7 +1346,7 @@
     { key: '2', label: 'Act 2 — Query Wow (→ to type)' },
     { key: '3', label: 'Act 3 — Iliza (→ to type)' },
     { key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true },
-    { key: '5', label: 'Act 5 — Content Intelligence', url: DASHBOARD_URL, dashboard: true },
+    { key: '5', label: 'Act 5 — Content Intelligence', url: DASHBOARD2_URL, dashboard: true },
     { key: '6', label: 'Act 6 — Gaps & Opportunities', url: DASHBOARD_URL, dashboard: true, dashboardView: 'dd-act6' },
   ];
 
@@ -1394,13 +1395,13 @@
       input.value += query[i];
       var ch = query[i];
       i++;
-      // Base speed ~45ms per char (real typing pace)
-      var delay = 35 + Math.random() * 25;
+      // Base speed ~36ms per char (real typing pace, 20% faster)
+      var delay = 28 + Math.random() * 20;
       // Pause longer after punctuation
-      if (ch === ',' || ch === '.' || ch === '—' || ch === ':') delay += 150 + Math.random() * 100;
-      else if (ch === ' ') delay += 10 + Math.random() * 30;
+      if (ch === ',' || ch === '.' || ch === '—' || ch === ':') delay += 120 + Math.random() * 80;
+      else if (ch === ' ') delay += 8 + Math.random() * 24;
       // Occasional micro-hesitation mid-word
-      else if (Math.random() < 0.08) delay += 80 + Math.random() * 60;
+      else if (Math.random() < 0.08) delay += 64 + Math.random() * 48;
       setTimeout(typeNext, delay);
     }
     typeNext();
@@ -1441,7 +1442,7 @@
     if (actNum === 1) {
       showDemoToast(act.label);
       // Title slide — always on localhost
-      window.location.href = 'http://localhost:3000/demo/titles/';
+      window.location.href = 'http://localhost:3000/demo/titles3/';
       return;
     }
 
@@ -1449,8 +1450,8 @@
     if (actNum === 2 || actNum === 3) {
       pendingQueryAct = actNum;
       if (window.location.pathname !== '/' || window.location.search) {
-        // Navigate to home — typing will be triggered by → after arrival
-        window.location.href = base + '/?demo-pending=' + actNum;
+        // Navigate to home — clear=1 wipes sessionStorage (previous query context)
+        window.location.href = base + '/?demo-pending=' + actNum + '&clear=1';
       }
       // If already on home, just wait for → to trigger typing
       return;
@@ -1465,7 +1466,7 @@
         window.dispatchEvent(new CustomEvent('demo-dashboard-view', { detail: viewId }));
       } else {
         // Navigate to dashboard, with optional view param
-        var url = DASHBOARD_URL;
+        var url = act.url || DASHBOARD_URL;
         if (act.dashboardView) url += '?view=' + act.dashboardView;
         window.location.href = url;
       }

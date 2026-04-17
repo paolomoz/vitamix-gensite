@@ -1,0 +1,874 @@
+/**
+ * Demo Dashboard v2 — Marketer's Content Performance Matrix
+ *
+ * Hero visual: content × audience heatmap ("which content works, for whom, in real time").
+ * Aligned to Act 5 talk track: recipe cards 92 for Health-Conscious, 54 for Gift Buyers.
+ *
+ * Single-view design: AEM shell + KPI strip + matrix + insight rail + live query ticker.
+ */
+
+/* ── Matrix data ── */
+
+const AUDIENCES = [
+  { id: 'health', label: 'Health-\u200bConscious', short: 'Health' },
+  { id: 'parents', label: 'Busy Parents', short: 'Parents' },
+  { id: 'gift', label: 'Gift Buyers', short: 'Gift' },
+  { id: 'pro', label: 'Pro / Commercial', short: 'Pro' },
+];
+
+// Rows are content blocks the system generates. Numbers are engagement scores (0-100).
+const CONTENT_ROWS = [
+  { id: 'recipe-cards', label: 'Recipe cards', scores: [92, 78, 54, 31], trend: '+18%' },
+  { id: 'product-comparisons', label: 'Product comparisons', scores: [68, 71, 84, 76], trend: '+6%' },
+  { id: 'quick-start', label: 'Quick-start guides', scores: [74, 88, 61, 45], trend: '+11%' },
+  { id: 'spec-sheets', label: 'Spec sheets', scores: [38, 34, 58, 94], trend: '+4%' },
+  { id: 'allergen', label: 'Allergen & safety info', scores: [65, 82, 47, 52], trend: '+2%' },
+  { id: 'competitor', label: 'Competitor comparisons', scores: [72, 63, 89, 81], trend: '+14%' },
+];
+
+const KPIS = [
+  {
+    label: 'Engagement',
+    value: '78%',
+    trend: '+15%',
+    dir: 'up',
+    spark: [32, 38, 35, 42, 48, 52, 58, 62, 68, 72, 78],
+  },
+  {
+    label: 'Conversion rate',
+    value: '14.2%',
+    trend: '+3.4%',
+    dir: 'up',
+    spark: [6, 7, 7.5, 8, 9, 10, 10.5, 11, 12, 13, 14.2],
+  },
+  {
+    label: 'Trust score',
+    value: '81%',
+    trend: '+9%',
+    dir: 'up',
+    spark: [52, 55, 58, 62, 64, 68, 70, 74, 76, 79, 81],
+  },
+  {
+    label: 'Unique page variants (24h)',
+    value: '12,487',
+    trend: '+2,104',
+    dir: 'up',
+    spark: [3200, 4100, 5300, 6600, 7800, 8900, 9800, 10500, 11200, 11900, 12487],
+  },
+];
+
+const INSIGHTS = [
+  {
+    kind: 'signal',
+    title: 'Recipe cards dominate for Health-Conscious',
+    body: 'Engagement 92 — <strong>+18</strong> vs. segment average. Same block underperforms Gift Buyers at 54.',
+    cells: ['recipe-cards:health', 'recipe-cards:gift'],
+  },
+  {
+    kind: 'signal',
+    title: 'Gift Buyers respond to comparisons, not recipes',
+    body: 'Product and competitor comparisons score 84–89 for Gift Buyers, vs. 54 for recipe cards.',
+    cells: ['product-comparisons:gift', 'competitor:gift', 'recipe-cards:gift'],
+  },
+  {
+    kind: 'shift',
+    title: 'Quick-start guides trending up with Busy Parents',
+    body: '+11% engagement over the last 24 hours. Likely driver: 3-ingredient morning smoothie queries.',
+    cells: ['quick-start:parents'],
+  },
+  {
+    kind: 'gap',
+    title: 'Allergen content under-served for Gift Buyers',
+    body: 'Only 47 engagement despite 12% of Gift-Buyer queries mentioning allergies. Coverage gap.',
+    cells: ['allergen:gift'],
+  },
+];
+
+/* ── Step 2 data ── */
+
+// Demand (queries/week) × Satisfaction (%) bubbles. Cited items tagged.
+const TOPICS = [
+  { id: 'recipe-cards', label: 'Recipe cards', demand: 312, sat: 89, tier: 'good' },
+  { id: 'product-comp', label: 'Product comparisons', demand: 215, sat: 81, tier: 'good' },
+  { id: 'quick-start', label: 'Quick-start guides', demand: 178, sat: 76, tier: 'good' },
+  { id: 'spec-sheets', label: 'Spec sheets (Pro)', demand: 45, sat: 94, tier: 'good' },
+  { id: 'allergen', label: 'Allergen & safety', demand: 132, sat: 64, tier: 'mid' },
+  { id: 'upgrade', label: 'Upgrade paths', demand: 89, sat: 51, tier: 'mid' },
+  { id: 'competitor', label: 'Competitor comparisons', demand: 124, sat: 38, tier: 'gap', cited: true },
+  { id: 'noise', label: 'Noise-level comparisons', demand: 89, sat: 42, tier: 'gap', cited: true },
+  { id: 'gift-registry', label: 'Gift registry integration', demand: 156, sat: 44, tier: 'gap' },
+  { id: 'baby-food', label: 'Baby food & toddler nutrition', demand: 67, sat: 29, tier: 'gap', cited: true },
+];
+
+const GAP_EVIDENCE = [
+  {
+    id: 'competitor',
+    title: 'Competitor comparisons',
+    queries: 124,
+    sat: 38,
+    delta: '−14% vs. avg',
+    sampleQueries: ['vitamix vs ninja quiet', 'blendtec or vitamix 2026', 'is vitamix worth it vs kitchenaid'],
+    segment: 'Gift Buyers',
+    tag: 'High-volume gap',
+  },
+  {
+    id: 'noise',
+    title: 'Noise-level comparisons',
+    queries: 89,
+    sat: 42,
+    delta: '−10% vs. avg',
+    sampleQueries: ['quiet blender nursery', 'blender noise apartment', 'low decibel blender'],
+    segment: 'Busy Parents',
+    tag: 'Rising demand',
+  },
+  {
+    id: 'baby-food',
+    title: 'Baby food & toddler nutrition',
+    queries: 67,
+    sat: 29,
+    delta: '−23% vs. avg',
+    sampleQueries: ['baby puree stage 1', 'toddler smoothie picky eater', 'iron-rich first foods'],
+    segment: 'Busy Parents + Health-Conscious',
+    tag: 'Deepest gap',
+  },
+];
+
+const OPPORTUNITIES = [
+  {
+    rank: 1,
+    title: 'Enhance baby food content',
+    metric: { value: 15, unit: '%', label: 'projected engagement lift' },
+    queries: 67,
+    segments: ['Busy Parents', 'Health-Conscious'],
+    evidence: '67 unanswered queries/week · satisfaction 29%',
+    confidence: 92,
+    effort: 'S',
+  },
+  {
+    rank: 2,
+    title: 'Add gift registry integration',
+    metric: { value: 22, unit: '%', label: 'projected conversion lift' },
+    queries: 156,
+    segments: ['Gift Buyers'],
+    evidence: 'Weddings, graduations, holidays — 44% satisfaction on registry intent',
+    confidence: 86,
+    effort: 'M',
+  },
+  {
+    rank: 3,
+    title: 'Create upgrade path calculator',
+    metric: { value: 8, unit: '%', label: 'projected conversion lift' },
+    queries: 89,
+    segments: ['Existing owners'],
+    evidence: '"worth upgrading" queries outpace retention content 3:1',
+    confidence: 74,
+    effort: 'M',
+  },
+];
+
+const INITIAL_FEED = [
+  { time: '2s ago', query: 'quiet blender nursery', audience: 'Parents', blocks: 4 },
+  { time: '4s ago', query: 'protein smoothie college', audience: 'Health', blocks: 6 },
+  { time: '9s ago', query: 'margarita party 30 people', audience: 'Gift', blocks: 5 },
+  { time: '15s ago', query: 'baby food puree vitamix', audience: 'Parents', blocks: 4 },
+  { time: '22s ago', query: 'commercial blender restaurant', audience: 'Pro', blocks: 7 },
+  { time: '30s ago', query: 'gift for mom who cooks', audience: 'Gift', blocks: 5 },
+  { time: '38s ago', query: 'hot soup blender safe', audience: 'Health', blocks: 4 },
+  { time: '44s ago', query: 'keto smoothie meal prep', audience: 'Health', blocks: 5 },
+  { time: '51s ago', query: 'vitamix vs ninja comparison', audience: 'Gift', blocks: 6 },
+];
+
+const EXTRA_QUERIES = [
+  { query: 'toddler smoothie picky eater', audience: 'Parents', blocks: 4 },
+  { query: 'meal prep weekly soups', audience: 'Health', blocks: 5 },
+  { query: 'self-cleaning blender easy', audience: 'Parents', blocks: 3 },
+  { query: 'acai bowl thick consistency', audience: 'Health', blocks: 4 },
+  { query: 'blender under 300 dollars', audience: 'Gift', blocks: 5 },
+  { query: 'restaurant grade blender home', audience: 'Pro', blocks: 7 },
+  { query: 'vitamix refurbished worth it', audience: 'Gift', blocks: 5 },
+  { query: 'wedding registry blender', audience: 'Gift', blocks: 5 },
+  { query: 'protein shake gym morning', audience: 'Health', blocks: 4 },
+  { query: 'juicing vs blending health', audience: 'Health', blocks: 6 },
+  { query: 'quiet blender apartment', audience: 'Parents', blocks: 4 },
+  { query: 'nut butter smooth grind', audience: 'Pro', blocks: 5 },
+  { query: 'frozen cocktails blender', audience: 'Gift', blocks: 4 },
+  { query: 'green smoothie beginner', audience: 'Health', blocks: 4 },
+];
+
+/* ── SVG Icons (Spectrum-style outline) ── */
+
+const ICONS = {
+  home: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l7-5 7 5v8a1 1 0 01-1 1H4a1 1 0 01-1-1V8z"/><path d="M8 17V10h4v7"/></svg>',
+  chart: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16H4V4"/><path d="M4 12l4-4 3 3 5-5"/></svg>',
+  content: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7h6M7 10h4M7 13h5"/></svg>',
+  target: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3.5"/><circle cx="10" cy="10" r="0.5" fill="currentColor"/></svg>',
+  layers: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2L2 7l8 5 8-5-8-5z"/><path d="M2 13l8 5 8-5"/><path d="M2 10l8 5 8-5"/></svg>',
+  assets: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="7.5" cy="7.5" r="1.5"/><path d="M17 12l-4-4L5 17"/></svg>',
+  chat: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12a1 1 0 011 1v8a1 1 0 01-1 1H7l-3 3V5a1 1 0 011-1z"/></svg>',
+  settings: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M16 10h2M2 10h2M14.5 5.5l1.5-1.5M4 16l1.5-1.5M14.5 14.5l1.5 1.5M4 4l1.5 1.5"/></svg>',
+  bell: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17.5a1.5 1.5 0 003 0H7a1.5 1.5 0 003 0zM15 11V8a5 5 0 00-10 0v3l-2 3h14l-2-3z"/></svg>',
+  help: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M7.5 7.5a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><circle cx="10" cy="14" r="0.5" fill="currentColor"/></svg>',
+  grid: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="3" width="5.5" height="5.5" rx="1"/><rect x="3" y="11.5" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1"/></svg>',
+  filter: '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h14M6 10h8M9 15h2"/></svg>',
+  dotsH: '<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><circle cx="5" cy="10" r="1.25"/><circle cx="10" cy="10" r="1.25"/><circle cx="15" cy="10" r="1.25"/></svg>',
+  trendUp: '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l3-3 2 2 3-4M7 3h3v3"/></svg>',
+  spark: '<svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path d="M10 1l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6L10 13.4 4.9 16.2l1.2-5.6L2 6.8l5.6-.6L10 1z"/></svg>',
+  arrowRight: '<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h10M11 6l4 4-4 4"/></svg>',
+};
+
+/* ── Rendering helpers ── */
+
+function colorForScore(score) {
+  // 0-40 red, 40-70 amber, 70-100 green. Return { bg, ink }.
+  if (score >= 70) {
+    const strength = (score - 70) / 30; // 0..1
+    const alpha = 0.12 + strength * 0.55;
+    const ink = score >= 85 ? '#0a3b28' : '#0d4f36';
+    return { bg: `rgba(7, 147, 85, ${alpha.toFixed(3)})`, ink, tone: 'good' };
+  }
+  if (score >= 40) {
+    const strength = (score - 40) / 30;
+    const alpha = 0.10 + strength * 0.35;
+    return { bg: `rgba(230, 134, 25, ${alpha.toFixed(3)})`, ink: '#7a4100', tone: 'mid' };
+  }
+  const strength = 1 - score / 40;
+  const alpha = 0.12 + strength * 0.40;
+  return { bg: `rgba(215, 50, 32, ${alpha.toFixed(3)})`, ink: '#5a1008', tone: 'low' };
+}
+
+function sparkline(data, { w = 68, h = 20, stroke = '#3b63fb' } = {}) {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const step = w / (data.length - 1);
+  const pts = data.map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * (h - 3) - 1.5).toFixed(1)}`).join(' ');
+  const last = data[data.length - 1];
+  const lx = (w).toFixed(1);
+  const ly = (h - ((last - min) / range) * (h - 3) - 1.5).toFixed(1);
+  return `<svg class="dd2-spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lx}" cy="${ly}" r="2" fill="${stroke}"/>
+  </svg>`;
+}
+
+function audiencePill(audience) {
+  return `<span class="dd2-aud-pill dd2-aud-${audience.toLowerCase()}">${audience}</span>`;
+}
+
+/* ── Shell ── */
+
+function buildShell() {
+  return `
+    <header class="dd2-header" role="banner">
+      <div class="dd2-header-left">
+        <button class="dd2-header-menu" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+        <div class="dd2-header-logo">
+          <svg width="24" height="20" viewBox="0 0 24 20" fill="none">
+            <path d="M9.2 0H0v20l9.2-20zM14.8 0H24v20l-9.2-20zM12 7.4L16.6 20h-3.4l-1.4-3.8H8.2L12 7.4z" fill="#eb1000"/>
+          </svg>
+        </div>
+        <span class="dd2-header-title">Adobe Experience Manager</span>
+        <span class="dd2-header-sep">/</span>
+        <span class="dd2-header-project">Project Page Turner</span>
+        <span class="dd2-header-sep">/</span>
+        <span class="dd2-header-section">Content Intelligence</span>
+      </div>
+      <div class="dd2-header-right">
+        <div class="dd2-env">
+          <span class="dd2-env-dot"></span>
+          <span>Production · vitamix.com</span>
+        </div>
+        <button class="dd2-header-action" aria-label="Help">${ICONS.help}</button>
+        <button class="dd2-header-action" aria-label="Notifications">
+          ${ICONS.bell}
+          <span class="dd2-bell-dot"></span>
+        </button>
+        <button class="dd2-header-action" aria-label="Apps">${ICONS.grid}</button>
+        <div class="dd2-avatar">PM</div>
+      </div>
+    </header>
+    <div class="dd2-body">
+      <nav class="dd2-sidebar" role="navigation" aria-label="Main">
+        <button class="dd2-nav-item dd2-nav-step dd2-nav-active" data-step="1" aria-label="Performance matrix" aria-current="page">${ICONS.chart}</button>
+        <button class="dd2-nav-item dd2-nav-step" data-step="2" aria-label="Gaps and opportunities">${ICONS.target}</button>
+        <button class="dd2-nav-item" aria-label="Content">${ICONS.content}</button>
+        <button class="dd2-nav-item" aria-label="Experiments">${ICONS.layers}</button>
+        <button class="dd2-nav-item" aria-label="Assets">${ICONS.assets}</button>
+        <button class="dd2-nav-item" aria-label="Conversations">${ICONS.chat}</button>
+        <div class="dd2-sidebar-spacer"></div>
+        <button class="dd2-nav-item" aria-label="Settings">${ICONS.settings}</button>
+      </nav>
+      <main class="dd2-main" role="main">
+        <div class="dd2-content" id="dd2-content"></div>
+      </main>
+    </div>`;
+}
+
+/* ── KPI strip ── */
+
+function buildKpis() {
+  return `
+    <div class="dd2-kpis">
+      ${KPIS.map((k) => `
+        <div class="dd2-kpi">
+          <div class="dd2-kpi-label">${k.label}</div>
+          <div class="dd2-kpi-main">
+            <div class="dd2-kpi-value">${k.value}</div>
+            ${sparkline(k.spark, { stroke: '#3b63fb' })}
+          </div>
+          <div class="dd2-kpi-trend dd2-trend-${k.dir}">${ICONS.trendUp}<span>${k.trend}</span><span class="dd2-kpi-trend-sub">vs. last month</span></div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+/* ── Matrix ── */
+
+function buildMatrix() {
+  // Column totals (averages)
+  const colAvgs = AUDIENCES.map((_, ci) => {
+    const sum = CONTENT_ROWS.reduce((acc, r) => acc + r.scores[ci], 0);
+    return Math.round(sum / CONTENT_ROWS.length);
+  });
+
+  return `
+    <section class="dd2-matrix-card">
+      <header class="dd2-card-head">
+        <div class="dd2-card-head-left">
+          <h2 class="dd2-card-title">Which content works, for whom</h2>
+          <span class="dd2-card-meta">Engagement score · ${CONTENT_ROWS.length} blocks × ${AUDIENCES.length} audiences</span>
+        </div>
+        <div class="dd2-card-head-right">
+          <div class="dd2-legend">
+            <span class="dd2-legend-item"><i class="dd2-legend-swatch" style="background:rgba(7,147,85,0.55)"></i>Strong</span>
+            <span class="dd2-legend-item"><i class="dd2-legend-swatch" style="background:rgba(230,134,25,0.35)"></i>Mixed</span>
+            <span class="dd2-legend-item"><i class="dd2-legend-swatch" style="background:rgba(215,50,32,0.45)"></i>Weak</span>
+          </div>
+          <button class="dd2-icon-btn" aria-label="More">${ICONS.dotsH}</button>
+        </div>
+      </header>
+
+      <div class="dd2-matrix">
+        <div class="dd2-matrix-grid">
+          <div class="dd2-mx-corner">
+            <span class="dd2-mx-corner-row">Content block</span>
+            <span class="dd2-mx-corner-col">Audience <span aria-hidden="true">→</span></span>
+          </div>
+          ${AUDIENCES.map((a) => `
+            <div class="dd2-mx-col-head">
+              <span class="dd2-mx-col-label">${a.label}</span>
+              <span class="dd2-mx-col-n">n = ${(Math.round((300 + Math.random() * 900)))}</span>
+            </div>
+          `).join('')}
+          <div class="dd2-mx-col-head dd2-mx-avg-head">
+            <span class="dd2-mx-col-label">Avg.</span>
+          </div>
+
+          ${CONTENT_ROWS.map((r) => {
+    const rowAvg = Math.round(r.scores.reduce((a, b) => a + b, 0) / r.scores.length);
+    return `
+              <div class="dd2-mx-row-head">
+                <span class="dd2-mx-row-label">${r.label}</span>
+                <span class="dd2-mx-row-trend">${ICONS.trendUp}<span>${r.trend}</span></span>
+              </div>
+              ${r.scores.map((score, ci) => {
+      const c = colorForScore(score);
+      const isFocus = r.id === 'recipe-cards' && (ci === 0 || ci === 2);
+      return `
+                  <div class="dd2-mx-cell ${isFocus ? 'dd2-mx-cell-focus' : ''}" data-cell="${r.id}:${AUDIENCES[ci].id}" style="background:${c.bg};color:${c.ink}">
+                    <span class="dd2-mx-score">${score}</span>
+                    <span class="dd2-mx-bar"><i style="width:${score}%;background:${c.ink}"></i></span>
+                  </div>`;
+    }).join('')}
+              <div class="dd2-mx-avg-cell">${rowAvg}</div>`;
+  }).join('')}
+        </div>
+
+        <div class="dd2-matrix-footer">
+          <div class="dd2-mx-foot-label">Column avg.</div>
+          ${colAvgs.map((v) => `<div class="dd2-mx-foot-cell">${v}</div>`).join('')}
+          <div class="dd2-mx-foot-cell dd2-mx-foot-total">${Math.round(colAvgs.reduce((a, b) => a + b, 0) / colAvgs.length)}</div>
+        </div>
+      </div>
+    </section>`;
+}
+
+/* ── Insight rail ── */
+
+function buildInsights() {
+  return `
+    <aside class="dd2-insights">
+      <header class="dd2-card-head">
+        <div class="dd2-card-head-left">
+          <h2 class="dd2-card-title">Why this matters</h2>
+          <span class="dd2-card-meta">Auto-surfaced signals</span>
+        </div>
+        <span class="dd2-beta-tag">AI</span>
+      </header>
+      <ol class="dd2-insight-list">
+        ${INSIGHTS.map((i, idx) => `
+          <li class="dd2-insight dd2-insight-${i.kind}">
+            <span class="dd2-insight-num">${idx + 1}</span>
+            <div class="dd2-insight-body">
+              <div class="dd2-insight-title">${i.title}</div>
+              <p class="dd2-insight-text">${i.body}</p>
+              <div class="dd2-insight-actions">
+                <button class="dd2-link-btn">Show on matrix ${ICONS.arrowRight}</button>
+              </div>
+            </div>
+          </li>
+        `).join('')}
+      </ol>
+    </aside>`;
+}
+
+/* ── Live ticker (bottom strip) ── */
+
+function buildTicker() {
+  return `
+    <section class="dd2-ticker-card">
+      <header class="dd2-card-head">
+        <div class="dd2-card-head-left">
+          <h2 class="dd2-card-title">Live query stream</h2>
+          <span class="dd2-card-meta">Each query &rarr; an audience &rarr; a generated page</span>
+        </div>
+        <div class="dd2-ticker-legend">
+          ${AUDIENCES.map((a) => `<span class="dd2-aud-pill dd2-aud-${a.id}">${a.short}</span>`).join('')}
+        </div>
+      </header>
+      <div class="dd2-ticker" id="dd2-ticker">
+        ${INITIAL_FEED.map((f) => `
+          <div class="dd2-ticker-row">
+            <span class="dd2-ticker-time">${f.time}</span>
+            <span class="dd2-ticker-query">&ldquo;${f.query}&rdquo;</span>
+            <span class="dd2-ticker-arrow">${ICONS.arrowRight}</span>
+            <span class="dd2-aud-pill dd2-aud-${f.audience.toLowerCase()}">${f.audience}</span>
+            <span class="dd2-ticker-blocks">${f.blocks} blocks</span>
+            <span class="dd2-ticker-status">Generated</span>
+          </div>
+        `).join('')}
+      </div>
+    </section>`;
+}
+
+/* ── Step 2: Quadrant chart ── */
+
+function buildQuadrantChart() {
+  const W = 1280;
+  const H = 480;
+  const PAD_L = 92;
+  const PAD_R = 40;
+  const PAD_T = 32;
+  const PAD_B = 64;
+  const plotW = W - PAD_L - PAD_R;
+  const plotH = H - PAD_T - PAD_B;
+  const MAX_D = 360;
+  const MAX_S = 100;
+
+  const toX = (d) => PAD_L + (d / MAX_D) * plotW;
+  const toY = (s) => PAD_T + (1 - s / MAX_S) * plotH;
+
+  // Gap quadrant = demand >= 60, satisfaction <= 55
+  const gapX1 = toX(60);
+  const gapX2 = toX(MAX_D);
+  const gapY1 = toY(55);
+  const gapY2 = toY(0);
+
+  const gridXs = [60, 120, 180, 240, 300];
+  const gridYs = [25, 50, 75, 100];
+
+  const tierColor = {
+    good: { fill: 'rgba(7,147,85,0.16)', stroke: '#079355', ink: '#0a5a38' },
+    mid: { fill: 'rgba(230,134,25,0.16)', stroke: '#e68619', ink: '#8a4a00' },
+    gap: { fill: 'rgba(215,50,32,0.18)', stroke: '#d73220', ink: '#5a1008' },
+  };
+
+  const bubbles = TOPICS.map((t) => {
+    const cx = toX(t.demand);
+    const cy = toY(t.sat);
+    const r = 14 + Math.min(26, t.demand / 14);
+    const c = tierColor[t.tier];
+    return { ...t, cx, cy, r, c };
+  });
+
+  // Labels positioned to avoid overlap
+  const labels = bubbles.map((b) => {
+    // simple heuristic: put labels to the right if there's room, else left
+    const side = b.cx > toX(220) ? 'left' : 'right';
+    const lx = side === 'right' ? b.cx + b.r + 8 : b.cx - b.r - 8;
+    const anchor = side === 'right' ? 'start' : 'end';
+    return { ...b, lx, ly: b.cy + 4, anchor };
+  });
+
+  return `
+    <svg class="dd2-quadrant" viewBox="0 0 ${W} ${H}" role="img" aria-label="Demand vs. satisfaction quadrant">
+      <!-- Gap quadrant background -->
+      <rect x="${gapX1}" y="${gapY1}" width="${gapX2 - gapX1}" height="${gapY2 - gapY1}" fill="rgba(215,50,32,0.07)"/>
+      <text x="${gapX2 - 14}" y="${gapY1 + 22}" text-anchor="end" font-size="12" font-weight="700" fill="#d73220" letter-spacing="0.14em">OPPORTUNITY QUADRANT</text>
+
+      <!-- Gridlines -->
+      ${gridXs.map((d) => `<line x1="${toX(d)}" y1="${PAD_T}" x2="${toX(d)}" y2="${H - PAD_B}" stroke="#ededed" stroke-width="1"/>`).join('')}
+      ${gridYs.map((s) => `<line x1="${PAD_L}" y1="${toY(s)}" x2="${W - PAD_R}" y2="${toY(s)}" stroke="#ededed" stroke-width="1"/>`).join('')}
+
+      <!-- Axes -->
+      <line x1="${PAD_L}" y1="${H - PAD_B}" x2="${W - PAD_R}" y2="${H - PAD_B}" stroke="#b3b3b3" stroke-width="1.25"/>
+      <line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${H - PAD_B}" stroke="#b3b3b3" stroke-width="1.25"/>
+
+      <!-- X labels -->
+      ${gridXs.map((d) => `<text x="${toX(d)}" y="${H - PAD_B + 20}" text-anchor="middle" font-size="12" fill="#8a8a8a">${d}</text>`).join('')}
+      <text x="${(PAD_L + W - PAD_R) / 2}" y="${H - 14}" text-anchor="middle" font-size="13" font-weight="600" fill="#4a4a4a">Demand (queries per week) →</text>
+
+      <!-- Y labels -->
+      ${gridYs.map((s) => `<text x="${PAD_L - 12}" y="${toY(s) + 4}" text-anchor="end" font-size="12" fill="#8a8a8a">${s}%</text>`).join('')}
+      <text transform="translate(22 ${(PAD_T + H - PAD_B) / 2}) rotate(-90)" text-anchor="middle" font-size="13" font-weight="600" fill="#4a4a4a">Content satisfaction ↑</text>
+
+      <!-- Bubbles -->
+      ${bubbles.map((b) => `
+        <g class="dd2-bubble-g ${b.tier === 'gap' ? 'dd2-bubble-gap' : ''}" data-topic="${b.id}">
+          <circle cx="${b.cx}" cy="${b.cy}" r="${b.r}" fill="${b.c.fill}" stroke="${b.c.stroke}" stroke-width="1.75"/>
+          ${b.cited ? `<circle cx="${b.cx}" cy="${b.cy}" r="${b.r + 7}" fill="none" stroke="${b.c.stroke}" stroke-width="1.25" stroke-dasharray="3 3" opacity="0.65"/>` : ''}
+        </g>
+      `).join('')}
+
+      <!-- Labels -->
+      ${labels.map((b) => `
+        <text x="${b.lx}" y="${b.ly}" text-anchor="${b.anchor}" font-size="13" font-weight="${b.tier === 'gap' ? 700 : 500}" fill="${b.c.ink}">${b.label}</text>
+      `).join('')}
+    </svg>
+  `;
+}
+
+function buildStep2() {
+  return `
+    <div class="dd2-view dd2-view-step2 dd2-hidden" id="dd2-step2">
+      ${buildPageHeader2()}
+
+      <div class="dd2-split-2">
+        <section class="dd2-quadrant-card">
+          <header class="dd2-card-head">
+            <div class="dd2-card-head-left">
+              <h2 class="dd2-card-title">Where your content falls short</h2>
+              <span class="dd2-card-meta">Every topic the system inferred this week, plotted by demand and satisfaction</span>
+            </div>
+            <div class="dd2-card-head-right">
+              <div class="dd2-legend">
+                <span class="dd2-legend-item"><i class="dd2-legend-swatch" style="background:rgba(7,147,85,0.35)"></i>Working</span>
+                <span class="dd2-legend-item"><i class="dd2-legend-swatch" style="background:rgba(230,134,25,0.35)"></i>Watch</span>
+                <span class="dd2-legend-item"><i class="dd2-legend-swatch" style="background:rgba(215,50,32,0.45)"></i>Gap</span>
+              </div>
+            </div>
+          </header>
+          <div class="dd2-quadrant-wrap">
+            ${buildQuadrantChart()}
+          </div>
+        </section>
+
+        <aside class="dd2-gap-rail">
+          <header class="dd2-card-head">
+            <div class="dd2-card-head-left">
+              <h2 class="dd2-card-title">Top gaps this week</h2>
+              <span class="dd2-card-meta">High demand · low satisfaction</span>
+            </div>
+            <span class="dd2-beta-tag">AI</span>
+          </header>
+          <ol class="dd2-gap-list">
+            ${GAP_EVIDENCE.map((g, i) => `
+              <li class="dd2-gap-item" data-topic="${g.id}">
+                <div class="dd2-gap-item-head">
+                  <span class="dd2-gap-rank">${i + 1}</span>
+                  <span class="dd2-gap-tag dd2-gap-tag-${i === 0 ? 'vol' : i === 1 ? 'rise' : 'deep'}">${g.tag}</span>
+                </div>
+                <div class="dd2-gap-title">${g.title}</div>
+                <div class="dd2-gap-stats">
+                  <span class="dd2-gap-stat"><strong>${g.queries}</strong><em>queries/wk</em></span>
+                  <span class="dd2-gap-stat"><strong>${g.sat}%</strong><em>satisfaction</em></span>
+                  <span class="dd2-gap-stat dd2-gap-delta"><strong>${g.delta}</strong></span>
+                </div>
+                <div class="dd2-gap-samples">
+                  ${g.sampleQueries.map((q) => `<span class="dd2-gap-sample">&ldquo;${q}&rdquo;</span>`).join('')}
+                </div>
+              </li>
+            `).join('')}
+          </ol>
+        </aside>
+      </div>
+
+      <section class="dd2-opps-card">
+        <header class="dd2-card-head">
+          <div class="dd2-card-head-left">
+            <h2 class="dd2-card-title">Your content roadmap</h2>
+            <span class="dd2-card-meta">Ranked by projected impact · written by your visitors</span>
+          </div>
+          <div class="dd2-card-head-right">
+            <button class="dd2-btn dd2-btn-ghost">Sort: impact ↓</button>
+            <button class="dd2-btn dd2-btn-primary">Export roadmap</button>
+          </div>
+        </header>
+        <div class="dd2-opps-grid">
+          ${OPPORTUNITIES.map((o) => `
+            <article class="dd2-opp-card dd2-opp-rank-${o.rank}">
+              <div class="dd2-opp-top">
+                <div class="dd2-opp-rank-badge">#${o.rank}</div>
+                <div class="dd2-opp-effort">Effort: <strong>${o.effort}</strong></div>
+              </div>
+              <h3 class="dd2-opp-title">${o.title}</h3>
+              <div class="dd2-opp-metric">
+                <div class="dd2-opp-metric-value">+${o.metric.value}<span class="dd2-opp-metric-unit">${o.metric.unit}</span></div>
+                <div class="dd2-opp-metric-label">${o.metric.label}</div>
+                <div class="dd2-opp-metric-bar">
+                  <i style="width:${o.metric.value * 4}%"></i>
+                </div>
+              </div>
+              <div class="dd2-opp-evidence">${o.evidence}</div>
+              <div class="dd2-opp-meta">
+                <div class="dd2-opp-segments">
+                  ${o.segments.map((s) => `<span class="dd2-opp-seg">${s}</span>`).join('')}
+                </div>
+                <div class="dd2-opp-confidence">
+                  <span class="dd2-opp-conf-label">Confidence</span>
+                  <span class="dd2-opp-conf-bar"><i style="width:${o.confidence}%"></i></span>
+                  <span class="dd2-opp-conf-pct">${o.confidence}%</span>
+                </div>
+              </div>
+              <div class="dd2-opp-actions">
+                <button class="dd2-btn dd2-btn-ghost">View evidence</button>
+                <button class="dd2-btn dd2-btn-primary">Create brief</button>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </section>
+    </div>`;
+}
+
+function buildPageHeader2() {
+  return `
+    <div class="dd2-page-head">
+      <div class="dd2-page-head-titles">
+        <div class="dd2-eyebrow">
+          <span class="dd2-updated">${TOPICS.filter((t) => t.tier === 'gap').length} gaps surfaced · ${OPPORTUNITIES.length} ranked opportunities</span>
+        </div>
+        <h1 class="dd2-page-title">Gaps &amp; opportunities</h1>
+        <p class="dd2-page-sub">The system generates a page for every intent &mdash; which means it sees <strong>exactly</strong> where your content falls short, and what to build next.</p>
+      </div>
+      <div class="dd2-page-head-actions">
+        <button class="dd2-btn dd2-btn-ghost">${ICONS.filter}<span>Filters</span></button>
+        <button class="dd2-btn dd2-btn-primary"><span>Export roadmap</span></button>
+      </div>
+    </div>`;
+}
+
+/* ── View ── */
+
+function buildView() {
+  return `
+    <div class="dd2-view dd2-view-step1" id="dd2-step1">
+      ${buildPageHeaderStep1()}
+      ${buildKpis()}
+      <div class="dd2-split">
+        ${buildMatrix()}
+        ${buildInsights()}
+      </div>
+      ${buildTicker()}
+    </div>
+    ${buildStep2()}`;
+}
+
+function buildPageHeaderStep1() {
+  return `
+    <div class="dd2-page-head">
+      <div class="dd2-page-head-titles">
+        <div class="dd2-eyebrow">
+          <span class="dd2-live">
+            <span class="dd2-live-dot"></span>
+            Live
+          </span>
+          <span class="dd2-sessions"><span id="dd2-session-count">2,487</span> sessions today</span>
+          <span class="dd2-sep-dot"></span>
+          <span class="dd2-updated">Updated <span id="dd2-updated-secs">3</span>s ago</span>
+        </div>
+        <h1 class="dd2-page-title">Content performance matrix</h1>
+        <p class="dd2-page-sub">Every block the system generates, scored for every audience it discovers &mdash; in real time.</p>
+      </div>
+      <div class="dd2-page-head-actions">
+        <button class="dd2-btn dd2-btn-ghost">${ICONS.filter}<span>Filters</span></button>
+        <button class="dd2-btn dd2-btn-primary"><span>Export report</span></button>
+      </div>
+    </div>
+    <div class="dd2-filter-row">
+      ${['All audiences', ...AUDIENCES.map((a) => a.label.replace('\u200b', ''))].map((p, i) => `<button class="dd2-pill ${i === 0 ? 'dd2-pill-active' : ''}">${p}</button>`).join('')}
+      <div class="dd2-filter-right">
+        <span class="dd2-filter-label">Time range</span>
+        <button class="dd2-pill dd2-pill-active">Last 24 h</button>
+        <button class="dd2-pill">7 d</button>
+        <button class="dd2-pill">30 d</button>
+      </div>
+    </div>`;
+}
+
+/* ── Live behaviors ── */
+
+function startTicker() {
+  const ticker = document.getElementById('dd2-ticker');
+  if (!ticker) return;
+  let idx = 0;
+  let elapsed = 0;
+
+  function addRow() {
+    const q = EXTRA_QUERIES[idx % EXTRA_QUERIES.length];
+    const row = document.createElement('div');
+    row.className = 'dd2-ticker-row dd2-ticker-new';
+    row.innerHTML = `
+      <span class="dd2-ticker-time">just now</span>
+      <span class="dd2-ticker-query">&ldquo;${q.query}&rdquo;</span>
+      <span class="dd2-ticker-arrow">${ICONS.arrowRight}</span>
+      <span class="dd2-aud-pill dd2-aud-${q.audience.toLowerCase()}">${q.audience}</span>
+      <span class="dd2-ticker-blocks">${q.blocks} blocks</span>
+      <span class="dd2-ticker-status">Generated</span>`;
+    ticker.prepend(row);
+
+    elapsed += 1;
+    const rows = ticker.querySelectorAll('.dd2-ticker-row');
+    rows.forEach((r, i) => {
+      if (i === 0) return;
+      const t = r.querySelector('.dd2-ticker-time');
+      if (!t) return;
+      const secs = i * 4 + elapsed;
+      t.textContent = secs < 60 ? `${secs}s ago` : `${Math.floor(secs / 60)}m ago`;
+    });
+
+    while (ticker.children.length > 10) {
+      ticker.removeChild(ticker.lastChild);
+    }
+
+    idx += 1;
+    const delay = 1200 + Math.random() * 4000;
+    setTimeout(addRow, delay);
+  }
+
+  setTimeout(addRow, 1500);
+}
+
+function startSessionCounter() {
+  const countEl = document.getElementById('dd2-session-count');
+  const updatedEl = document.getElementById('dd2-updated-secs');
+  if (!countEl) return;
+  let n = 2487;
+  let updated = 3;
+
+  setInterval(() => {
+    const bump = 1 + Math.floor(Math.random() * 4);
+    n += bump;
+    countEl.textContent = n.toLocaleString();
+    updated = 0;
+    if (updatedEl) updatedEl.textContent = String(updated);
+  }, 2600);
+
+  setInterval(() => {
+    updated += 1;
+    if (updatedEl) updatedEl.textContent = String(updated);
+  }, 1000);
+}
+
+function wireInsightJumps() {
+  document.querySelectorAll('.dd2-insight .dd2-link-btn').forEach((btn, idx) => {
+    btn.addEventListener('click', () => {
+      const insight = INSIGHTS[idx];
+      if (!insight) return;
+      document.querySelectorAll('.dd2-mx-cell').forEach((c) => c.classList.remove('dd2-mx-cell-pulse'));
+      insight.cells.forEach((id) => {
+        const cell = document.querySelector(`.dd2-mx-cell[data-cell="${id}"]`);
+        if (cell) {
+          cell.classList.add('dd2-mx-cell-pulse');
+          setTimeout(() => cell.classList.remove('dd2-mx-cell-pulse'), 1800);
+        }
+      });
+    });
+  });
+}
+
+/* ── Step navigation ── */
+
+function showStep(n) {
+  const step1 = document.getElementById('dd2-step1');
+  const step2 = document.getElementById('dd2-step2');
+  if (!step1 || !step2) return;
+  if (n === 2) {
+    step1.classList.add('dd2-hidden');
+    step2.classList.remove('dd2-hidden');
+    step2.classList.add('dd2-fade-in');
+    setTimeout(() => step2.classList.remove('dd2-fade-in'), 400);
+  } else {
+    step2.classList.add('dd2-hidden');
+    step1.classList.remove('dd2-hidden');
+    step1.classList.add('dd2-fade-in');
+    setTimeout(() => step1.classList.remove('dd2-fade-in'), 400);
+  }
+  document.querySelectorAll('.dd2-nav-step').forEach((btn) => {
+    const step = parseInt(btn.getAttribute('data-step'), 10);
+    const active = step === n;
+    btn.classList.toggle('dd2-nav-active', active);
+    if (active) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
+  });
+  const main = document.querySelector('.dd2-main');
+  if (main) main.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function wireStepper() {
+  document.querySelectorAll('.dd2-nav-step').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const step = parseInt(btn.getAttribute('data-step'), 10);
+      if (step) showStep(step);
+    });
+  });
+}
+
+function wireKeyboard() {
+  let current = 1;
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey && (e.key === '1' || e.code === 'Digit1')) {
+      e.preventDefault();
+      current = 1;
+      showStep(1);
+    } else if (e.altKey && (e.key === '2' || e.code === 'Digit2')) {
+      e.preventDefault();
+      current = 2;
+      showStep(2);
+    } else if (!e.altKey && (e.key === 'ArrowRight' || e.key === ' ')) {
+      if (e.target && e.target.tagName === 'INPUT') return;
+      e.preventDefault();
+      current = Math.min(2, current + 1);
+      showStep(current);
+    } else if (!e.altKey && e.key === 'ArrowLeft') {
+      e.preventDefault();
+      current = Math.max(1, current - 1);
+      showStep(current);
+    }
+  });
+}
+
+/* ── Main ── */
+
+export default function decorate(block) {
+  block.innerHTML = '';
+  const shell = document.createElement('div');
+  shell.className = 'dd2-shell';
+  shell.innerHTML = buildShell();
+  block.appendChild(shell);
+
+  const content = shell.querySelector('#dd2-content');
+  content.innerHTML = buildView();
+
+  startTicker();
+  startSessionCounter();
+  wireInsightJumps();
+  wireStepper();
+  wireKeyboard();
+
+  // URL param to deep-link to step
+  const stepParam = new URLSearchParams(window.location.search).get('step');
+  if (stepParam === '2') showStep(2);
+}

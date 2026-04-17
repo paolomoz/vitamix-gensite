@@ -452,6 +452,7 @@ Return ONLY valid JSON:
         model: 'gpt-oss-120b',
         max_tokens: 1024,
         temperature: 0.7,
+        service_tier: 'priority',
         messages: [{ role: 'user', content: prompt }],
       }),
     });

@@ -104,6 +104,7 @@ Respond with JSON only:
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 150,
           temperature: 0,
+          service_tier: 'priority',
         }),
       });
 

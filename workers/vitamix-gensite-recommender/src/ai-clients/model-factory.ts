@@ -214,6 +214,7 @@ export class ModelFactory {
           model: config.model,
           max_tokens: config.maxTokens || 4096,
           temperature: config.temperature || 0.8,
+          service_tier: 'priority',
           messages: messages.map((m) => ({
             role: m.role,
             content: m.content,

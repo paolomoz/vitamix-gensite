@@ -1331,7 +1331,7 @@
 
   // Use localhost if we're on localhost, otherwise use aem.live
   function getDemoBase() {
-    if (window.location.hostname === 'localhost') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === 'vitamix.of1.live') {
       return window.location.origin;
     }
     return DEMO_SITE;
@@ -1487,6 +1487,11 @@
     window.history.replaceState({}, '', '/');
     var prefillText = prefillParam === 'iliza' ? ACT3_QUERY : ACT2_QUERY;
     setTimeout(function() { demoPrefillQuery(prefillText); }, 2000);
+  }
+
+  // On vitamix.of1.live homepage, auto-arm → for Act 2 typing
+  if (window.location.origin === 'https://vitamix.of1.live' && window.location.pathname === '/' && !pendingQueryAct) {
+    pendingQueryAct = 2;
   }
 
   // ---- Act 4 sub-steps (advance with → arrow key) ----
@@ -1655,6 +1660,18 @@
         e.stopPropagation();
         advanceAct4();
         saveAct4State();
+        return;
+      }
+    }
+
+    // Down arrow: append " compare the best blenders" to current query
+    if (e.code === 'ArrowDown' && !e.altKey && !e.metaKey && !e.ctrlKey) {
+      var input = findQueryInput();
+      if (input) {
+        e.preventDefault();
+        e.stopPropagation();
+        input.value += ' compare the best blenders';
+        input.focus();
         return;
       }
     }

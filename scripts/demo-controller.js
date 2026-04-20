@@ -205,6 +205,18 @@ function handleKeydown(e) {
     return;
   }
 
+  // Down arrow: append " compare the best blenders" to current query
+  if (e.code === 'ArrowDown' && !e.altKey && !e.metaKey && !e.ctrlKey) {
+    const input = document.querySelector('#vitamix-form input, #cerebras-form input, .query-form input[type="text"]');
+    if (input) {
+      e.preventDefault();
+      const suffix = ' compare the best blenders';
+      input.value += suffix;
+      input.focus();
+      return;
+    }
+  }
+
   // Require Option (Alt) key
   if (!e.altKey) return;
 
@@ -284,6 +296,10 @@ export default function initDemoController() {
   document.addEventListener('keydown', handleKeydown);
   checkPrefill();
   watchHeroOverride();
+
+  if (window.location.origin === 'https://vitamix.of1.live' && window.location.pathname === '/') {
+    pendingQueryAct = 2;
+  }
   // eslint-disable-next-line no-console
   console.log('[Demo] Controller ready — Option+0 for HUD');
 }

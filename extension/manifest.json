@@ -24,6 +24,7 @@
     "*://vitamix.com/*",
     "*://main--vitamix-gensite--paolomoz.aem.live/*",
     "*://*.aem.live/*",
+    "*://vitamix.of1.live/*",
     "http://localhost:3000/*"
   ],
   "background": {
@@ -36,6 +37,7 @@
         "*://www.vitamix.com/*",
         "*://vitamix.com/*",
         "*://main--vitamix-gensite--paolomoz.aem.live/*",
+        "*://vitamix.of1.live/*",
         "http://localhost:3000/*"
       ],
       "js": ["content-script.js"],
@@ -55,6 +57,7 @@
         "*://www.vitamix.com/*",
         "*://vitamix.com/*",
         "*://main--vitamix-gensite--paolomoz.aem.live/*",
+        "*://vitamix.of1.live/*",
         "http://localhost:3000/*"
       ]
     }

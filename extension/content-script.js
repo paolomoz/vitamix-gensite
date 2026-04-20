@@ -1360,6 +1360,9 @@
       }).join('')
       + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;font-size:11px;color:#888;margin-bottom:4px;">→ starts typing (Acts 2-3) or advances (Act 4):</div>'
       + '<div style="font-size:11px;color:#666;padding-left:8px;">Scroll → X4 → X5 → Recipes → Scroll categories → Soups → Recipes → Smoothies → Open search → Type → Submit</div>'
+      + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;font-size:11px;color:#888;margin-bottom:4px;">Local backups (localhost:3000):</div>'
+      + '<div style="display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u2325W</span><span>Act 2 generated page</span></div>'
+      + '<div style="display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u2325R</span><span>Act 4 generated page</span></div>'
       + '<div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;gap:16px;"><span style="opacity:0.6">\u23250</span><span>Toggle this HUD</span></div>';
     document.body.appendChild(hud);
     return hud;
@@ -1667,6 +1670,20 @@
       if (!demoHudEl) demoHudEl = createDemoHUD();
       demoHudVisible = !demoHudVisible;
       demoHudEl.style.display = demoHudVisible ? 'block' : 'none';
+      return;
+    }
+
+    // Option+W: Open local Act 2 backup
+    if (e.code === 'KeyW') {
+      e.preventDefault();
+      window.open('http://localhost:3000/demo/act2', '_blank');
+      return;
+    }
+
+    // Option+R: Open local Act 4 generated page
+    if (e.code === 'KeyR') {
+      e.preventDefault();
+      window.open('http://localhost:3000/demo/act4-generated', '_blank');
       return;
     }
 

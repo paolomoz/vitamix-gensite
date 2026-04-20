@@ -64,6 +64,17 @@ function createHUD() {
         <span>${act.label}</span>
       </div>
     `).join('')}
+    <div style="border-top: 1px solid rgba(255,255,255,0.15); margin-top: 8px; padding-top: 8px; font-size: 11px; color: #888; margin-bottom: 4px;">
+      Local backups (localhost:3000):
+    </div>
+    <div style="display: flex; justify-content: space-between; gap: 16px;">
+      <span style="opacity: 0.6;">⌥W</span>
+      <span>Act 2 generated page</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; gap: 16px;">
+      <span style="opacity: 0.6;">⌥R</span>
+      <span>Act 4 generated page</span>
+    </div>
     <div style="border-top: 1px solid rgba(255,255,255,0.15); margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; gap: 16px;">
       <span style="opacity: 0.6;">⌥0</span>
       <span>Toggle this HUD</span>
@@ -218,6 +229,20 @@ function handleKeydown(e) {
     if (!hudEl) hudEl = createHUD();
     hudVisible = !hudVisible;
     hudEl.style.display = hudVisible ? 'block' : 'none';
+    return;
+  }
+
+  // Option+W: Open local Act 2 backup
+  if (e.code === 'KeyW') {
+    e.preventDefault();
+    window.open('http://localhost:3000/demo/act2', '_blank');
+    return;
+  }
+
+  // Option+R: Open local Act 4 generated page
+  if (e.code === 'KeyR') {
+    e.preventDefault();
+    window.open('http://localhost:3000/demo/act4-generated', '_blank');
     return;
   }
 

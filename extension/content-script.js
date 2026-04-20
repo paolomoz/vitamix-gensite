@@ -601,7 +601,7 @@
     // TODO: DEMO WORKAROUND — hardcoded URL to avoid hint.query containing stale/wrong context.
     // Proper fix: regenerate hint query on session clear, or use short intent + ?ctx= signals.
     ctaButton.addEventListener('click', () => {
-      var demoUrl = 'http://localhost:3000/?q=Looking%20to%20buy%20a%20Vitamix%20blender%20-%20can%20you%20compare%20X5%20vs%20X4%20and%20others%20if%20you%20think%20they%20make%20sense%20to%20look%20into.%20I%20have%20a%20family%20of%204%20-%20my%20older%20son%20is%20into%20smoothies%20and%20my%20younger%20son%20does%27t%20like%20veggies%20-%20but%20when%20I%20make%20soups%20he%20likes%20them%20-%20even%20if%20they%20are%20green%20looking&preset=all-cerebras&clear=1';
+      var demoUrl = 'https://vitamix.of1.live/?q=Looking%20to%20buy%20a%20Vitamix%20blender%20-%20can%20you%20compare%20X5%20vs%20X4%20and%20others%20if%20you%20think%20they%20make%20sense%20to%20look%20into.%20I%20have%20a%20family%20of%204%20-%20my%20older%20son%20is%20into%20smoothies%20and%20my%20younger%20son%20does%27t%20like%20veggies%20-%20but%20when%20I%20make%20soups%20he%20likes%20them%20-%20even%20if%20they%20are%20green%20looking&preset=all-cerebras&clear=1';
       console.log('[VitamixIntent] Hint CTA clicked, navigating to hardcoded demo URL');
       window.location.href = demoUrl;
     });

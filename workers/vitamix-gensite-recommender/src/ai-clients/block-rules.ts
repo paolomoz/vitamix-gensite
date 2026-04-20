@@ -285,7 +285,14 @@ export const BLOCK_RULES: BlockRule[] = [
       { type: 'keyword', value: '\\bstroke\\b' },
       { type: 'keyword', value: '\\bmobility\\b' },
       { type: 'keyword', value: '\\bgrip\\b' },
-      { type: 'keyword', value: '\\bheavy\\b' },
+      {
+        type: 'keyword',
+        value: '\\bheavy\\b',
+        negativePatterns: [
+          '\\bheavy.{0,10}(use|usage|duty|daily|load|demand|volume)\\b',
+          '\\b(daily|commercial|heavy).{0,10}use\\b',
+        ],
+      },
       { type: 'keyword', value: '\\baging\\b' },
       { type: 'intent', intentType: 'medical' },
       { type: 'intent', intentType: 'accessibility' },

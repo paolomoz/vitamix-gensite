@@ -1337,17 +1337,13 @@
     return DEMO_SITE;
   }
 
-  const DASHBOARD_URL = 'http://localhost:3000/demo/dashboard';
-  const DASHBOARD2_URL = 'http://localhost:3000/demo/dashboard2';
-
   const ACTS = [
     null,
-    { key: '1', label: 'Act 1 — Title Slide' },
+    { key: '1', label: 'Act 1 — Intro', url: 'https://vitamix.of1.live/intro.html' },
     { key: '2', label: 'Act 2 — Query Wow (→ to type)' },
     { key: '3', label: 'Act 3 — Iliza (→ to type)' },
     { key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true },
-    { key: '5', label: 'Act 5 — Content Intelligence', url: DASHBOARD2_URL, dashboard: true },
-    { key: '6', label: 'Act 6 — Gaps & Opportunities', url: DASHBOARD_URL, dashboard: true, dashboardView: 'dd-act6' },
+    { key: '5', label: 'Act 5 — Brand Insights', url: 'https://vitamix.of1.live/dashboard.html' },
   ];
 
   let demoHudVisible = false;
@@ -1439,45 +1435,31 @@
       return;
     }
 
-    if (actNum === 1) {
-      showDemoToast(act.label);
-      // Title slide — always on localhost
-      window.location.href = 'http://localhost:3000/demo/titles3/';
-      return;
-    }
-
-    // Acts 2 & 3: navigate silently, wait for → to trigger typing
+    // Acts 2 & 3: navigate to clear page, wait for → to trigger typing
     if (actNum === 2 || actNum === 3) {
       pendingQueryAct = actNum;
-      if (window.location.pathname !== '/' || window.location.search) {
-        // Navigate to home — clear=1 wipes sessionStorage (previous query context)
-        window.location.href = base + '/?demo-pending=' + actNum + '&clear=1';
+      var clearUrl = base + '/?clear=1';
+      if (window.location.href !== clearUrl) {
+        window.location.href = clearUrl + '&demo-pending=' + actNum;
       }
-      // If already on home, just wait for → to trigger typing
+      // If already on clear page, just wait for → to trigger typing
       return;
     }
 
-    // Acts 5-6: dashboard views
-    if (act.dashboard) {
-      var onDashboard = window.location.pathname.startsWith('/demo/dashboard');
-      if (onDashboard) {
-        // Already on dashboard — switch view via custom event
-        var viewId = act.dashboardView || 'dd-act5';
-        window.dispatchEvent(new CustomEvent('demo-dashboard-view', { detail: viewId }));
-      } else {
-        // Navigate to dashboard, with optional view param
-        var url = act.url || DASHBOARD_URL;
-        if (act.dashboardView) url += '?view=' + act.dashboardView;
-        window.location.href = url;
-      }
+    showDemoToast(act.label);
+    if (act.url) {
+      window.location.href = act.url;
       return;
     }
   }
 
   // Check for demo-pending param on page load (act 2/3 arrived, waiting for →)
-  var pendingParam = new URLSearchParams(window.location.search).get('demo-pending');
+  var demoParams = new URLSearchParams(window.location.search);
+  var pendingParam = demoParams.get('demo-pending');
   if (pendingParam) {
-    window.history.replaceState({}, '', '/');
+    demoParams.delete('demo-pending');
+    var remainingParams = demoParams.toString();
+    window.history.replaceState({}, '', remainingParams ? '/?' + remainingParams : '/');
     pendingQueryAct = parseInt(pendingParam, 10);
   }
 

@@ -8,7 +8,7 @@
  * Only active when no input/textarea is focused.
  */
 
-const SITE_BASE = window.location.origin;
+const SITE_BASE = 'https://vitamix.of1.live';
 const VITAMIX_ASCENT_URL = 'https://www.vitamix.com/us/en_us/shop/ascent-x-series-blenders';
 
 const ACT2_QUERY = 'I need something quiet for morning smoothies — I have a newborn, kitchen is next to the nursery, and my older kid is obsessed with protein shakes.';
@@ -19,13 +19,13 @@ let pendingQueryAct = null; // 2 or 3 — waiting for → to trigger typing
 
 const ACTS = [
   null, // index 0 unused
-  { key: '1', label: 'Act 1 — The Before & Now', url: `${SITE_BASE}/` },
-  { key: '2', label: 'Act 2 — Query Wow (→ to type)', url: `${SITE_BASE}/` },
-  { key: '3', label: 'Act 3 — Iliza (→ to type)', url: `${SITE_BASE}/` },
+  { key: '1', label: 'Act 1 — Intro', url: `${SITE_BASE}/intro.html` },
+  { key: '2', label: 'Act 2 — Query Wow (→ to type)', url: `${SITE_BASE}/?clear=1` },
+  { key: '3', label: 'Act 3 — Iliza (→ to type)', url: `${SITE_BASE}/?clear=1` },
   {
     key: '4', label: 'Act 4 — Browsing (vitamix.com)', url: VITAMIX_ASCENT_URL, external: true,
   },
-  { key: '5', label: 'Act 5 — Brand Insights (ext panel)' },
+  { key: '5', label: 'Act 5 — Brand Insights', url: `${SITE_BASE}/dashboard.html` },
 ];
 
 let hudVisible = false;
@@ -157,24 +157,12 @@ function goToAct(actNum) {
     return;
   }
 
-  // Acts 2 & 3: navigate to home silently, wait for → to trigger typing
+  // Acts 2 & 3: navigate to clear page, wait for → to trigger typing
   if (actNum === 2 || actNum === 3) {
     pendingQueryAct = actNum;
-    if (window.location.pathname !== '/' || window.location.search) {
-      window.location.href = `${SITE_BASE}/?demo-pending=${actNum}`;
-    }
-    return;
-  }
-
-  // Act 5: open extension panel as full tab (requires extension context)
-  if (actNum === 5) {
-    showToast(act.label);
-    try {
-      chrome.runtime.sendMessage({ type: 'OPEN_PANEL_TAB' });
-    } catch (e) {
-      // Fallback if not running in extension context
-      // eslint-disable-next-line no-console
-      console.warn('[Demo] Extension not available for Act 5');
+    const clearUrl = `${SITE_BASE}/?clear=1`;
+    if (window.location.href !== clearUrl) {
+      window.location.href = `${clearUrl}&demo-pending=${actNum}`;
     }
     return;
   }
@@ -251,7 +239,10 @@ function checkPrefill() {
   // New flow: arrived via demo-pending, waiting for → to trigger typing
   const pending = params.get('demo-pending');
   if (pending) {
-    window.history.replaceState({}, '', '/');
+    // Keep ?clear=1 if present, strip demo-pending
+    params.delete('demo-pending');
+    const remaining = params.toString();
+    window.history.replaceState({}, '', remaining ? `/?${remaining}` : '/');
     pendingQueryAct = parseInt(pending, 10);
     return;
   }
